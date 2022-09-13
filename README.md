@@ -21,7 +21,6 @@ In short, there are three different levels of file-sharing that need to take pla
 1. Selective sharing across different computers
 1. Selective sharing across different instances on the same computer
 1. Selective sharing across server and client installations
- 
 
 ## Directory Tree
 To that end, the basic folder layout is split out by the context of which instances / installations will need to sync these files.
@@ -61,6 +60,7 @@ to treat the _folder itself_ as a file in terms of tagging (so maybe you'll crea
 `backups@nirvana@current@legacy`). It might turn out to make sense for the _default behavior_ to be to automatically link
 these folders across all instances, but for now, you'll need to explicitly tag each instance you want centrally managed.
 
+
 ### The default behavior is that instance files are not linked
 
 This is most applicable to world saves--if you create a new world, you will need to:
@@ -69,6 +69,7 @@ This is most applicable to world saves--if you create a new world, you will need
    folder underneath that)
 1. Append the tags for the original instance and any instances that should share access to the world **to the world's folder name**
 1. Run the command to regenerate all the links.
+
 
 ### Name Collisions and Conflicts
 
@@ -93,4 +94,68 @@ Similarly, if your setup were the following:
 I'm not exactly sure what it should do, but I can pretty much guarantee that it's not doing what you wanted.
 
 
+## Installation
 
+EnderChest has no package dependencies but does require **python 3.10 or greater.** So unless your system Python
+is already 3.10+, you'll need to first create a virtual environment (releasing as a stand-alone binary
+is planned). Assuming that you're starting from zero, the recommended installation steps are:
+
+1. Download and install a [`conda`](https://docs.conda.io/en/latest/) distribution
+   ([`mambaforge`](https://github.com/conda-forge/miniforge#mambaforge) highly recommended)
+2. Open a terminal and create a new virtual enviroment via:
+   ```bash
+   $ mamba create -n enderchest "python>=3.10" "pip>22"
+   ```
+   (substitute `conda` for `mamba` if as needed)
+3. Activate your new environment:
+   ```bash
+   $ conda activate enderchest
+   ```
+4. Install `enderchest` from github via pip:
+   ```bash
+   $ python -m pip install --user git://github.com/OpenBagTwo/EnderChest.git@release
+   ```
+   
+## Usage
+
+EnderChest is a command-line utility. With your `enderchest` virtual environment activated, run the command
+
+```bash
+$ enderchest --help
+```
+
+for full documentation on how to run this package.
+
+## Contributing
+
+Please open [a new issue](https://github.com/OpenBagTwo/EnderChest/issues/new) to report a bug or to propose a new
+feature or enhancement.
+
+If you would like to contribute your own bugfixes or code enhancements, start by
+[forking this repo](https://github.com/OpenBagTwo/EnderChest/fork), and cloning it into your local workspace.
+
+Once you've done that, navigate to the repo root and:
+
+1. Create the development environment via
+   ```bash
+   $ mamba env create
+   ```
+   (substitute `conda` if you so choose)
+2. Install the package in editable mode:
+   ```bash
+   python -m pip install --user -e . 
+   ```
+3. Set up pre-commit:
+   ```bash
+   pre-commit install
+   ```
+
+and then start developing.
+
+Once you're ready to contribute your code change back, open a PR into this repo, and tag
+[@OpenBagTwo](https://github.com/OpenBagTwo) for review.
+
+## License
+
+This package is licensed under GPLv3. If you have a use case for adapting this code that requires a more permissive
+license, please post an issue, and I'd be more than willing to consider a dual license.
