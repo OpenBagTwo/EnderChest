@@ -2,6 +2,10 @@ import os
 from pathlib import Path
 from typing import NamedTuple
 
+from . import _version
+
+__version__ = _version.get_versions()["version"]
+
 
 class Contexts(NamedTuple):
     universal: Path
@@ -35,4 +39,4 @@ def contexts(root: str | os.PathLike) -> Contexts:
 from .craft import craft_ender_chest
 from .place import place_enderchest
 
-__all__ = ["craft_ender_chest", "place_enderchest"]
+__all__ = ["craft_ender_chest", "place_enderchest", "__version__"]

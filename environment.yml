@@ -1,0 +1,16 @@
+# note: this is just the suggested development environment
+name: enderchest
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - ipython>=8
+  - jupyterlab>=3
+  - black
+  - isort
+  - mypy
+  - versioneer
+  - pip>=22
+  - pre-commit
+  - pytest>=7
+
