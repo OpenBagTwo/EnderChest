@@ -1,3 +1,4 @@
+"""Utilities for performing the linking"""
 import os
 from pathlib import Path
 

@@ -4,11 +4,16 @@ import versioneer
 
 setup(
     name="enderchest",
-    python_requires="3.10",
+    python_requires=">=3.10",
     description="syncing and linking for all your Minecraft instances",
     author='Gili "OpenBagTwo" Barlev',
     url="https://github.com/OpenBagTwo/EnderChest",
-    packages=["ennderchest"],
+    packages=["enderchest"],
+    entry_points={
+        "console_scripts": [
+            "enderchest = enderchest.cli:main",
+        ]
+    },
     license="GPL v3",
     include_package_data=True,
     version=versioneer.get_version(),

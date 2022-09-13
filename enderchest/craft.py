@@ -1,5 +1,5 @@
+"""Utilities for setting up the folder structure"""
 import os
-from pathlib import Path
 
 from . import contexts
 
