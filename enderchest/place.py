@@ -52,8 +52,8 @@ def link_instance(resource_path: str, instance_folder: Path, destination: Path) 
     """
     instance_file = instance_folder / ".minecraft" / resource_path
     instance_file.parent.mkdir(parents=True, exist_ok=True)
-    relative_path = os.path.relpath(instance_file, destination)
-    os.symlink(instance_file, relative_path)
+    relative_path = os.path.relpath(destination, instance_file.parent)
+    os.symlink(relative_path, instance_file)
 
 
 def link_server(resource_path: str, server_folder: Path, destination: Path) -> None:
