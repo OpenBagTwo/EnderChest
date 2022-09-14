@@ -10,7 +10,7 @@ folder/cpmtext, universal, client_only, local_only, server_only
 config,         yes,       yes,         yes,        yes
 mods,           yes,       yes,         yes,        yes
 resourcepacks,  yes,       yes,         yes,        no
-saves,          yes,       yes,         yes,        yes
+saves,          no,        yes,         yes,        yes
 shaderpacks,    no,        yes,         yes,        no
 """
 
