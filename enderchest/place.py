@@ -28,6 +28,8 @@ def place_enderchest(root: str | os.PathLike) -> None:
                 # if make_server_links:
                 #     link_server(path, instances / tag, link)
 
+        # TODO: clean up broken links
+
 
 def link_instance(resource_path: str, instance_folder: Path, destination: Path) -> None:
     """Create a symlink for the specified resource from an instance's space pointing to the
@@ -53,6 +55,9 @@ def link_instance(resource_path: str, instance_folder: Path, destination: Path) 
     instance_file = instance_folder / ".minecraft" / resource_path
     instance_file.parent.mkdir(parents=True, exist_ok=True)
     relative_path = os.path.relpath(destination, instance_file.parent)
+    if instance_file.exists() and instance_file.is_symlink():
+        # it's okay to overwrite (our own) symlinks
+        instance_file.unlink()
     os.symlink(relative_path, instance_file)
 
 
