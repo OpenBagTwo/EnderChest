@@ -36,7 +36,9 @@ def place_enderchest(root: str | os.PathLike, cleanup: bool = True) -> None:
                 file.unlink()
 
 
-def link_instance(resource_path: str, instance_folder: Path, destination: Path) -> None:
+def link_instance(
+    resource_path: str, instance_folder: Path, destination: Path, check_exists=True
+) -> None:
     """Create a symlink for the specified resource from an instance's space pointing to the
     tagged file / folder living in the EnderChest folder.
 
@@ -48,6 +50,9 @@ def link_instance(resource_path: str, instance_folder: Path, destination: Path) 
         the instance's folder (parent of ".minecraft")
     destination : Path
         the location to link, where the file or older actually lives (inside the EnderChest folder)
+    check_exists : bool, optional
+        By default, this method will only create links if a ".minecraft" folder exists in the
+        instance_folder. To create links regardless, pass check_exists=False
 
     Returns
     -------
@@ -57,6 +62,9 @@ def link_instance(resource_path: str, instance_folder: Path, destination: Path) 
     -----
     This method will create any folders that do not existc
     """
+    if not (instance_folder / ".minecraft").exists() and check_exists:
+        return
+
     instance_file = instance_folder / ".minecraft" / resource_path
     instance_file.parent.mkdir(parents=True, exist_ok=True)
     relative_path = os.path.relpath(destination, instance_file.parent)
