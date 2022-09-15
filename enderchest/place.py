@@ -5,13 +5,16 @@ from pathlib import Path
 from . import contexts
 
 
-def place_enderchest(root: str | os.PathLike) -> None:
+def place_enderchest(root: str | os.PathLike, cleanup: bool = True) -> None:
     """Link all instance files and folders
 
     Parameters
     ----------
     root : path
         The root directory that contains both the EnderChest directory, instances and servers
+    cleanup : bool, optional
+        By default, this method will remove any broken links in your instances and servers folders.
+        To disable this behavior, pass in cleanup=False
     """
     instances = Path(root) / "instances"
     servers = Path(root) / "servers"
@@ -27,8 +30,10 @@ def place_enderchest(root: str | os.PathLike) -> None:
                     link_instance(path, instances / tag, link)
                 # if make_server_links:
                 #     link_server(path, instances / tag, link)
-
-        # TODO: clean up broken links
+    if cleanup:
+        for file in (*instances.rglob("*"), *servers.rglob("*")):
+            if not file.exists():
+                file.unlink()
 
 
 def link_instance(resource_path: str, instance_folder: Path, destination: Path) -> None:
