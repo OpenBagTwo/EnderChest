@@ -55,8 +55,8 @@ def link_instance(resource_path: str, instance_folder: Path, destination: Path) 
     instance_file = instance_folder / ".minecraft" / resource_path
     instance_file.parent.mkdir(parents=True, exist_ok=True)
     relative_path = os.path.relpath(destination, instance_file.parent)
-    if instance_file.exists() and instance_file.is_symlink():
-        # it's okay to overwrite (our own) symlinks
+    if instance_file.is_symlink():
+        # remove previous symlink in this spot
         instance_file.unlink()
     os.symlink(relative_path, instance_file)
 
