@@ -1,6 +1,7 @@
 """Command-line interface"""
 import argparse
 import os
+from functools import partial
 from pathlib import Path
 from typing import Callable
 
@@ -47,8 +48,23 @@ def parse_args(argv=None) -> tuple[_Action, Path]:
         type=str,
         default=os.getcwd(),
     )
+    parser.add_argument(
+        "-k",
+        "--keep-broken",
+        action="store_true",
+        help="do not remove broken links when performing place",
+    )
     args = parser.parse_args(argv)
-    return actions[args.action], Path(args.root)
+
+    action = actions[args.action]
+    if args.keep_broken:
+        if args.action != "place":
+            raise ValueError(
+                "--keep-broken flag is only valid when using the place command"
+            )
+        action = partial(action, cleanup=False)
+
+    return action, Path(args.root)
 
 
 def main():
