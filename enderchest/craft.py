@@ -6,13 +6,13 @@ from . import contexts
 
 # sometimes you just need a CSV
 _FOLDER_CONTEXT_COMBOS = """
-folder/cpmtext, universal, client_only, local_only, server_only
-config,         yes,       yes,         yes,        yes
-mods,           yes,       yes,         yes,        yes
-resourcepacks,  yes,       yes,         yes,        no
-saves,          no,        yes,         yes,        yes
-shaderpacks,    no,        yes,         yes,        no
-"""
+folder/context, universal, client_only, server_only, local_only
+config,         yes,       yes,         yes,         yes
+mods,           yes,       yes,         yes,         yes
+resourcepacks,  yes,       yes,         no,          yes
+saves,          no,        yes,         yes,         yes
+shaderpacks,    no,        yes,         no,          yes
+"""  # mote: the omission of other_locals is intentional -- it shouldn't get any minecraft folders
 
 
 def _parse_folder_context_combos() -> dict[str, set[str]]:
@@ -45,5 +45,6 @@ def craft_ender_chest(root: str | os.PathLike) -> None:
     """
     folders_for_contexts = _parse_folder_context_combos()
     for context_type, context_root in contexts(root)._asdict().items():
+        context_root.mkdir(parents=True, exist_ok=True)
         for folder in folders_for_contexts[context_type]:
             (context_root / folder).mkdir(parents=True, exist_ok=True)
