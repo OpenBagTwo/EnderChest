@@ -3,12 +3,15 @@ import os
 import socket
 import warnings
 from pathlib import Path
+from typing import NamedTuple
 
 from . import contexts
 
 HEADER = """#!/usr/bin/env bash
 set -e
+"""
 
+SCARE_MESSAGE = """
 ########################## DELETE AFTER READING ########################################
 echo "These scripts were auto-generated and should be checked before first running!"
 echo "Please open" $(realpath "$0")
@@ -20,20 +23,64 @@ echo "the flags: --dry-run --verbose to make absolutely sure the script is doing
 echo "what you want before you potentially overwrite an entire file system."
 exit 1
 #########################################################################################
-
 """
 
 SHARED_SYNC = """# sync changes from {source_desc} to {destination_desc}
 rsync {options} {source}/EnderChest/ {destination}/EnderChest/ {exclusions} "$@"
 """
 
-LOCAL_BACKUP = """# backup local settings to {remote}
-rsync {options} {local_root}/EnderChest/local-only/ {remote}:{remote_root}/EnderChest/other-locals/{hostname}/. "$@"
+LOCAL_BACKUP = """# backup local settings to {remote_desc}
+rsync {options} {local_root}/EnderChest/local-only {remote_root}/EnderChest/other-locals/{local_desc} "$@"
 """
 
 
+# TODO: is there something from the stdlib (urllib?) that I should be using instead?
+class Remote(NamedTuple):
+    """Specification of a remote EnderChest installation to sync with using rsync over ssh (other protocols are not
+    explicitly supported).
+
+    Attributes
+    ----------
+    host : str
+        The address (_e.g._ 127.0.0.1) or cname/URL (_e.g._ steamdeck.local) of the host you're syncing with.
+    root : path-like
+        The root directory on the remote machine that contains all your minecraft stuff. Explicitly expects that
+        the folder contains: your EnderChest folder; your Multi-MC-style instances folder; your servers.
+    username : str, optional
+        The username for logging onto the remote machine. If None is specified on instantiation, it's assumed that
+        you don't need a username to log into the server from this local.
+    alias : str
+        A shorthand way to refer to the remote installation. If None is specified on instantiation,
+        this will be the same as the host attribute.
+    remote_folder : str
+        The full specification of the remote root, _e.g._ deck@steamdeck.local:~/minecraft
+
+    Notes
+    -----
+    This class is not designed to be safe against injection attacks and has none of the protections you'd get out
+    of using, say, the urllib.parse module.
+    """
+
+    host: str
+    root: str | os.PathLike
+    username: str | None = None
+    alias_: str | None = None
+
+    @property
+    def alias(self) -> str:
+        return self.alias_ or self.host
+
+    @property
+    def remote_folder(self) -> str:
+        if self.username is None:
+            url = self.host
+        else:
+            url = f"{self.username}@{self.host}"
+        return f"{url}:{self.root}"
+
+
 def _build_rsync_scripts(
-    local_root: str | os.PathLike, remote: str, remote_root: str | os.PathLike
+    local_root: str | os.PathLike, local_alias: str, remote: Remote
 ) -> tuple[str, str]:
     """Build two rsync scripts: one for pushing local changes to a remote instance and another for pulling remote
     changes to the local
@@ -42,10 +89,11 @@ def _build_rsync_scripts(
     ----------
     local_root : path
         The local root directory that contains both the EnderChest directory, instances and servers
-    remote : str
-        The username @ hostname / IP of the remote machine, _e.g._ deck@steamdeck.local or openbagtwo@127.0.0.1
-    remote_root : path
-        The root directory on the remote machine that contains both the EnderChest directory, instances and servers
+    local_alias : str
+        A shorthand way to refer to the local installation. This is what determines the name of the local settings
+        backup folder inside the remote machine's "other-locals" folder.
+    remote : Remote
+        The specification of the installation you're wanting to sync with
 
     Returns
     -------
@@ -64,30 +112,34 @@ def _build_rsync_scripts(
       EnderChest installation in the remote's "other-locals" folder. That's not going to be ideal if you're managing,
       say, multiple installations on the same computer (like, across separate user accounts?).
     """
-    options = "-az --delete"  # TODO: make z toggleable (to support local copies); conditionally add "v"
+    options = "-az --delete"
+    # TODO: make z toggleable (to support local copies)
+    # TODO: set timeout and controls around the conditions under you expect the remote to be accessible, _i,e,_
+    #       - internet-accessible (for a server you can access outside the LAN
+    #       - always-on (for desktops that don't get turned off when not in use)
     exclusion_folders = (".git", "local-only", "other-locals")
     exclusions = " ".join((f'--exclude="{folder}"' for folder in exclusion_folders))
 
     yeet = SHARED_SYNC.format(
         source_desc="this EnderChest",
-        destination_desc=remote.split("@")[-1],
+        destination_desc=remote.alias,
         options=options,
         source=Path(local_root).resolve(),
-        destination=f"{remote}:{remote_root}",
+        destination=remote.remote_folder,
         exclusions=exclusions,
     ) + LOCAL_BACKUP.format(
+        remote_desc=remote.alias,
         options=options,
         local_root=Path(local_root).resolve(),
-        remote=remote,
-        remote_root=remote_root,
-        hostname=socket.gethostname(),
+        remote_root=remote.remote_folder,
+        local_desc=local_alias,
     )
 
     yoink = SHARED_SYNC.format(
-        source_desc=remote.split("@")[-1],
+        source_desc=remote.alias,
         destination_desc="this EnderChest",
         options=options,
-        source=f"{remote}:{remote_root}",
+        source=remote.remote_folder,
         destination=Path(local_root).resolve(),
         exclusions=exclusions,
     )
@@ -96,7 +148,11 @@ def _build_rsync_scripts(
 
 
 def link_to_other_chests(
-    local_root: str | os.PathLike, *remotes: tuple[str, str | os.PathLike]
+    local_root: str | os.PathLike,
+    *remotes: Remote,
+    local_alias: str | None = None,
+    overwrite: bool = False,
+    omit_scare_message: bool = False,
 ) -> None:
     """Generate bash scripts for syncing to EnderChest installations on other computers. These will be saved in
     your EnderChest/local-only folder under `open.sh` (for pulling from remotes) and `close.sh` (for pushing to other
@@ -106,14 +162,29 @@ def link_to_other_chests(
     ----------
     local_root : path
         The local root directory that contains both the EnderChest directory, instances and servers
-    *remotes : tuples of (str, path)
-        The remote installations to sync with, specified as tuples of:
-          - remote_address (including username, so, like, "deck@steamdeck.local" or "openbagtwo@127.0.0.1")
-          - remote_root : the path to the remote's root directory (e.g. "~/minecraft")
+    *remotes : Remotes
+        The remote installations to sync with
+    local_alias : str, optional
+        A shorthand way to refer to the local installation. This is what determines the name of the local settings
+        backup folder inside remote "other-locals" folders. If None is specified, this computer's hostname will be
+        used.
+    overwrite : bool, optional
+        By default, if an open/close script exists, this method will leave it alone. To instead overwrite any existing
+        scripts, explicitly pass in the keyword argument overwrite=True
+    omit_scare_message : bool, optional
+        By default, the scripts this method generates are not runnable and tell the user to first open them in a text
+        editor and look them over. If you *really really trust* this method and your use of it, pass in the
+        keyword argument omit_scare_message=True to omit this safeguard and just make them runnable from the get-go.
 
     Returns
     -------
     None
+
+    Warnings
+    --------
+    If one of the scripts already exists, this method will emit a warning that generation of a new script is being
+    skipped (if overwrite=True is not specified) or that the old script is being overwritten (if this method is called
+    with overwrite=True).
 
     Notes
     -----
@@ -128,8 +199,15 @@ def link_to_other_chests(
     open_script = HEADER
     close_script = HEADER
 
-    for remote, remote_root in remotes:
-        yeet, yoink = _build_rsync_scripts(local_root, remote, remote_root)
+    if not omit_scare_message:
+        open_script += SCARE_MESSAGE
+        close_script += SCARE_MESSAGE
+
+    open_script += "\n"
+    for remote in remotes:
+        yeet, yoink = _build_rsync_scripts(
+            local_root, local_alias or socket.gethostname(), remote
+        )
         close_script += "\n" + yeet
         open_script += "{\n    " + "\n    ".join(yoink.split("\n")[:-1]) + "\n} || "
 
@@ -143,7 +221,15 @@ def link_to_other_chests(
         script_path = contexts(local_root).local_only / f"{name}.sh"
 
         if script_path.exists():
-            warnings.warn(f"{name.title()} script already exists. Skipping.")
-        else:
-            with script_path.open("x") as script_file:
-                script_file.write(script)
+            warning_message = f"{name.title()} script already exists."
+
+            if not overwrite:
+                warning_message += " Skipping."
+                warnings.warn(warning_message)
+                continue
+            else:
+                warning_message += " Overwriting."
+                warnings.warn(warning_message)
+
+        with script_path.open("w") as script_file:
+            script_file.write(script)
