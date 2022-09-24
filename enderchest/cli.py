@@ -29,7 +29,9 @@ def parse_args(argv=None) -> tuple[_Action, Path]:
 
     parser = argparse.ArgumentParser(
         prog=f"enderchest",
-        description=f"v{__version__}\n\nsyncing and linking for all your Minecraft instances",
+        description=(
+            f"v{__version__}\n" "\nsyncing and linking for all your Minecraft instances"
+        ),
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
