@@ -11,9 +11,10 @@ def place_enderchest(root: str | os.PathLike, cleanup: bool = True) -> None:
     Parameters
     ----------
     root : path
-        The root directory that contains both the EnderChest directory, instances and servers
+        The root directory that contains the EnderChest directory, instances and servers
     cleanup : bool, optional
-        By default, this method will remove any broken links in your instances and servers folders.
+        By default, this method will remove any broken links in your instances and
+        servers folders.
         To disable this behavior, pass in cleanup=False
     """
     instances = Path(root) / "instances"
@@ -39,8 +40,8 @@ def place_enderchest(root: str | os.PathLike, cleanup: bool = True) -> None:
 def link_instance(
     resource_path: str, instance_folder: Path, destination: Path, check_exists=True
 ) -> None:
-    """Create a symlink for the specified resource from an instance's space pointing to the
-    tagged file / folder living in the EnderChest folder.
+    """Create a symlink for the specified resource from an instance's space pointing to
+    the tagged file / folder living in the EnderChest folder.
 
     Parameters
     ----------
@@ -49,10 +50,11 @@ def link_instance(
     instance_folder : Path
         the instance's folder (parent of ".minecraft")
     destination : Path
-        the location to link, where the file or older actually lives (inside the EnderChest folder)
+        the location to link, where the file or older actually lives (inside the
+        EnderChest folder)
     check_exists : bool, optional
-        By default, this method will only create links if a ".minecraft" folder exists in the
-        instance_folder. To create links regardless, pass check_exists=False
+        By default, this method will only create links if a ".minecraft" folder exists
+        in the instance_folder. To create links regardless, pass check_exists=False
 
     Returns
     -------
@@ -85,7 +87,8 @@ def link_server(resource_path: str, server_folder: Path, destination: Path) -> N
     server_folder : Path
         the server's  folder
     destination : Path
-        the location to link, where the file or older actually lives (inside the EnderChest folder)
+        the location to link, where the file or older actually lives (inside the
+        EnderChest folder)
 
     Returns
     -------
