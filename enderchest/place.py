@@ -62,7 +62,11 @@ def link_instance(
 
     Notes
     -----
-    This method will create any folders that do not existc
+    - This method will create any folders that do not exist within an instance, but only
+      if the instance folder exists and has contains a ".minecraft" folder *or* if
+      check_exists is set to False
+    - This method will overwrite existing symlinks but will not overwrite any actual
+      files.
     """
     if not (instance_folder / ".minecraft").exists() and check_exists:
         return
