@@ -1,11 +1,10 @@
 """Utilities for synchronizing chests across different computers"""
 import os
 import socket
-from pathlib import Path
 import warnings
+from pathlib import Path
 
 from . import contexts
-
 
 HEADER = """#!/usr/bin/env bash
 set -e
@@ -73,12 +72,12 @@ def _build_rsync_scripts(
         source_desc="this EnderChest",
         destination_desc=remote.split("@")[-1],
         options=options,
-        source=Path(local_root).absolute(),
+        source=Path(local_root).resolve(),
         destination=f"{remote}:{remote_root}",
         exclusions=exclusions,
     ) + LOCAL_BACKUP.format(
         options=options,
-        local_root=Path(local_root).absolute(),
+        local_root=Path(local_root).resolve(),
         remote=remote,
         remote_root=remote_root,
         hostname=socket.gethostname(),
@@ -89,7 +88,7 @@ def _build_rsync_scripts(
         destination_desc="this EnderChest",
         options=options,
         source=f"{remote}:{remote_root}",
-        destination=Path(local_root).absolute(),
+        destination=Path(local_root).resolve(),
         exclusions=exclusions,
     )
 
@@ -132,7 +131,7 @@ def link_to_other_chests(
     for remote, remote_root in remotes:
         yeet, yoink = _build_rsync_scripts(local_root, remote, remote_root)
         close_script += "\n" + yeet
-        open_script += "{\n    " + "\n    ".join(yoink.split("\n")[:-1]) + "} || "
+        open_script += "{\n    " + "\n    ".join(yoink.split("\n")[:-1]) + "\n} || "
 
     open_script += """{
     echo "Could not pull changes from any remote EnderChests. Are you outside your local network?"
