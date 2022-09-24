@@ -149,8 +149,7 @@ def link_to_other_chests(
                 warning_message += " Overwriting."
                 warnings.warn(warning_message)
 
-        with script_path.open("w") as script_file:
-            script_file.write(script)
+        script_path.write_text(script)
 
 
 HEADER = """#!/usr/bin/env bash
