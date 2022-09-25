@@ -1,7 +1,7 @@
 # Checks performed on all pull requests, to any branch. Thus, required for protected branches,
 # but enables a workflow for CI validation against non-protected branches as well.
 
-name: Python application
+name: PR checker
 
 on:
   pull_request
@@ -23,15 +23,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest mypy black isort flake8 pytest-cov
-    - name: Autolint as needed
+    - name: Run code quality checks
       run: |
         isort . --profile="black"
         black .
-        # if nothing has changed, this won't do anything
-        git add .
-        git commit -m "Emptying the lint trap"
-    - name: Run code quality checks
-      run: |
         mypy .
         flake8 .
     - name: Run unit tests
