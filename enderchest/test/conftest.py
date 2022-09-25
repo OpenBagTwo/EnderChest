@@ -3,6 +3,8 @@ from pathlib import Path
 
 import pytest
 
+from enderchest.craft import craft_ender_chest
+
 
 @pytest.fixture
 def local_root(tmp_path):
@@ -62,8 +64,10 @@ def local_enderchest(local_root):
     """An existing EnderChest directory within the local root that's got some stuff
     in it
     """
+    craft_ender_chest(local_root)
+
     chest_folder = local_root / "EnderChest"
-    chest_folder.mkdir()
+
     do_not_touch: dict[Path, str] = {
         chest_folder / ".git" / "log": "i committed some stuff\n",
         (

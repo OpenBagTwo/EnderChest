@@ -162,3 +162,36 @@ class TestPlaceEnderChest:
                 local_root / "instances" / "axolotl" / ".minecraft" / "config"
             ).glob("*")
         ]
+
+    def test_existing_broken_links_are_cleaned_up_by_default(self, local_root):
+        config_folder = local_root / "instances" / "axolotl" / ".minecraft" / "config"
+        config_folder.mkdir(parents=True, exist_ok=True)
+        (config_folder / "BME.txt").symlink_to(
+            local_root / "workspace" / "BestModEver" / "there_is_no_config_here.txt"
+        )
+
+        place.place_enderchest(local_root)
+
+        assert "BME.txt" not in [path.name for path in config_folder.glob("*")]
+
+    def test_cleanup_of_existing_broken_links_can_be_disabled(self, local_root):
+        config_folder = local_root / "instances" / "axolotl" / ".minecraft" / "config"
+        config_folder.mkdir(parents=True, exist_ok=True)
+        (config_folder / "BME.txt").symlink_to(
+            local_root / "workspace" / "BestModEver" / "there_is_no_config_here.txt"
+        )
+
+        place.place_enderchest(local_root, cleanup=False)
+
+        assert "BME.txt" in [path.name for path in config_folder.glob("*")]
+
+    @pytest.mark.parametrize("cleanup", (True, False))
+    def test_server_only_assets_dont_go_in_instances(self, cleanup, local_root):
+
+        (local_root / "EnderChest" / "server-only" / "banlist.txt@axolotl").write_text(
+            "openbagtwo\n"
+        )
+
+        place.place_enderchest(local_root, cleanup=cleanup)
+
+        assert list((local_root / "instances").rglob("banlist.txt")) == []
