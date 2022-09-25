@@ -257,7 +257,7 @@ class TestSyncing:
             / "client-only"
             / "config"
             / "pupil.properties@axolotl@bee@cow"
-        ).write_text("relaxed\n")
+        ).write_text("constricted\n")
 
         assert (
             remote.root
@@ -284,4 +284,4 @@ class TestSyncing:
             / "client-only"
             / "config"
             / "pupil.properties@axolotl@bee@cow"
-        ).read_text() == "relaxed\n"
+        ).read_text() == "constricted\n"
