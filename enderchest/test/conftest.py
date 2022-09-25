@@ -36,7 +36,7 @@ def local_root(tmp_path):
             local_root / "workspace" / "neat_resource_pack" / "pack.mcmeta"
         ): '{"so": "meta"}\n',
     }
-    mod_builds_folder = local_root / "workspace" / "BestMobEver" / "build" / "libs"
+    mod_builds_folder = local_root / "workspace" / "BestModEver" / "build" / "libs"
 
     do_not_touch.update(
         {
@@ -67,9 +67,14 @@ def local_enderchest(local_root):
     do_not_touch: dict[Path, str] = {
         chest_folder / ".git" / "log": "i committed some stuff\n",
         (
-            chest_folder / "client-only" / "resourcepacks" / "stuff@axolotl"
+            chest_folder / "client-only" / "resourcepacks" / "stuff.zip@axolotl"
         ): "dfgwhgsadfhsd",
-        (chest_folder / "local-only" / "shaderpacks" / "Seuss CitH.zip.txt"): (
+        (
+            chest_folder
+            / "local-only"
+            / "shaderpacks"
+            / "Seuss CitH.zip.txt@axolotl@bee@cow"
+        ): (
             "with settings at max"
             "\nits important to note"
             "\nthe lag iks real bad"
@@ -87,7 +92,7 @@ def local_enderchest(local_root):
         (chest_folder / "global" / "mods" / "BME.jar@axolotl"): (
             local_root
             / "workspace"
-            / "BestMobEver"
+            / "BestModEver"
             / "build"
             / "libs"
             / "BME_1.19_alpha.jar"
@@ -95,7 +100,7 @@ def local_enderchest(local_root):
         (chest_folder / "global" / "mods" / "BME.jar@bee"): (
             local_root
             / "workspace"
-            / "BestMobEver"
+            / "BestModEver"
             / "build"
             / "libs"
             / "BME_1.19.1_beta.jar"
@@ -103,7 +108,7 @@ def local_enderchest(local_root):
         (chest_folder / "global" / "mods" / "BME.jar@cow"): (
             local_root
             / "workspace"
-            / "BestMobEver"
+            / "BestModEver"
             / "build"
             / "libs"
             / "BME_1.19.2_nightly.jar"
