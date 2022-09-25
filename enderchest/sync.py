@@ -40,18 +40,21 @@ class Remote(NamedTuple):
     protections you'd get out of using, say, the urllib.parse module.
     """
 
-    host: str
+    host: str | None  # intentionally not in the docstring to use None for local mirror
     root: str | os.PathLike
     username: str | None = None
     alias_: str | None = None
 
     @property
     def alias(self) -> str:
-        return self.alias_ or self.host
+        return self.alias_ or self.host or Path(self.root).name
 
     @property
     def remote_folder(self) -> str:
-        if self.username is None:
+        if not self.host:
+            # then the "remote" is actually local
+            return str(self.root)
+        if not self.username:
             url = self.host
         else:
             url = f"{self.username}@{self.host}"
