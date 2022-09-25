@@ -23,14 +23,16 @@ def place_enderchest(root: str | os.PathLike, cleanup: bool = True) -> None:
         make_server_links = context_type in ("universal", "server_only")
         make_instance_links = context_type in ("universal", "client_only", "local_only")
 
-        links = sorted(context_root.rglob("*@*"))
-        for link in links:
-            path, *tags = str(link.relative_to(context_root)).split("@")
+        assets = sorted(context_root.rglob("*@*"))
+        for asset in assets:
+            if not asset.exists():
+                continue
+            path, *tags = str(asset.relative_to(context_root)).split("@")
             for tag in tags:
                 if make_instance_links:
-                    link_instance(path, instances / tag, link)
+                    link_instance(path, instances / tag, asset)
                 # if make_server_links:
-                #     link_server(path, instances / tag, link)
+                #     link_server(path, instances / tag, asset)
     if cleanup:
         for file in (*instances.rglob("*"), *servers.rglob("*")):
             if not file.exists():
