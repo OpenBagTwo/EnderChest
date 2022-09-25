@@ -1,10 +1,13 @@
 """Test functionality around rsync script generation"""
 import os
+import shutil
 import subprocess
 
 import pytest
 
 from enderchest import sync
+from enderchest.craft import craft_ender_chest
+from enderchest.place import place_enderchest
 from enderchest.sync import Remote
 
 remotes = (
@@ -48,7 +51,7 @@ class TestRemote:
         assert remote.remote_folder == expected
 
 
-class TestLinkToOtherChests:
+class TestScriptGeneration:
     @pytest.mark.parametrize("script", ("open.sh", "close.sh"))
     def test_link_to_other_chests_generates_executable_scripts(
         self, script, local_enderchest
@@ -133,3 +136,152 @@ class TestLinkToOtherChests:
         else:
             assert result.returncode == 0
             assert "You made it" in result.stdout.decode()
+
+
+class TestSyncing:
+    """This is only going to cover syncing locally"""
+
+    # TODO: add tests for rsync over ssh
+
+    @pytest.fixture
+    def remote(self, tmp_path, local_enderchest):
+        another_root = tmp_path / "not-so-remote"
+        craft_ender_chest(another_root)
+
+        ender_chest = another_root / "EnderChest"
+
+        shutil.copy(
+            (local_enderchest / "client-only" / "resourcepacks" / "stuff.zip@axolotl"),
+            (ender_chest / "client-only" / "resourcepacks" / "stuff.zip@axolotl"),
+            follow_symlinks=False,
+        )
+
+        shutil.copy(
+            (local_enderchest / "client-only" / "saves" / "olam@axolotl@bee@cow"),
+            (ender_chest / "client-only" / "saves" / "olam@axolotl@bee@cow"),
+            follow_symlinks=False,
+        )
+
+        for instance in ("axolotl", "bee", "cow"):
+            shutil.copy(
+                (local_enderchest / "global" / "mods" / f"BME.jar@{instance}"),
+                (ender_chest / "global" / "mods" / f"BME.jar@{instance}"),
+                follow_symlinks=False,
+            )
+
+        (ender_chest / "global" / "mods" / "AnOkayMod.jar@bee").write_bytes(b"beep")
+        (
+            ender_chest
+            / "local-only"
+            / "shaderpacks"
+            / "SildursMonochromeShaders.zip@axolotl@bee@cow@dolphin"
+        ).touch()
+        (ender_chest / "local-only" / "BME_indev.jar@axolotl").write_bytes(
+            b"alltheboops"
+        )
+        (
+            ender_chest / "client-only" / "config" / "pupil.properties@axolotl@bee@cow"
+        ).write_text("dilated\n")
+
+        yield Remote(None, ender_chest / "..", None, "behind_the_door")
+
+        assert list(ender_chest.glob(".git")) == []
+
+    def test_open_grabs_changes_from_upsteam(self, local_enderchest, remote):
+        (local_enderchest / ".." / "instances" / "bee" / ".minecraft").mkdir(
+            parents=True
+        )
+
+        sync.link_to_other_chests(
+            local_enderchest / "..", remote, omit_scare_message=True
+        )
+
+        result = subprocess.run(
+            [local_enderchest / "local-only" / "open.sh", "--verbose"],
+            capture_output=True,
+        )
+
+        assert result.returncode == 0
+
+        place_enderchest(local_enderchest / "..")
+
+        assert sorted(
+            (
+                path.name
+                for path in (
+                    local_enderchest
+                    / ".."
+                    / "instances"
+                    / "bee"
+                    / ".minecraft"
+                    / "mods"
+                ).glob("*")
+            )
+        ) == ["AnOkayMod.jar", "BME.jar"]
+
+    def test_open_processes_deletions_from_upstream(self, local_enderchest, remote):
+        (local_enderchest / ".." / "instances" / "bee" / ".minecraft").mkdir(
+            parents=True
+        )
+
+        sync.link_to_other_chests(
+            local_enderchest / "..", remote, omit_scare_message=True
+        )
+
+        result = subprocess.run(
+            [local_enderchest / "local-only" / "open.sh", "--verbose"],
+            capture_output=True,
+        )
+
+        assert result.returncode == 0
+
+        place_enderchest(local_enderchest / "..")
+
+        assert (
+            list(
+                (
+                    local_enderchest
+                    / ".."
+                    / "instances"
+                    / "bee"
+                    / ".minecraft"
+                    / "resourcepacks"
+                ).glob("*")
+            )
+            == []
+        )
+
+    def test_close_pushes_changes_from_local(self, local_enderchest, remote):
+        (
+            local_enderchest
+            / "client-only"
+            / "config"
+            / "pupil.properties@axolotl@bee@cow"
+        ).write_text("relaxed\n")
+
+        assert (
+            remote.root
+            / "EnderChest"
+            / "client-only"
+            / "config"
+            / "pupil.properties@axolotl@bee@cow"
+        ).read_text() == "dilated\n"
+
+        sync.link_to_other_chests(
+            local_enderchest / "..", remote, omit_scare_message=True
+        )
+
+        result = subprocess.run(
+            [local_enderchest / "local-only" / "close.sh", "--verbose"],
+            capture_output=True,
+        )
+
+        assert result.returncode == 0
+
+        assert (
+            remote.root
+            / "EnderChest"
+            / "client-only"
+            / "config"
+            / "pupil.properties@axolotl@bee@cow"
+        ).read_text() == "relaxed\n"

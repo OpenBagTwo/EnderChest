@@ -86,10 +86,11 @@ def local_enderchest(local_root):
         ),
     }
 
+    (
+        chest_folder / "global" / "resourcepacks" / "neat_resource_pack@axolotl@bee"
+    ).symlink_to(local_root / "workspace" / "neat_resource_pack")
+
     symlinks: dict[Path, Path] = {  # map of links to targets
-        (
-            chest_folder / "global" / "resourcepacks" / "neat_resource_pack@axolotl@bee"
-        ): (local_root / "workspace" / "neat_resource_pack"),
         (chest_folder / "client-only" / "saves" / "olam@axolotl@bee@cow"): (
             local_root / "worlds" / "olam"
         ),
