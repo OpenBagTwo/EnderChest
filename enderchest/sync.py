@@ -1,6 +1,7 @@
 """Utilities for synchronizing chests across different computers"""
 import os
 import socket
+import stat
 import warnings
 from pathlib import Path
 from typing import NamedTuple
@@ -150,6 +151,7 @@ def link_to_other_chests(
                 warnings.warn(warning_message)
 
         script_path.write_text(script)
+        script_path.chmod(script_path.stat().st_mode | stat.S_IEXEC)
 
 
 HEADER = """#!/usr/bin/env bash
