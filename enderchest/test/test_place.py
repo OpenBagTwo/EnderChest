@@ -1,4 +1,5 @@
 """Test functionality around linking instances"""
+import os
 from pathlib import Path
 
 import pytest
@@ -105,3 +106,59 @@ class TestLinkInstance:
         assert not (
             tmp_path / "i_exist" / ".minecraft" / "backups" / "aether.zip"
         ).is_symlink()
+
+
+@pytest.mark.usefixtures("local_enderchest")
+class TestPlaceEnderChest:
+    @pytest.fixture(autouse=True)
+    def create_some_instances(self, local_root):
+        (local_root / "instances" / "axolotl" / ".minecraft").mkdir(parents=True)
+        (local_root / "instances" / "bee" / ".minecraft").mkdir(parents=True)
+
+    @pytest.mark.parametrize("cleanup", (True, False))
+    @pytest.mark.parametrize(
+        "resource",
+        (
+            (("axolotl",), "resourcepacks", "stuff.zip"),
+            (("axolotl", "bee"), "shaderpacks", "Seuss CitH.zip.txt"),
+            (("axolotl", "bee"), "resourcepacks", "neat_resource_pack"),
+            (("axolotl", "bee"), "saves", "olam"),
+            (("axolotl",), "mods", "BME.jar"),
+            (("bee",), "mods", "BME.jar"),  # not the same mod
+        ),
+    )
+    def test_placing_create_links_inside_instances(self, cleanup, resource, local_root):
+        place.place_enderchest(local_root, cleanup=cleanup)
+        instances, *path = resource
+        destinations: set[Path] = set()
+        for instance in instances:
+            link_path = local_root / "instances" / instance / ".minecraft"
+            for path_part in path:
+                link_path = link_path / path_part
+            destinations.add(os.path.realpath(link_path, strict=True))
+        assert len(destinations) == 1
+
+    @pytest.mark.parametrize("cleanup", (True, False))
+    def test_placing_doesnt_create_folders_for_missing_instances(
+        self, cleanup, local_root
+    ):
+        place.place_enderchest(local_root, cleanup=cleanup)
+        assert not (local_root / "instances" / "cow").exists()
+
+    @pytest.mark.parametrize("cleanup", (True, False))
+    def test_placing_doesnt_make_broken_links(self, cleanup, local_root):
+
+        global_config = local_root / "EnderChest" / "global" / "config"
+        global_config.mkdir(parents=True, exist_ok=True)
+        (global_config / "BME.txt@axolotl").symlink_to(
+            local_root / "workspace" / "BestModEver" / "there_is_no_config_here.txt"
+        )
+
+        place.place_enderchest(local_root, cleanup=cleanup)
+
+        assert "BME.txt" not in [
+            path.name
+            for path in (
+                local_root / "instances" / "axolotl" / ".minecraft" / "config"
+            ).glob("*")
+        ]
