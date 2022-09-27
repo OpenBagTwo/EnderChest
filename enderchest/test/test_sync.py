@@ -173,7 +173,11 @@ class TestSyncing:
                 follow_symlinks=False,
             )
 
-        (ender_chest / "global" / "mods" / "AnOkayMod.jar@bee").write_bytes(b"beep")
+        (another_root / "AnOkayMod.jar").write_bytes(b"beep")
+        (ender_chest / "global" / "mods" / "AnOkayMod.jar@bee").symlink_to(
+            (another_root / "AnOkayMod.jar")
+        )
+
         (
             ender_chest
             / "local-only"
@@ -190,8 +194,9 @@ class TestSyncing:
         yield Remote(None, ender_chest / "..", None, "behind_the_door")
 
         assert list(ender_chest.glob(".git")) == []
+        assert (another_root / "AnOkayMod.jar").read_bytes() == b"beep"
 
-    def test_open_grabs_changes_from_upsteam(self, local_enderchest, remote):
+    def test_open_grabs_changes_from_upstream(self, local_enderchest, remote):
         (local_enderchest / ".." / "instances" / "bee" / ".minecraft").mkdir(
             parents=True
         )
@@ -255,7 +260,7 @@ class TestSyncing:
             == []
         )
 
-    def test_close_pushes_changes_from_local(self, local_enderchest, remote):
+    def test_close_overwrites_with_changes_from_local(self, local_enderchest, remote):
         (
             local_enderchest
             / "client-only"
@@ -263,13 +268,14 @@ class TestSyncing:
             / "pupil.properties@axolotl@bee@cow"
         ).write_text("constricted\n")
 
-        assert (
+        remote_config = (
             remote.root
             / "EnderChest"
             / "client-only"
             / "config"
             / "pupil.properties@axolotl@bee@cow"
-        ).read_text() == "dilated\n"
+        )
+        assert remote_config.read_text() == "dilated\n"
 
         sync.link_to_other_chests(
             local_enderchest / "..", remote, omit_scare_message=True
@@ -282,10 +288,39 @@ class TestSyncing:
 
         assert result.returncode == 0
 
-        assert (
+        assert remote_config.read_text() == "constricted\n"
+
+    def test_close_deletes_remote_copies_when_locals_are_deleted(
+        self, local_enderchest, remote
+    ):
+        file_to_be_removed = (
             remote.root
             / "EnderChest"
             / "client-only"
             / "config"
             / "pupil.properties@axolotl@bee@cow"
-        ).read_text() == "constricted\n"
+        )
+        link_to_be_removed = (
+            remote.root / "EnderChest" / "global" / "mods" / "AnOkayMod.jar@bee"
+        )
+
+        for object_to_be_removed in (file_to_be_removed, link_to_be_removed):
+            assert list(
+                object_to_be_removed.parent.glob(object_to_be_removed.name)
+            ) == [object_to_be_removed]
+
+        sync.link_to_other_chests(
+            local_enderchest / "..", remote, omit_scare_message=True
+        )
+
+        result = subprocess.run(
+            [local_enderchest / "local-only" / "close.sh", "--verbose"],
+            capture_output=True,
+        )
+
+        assert result.returncode == 0
+
+        for object_to_be_removed in (file_to_be_removed, link_to_be_removed):
+            assert (
+                list(object_to_be_removed.parent.glob(object_to_be_removed.name)) == []
+            )
