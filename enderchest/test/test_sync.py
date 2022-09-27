@@ -324,3 +324,30 @@ class TestSyncing:
             assert (
                 list(object_to_be_removed.parent.glob(object_to_be_removed.name)) == []
             )
+
+    def test_close_backs_up_this_local(self, local_enderchest, remote):
+
+        sync.link_to_other_chests(
+            local_enderchest / "..", remote, local_alias="this", omit_scare_message=True
+        )
+
+        result = subprocess.run(
+            [local_enderchest / "local-only" / "close.sh", "--verbose"],
+            capture_output=True,
+        )
+
+        assert result.returncode == 0
+
+        assert sorted(
+            [
+                file.relative_to(local_enderchest / "local-only")
+                for file in (local_enderchest / "local-only").rglob("*")
+            ]
+        ) == sorted(
+            [
+                file.relative_to(remote.root / "EnderChest" / "other-locals" / "this")
+                for file in (
+                    remote.root / "EnderChest" / "other-locals" / "this"
+                ).rglob("*")
+            ]
+        )

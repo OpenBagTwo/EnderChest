@@ -185,7 +185,7 @@ rsync {options} \\
 
 LOCAL_BACKUP = """# backup local settings to {remote_desc}
 rsync {options} \\
-    {local_root}/EnderChest/local-only \\
+    {local_root}/EnderChest/local-only/ \\
     {remote_root}/EnderChest/other-locals/{local_desc} \\
     "$@"
 """
