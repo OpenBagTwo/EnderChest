@@ -1,4 +1,5 @@
 """Useful setup / teardown fixtures"""
+import importlib.resources
 from pathlib import Path
 
 import pytest
@@ -135,3 +136,11 @@ def local_enderchest(local_root):
 
     for path, contents in do_not_touch.items():
         assert path.read_text() == contents
+
+
+@pytest.fixture
+def example_config_path():
+    with importlib.resources.path(
+        "enderchest.test", "example_configs"
+    ) as example_configs:
+        yield example_configs / "example.cfg"
