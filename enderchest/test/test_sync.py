@@ -388,6 +388,10 @@ class TestSyncing:
             remote_sync,
             local_alias="this",
             omit_scare_message=True,
+            pre_open=["echo open start"],
+            pre_close=["echo close start"],
+            post_open=["echo open end"],
+            post_close=["# all done", "echo close end"],
         )
 
         result = subprocess.run(
@@ -399,7 +403,9 @@ class TestSyncing:
 
         output = result.stdout.decode().splitlines()
 
-        assert int(output[0]), int(output[-1]) == (
-            1 + operation == "close",
-            3 + operation == "close",
+        assert (output[0], int(output[1]), int(output[-2]), output[-1]) == (
+            f"{operation} start",
+            1 + (operation == "close"),
+            3 + (operation == "close"),
+            f"{operation} end",
         )
