@@ -401,4 +401,9 @@ post_close=[
         }
 
 
+# TODO: test top-level conf-readers
+#       (once I change the config format to keep wrapper commands with the remotes)
+
+# TODO: test serializing
+
 # TODO: test for TOML compatibility

@@ -15,6 +15,8 @@ class Config(NamedTuple):
     close_ops: Sequence[Remote | str]
     craft_options: dict[str, Any] = {}
 
+    # TODO: add serializer
+
 
 def parse_config_file(config_path: str | os.PathLike) -> Config:
     """Parse a config file
