@@ -3,8 +3,9 @@ import os
 import socket
 import stat
 import warnings
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Sequence
 
 from . import contexts
 
@@ -61,9 +62,36 @@ class Remote(NamedTuple):
         return f"{url}:{self.root}"
 
 
+@dataclass
+class RemoteSync:
+    """
+    A specification of a remote and the commands to run pre- and post- syncing
+    with the remote"
+
+    Attributes
+    ----------
+    remote : Remote
+        The remote to sync
+    pre_open: list of str
+        Any commands to run before pulling in EnderChest changes from the remote
+    pre_close: list of str
+        Any commands to run before pushing EnderChest changes to the remote
+    post_open: list of str
+        Any commands to run after pulling in EnderChest changes from the remote
+    post_close: list of str
+        Any commands to run after pushing EnderChest changes to the remote
+    """
+
+    remote: Remote
+    pre_open: Sequence[str] = field(default_factory=list)
+    pre_close: Sequence[str] = field(default_factory=list)
+    post_open: Sequence[str] = field(default_factory=list)
+    post_close: Sequence[str] = field(default_factory=list)
+
+
 def link_to_other_chests(
     local_root: str | os.PathLike,
-    *remotes: Remote,
+    *remotes: Remote | RemoteSync,
     local_alias: str | None = None,
     overwrite: bool = False,
     omit_scare_message: bool = False,
@@ -77,7 +105,7 @@ def link_to_other_chests(
     local_root : path
         The local root directory that contains both the EnderChest directory, instances
         and servers
-    *remotes : Remotes
+    *remotes : Remotes / RemoteSyncs
         The remote installations to sync with
     local_alias : str, optional
         A shorthand way to refer to the local installation. This is what determines the
@@ -192,7 +220,7 @@ rsync {options} \\
 
 
 def _build_rsync_scripts(
-    local_root: str | os.PathLike, local_alias: str, remote: Remote
+    local_root: str | os.PathLike, local_alias: str, remote: Remote | RemoteSync
 ) -> tuple[str, str]:
     """Build two rsync scripts: one for pushing local changes to a remote instance and
     another for pulling remote changes to the local
@@ -206,8 +234,8 @@ def _build_rsync_scripts(
         A shorthand way to refer to the local installation. This is what determines the
         name of the local settings backup folder inside the remote installation's
         "other-locals" folder.
-    remote : Remote
-        The specification of the installation you're wanting to sync with
+    remote : Remote or RemoteSync
+        The specification of the installation to sync with
 
     Returns
     -------
@@ -238,28 +266,37 @@ def _build_rsync_scripts(
     exclusion_folders = (".git", "local-only", "other-locals")
     exclusions = " ".join((f'--exclude="{folder}"' for folder in exclusion_folders))
 
-    yeet = SHARED_SYNC.format(
+    if isinstance(remote, Remote):
+        remote = RemoteSync(remote)
+
+    yoink = "".join([f"{command}\n" for command in remote.pre_open])
+    yeet = "".join([f"{command}\n" for command in remote.pre_close])
+
+    yeet += SHARED_SYNC.format(
         source_desc="this EnderChest",
-        destination_desc=remote.alias,
+        destination_desc=remote.remote.alias,
         options=options,
         source=Path(local_root).resolve(),
-        destination=remote.remote_folder,
+        destination=remote.remote.remote_folder,
         exclusions=exclusions,
-    ) + LOCAL_BACKUP.format(
-        remote_desc=remote.alias,
+    )
+    yeet += LOCAL_BACKUP.format(
+        remote_desc=remote.remote.alias,
         options=options,
         local_root=Path(local_root).resolve(),
-        remote_root=remote.remote_folder,
+        remote_root=remote.remote.remote_folder,
         local_desc=local_alias,
     )
 
-    yoink = SHARED_SYNC.format(
-        source_desc=remote.alias,
+    yoink += SHARED_SYNC.format(
+        source_desc=remote.remote.alias,
         destination_desc="this EnderChest",
         options=options,
-        source=remote.remote_folder,
+        source=remote.remote.remote_folder,
         destination=Path(local_root).resolve(),
         exclusions=exclusions,
     )
+    yoink += "".join([f"{command}\n" for command in remote.post_open])
+    yeet += "".join([f"{command}\n" for command in remote.post_close])
 
     return yeet, yoink

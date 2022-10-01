@@ -9,12 +9,28 @@ import pytest
 from enderchest import sync
 from enderchest.craft import craft_ender_chest
 from enderchest.place import place_enderchest
-from enderchest.sync import Remote
+from enderchest.sync import Remote, RemoteSync
 
 remotes = (
     Remote("localhost", "~/minecraft", "openbagtwo", "Not Actually Remote"),
     Remote("8.8.8.8", "/root/minecraft", "sergey", "Not-Bing"),
-    Remote("spare-pi", "/opt/minecraft", "pi"),
+    RemoteSync(
+        Remote("spare-pi", "/opt/minecraft", "pi"),
+        pre_open=[
+            "wakeonlan bigmac",
+            "ssh pi@sparepi"
+            ' "cd /opt/minecraft/EnderChest'
+            " && git add ."
+            ' && git commit -m "Process local changes"',
+        ],
+        pre_close=["wakeonlan bigmac"],
+        post_close=[
+            "ssh pi@sparepi"
+            ' "cd /opt/minecraft/EnderChest'
+            " && git add ."
+            ' && git commit -m "Process downstream changes"'
+        ],
+    ),
     Remote("steamdeck.local", "~/minecraft"),
 )
 
@@ -34,6 +50,8 @@ class TestRemote:
         ),
     )
     def test_alias_fallback(self, remote, expected):
+        if isinstance(remote, RemoteSync):
+            remote = remote.remote
         assert remote.alias == expected
 
     @pytest.mark.parametrize(
@@ -49,6 +67,8 @@ class TestRemote:
         ),
     )
     def test_remote_folder(self, remote, expected):
+        if isinstance(remote, RemoteSync):
+            remote = remote.remote
         assert remote.remote_folder == expected
 
 
@@ -350,4 +370,36 @@ class TestSyncing:
                     remote.root / "EnderChest" / "other-locals" / "this"
                 ).rglob("*")
             ]
+        )
+
+    @pytest.mark.parametrize("operation", ("open", "close"))
+    def test_wrapper_commands(self, local_enderchest, remote, operation):
+
+        remote_sync = RemoteSync(
+            remote,
+            pre_open=["echo 1"],
+            pre_close=["echo 2"],
+            post_open=["echo 3"],
+            post_close=["echo 4"],
+        )
+
+        sync.link_to_other_chests(
+            local_enderchest / "..",
+            remote_sync,
+            local_alias="this",
+            omit_scare_message=True,
+        )
+
+        result = subprocess.run(
+            [local_enderchest / "local-only" / f"{operation}.sh", "--verbose"],
+            capture_output=True,
+        )
+
+        assert result.returncode == 0
+
+        output = result.stdout.decode().splitlines()
+
+        assert int(output[0]), int(output[-1]) == (
+            1 + operation == "close",
+            3 + operation == "close",
         )
