@@ -95,6 +95,10 @@ def link_to_other_chests(
     local_alias: str | None = None,
     overwrite: bool = False,
     omit_scare_message: bool = False,
+    pre_open: Sequence[str] | None = None,
+    pre_close: Sequence[str] | None = None,
+    post_open: Sequence[str] | None = None,
+    post_close: Sequence[str] | None = None,
 ) -> None:
     """Generate bash scripts for syncing to EnderChest installations on other computers.
     These will be saved in your EnderChest/local-only folder under `open.sh`
@@ -121,6 +125,14 @@ def link_to_other_chests(
         trust* this method and the use of it, pass in the keyword argument
         omit_scare_message=True to omit this safeguard and just make them runnable from
         the get-go.
+    pre_open: list of str, optional
+        Any commands to run before pulling in EnderChest changes from the remotes
+    pre_close: list of str, optional
+        Any commands to run before pushing EnderChest changes to the remotes
+    post_open: list of str, optional
+        Any commands to run after pulling in EnderChest changes from the remotes
+    post_close: list of str, optional
+        Any commands to run after pushing EnderChest changes to the remotes
 
     Returns
     -------
@@ -153,6 +165,12 @@ def link_to_other_chests(
         close_script += SCARE_MESSAGE
 
     open_script += "\n"
+
+    if pre_open:
+        open_script += "".join([f"{command}\n" for command in pre_open])
+    if pre_close:
+        close_script += "".join([f"{command}\n" for command in pre_close])
+
     for remote in remotes:
         yeet, yoink = _build_rsync_scripts(
             local_root, local_alias or socket.gethostname(), remote
@@ -166,6 +184,11 @@ def link_to_other_chests(
     exit 1
 }
 """
+
+    if post_open:
+        open_script += "".join([f"{command}\n" for command in post_open])
+    if post_close:
+        close_script += "".join([f"{command}\n" for command in post_close])
 
     for name, script in (("open", open_script), ("close", close_script)):
         script_path = contexts(local_root).local_only / f"{name}.sh"
