@@ -51,7 +51,54 @@ class Config:
         if craft_options:
             self.craft_options.update(craft_options)
 
-    # TODO: add serializer
+    @property
+    def _config(self) -> ConfigParser:
+        parser = ConfigParser()
+        local: dict[str, str] = {"root": str(self.local_root)}
+        if alias := self.craft_options["local_alias"]:
+            local["name"] = alias
+        parser["local"] = local
+
+        options: dict[str, Any] = {}
+        for keyword, value in self.craft_options.items():
+            if keyword == "local_alias":
+                continue
+            options[keyword] = value
+
+        parser["options"] = options
+
+        for remote_sync in self.remotes:
+            remote = remote_sync.remote
+            remote_spec: dict[str, str] = {
+                "host": remote.host if remote.host else "",
+                "root": str(remote.root),
+            }
+            if username := remote.username:
+                remote_spec["username"] = username
+            for wrapper in ("pre_open", "pre_close", "post_open", "post_close"):
+                if commands := getattr(remote_sync, wrapper):
+                    remote_spec[wrapper] = str(commands)
+            parser[remote.alias] = remote_spec
+        return parser
+
+    @property
+    def _asdict(self) -> dict[str, Any]:
+        as_dict = {}
+        for section in self._config.sections():
+            as_dict[section] = {
+                keyword: self._config.get(section, keyword)
+                for keyword in self._config.options(section)
+            }
+        return as_dict
+
+    def __repr__(self) -> str:
+        return repr(self._asdict)
+
+    def __eq__(self, other) -> bool:
+        try:
+            return self._asdict == other._asdict
+        except AttributeError:
+            return self._asdict == other
 
 
 def parse_config_file(config_path: str | os.PathLike) -> Config:
@@ -87,19 +134,23 @@ def parse_config(contents: str) -> Config:
     parser = ConfigParser()
     parser.read_string(contents)
 
+    if "local" not in parser:
+        raise ParsingError("Configuration must contain a [local] section")
     local_root, options = _parse_local_section(parser["local"])
-    more_options = _parse_options_section(parser["options"])
-    for option, value in more_options.items():
-        if option in ("pre_open", "pre_close", "post_open", "post_close"):
-            options[option].extend(value)
-        elif option in options and value != options[option]:
-            raise ParsingError(f"Found conflicting values for {option}")
-        options[option] = value
+    if "options" in parser:
+        more_options = _parse_options_section(parser["options"])
+        for option, value in more_options.items():
+            if option in ("pre_open", "pre_close", "post_open", "post_close"):
+                options[option].extend(value)
+            elif option in options and value != options[option]:
+                raise ParsingError(f"Found conflicting values for {option}")
+            else:
+                options[option] = value
 
     remotes = [
         _parse_remote_section(parser[alias])
         for alias in parser.sections()
-        if alias not in alias in ("local", "options")
+        if alias not in ("local", "options")
     ]
 
     return Config(local_root, remotes, options)
