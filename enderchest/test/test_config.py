@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from enderchest import config
+from enderchest.sync import Remote, RemoteSync
 
 
 @pytest.fixture
@@ -109,7 +110,7 @@ class TestParseRemoteSection:
         "alias", ("couch-potato", "steam-deck.local", "nuggets_laptop")
     )
     def test_alias_comes_from_the_section_header(self, example_config_parser, alias):
-        _, remote, _ = config._parse_remote_section(example_config_parser[alias])
+        remote = config._parse_remote_section(example_config_parser[alias]).remote
         assert remote.alias == alias
 
     def test_root_is_required(self):
@@ -124,22 +125,22 @@ blah=blah
             config._parse_remote_section(parser["floating"])
 
     def test_parsing_root(self, example_config_parser):
-        _, remote, _ = config._parse_remote_section(
+        remote = config._parse_remote_section(
             example_config_parser["couch-potato"]
-        )
+        ).remote
 
         assert remote.root == Path("~/Games/minecraft")
 
     def test_host_is_alias_by_default(self, example_config_parser):
-        _, remote, _ = config._parse_remote_section(
+        remote = config._parse_remote_section(
             example_config_parser["steam-deck.local"]
-        )
+        ).remote
         assert remote.host == "steam-deck.local"
 
     def test_setting_host_explicitly(self, example_config_parser):
-        _, remote, _ = config._parse_remote_section(
+        remote = config._parse_remote_section(
             example_config_parser["couch-potato"]
-        )
+        ).remote
         assert remote.host == "192.168.0.101"
 
     def test_conflicting_hosts_raises_error(self):
@@ -162,9 +163,9 @@ root=/cul/de/sac
             config._parse_remote_section(parser["banjo_man"])
 
     def test_no_username_by_default(self, example_config_parser):
-        _, remote, _ = config._parse_remote_section(
+        remote = config._parse_remote_section(
             example_config_parser["couch-potato"]
-        )
+        ).remote
         assert remote.remote_folder == "192.168.0.101:~/Games/minecraft"
 
     @pytest.mark.parametrize(
@@ -175,7 +176,7 @@ root=/cul/de/sac
         ),
     )
     def test_setting_username(self, example_config_parser, keyword, alias, expected):
-        _, remote, _ = config._parse_remote_section(example_config_parser[alias])
+        remote = config._parse_remote_section(example_config_parser[alias]).remote
         assert remote.remote_folder.startswith(f"{expected}@")
 
     def test_conflicting_username_raises_error(self):
@@ -200,13 +201,16 @@ username=Maurice (wah wah)
             config._parse_remote_section(parser["steve miller band"])
 
     def test_remote_parsing_grabs_wrapper_commands(self, example_config_parser):
-        (
-            (pre_open, pre_close),
-            _,
-            (post_open, post_close),
-        ) = config._parse_remote_section(example_config_parser["couch-potato"])
+        remote_sync = config._parse_remote_section(
+            example_config_parser["couch-potato"]
+        )
 
-        assert (pre_open, pre_close, post_open, post_close) == (
+        assert (
+            remote_sync.pre_open,
+            remote_sync.pre_close,
+            remote_sync.post_open,
+            remote_sync.post_close,
+        ) == (
             [],
             ["lectern return $active_world"],
             ["lectern checkout $active_world"],
@@ -401,8 +405,28 @@ post_close=[
         }
 
 
-# TODO: test top-level conf-readers
-#       (once I change the config format to keep wrapper commands with the remotes)
+class TestParseConfig:
+    def test_parse_config_from_string(self):
+
+        simple_config = """
+[local]
+root=~/minecraft
+
+[options]
+overwrite_scripts=yes
+
+[mirror]
+root=~/minecraft        
+"""
+        expected = config.Config(
+            Path("~/minecraft"),
+            [RemoteSync(Remote("mirror", "~/minecraft"))],
+            craft_options={"overwrite": True},
+        )
+        parsed_config = config.parse_config(simple_config)
+
+        assert parsed_config == expected
+
 
 # TODO: test serializing
 
