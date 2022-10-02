@@ -563,7 +563,6 @@ overwrite_scripts=no
             original_config._config.write(f)
 
         deserialized_config = config.parse_config_file(write_path)
-
         assert original_config._asdict == deserialized_config._asdict
 
 

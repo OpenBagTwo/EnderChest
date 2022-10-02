@@ -63,7 +63,10 @@ class Config:
         for keyword, value in self.craft_options.items():
             if keyword == "local_alias":
                 continue
-            options[keyword] = value
+            if keyword in ("pre_open", "pre_close", "post_open", "post_close"):
+                options[keyword] = json.dumps(value)
+            else:
+                options[keyword] = value
 
         parser["options"] = options
 
@@ -77,7 +80,7 @@ class Config:
                 remote_spec["username"] = username
             for wrapper in ("pre_open", "pre_close", "post_open", "post_close"):
                 if commands := getattr(remote_sync, wrapper):
-                    remote_spec[wrapper] = str(commands)
+                    remote_spec[wrapper] = json.dumps(commands)
             parser[remote.alias] = remote_spec
         return parser
 
