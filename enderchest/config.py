@@ -4,16 +4,52 @@ import os
 import warnings
 from configparser import ConfigParser, ParsingError, SectionProxy
 from pathlib import Path
-from typing import Any, NamedTuple, Sequence
+from typing import Any, Sequence
 
-from .sync import Remote
+from .sync import Remote, RemoteSync
 
 
-class Config(NamedTuple):
-    local_root: Path
-    open_ops: Sequence[Remote | str]
-    close_ops: Sequence[Remote | str]
-    craft_options: dict[str, Any] = {}
+class Config:
+    """The configuration spec for the EnderChest package
+
+    Attributes
+    ----------
+    local_root : Path
+        The path on the local installation of the minecraft directory (which
+        should / will contain the EnderChest folder, along with the instances
+        and servers directories)
+    remotes : list-like of RemoteSync
+        The specifications of the remote EnderChest installations to sync with,
+        complete with any wrapper commands
+    craft_options: dict
+        Any additional options to pass to the craft command
+    """
+
+    @classmethod
+    def _default_craft_options(cls) -> dict:
+        """The default craft options if None are specified. Note that providing
+        *any* value to craft_options will completely replace this dict"""
+
+        # TODO: figure out how to to have
+        return {
+            "local_alias": None,
+            "pre_open": [],
+            "pre_close": [],
+            "post_open": [],
+            "post_close": [],
+        }
+
+    def __init__(
+        self,
+        local_root: Path,
+        remotes: Sequence[RemoteSync],
+        craft_options: dict[str, Any] | None = None,
+    ):
+        self.local_root = local_root
+        self.remotes = remotes
+        self.craft_options = Config._default_craft_options()
+        if craft_options:
+            self.craft_options.update(craft_options)
 
     # TODO: add serializer
 
@@ -60,21 +96,13 @@ def parse_config(contents: str) -> Config:
             raise ParsingError(f"Found conflicting values for {option}")
         options[option] = value
 
-    open_ops: list[Remote | str] = list(options.pop("pre_open"))
-    close_ops: list[Remote | str] = list(options.pop("pre_close"))
+    remotes = [
+        _parse_remote_section(parser[alias])
+        for alias in parser.sections()
+        if alias not in alias in ("local", "options")
+    ]
 
-    for alias in parser.sections():
-        if alias in ("local", "options"):
-            continue
-        (pre_open, pre_close), remote, (post_open, post_close) = _parse_remote_section(
-            parser[alias]
-        )
-        open_ops.extend([*pre_open, remote, *post_open])
-        close_ops.extend([*pre_close, remote, *post_close])
-    open_ops.extend(options.pop("post_open"))
-    close_ops.extend(options.pop("post_close"))
-
-    return Config(local_root, open_ops, close_ops, options)
+    return Config(local_root, remotes, options)
 
 
 def _parse_local_section(section: SectionProxy) -> tuple[Path, dict[str, Any]]:
@@ -188,7 +216,7 @@ def _parse_options_section(section: SectionProxy) -> dict[str, Any]:
 
 def _parse_remote_section(
     section: SectionProxy,
-) -> tuple[tuple[list[str], list[str]], Remote, tuple[list[str], list[str]]]:
+) -> RemoteSync:
     """Parse a remote section
 
     Parameters
@@ -198,14 +226,8 @@ def _parse_remote_section(
 
     Returns
     -------
-    tuple of two lists of str
-        The list of commands to execute immediately before running the "open" and
-        "close" rsync scripts, respectively, for this particular remote
-    Remote
-        The specification of this remote
-    tuple of two lists of str
-        The list of commands to execute immediately after running the "open" and
-        "close" rsync scripts, respectively, for this particular remote
+    RemoteSync
+        The specification of the remote source, complete with wrapper commands
 
     Raises
     ------
@@ -254,11 +276,7 @@ def _parse_remote_section(
         )
 
     wrapper_commands = _parse_pre_and_post_commands(section)
-    return (
-        (wrapper_commands["pre_open"], wrapper_commands["pre_close"]),
-        Remote(host, root, username, alias),
-        (wrapper_commands["post_open"], wrapper_commands["post_close"]),
-    )
+    return RemoteSync(Remote(host, root, username, alias), **wrapper_commands)
 
 
 def _parse_pre_and_post_commands(
