@@ -564,6 +564,3 @@ overwrite_scripts=no
 
         deserialized_config = config.parse_config_file(write_path)
         assert original_config._asdict == deserialized_config._asdict
-
-
-# TODO: test for TOML compatibility
