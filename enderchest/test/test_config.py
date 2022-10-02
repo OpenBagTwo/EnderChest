@@ -427,7 +427,144 @@ root=~/minecraft
 
         assert parsed_config == expected
 
+    def test_options_is_optional(self):
+        simpler_config = """
+[local]
+root=~/minecraft
+overwrite_scripts=yes
 
-# TODO: test serializing
+[mirror]
+root=~/minecraft        
+"""
+        expected = config.Config(
+            Path("~/minecraft"),
+            [RemoteSync(Remote("mirror", "~/minecraft"))],
+            craft_options={"overwrite": True},
+        )
+        parsed_config = config.parse_config(simpler_config)
+
+        assert parsed_config == expected
+
+    def test_you_dont_technically_need_any_remotes(self):
+        local_only_config = """
+[local]
+root=~/minecraft    
+"""
+        expected = config.Config(
+            Path("~/minecraft"),
+            [],
+        )
+        parsed_config = config.parse_config(local_only_config)
+
+        assert parsed_config == expected
+
+    def test_leaving_off_a_local_section_raises_an_error(self):
+        nonlocal_config = """
+[options]
+blah=True
+        
+[mirror]
+root=~/minecraft    
+"""
+        with pytest.raises(ParsingError, match="local"):
+            config.parse_config(nonlocal_config)
+
+    def test_duplicated_section_raises_an_error(self):
+        dupe_config = """
+[local]
+root=~/minecraft
+
+[options]
+blah=True
+
+[mirror]
+root=~/minecraft
+
+[mirror]
+host=mirror
+root=/on/the/wall 
+"""
+        with pytest.raises(Exception, match="mirror"):
+            config.parse_config(dupe_config)
+
+    def test_wreappers_stack(self):
+        split_wrapper_config = """
+[local]
+root=~/minecraft
+pre_open = echo 1
+pre_close = echo 2
+
+[options]
+pre_close = [
+    "echo 3",
+    "echo 4"
+    ]
+post_open = "echo 5"
+             
+"""
+        parsed_config = config.parse_config(split_wrapper_config)
+        assert (
+            parsed_config.craft_options["pre_open"],
+            parsed_config.craft_options["pre_close"],
+            parsed_config.craft_options["post_open"],
+            parsed_config.craft_options["post_close"],
+        ) == (["echo 1"], ["echo 2", "echo 3", "echo 4"], ["echo 5"], [])
+
+    def test_other_options_raise_error_on_conflict(self):
+        make_up_your_mind_config = """
+[local]
+root=~/minecraft
+overwrite_scripts=True
+
+[options]
+overwrite_scripts=no
+
+"""
+        with pytest.raises(ParsingError, match="conflicting"):
+            config.parse_config(make_up_your_mind_config)
+
+    def test_parse_config_from_file(self, example_config_path):
+        expected = config.Config(
+            Path("/main/minecraft"),
+            (
+                RemoteSync(
+                    Remote("192.168.0.101", "~/Games/minecraft", alias_="couch-potato"),
+                    pre_open=[],
+                    post_open=["lectern checkout $active_world"],
+                    pre_close=["lectern return $active_world"],
+                    post_close=[],
+                ),
+                RemoteSync(Remote("steam-deck.local", "~/minecraft", "deck")),
+                RemoteSync(Remote("nuggets_laptop", "~/Games/minecraft", "nugget")),
+            ),
+            craft_options={
+                "local_alias": "battlestar",
+                "post_open": [
+                    "cd /main/minecraft/EnderChest"
+                    " && git add ."
+                    ' && git commit -m "Pulled changes from remotes"'
+                ],
+                "post_close": [
+                    "cd /main/minecraft/EnderChest"
+                    " && git add ."
+                    ' && git commit -m "Pushing out local changes"'
+                ],
+                "pre_open": [],
+                "pre_close": [],
+            },
+        )
+        assert config.parse_config_file(example_config_path) == expected
+
+    def test_that_configs_are_serializable(self, tmp_path, example_config_path):
+        original_config = config.parse_config_file(example_config_path)
+
+        write_path = tmp_path / "config.cfg"
+        with write_path.open("w") as f:
+            original_config._config.write(f)
+
+        deserialized_config = config.parse_config_file(write_path)
+
+        assert original_config._asdict == deserialized_config._asdict
+
 
 # TODO: test for TOML compatibility
