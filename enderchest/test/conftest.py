@@ -63,9 +63,9 @@ def local_root(tmp_path):
 @pytest.fixture
 def local_enderchest(local_root):
     """An existing EnderChest directory within the local root that's got some stuff
-    in it
+    in it (but critically no sync scripts)
     """
-    craft_ender_chest(local_root)
+    craft_ender_chest(local_root, craft_folders_only=True)
 
     chest_folder = local_root / "EnderChest"
 
@@ -82,7 +82,7 @@ def local_enderchest(local_root):
         ): (
             "with settings at max"
             "\nits important to note"
-            "\nthe lag iks real bad"
+            "\nthe lag is real bad"
             "\nbut just look at that goat!"
         ),
     }

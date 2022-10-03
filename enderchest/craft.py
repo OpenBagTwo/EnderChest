@@ -3,21 +3,61 @@ import os
 from collections import defaultdict
 
 from . import contexts
+from .config import Config, parse_config_file
+from .sync import Remote, RemoteSync, link_to_other_chests
 
 
-def craft_ender_chest(root: str | os.PathLike) -> None:
-    """Create the EnderChest folder structure in the specified root directory
+def craft_ender_chest_from_config(config: Config | str | os.PathLike) -> None:
+    """Craft the EnderChest folder structure and set up the sync scripts based on the
+    contents of a config file
+
+    Parameters
+    ----------
+    config : Config or path
+        The path to a config file, or the parsed config itself
+
+    Returns
+    -------
+    None
+    """
+    if not isinstance(config, Config):
+        config = parse_config_file(config)
+    craft_ender_chest(config.local_root, *config.remotes, **config.craft_options)
+
+
+def craft_ender_chest(
+    root: str | os.PathLike,
+    *remotes: Remote | RemoteSync,
+    craft_folders_only: bool = False,
+    **sync_options
+) -> None:
+    """Create the EnderChest folder structure in the specified root directory as well
+    as the sync scripts
 
     Parameters
     ----------
     root : path
         The root directory to put the EnderChest folder structure into
+    *remotes : Remotes / RemoteSyncs
+        The remote installations to sync with
+    craft_folders_only : bool, optional
+        If set to True, this method will only set up the EnderChest folders and will
+        not create any sync scripts.
+    **sync_options
+        Any additional arguments to pass to the sync.link_to_other_chests()
+
+    Returns
+    -------
+    None
     """
     folders_for_contexts = _parse_folder_context_combos()
     for context_type, context_root in contexts(root)._asdict().items():
         context_root.mkdir(parents=True, exist_ok=True)
         for folder in folders_for_contexts[context_type]:
             (context_root / folder).mkdir(parents=True, exist_ok=True)
+
+    if not craft_folders_only:
+        link_to_other_chests(root, *remotes, **sync_options)
 
 
 # sometimes you just need a CSV
