@@ -146,5 +146,4 @@ def parse_args(argv: Sequence[str]) -> tuple[_Action, str, dict[str, Any]]:
 
 def main():
     action, root, kwargs = parse_args(sys.argv)
-    print(action, root, kwargs)
-    # action(root, **kwargs)
+    action(root, **kwargs)
