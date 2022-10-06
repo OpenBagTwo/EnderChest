@@ -163,3 +163,100 @@ class TestPlace:
 
         action, root, options = cli.parse_args(["enderchest", "place", "/home"])
         action(root, **options)
+
+
+@pytest.mark.parametrize("command", ("open", "close"))
+class TestOpenAndClose:
+    def test_default_root_is_cwd(self, monkeypatch, command):
+        monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
+        _, root, _ = cli.parse_args(["enderchest", command])
+        assert root == Path("~~dummy~~")
+
+    def test_first_argument_is_root(self, command):
+        _, root, _ = cli.parse_args(["enderchest", command, "/home"])
+        assert root == Path("/home")
+
+    def test_dispatcher_expands_the_correct_script(self, monkeypatch, command):
+        bash_run_commands = []
+
+        def mock_run_bash(root, command, *args):
+            bash_run_commands.append(command)
+
+        monkeypatch.setattr(cli, "_run_bash", mock_run_bash)
+
+        action, root, options = cli.parse_args(["enderchest", command])
+        action(root, **options)
+
+        assert bash_run_commands == [f"./EnderChest/local-only/{command}.sh"]
+
+    def test_dispatcher_passes_default_root(self, monkeypatch, command):
+        monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
+
+        roots = []
+
+        def mock_run_bash(root, command, *args):
+            roots.append(root)
+
+        monkeypatch.setattr(cli, "_run_bash", mock_run_bash)
+
+        action, root, options = cli.parse_args(["enderchest", command])
+        action(root, **options)
+
+        assert roots == [Path("~~dummy~~")]
+
+    def test_dispatcher_passes_provided_root(self, monkeypatch, command):
+        roots = []
+
+        def mock_run_bash(root, command, *args):
+            roots.append(root)
+
+        monkeypatch.setattr(cli, "_run_bash", mock_run_bash)
+
+        action, root, options = cli.parse_args(["enderchest", command, "~/minecraft"])
+        action(root, **options)
+
+        assert roots == [Path("~/minecraft")]
+
+    def test_dispatcher_passes_through_script_flags(self, monkeypatch, command):
+        roots = []
+        flags = []
+
+        def mock_run_bash(root, command, *args):
+            roots.append(root)
+            flags.extend(args)
+
+        monkeypatch.setattr(cli, "_run_bash", mock_run_bash)
+
+        action, root, options = cli.parse_args(
+            [
+                "enderchest",
+                command,
+                "~/minecraft",
+                "--verbose",
+                "--dry-run",
+                "# blahblah",
+            ]
+        )
+        action(root, **options)
+
+        assert (roots, flags) == (
+            [Path("~/minecraft")],
+            ["--verbose", "--dry-run", "# blahblah"],
+        )
+
+    def test_dispatcher_doesnt_confuse_a_flag_for_a_root(self, monkeypatch, command):
+        monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
+
+        roots = []
+        flags = []
+
+        def mock_run_bash(root, command, *args):
+            roots.append(root)
+            flags.extend(args)
+
+        monkeypatch.setattr(cli, "_run_bash", mock_run_bash)
+
+        action, root, options = cli.parse_args(["enderchest", command, "--verbose"])
+        action(root, **options)
+
+        assert (roots, flags) == ([Path("~~dummy~~")], ["--verbose"])
