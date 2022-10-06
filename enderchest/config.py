@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from configparser import ConfigParser, ParsingError, SectionProxy
-from pathlib import PurePosixPath
+from pathlib import Path
 from typing import Any, Sequence
 
 from .sync import Remote, RemoteSync
@@ -41,7 +41,7 @@ class Config:
 
     def __init__(
         self,
-        local_root: os.PathLike,
+        local_root: str | os.PathLike,
         remotes: Sequence[RemoteSync],
         craft_options: dict[str, Any] | None = None,
     ):
@@ -159,7 +159,7 @@ def parse_config(contents: str) -> Config:
     return Config(local_root, remotes, options)
 
 
-def _parse_local_section(section: SectionProxy) -> tuple[os.PathLike, dict[str, Any]]:
+def _parse_local_section(section: SectionProxy) -> tuple[str, dict[str, Any]]:
     """Parse the local section of the config
 
     Parameters
@@ -169,7 +169,7 @@ def _parse_local_section(section: SectionProxy) -> tuple[os.PathLike, dict[str, 
 
     Returns
     -------
-    Path
+    str
         The local root folder
     dict
         Any keyword options to pass to the craft command
@@ -180,7 +180,7 @@ def _parse_local_section(section: SectionProxy) -> tuple[os.PathLike, dict[str, 
         If a required parameter isn't present or if a given option cannot be parsed
     """
     try:
-        root = PurePosixPath(section["root"])
+        root = Path(section["root"]).as_posix()
     except KeyError:
         raise ParsingError("Config must explicitly specify a local root directory")
     except (TypeError, ValueError):
@@ -310,7 +310,7 @@ def _parse_remote_section(
         host = alias
 
     try:
-        root = PurePosixPath(section["root"])
+        root = Path(section["root"]).as_posix()
     except KeyError:
         raise ParsingError(f"{alias} remote config must specify a root directory")
     except (TypeError, ValueError):
