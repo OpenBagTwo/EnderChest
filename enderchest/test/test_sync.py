@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -70,6 +71,84 @@ class TestRemote:
         if isinstance(remote, RemoteSync):
             remote = remote.remote
         assert remote.remote_folder == expected
+
+
+class TestCommandBuilding:
+    def test_simple_mirror(self):
+        yeet, yoink = sync._build_rsync_scripts(
+            "~/minecraft", "this", Remote("there", "/home/me/minecraft", "me", "that")
+        )
+
+        assert (yeet.strip(), yoink.strip()) == (
+            rf'''# sync changes from this EnderChest to that
+rsync -az --delete \
+    {Path.home()}/minecraft/EnderChest/ \
+    me@there:/home/me/minecraft/EnderChest/ \
+    --exclude=".git" --exclude="local-only" --exclude="other-locals" \
+    "$@"
+# backup local settings to that
+rsync -az --delete \
+    {Path.home()}/minecraft/EnderChest/local-only/ \
+    me@there:/home/me/minecraft/EnderChest/other-locals/this \
+    "$@"''',
+            rf'''# sync changes from that to this EnderChest
+rsync -az --delete \
+    me@there:/home/me/minecraft/EnderChest/ \
+    {Path.home()}/minecraft/EnderChest/ \
+    --exclude=".git" --exclude="local-only" --exclude="other-locals" \
+    "$@"''',
+        )
+
+    def test_local_sync(self):
+        yeet, yoink = sync._build_rsync_scripts(
+            "~/minecraft", "local", Remote(None, "~/minecraft2", "me", "next door")
+        )
+
+        assert (yeet.strip(), yoink.strip()) == (
+            rf'''# sync changes from this EnderChest to next door
+rsync -az --delete \
+    {Path.home()}/minecraft/EnderChest/ \
+    ~/minecraft2/EnderChest/ \
+    --exclude=".git" --exclude="local-only" --exclude="other-locals" \
+    "$@"
+# backup local settings to next door
+rsync -az --delete \
+    {Path.home()}/minecraft/EnderChest/local-only/ \
+    ~/minecraft2/EnderChest/other-locals/local \
+    "$@"''',
+            rf'''# sync changes from next door to this EnderChest
+rsync -az --delete \
+    ~/minecraft2/EnderChest/ \
+    {Path.home()}/minecraft/EnderChest/ \
+    --exclude=".git" --exclude="local-only" --exclude="other-locals" \
+    "$@"''',
+        )
+
+    def test_escaping_special_characters(self):
+        yeet, yoink = sync._build_rsync_scripts(
+            "C Drive/Games (and other stuff)/minecr@ft",
+            "source",
+            Remote("faraway", 'maybe here?/definitely+not+"here"/$$$'),
+        )
+        assert (yeet.strip(), yoink.strip()) == (
+            rf'''# sync changes from this EnderChest to faraway
+rsync -az --delete \
+    '{os.getcwd()}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/ \
+    faraway:'maybe here?/definitely+not+"here"/$$$'/EnderChest/ \
+    --exclude=".git" --exclude="local-only" --exclude="other-locals" \
+    "$@"
+# backup local settings to faraway
+rsync -az --delete \
+    '{os.getcwd()}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/local-only/ \
+    faraway:'maybe here?/definitely+not+"here"/$$$'/EnderChest/other-locals/source \
+    "$@"''',
+            rf'''# sync changes from faraway to this EnderChest
+rsync -az --delete \
+    faraway:'maybe here?/definitely+not+"here"/$$$'/EnderChest/ \
+    '{os.getcwd()}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/ \
+    --exclude=".git" --exclude="local-only" --exclude="other-locals" \
+    "$@"''',
+        )
 
 
 class TestScriptGeneration:
