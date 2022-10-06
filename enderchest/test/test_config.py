@@ -129,7 +129,7 @@ blah=blah
             example_config_parser["couch-potato"]
         ).remote
 
-        assert remote.root == PurePosixPath("~/Games/minecraft")
+        assert remote.root == "~/Games/minecraft"
 
     def test_host_is_alias_by_default(self, example_config_parser):
         remote = config._parse_remote_section(
@@ -330,7 +330,7 @@ blah=blah
     def test_parsing_root(self, example_config_parser):
         local_root, _ = config._parse_local_section(example_config_parser["local"])
 
-        assert local_root == PurePosixPath("/main/minecraft")
+        assert local_root == "/main/minecraft"
 
     def test_name_is_not_required(self):
         parser = ConfigParser()

@@ -1,7 +1,7 @@
 """Test functionality around rsync script generation"""
 import os
-import posixpath
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -81,19 +81,19 @@ class TestCommandBuilding:
         assert (yeet.strip(), yoink.strip()) == (
             rf'''# sync changes from this EnderChest to that
 rsync -az --delete \
-    {posixpath.expanduser("~")}/minecraft/EnderChest/ \
+    {Path.home().as_posix()}/minecraft/EnderChest/ \
     me@there:/home/me/minecraft/EnderChest/ \
     --exclude=".git" --exclude="local-only" --exclude="other-locals" \
     "$@"
 # backup local settings to that
 rsync -az --delete \
-    {posixpath.expanduser("~")}/minecraft/EnderChest/local-only/ \
+    {Path.home().as_posix()}/minecraft/EnderChest/local-only/ \
     me@there:/home/me/minecraft/EnderChest/other-locals/this \
     "$@"''',
             rf'''# sync changes from that to this EnderChest
 rsync -az --delete \
     me@there:/home/me/minecraft/EnderChest/ \
-    {posixpath.expanduser("~")}/minecraft/EnderChest/ \
+    {Path.home().as_posix()}/minecraft/EnderChest/ \
     --exclude=".git" --exclude="local-only" --exclude="other-locals" \
     "$@"''',
         )
@@ -106,19 +106,19 @@ rsync -az --delete \
         assert (yeet.strip(), yoink.strip()) == (
             rf'''# sync changes from this EnderChest to next door
 rsync -az --delete \
-    {posixpath.expanduser("~")}/minecraft/EnderChest/ \
+    {Path.home().as_posix()}/minecraft/EnderChest/ \
     ~/minecraft2/EnderChest/ \
     --exclude=".git" --exclude="local-only" --exclude="other-locals" \
     "$@"
 # backup local settings to next door
 rsync -az --delete \
-    {posixpath.expanduser("~")}/minecraft/EnderChest/local-only/ \
+    {Path.home().as_posix()}/minecraft/EnderChest/local-only/ \
     ~/minecraft2/EnderChest/other-locals/local \
     "$@"''',
             rf'''# sync changes from next door to this EnderChest
 rsync -az --delete \
     ~/minecraft2/EnderChest/ \
-    {posixpath.expanduser("~")}/minecraft/EnderChest/ \
+    {Path.home().as_posix()}/minecraft/EnderChest/ \
     --exclude=".git" --exclude="local-only" --exclude="other-locals" \
     "$@"''',
         )
