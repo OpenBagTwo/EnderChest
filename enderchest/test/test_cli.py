@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 import enderchest
-from enderchest import cli
+from enderchest import cli, place
 from enderchest.sync import Remote
 
 
@@ -146,6 +146,20 @@ class TestPlace:
         _, root, _ = cli.parse_args(["enderchest", "place"])
         assert root == Path("~~dummy~~")
 
+    def test_dispatches_to_place_method(self):
+        action, _, _ = cli.parse_args(["enderchest", "place"])
+        assert action == place.place_enderchest
+
     def test_first_argument_is_root(self):
         _, root, _ = cli.parse_args(["enderchest", "place", "/home"])
         assert root == Path("/home")
+
+    @pytest.mark.parametrize("flag", ("-k", "--keep-broken"))
+    def test_keep_broken_links(self, monkeypatch, flag):
+        def mock_place(path, cleanup):
+            assert not cleanup
+
+        monkeypatch.setattr(cli, "place_enderchest", mock_place)
+
+        action, root, options = cli.parse_args(["enderchest", "place", "/home"])
+        action(root, **options)
