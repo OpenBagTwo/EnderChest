@@ -1,5 +1,7 @@
 """Utilities for synchronizing chests across different computers"""
 import os
+import re
+import shlex
 import socket
 import stat
 import warnings
@@ -10,7 +12,6 @@ from typing import NamedTuple, Sequence
 from . import contexts
 
 
-# TODO: is there something from the stdlib (urllib?) that I should be using instead?
 class Remote(NamedTuple):
     """Specification of a remote EnderChest installation to sync with using rsync over
     ssh (other protocols are not explicitly supported).
@@ -51,15 +52,54 @@ class Remote(NamedTuple):
         return self.alias_ or self.host or Path(self.root).name
 
     @property
+    def _encoded_root(self) -> str:
+        """Shell-script safe version of the root folder.
+
+        Notes
+        -----
+        Can't just use shlex.quote directly because it tries to quote "~"
+        """
+        root_string = str(self.root)
+        if root_string == "~":
+            return root_string
+        if root_string.startswith("~/"):
+            return "~/" + shlex.quote(root_string[2:])
+        return shlex.quote(root_string)
+
+    @property
     def remote_folder(self) -> str:
         if not self.host:
             # then the "remote" is actually local
-            return str(self.root)
+            return self._encoded_root
         if not self.username:
-            url = self.host
+            url = shlex.quote(self.host)
         else:
-            url = f"{self.username}@{self.host}"
-        return f"{url}:{self.root}"
+            url = f"{self.username}@{shlex.quote(self.host)}"
+        return f"{url}:{self._encoded_root}"
+
+    @classmethod
+    def from_string(cls, oneline_spec: str) -> "Remote":
+        match oneline_spec.split(":"):
+            case [root]:
+                address: str | None = None
+            case address, *root:
+                root = ":".join(root)
+            case _:
+                raise ValueError(f"Unable to parse {oneline_spec} into a remote spec")
+        if address is None:
+            username: str | None = None
+            host: str | None = None
+        else:
+            match address.split("@"):
+                case [host]:
+                    username = None
+                case username, host:
+                    pass
+                case _:
+                    raise ValueError(
+                        f"Unable to parse {oneline_spec} into a remote spec"
+                    )
+        return Remote(host, root, username)
 
 
 @dataclass
@@ -295,18 +335,20 @@ def _build_rsync_scripts(
     yoink = "".join([f"{command}\n" for command in remote.pre_open])
     yeet = "".join([f"{command}\n" for command in remote.pre_close])
 
+    local_root_path = shlex.quote(str(Path(local_root).expanduser().resolve()))
+
     yeet += SHARED_SYNC.format(
         source_desc="this EnderChest",
         destination_desc=remote.remote.alias,
         options=options,
-        source=Path(local_root).resolve(),
+        source=local_root_path,
         destination=remote.remote.remote_folder,
         exclusions=exclusions,
     )
     yeet += LOCAL_BACKUP.format(
         remote_desc=remote.remote.alias,
         options=options,
-        local_root=Path(local_root).resolve(),
+        local_root=local_root_path,
         remote_root=remote.remote.remote_folder,
         local_desc=local_alias,
     )
@@ -316,7 +358,7 @@ def _build_rsync_scripts(
         destination_desc="this EnderChest",
         options=options,
         source=remote.remote.remote_folder,
-        destination=Path(local_root).resolve(),
+        destination=local_root_path,
         exclusions=exclusions,
     )
     yoink += "".join([f"{command}\n" for command in remote.post_open])
