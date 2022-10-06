@@ -1,6 +1,5 @@
 """Utilities for synchronizing chests across different computers"""
 import os
-import re
 import shlex
 import socket
 import stat
@@ -21,7 +20,7 @@ class Remote(NamedTuple):
     host : str
         The address (_e.g._ 127.0.0.1) or cname/URL (_e.g._ steamdeck.local) of the
         host you're syncing with.
-    root : path-like
+    root : path
         The root directory on the remote machine that contains all your minecraft stuff.
         Explicitly expects that the folder contains: your EnderChest folder;
         your Multi-MC-style instances folder; your servers.
