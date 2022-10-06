@@ -121,7 +121,6 @@ class PassThroughParser:
         if "-h" in args or "--help" in args:
             return self._parser.parse_args(["--help"])
 
-        arguments: dict[str, Any] = {}
         root: Path | None = None
         if len(args) > 0 and not args[0].startswith("-"):
             try:

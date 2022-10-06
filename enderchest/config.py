@@ -191,7 +191,7 @@ def _parse_local_section(section: SectionProxy) -> tuple[Path, dict[str, Any]]:
     alias_option_names = {"name", "alias"}
     if len(alias_option_names.intersection(section.keys())) > 1:
         raise ParsingError(
-            f"Found conflicting values for local installation's name/alias"
+            "Found conflicting values for local installation's name/alias"
         )
 
     for option_name in alias_option_names:
