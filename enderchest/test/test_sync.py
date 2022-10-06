@@ -244,7 +244,6 @@ class TestScriptGeneration:
             assert "You made it" in result.stdout.decode()
 
 
-@pytest.mark.xfail(sys.platform.startswith("win"), reason="only done bash so far")
 class TestSyncing:
     """This is only going to cover syncing locally"""
 
