@@ -8,6 +8,7 @@ from typing import Any, Protocol, Sequence
 from . import __version__
 from .craft import craft_ender_chest, craft_ender_chest_from_config
 from .place import place_enderchest
+from .sync import Remote
 
 
 class _Action(Protocol):
@@ -17,10 +18,11 @@ class _Action(Protocol):
 
 def _dispatch_craft(root: str | os.PathLike, **kwargs) -> None:
     """Call the correct craft command based on the arguments passed"""
-    if config_path := kwargs.get("config_file"):
+    if config_path := kwargs.pop("config_file", None):
         craft_ender_chest_from_config(config_path)
     else:
-        craft_ender_chest(root, *kwargs.pop("remotes", []), **kwargs)
+        remotes = [Remote.from_string(spec) for spec in kwargs.pop("remotes", [])]
+        craft_ender_chest(root, *remotes, **kwargs)
 
 
 ACTIONS: tuple[tuple[str, str, _Action], ...] = (
