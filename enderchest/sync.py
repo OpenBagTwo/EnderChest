@@ -258,8 +258,8 @@ echo "Please open" $(realpath "$0")
 echo "and read through the entire script to make sure it's doing what you want,"
 echo "then delete the section marked "DELETE AFTER READING" near the top of the file."
 echo
-echo "It's also *strongly recommended* to run the commands first with
-echo "the flags: --dry-run --verbose to make absolutely sure the script is doing 
+echo "It's also *strongly recommended* to run the commands first with"
+echo "the flags: --dry-run --verbose to make absolutely sure the script is doing"
 echo "what you want before you potentially overwrite an entire file system."
 exit 1
 ########################################################################################

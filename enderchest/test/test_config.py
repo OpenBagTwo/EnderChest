@@ -275,7 +275,7 @@ generate_runnable_scripts={magic_words}
     def test_no_scripts_overwrite_by_default(self):
         parser = ConfigParser()
         parser.read_string(
-            f"""
+            """
 [options]
 dephlogisticate=True
 """
@@ -303,7 +303,7 @@ overwrite_scripts={entry}
     def test_non_boolean_overwrite_value_raises_parsing_error(self):
         parser = ConfigParser()
         parser.read_string(
-            f"""
+            """
 [options]
 overwrite_scripts="okay"
 """
@@ -359,7 +359,7 @@ root=.
     def test_conflicting_names_gives_error(self):
         parser = ConfigParser()
         parser.read_string(
-            f"""
+            """
 [local]
 name=Antar
 alias=OpenBagTwo
@@ -416,7 +416,7 @@ root=~/minecraft
 overwrite_scripts=yes
 
 [mirror]
-root=~/minecraft        
+root=~/minecraft
 """
         expected = config.Config(
             Path("~/minecraft"),
@@ -434,7 +434,7 @@ root=~/minecraft
 overwrite_scripts=yes
 
 [mirror]
-root=~/minecraft        
+root=~/minecraft
 """
         expected = config.Config(
             Path("~/minecraft"),
@@ -448,7 +448,7 @@ root=~/minecraft
     def test_you_dont_technically_need_any_remotes(self):
         local_only_config = """
 [local]
-root=~/minecraft    
+root=~/minecraft
 """
         expected = config.Config(
             Path("~/minecraft"),
@@ -462,9 +462,9 @@ root=~/minecraft
         nonlocal_config = """
 [options]
 blah=True
-        
+
 [mirror]
-root=~/minecraft    
+root=~/minecraft
 """
         with pytest.raises(ParsingError, match="local"):
             config.parse_config(nonlocal_config)
@@ -482,7 +482,7 @@ root=~/minecraft
 
 [mirror]
 host=mirror
-root=/on/the/wall 
+root=/on/the/wall
 """
         with pytest.raises(Exception, match="mirror"):
             config.parse_config(dupe_config)
@@ -500,7 +500,7 @@ pre_close = [
     "echo 4"
     ]
 post_open = "echo 5"
-             
+
 """
         parsed_config = config.parse_config(split_wrapper_config)
         assert (

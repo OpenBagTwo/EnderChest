@@ -20,7 +20,7 @@ def place_enderchest(root: str | os.PathLike, cleanup: bool = True) -> None:
     instances = Path(root) / "instances"
     servers = Path(root) / "servers"
     for context_type, context_root in contexts(root)._asdict().items():
-        make_server_links = context_type in ("universal", "server_only")
+        # make_server_links = context_type in ("universal", "server_only")
         make_instance_links = context_type in ("universal", "client_only", "local_only")
 
         assets = sorted(context_root.rglob("*@*"))
@@ -83,8 +83,8 @@ def link_instance(
 
 
 def link_server(resource_path: str, server_folder: Path, destination: Path) -> None:
-    """Create a symlink for the specified resource from an server's space pointing to the
-    tagged file / folder living in the EnderChest folder.
+    """Create a symlink for the specified resource from an server's space pointing to
+    the tagged file / folder living in the EnderChest folder.
 
     Parameters
     ----------
