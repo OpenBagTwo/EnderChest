@@ -1,13 +1,13 @@
 """Test functionality around rsync script generation"""
 import os
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
 from enderchest import sync
+from enderchest.cli import _run_bash
 from enderchest.craft import craft_ender_chest
 from enderchest.place import place_enderchest
 from enderchest.sync import Remote, RemoteSync
@@ -207,8 +207,10 @@ class TestScriptGeneration:
         with script_path.open("a") as script_file:
             script_file.write('echo "I should not be reachable"\n')
 
-        result = subprocess.run(
-            [script_path, "--dry-run"],  # out of an overabundance of caution
+        result = _run_bash(
+            local_enderchest,
+            script_path,
+            "--dry-run",  # out of an overabundance of caution)
             capture_output=True,
         )
 
@@ -227,8 +229,10 @@ class TestScriptGeneration:
         with script_path.open("a") as script_file:
             script_file.write('echo "You made it"\n')
 
-        result = subprocess.run(
-            [script_path, "--dry-run"],  # out of an overabundance of caution
+        result = _run_bash(
+            local_enderchest,
+            script_path,
+            "--dry-run",  # out of an overabundance of caution
             capture_output=True,
         )
 
@@ -304,8 +308,10 @@ class TestSyncing:
             local_enderchest / "..", remote, omit_scare_message=True
         )
 
-        result = subprocess.run(
-            [local_enderchest / "local-only" / "open.sh", "--verbose"],
+        result = _run_bash(
+            local_enderchest,
+            local_enderchest / "local-only" / "open.sh",
+            "--verbose",
             capture_output=True,
         )
 
@@ -336,8 +342,10 @@ class TestSyncing:
             local_enderchest / "..", remote, omit_scare_message=True
         )
 
-        result = subprocess.run(
-            [local_enderchest / "local-only" / "open.sh", "--verbose"],
+        result = _run_bash(
+            local_enderchest,
+            local_enderchest / "local-only" / "open.sh",
+            "--verbose",
             capture_output=True,
         )
 
@@ -380,8 +388,10 @@ class TestSyncing:
             local_enderchest / "..", remote, omit_scare_message=True
         )
 
-        result = subprocess.run(
-            [local_enderchest / "local-only" / "close.sh", "--verbose"],
+        result = _run_bash(
+            local_enderchest,
+            local_enderchest / "local-only" / "close.sh",
+            "--verbose",
             capture_output=True,
         )
 
@@ -412,8 +422,10 @@ class TestSyncing:
             local_enderchest / "..", remote, omit_scare_message=True
         )
 
-        result = subprocess.run(
-            [local_enderchest / "local-only" / "close.sh", "--verbose"],
+        result = _run_bash(
+            local_enderchest,
+            local_enderchest / "local-only" / "close.sh",
+            "--verbose",
             capture_output=True,
         )
 
@@ -430,8 +442,10 @@ class TestSyncing:
             local_enderchest / "..", remote, local_alias="this", omit_scare_message=True
         )
 
-        result = subprocess.run(
-            [local_enderchest / "local-only" / "close.sh", "--verbose"],
+        result = _run_bash(
+            local_enderchest,
+            local_enderchest / "local-only" / "close.sh",
+            "--verbose",
             capture_output=True,
         )
 
@@ -473,8 +487,10 @@ class TestSyncing:
             post_close=["# all done", "echo close end"],
         )
 
-        result = subprocess.run(
-            [local_enderchest / "local-only" / f"{operation}.sh", "--verbose"],
+        result = _run_bash(
+            local_enderchest,
+            local_enderchest / "local-only" / f"{operation}.sh",
+            "--verbose",
             capture_output=True,
         )
 
