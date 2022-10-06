@@ -129,22 +129,23 @@ rsync -az --delete \
             "source",
             Remote("faraway", 'maybe here?/definitely+not+"here"/$$$'),
         )
+        cwd = Path(os.getcwd()).as_posix()
         assert (yeet.strip(), yoink.strip()) == (
             rf'''# sync changes from this EnderChest to faraway
 rsync -az --delete \
-    '{os.getcwd()}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/ \
+    '{cwd}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/ \
     faraway:'maybe here?/definitely+not+"here"/$$$'/EnderChest/ \
     --exclude=".git" --exclude="local-only" --exclude="other-locals" \
     "$@"
 # backup local settings to faraway
 rsync -az --delete \
-    '{os.getcwd()}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/local-only/ \
+    '{cwd}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/local-only/ \
     faraway:'maybe here?/definitely+not+"here"/$$$'/EnderChest/other-locals/source \
     "$@"''',
             rf'''# sync changes from faraway to this EnderChest
 rsync -az --delete \
     faraway:'maybe here?/definitely+not+"here"/$$$'/EnderChest/ \
-    '{os.getcwd()}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/ \
+    '{cwd}/C Drive/Games (and other stuff)/minecr@ft'/EnderChest/ \
     --exclude=".git" --exclude="local-only" --exclude="other-locals" \
     "$@"''',
         )
