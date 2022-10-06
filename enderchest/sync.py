@@ -1,11 +1,12 @@
 """Utilities for synchronizing chests across different computers"""
 import os
+import posixpath
 import shlex
 import socket
 import stat
 import warnings
 from dataclasses import dataclass, field
-from pathlib import PosixPath
+from pathlib import PurePosixPath
 from typing import NamedTuple, Sequence
 
 from . import contexts
@@ -48,7 +49,7 @@ class Remote(NamedTuple):
 
     @property
     def alias(self) -> str:
-        return self.alias_ or self.host or PosixPath(self.root).name
+        return self.alias_ or self.host or PurePosixPath(self.root).name
 
     @property
     def _encoded_root(self) -> str:
@@ -334,7 +335,7 @@ def _build_rsync_scripts(
     yoink = "".join([f"{command}\n" for command in remote.pre_open])
     yeet = "".join([f"{command}\n" for command in remote.pre_close])
 
-    local_root_path = shlex.quote(str(PosixPath(local_root).expanduser().resolve()))
+    local_root_path = shlex.quote(posixpath.abspath(posixpath.expanduser(local_root)))
 
     yeet += SHARED_SYNC.format(
         source_desc="this EnderChest",
