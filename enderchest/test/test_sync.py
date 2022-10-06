@@ -1,7 +1,6 @@
 """Test functionality around rsync script generation"""
 import os
 import shutil
-import sys
 from pathlib import Path
 
 import pytest
@@ -197,7 +196,6 @@ class TestScriptGeneration:
         )
 
     @pytest.mark.parametrize("script", ("open.sh", "close.sh"))
-    @pytest.mark.xfail(sys.platform.startswith("win"), reason="only done bash so far")
     def test_scripts_just_scare_and_quit_by_default(self, script, local_enderchest):
         sync.link_to_other_chests(
             local_enderchest / ".."
@@ -221,7 +219,6 @@ class TestScriptGeneration:
         assert "I should not be reachable" not in result.stdout.decode()
 
     @pytest.mark.parametrize("script", ("open.sh", "close.sh"))
-    @pytest.mark.xfail(sys.platform.startswith("win"), reason="only done bash so far")
     def test_yes_you_can_disable_the_scare_warning(self, script, local_enderchest):
         sync.link_to_other_chests(local_enderchest / "..", omit_scare_message=True)
 
