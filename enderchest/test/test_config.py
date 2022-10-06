@@ -2,7 +2,7 @@
 import itertools
 import warnings
 from configparser import ConfigParser, ParsingError
-from pathlib import Path
+from pathlib import PurePosixPath
 
 import pytest
 
@@ -129,7 +129,7 @@ blah=blah
             example_config_parser["couch-potato"]
         ).remote
 
-        assert remote.root == Path("~/Games/minecraft")
+        assert remote.root == PurePosixPath("~/Games/minecraft")
 
     def test_host_is_alias_by_default(self, example_config_parser):
         remote = config._parse_remote_section(
@@ -330,7 +330,7 @@ blah=blah
     def test_parsing_root(self, example_config_parser):
         local_root, _ = config._parse_local_section(example_config_parser["local"])
 
-        assert local_root == Path("/main/minecraft")
+        assert local_root == PurePosixPath("/main/minecraft")
 
     def test_name_is_not_required(self):
         parser = ConfigParser()
@@ -419,7 +419,7 @@ overwrite_scripts=yes
 root=~/minecraft
 """
         expected = config.Config(
-            Path("~/minecraft"),
+            PurePosixPath("~/minecraft"),
             [RemoteSync(Remote("mirror", "~/minecraft"))],
             craft_options={"overwrite": True},
         )
@@ -437,7 +437,7 @@ overwrite_scripts=yes
 root=~/minecraft
 """
         expected = config.Config(
-            Path("~/minecraft"),
+            PurePosixPath("~/minecraft"),
             [RemoteSync(Remote("mirror", "~/minecraft"))],
             craft_options={"overwrite": True},
         )
@@ -451,7 +451,7 @@ root=~/minecraft
 root=~/minecraft
 """
         expected = config.Config(
-            Path("~/minecraft"),
+            PurePosixPath("~/minecraft"),
             [],
         )
         parsed_config = config.parse_config(local_only_config)
@@ -525,7 +525,7 @@ overwrite_scripts=no
 
     def test_parse_config_from_file(self, example_config_path):
         expected = config.Config(
-            Path("/main/minecraft"),
+            PurePosixPath("/main/minecraft"),
             (
                 RemoteSync(
                     Remote("192.168.0.101", "~/Games/minecraft", alias_="couch-potato"),
