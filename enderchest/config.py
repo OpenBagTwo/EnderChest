@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from configparser import ConfigParser, ParsingError, SectionProxy
-from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any, Sequence
 
 from .sync import Remote, RemoteSync
@@ -14,7 +14,7 @@ class Config:
 
     Attributes
     ----------
-    local_root : Path
+    local_root : str
         The path on the local installation of the minecraft directory (which
         should / will contain the EnderChest folder, along with the instances
         and servers directories)
@@ -41,7 +41,7 @@ class Config:
 
     def __init__(
         self,
-        local_root: str | os.PathLike,
+        local_root: str,
         remotes: Sequence[RemoteSync],
         craft_options: dict[str, Any] | None = None,
     ):
@@ -54,7 +54,7 @@ class Config:
     @property
     def _config(self) -> ConfigParser:
         parser = ConfigParser()
-        local: dict[str, str] = {"root": str(self.local_root)}
+        local: dict[str, str] = {"root": self.local_root}
         if alias := self.craft_options["local_alias"]:
             local["name"] = alias
         parser["local"] = local
@@ -180,7 +180,7 @@ def _parse_local_section(section: SectionProxy) -> tuple[str, dict[str, Any]]:
         If a required parameter isn't present or if a given option cannot be parsed
     """
     try:
-        root = Path(section["root"]).as_posix()
+        root = section["root"]
     except KeyError:
         raise ParsingError("Config must explicitly specify a local root directory")
     except (TypeError, ValueError):
@@ -310,7 +310,7 @@ def _parse_remote_section(
         host = alias
 
     try:
-        root = Path(section["root"]).as_posix()
+        root = section["root"]
     except KeyError:
         raise ParsingError(f"{alias} remote config must specify a root directory")
     except (TypeError, ValueError):
@@ -330,7 +330,9 @@ def _parse_remote_section(
         )
 
     wrapper_commands = _parse_pre_and_post_commands(section)
-    return RemoteSync(Remote(host, root, username, alias), **wrapper_commands)
+    return RemoteSync(
+        Remote(host, PurePosixPath(root), username, alias), **wrapper_commands
+    )
 
 
 def _parse_pre_and_post_commands(
