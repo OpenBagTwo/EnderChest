@@ -1,6 +1,7 @@
 """Test functionality around rsync script generation"""
 import os
 import shutil
+import sys
 from pathlib import Path
 
 import pytest
@@ -242,6 +243,9 @@ class TestScriptGeneration:
             assert "You made it" in result.stdout.decode()
 
 
+@pytest.mark.xfail(
+    sys.platform.startswith("win"), reason="shlex is only guaranteed for posix"
+)
 class TestSyncing:
     """This is only going to cover syncing locally"""
 
@@ -304,7 +308,6 @@ class TestSyncing:
         sync.link_to_other_chests(
             local_enderchest / "..", remote, omit_scare_message=True
         )
-        print((local_enderchest / "local-only" / "open.sh").read_text())
 
         result = _run_bash(
             local_enderchest,
