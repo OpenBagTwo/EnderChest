@@ -304,6 +304,7 @@ class TestSyncing:
         sync.link_to_other_chests(
             local_enderchest / "..", remote, omit_scare_message=True
         )
+        print((local_enderchest / "local-only" / "open.sh").read_text())
 
         result = _run_bash(
             local_enderchest,
