@@ -153,6 +153,9 @@ rsync -az --delete \
 
 
 class TestScriptGeneration:
+
+    # TODO: test that script generation expands ~ when generating local root
+
     @pytest.mark.parametrize("script", ("open.sh", "close.sh"))
     def test_link_to_other_chests_generates_executable_scripts(
         self, script, local_enderchest

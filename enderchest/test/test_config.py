@@ -2,7 +2,6 @@
 import itertools
 import warnings
 from configparser import ConfigParser, ParsingError
-from pathlib import PurePosixPath
 
 import pytest
 
@@ -129,7 +128,7 @@ blah=blah
             example_config_parser["couch-potato"]
         ).remote
 
-        assert remote.root == "~/Games/minecraft"
+        assert str(remote.root) == "~/Games/minecraft"
 
     def test_host_is_alias_by_default(self, example_config_parser):
         remote = config._parse_remote_section(
@@ -419,7 +418,7 @@ overwrite_scripts=yes
 root=~/minecraft
 """
         expected = config.Config(
-            PurePosixPath("~/minecraft"),
+            "~/minecraft",
             [RemoteSync(Remote("mirror", "~/minecraft"))],
             craft_options={"overwrite": True},
         )
@@ -437,7 +436,7 @@ overwrite_scripts=yes
 root=~/minecraft
 """
         expected = config.Config(
-            PurePosixPath("~/minecraft"),
+            "~/minecraft",
             [RemoteSync(Remote("mirror", "~/minecraft"))],
             craft_options={"overwrite": True},
         )
@@ -451,7 +450,7 @@ root=~/minecraft
 root=~/minecraft
 """
         expected = config.Config(
-            PurePosixPath("~/minecraft"),
+            "~/minecraft",
             [],
         )
         parsed_config = config.parse_config(local_only_config)
@@ -525,7 +524,7 @@ overwrite_scripts=no
 
     def test_parse_config_from_file(self, example_config_path):
         expected = config.Config(
-            PurePosixPath("/main/minecraft"),
+            "/main/minecraft",
             (
                 RemoteSync(
                     Remote("192.168.0.101", "~/Games/minecraft", alias_="couch-potato"),

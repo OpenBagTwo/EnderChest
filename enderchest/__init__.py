@@ -36,7 +36,7 @@ def contexts(root: str | os.PathLike) -> Contexts:
     - For all other contexts, the namedtuple key replaces a dash (not a valid token
       character) with an underscore   `
     """
-    ender_chest = Path(root) / "EnderChest"
+    ender_chest = Path(root).expanduser().resolve() / "EnderChest"
 
     return Contexts(
         ender_chest / "global",
