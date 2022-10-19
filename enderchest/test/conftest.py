@@ -78,7 +78,7 @@ def local_enderchest(local_root):
             chest_folder
             / "local-only"
             / "shaderpacks"
-            / "Seuss CitH.zip.txt@axolotl@bee@cow"
+            / "Seuss CitH.zip.txt@axolotl@bee@Chest Boat"
         ): (
             "with settings at max"
             "\nits important to note"
@@ -92,7 +92,7 @@ def local_enderchest(local_root):
     ).symlink_to(local_root / "workspace" / "neat_resource_pack")
 
     symlinks: dict[Path, Path] = {  # map of links to targets
-        (chest_folder / "client-only" / "saves" / "olam@axolotl@bee@cow"): (
+        (chest_folder / "client-only" / "saves" / "olam@axolotl@bee@Chest Boat"): (
             local_root / "worlds" / "olam"
         ),
         (chest_folder / "global" / "mods" / "BME.jar@axolotl"): (
@@ -111,7 +111,7 @@ def local_enderchest(local_root):
             / "libs"
             / "BME_1.19.1_beta.jar"
         ),
-        (chest_folder / "global" / "mods" / "BME.jar@cow"): (
+        (chest_folder / "global" / "mods" / "BME.jar@Chest Boat"): (
             local_root
             / "workspace"
             / "BestModEver"

@@ -46,5 +46,5 @@ jobs:
         pip install pytest mypy black isort flake8 pytest-cov
     - name: Run unit tests
       run: |
-        pytest -vv --cov=enderchest
+        pytest -vv --doctest-modules --cov=enderchest
       
