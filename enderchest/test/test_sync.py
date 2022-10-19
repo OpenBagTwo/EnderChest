@@ -268,12 +268,17 @@ class TestSyncing:
         )
 
         shutil.copy(
-            (local_enderchest / "client-only" / "saves" / "olam@axolotl@bee@cow"),
-            (ender_chest / "client-only" / "saves" / "olam@axolotl@bee@cow"),
+            (
+                local_enderchest
+                / "client-only"
+                / "saves"
+                / "olam@axolotl@bee@Chest Boat"
+            ),
+            (ender_chest / "client-only" / "saves" / "olam@axolotl@bee@Chest Boat"),
             follow_symlinks=False,
         )
 
-        for instance in ("axolotl", "bee", "cow"):
+        for instance in ("axolotl", "bee", "Chest Boat"):
             shutil.copy(
                 (local_enderchest / "global" / "mods" / f"BME.jar@{instance}"),
                 (ender_chest / "global" / "mods" / f"BME.jar@{instance}"),
@@ -289,13 +294,16 @@ class TestSyncing:
             ender_chest
             / "local-only"
             / "shaderpacks"
-            / "SildursMonochromeShaders.zip@axolotl@bee@cow@dolphin"
+            / "SildursMonochromeShaders.zip@axolotl@bee@Chest Boat@dolphin"
         ).touch()
         (ender_chest / "local-only" / "BME_indev.jar@axolotl").write_bytes(
             b"alltheboops"
         )
         (
-            ender_chest / "client-only" / "config" / "pupil.properties@axolotl@bee@cow"
+            ender_chest
+            / "client-only"
+            / "config"
+            / "pupil.properties@axolotl@bee@Chest Boat"
         ).write_text("dilated\n")
 
         yield Remote(None, ender_chest / "..", None, "behind_the_door")
@@ -376,7 +384,7 @@ class TestSyncing:
             local_enderchest
             / "client-only"
             / "config"
-            / "pupil.properties@axolotl@bee@cow"
+            / "pupil.properties@axolotl@bee@Chest Boat"
         ).write_text("constricted\n")
 
         remote_config = (
@@ -384,7 +392,7 @@ class TestSyncing:
             / "EnderChest"
             / "client-only"
             / "config"
-            / "pupil.properties@axolotl@bee@cow"
+            / "pupil.properties@axolotl@bee@Chest Boat"
         )
         assert remote_config.read_text() == "dilated\n"
 
@@ -411,7 +419,7 @@ class TestSyncing:
             / "EnderChest"
             / "client-only"
             / "config"
-            / "pupil.properties@axolotl@bee@cow"
+            / "pupil.properties@axolotl@bee@Chest Boat"
         )
         link_to_be_removed = (
             remote.root / "EnderChest" / "global" / "mods" / "AnOkayMod.jar@bee"
