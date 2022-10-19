@@ -7,7 +7,7 @@ import pytest
 from enderchest import place
 
 
-class TestLinkInstance:
+class TestLink:
     @pytest.fixture
     def aether_dot_zip(self, tmp_path):
         a_backup = tmp_path / "aether.zip"
@@ -20,10 +20,11 @@ class TestLinkInstance:
         another_backup.write_bytes(b"buzzbuzz")
         yield another_backup
 
-    def test_link_instance_skips_nonexistent_instances_by_default(
-        self, tmp_path, aether_dot_zip
+    @pytest.mark.parametrize("linker", ("link_instance", "link_server"))
+    def test_linker_skips_nonexistent_folder_by_default(
+        self, tmp_path, aether_dot_zip, linker
     ):
-        place.link_instance(
+        getattr(place, linker)(
             Path("backups") / "aether.zip", tmp_path / "idonotexist", aether_dot_zip
         )
 
@@ -43,31 +44,49 @@ class TestLinkInstance:
             tmp_path / "i_sort_of_exist" / ".minecraft" / "backups" / "aether.zip"
         ).exists()
 
-    def test_link_instance_can_be_made_to_create_instance_folders(
+    def test_link_server_will_create_folders_inside_of_existing_server_folders(
         self, tmp_path, aether_dot_zip
     ):
+        (tmp_path / "i_sort_of_exist" / "backups").mkdir(parents=True)
+        place.link_server(
+            Path("backups") / "aether.zip",
+            tmp_path / "i_sort_of_exist",
+            aether_dot_zip,
+        )
 
-        place.link_instance(
+        assert (tmp_path / "i_sort_of_exist" / "backups" / "aether.zip").exists()
+
+    @pytest.mark.parametrize("linker", ("link_instance", "link_server"))
+    def test_link_instance_can_be_made_to_create_folders(
+        self, tmp_path, aether_dot_zip, linker
+    ):
+
+        getattr(place, linker)(
             Path("backups") / "aether.zip",
             tmp_path / "makeme",
             aether_dot_zip,
             check_exists=False,
         )
+        minecraft_root = tmp_path / "makeme"
+        if linker == "link_instance":
+            minecraft_root /= ".minecraft"
+        assert (minecraft_root / "backups" / "aether.zip").exists()
 
-        assert (tmp_path / "makeme" / ".minecraft" / "backups" / "aether.zip").exists()
-
+    @pytest.mark.parametrize("linker", ("link_instance", "link_server"))
     @pytest.mark.parametrize("check_exists", (True, False))
-    def test_link_instance_will_overwrite_existing_links(
-        self, check_exists, tmp_path, aether_dot_zip, beether_dot_zip
+    def test_linker_will_overwrite_existing_links(
+        self, check_exists, tmp_path, aether_dot_zip, beether_dot_zip, linker
     ):
         beether_contents = beether_dot_zip.read_bytes()
 
-        (tmp_path / "i_exist" / ".minecraft" / "backups").mkdir(parents=True)
-        (tmp_path / "i_exist" / ".minecraft" / "backups" / "aether.zip").symlink_to(
-            beether_dot_zip
-        )
+        minecraft_root = tmp_path / "i_exist"
+        if linker == "link_instance":
+            minecraft_root /= ".minecraft"
 
-        place.link_instance(
+        (minecraft_root / "backups").mkdir(parents=True)
+        (minecraft_root / "backups" / "aether.zip").symlink_to(beether_dot_zip)
+
+        getattr(place, linker)(
             Path("backups") / "aether.zip",
             tmp_path / "i_exist",
             aether_dot_zip,
@@ -75,24 +94,27 @@ class TestLinkInstance:
         )
 
         assert (
-            tmp_path / "i_exist" / ".minecraft" / "backups" / "aether.zip"
+            minecraft_root / "backups" / "aether.zip"
         ).read_bytes() == aether_dot_zip.read_bytes()
 
         # assert that the original is unchanged
         assert beether_dot_zip.read_bytes() == beether_contents
 
+    @pytest.mark.parametrize("linker", ("link_instance", "link_server"))
     @pytest.mark.parametrize("check_exists", (True, False))
-    def test_link_instance_will_not_overwrite_an_actual_file(
-        self, check_exists, tmp_path, aether_dot_zip, beether_dot_zip
+    def test_linker_will_not_overwrite_an_actual_file(
+        self, check_exists, tmp_path, aether_dot_zip, beether_dot_zip, linker
     ):
         beether_contents = beether_dot_zip.read_bytes()
 
-        (tmp_path / "i_exist" / ".minecraft" / "backups").mkdir(parents=True)
-        beether_dot_zip.rename(
-            tmp_path / "i_exist" / ".minecraft" / "backups" / "aether.zip"
-        )
+        minecraft_root = tmp_path / "i_exist"
+        if linker == "link_instance":
+            minecraft_root /= ".minecraft"
+
+        (minecraft_root / "backups").mkdir(parents=True)
+        beether_dot_zip.rename(minecraft_root / "backups" / "aether.zip")
         with pytest.raises(FileExistsError):
-            place.link_instance(
+            getattr(place, linker)(
                 Path("backups") / "aether.zip",
                 tmp_path / "i_exist",
                 aether_dot_zip,
@@ -100,12 +122,10 @@ class TestLinkInstance:
             )
 
         assert (
-            tmp_path / "i_exist" / ".minecraft" / "backups" / "aether.zip"
+            minecraft_root / "backups" / "aether.zip"
         ).read_bytes() == beether_contents
 
-        assert not (
-            tmp_path / "i_exist" / ".minecraft" / "backups" / "aether.zip"
-        ).is_symlink()
+        assert not (minecraft_root / "backups" / "aether.zip").is_symlink()
 
 
 @pytest.mark.usefixtures("local_enderchest")
@@ -114,26 +134,41 @@ class TestPlaceEnderChest:
     def create_some_instances(self, local_root):
         (local_root / "instances" / "axolotl" / ".minecraft").mkdir(parents=True)
         (local_root / "instances" / "bee" / ".minecraft").mkdir(parents=True)
+        (local_root / "servers" / "axolotl").mkdir(parents=True)
+        (local_root / "servers" / "chest.boat").mkdir(parents=True)
 
     @pytest.mark.parametrize("cleanup", (True, False))
     @pytest.mark.parametrize(
-        "resource",
+        "instances, servers, resource_path",
         (
-            (("axolotl",), "resourcepacks", "stuff.zip"),
-            (("axolotl", "bee"), "shaderpacks", "Seuss CitH.zip.txt"),
-            (("axolotl", "bee"), "resourcepacks", "neat_resource_pack"),
-            (("axolotl", "bee"), "saves", "olam"),
-            (("axolotl",), "mods", "BME.jar"),
-            (("bee",), "mods", "BME.jar"),  # not the same mod
+            (("axolotl",), (), ("resourcepacks", "stuff.zip")),
+            (("axolotl", "bee"), (), ("shaderpacks", "Seuss CitH.zip.txt")),
+            (
+                ("axolotl", "bee"),
+                ("axolotl",),
+                ("resourcepacks", "neat_resource_pack"),
+            ),
+            (("axolotl", "bee"), (), ("saves", "olam")),
+            (("axolotl",), ("axolotl",), ("mods", "BME.jar")),
+            (("bee",), (), ("mods", "BME.jar")),  # not the same mod
+            ((), ("chest.boat",), ("mods", "BME.jar")),  # also not the same mod
         ),
     )
-    def test_placing_create_links_inside_instances(self, cleanup, resource, local_root):
+    def test_placing_create_links_to_shared_resources(
+        self, cleanup, instances, servers, resource_path, local_root
+    ):
         place.place_enderchest(local_root, cleanup=cleanup)
-        instances, *path = resource
-        destinations: set[Path] = set()
+
+        minecraft_folders: list[Path] = []
         for instance in instances:
-            link_path = local_root / "instances" / instance / ".minecraft"
-            for path_part in path:
+            minecraft_folders.append(local_root / "instances" / instance / ".minecraft")
+        for server in servers:
+            minecraft_folders.append(local_root / "servers" / server)
+
+        destinations: set[Path] = set()
+
+        for link_path in minecraft_folders:
+            for path_part in resource_path:
                 link_path = link_path / path_part
             destinations.add(os.path.realpath(link_path, strict=True))
         assert len(destinations) == 1
@@ -143,11 +178,20 @@ class TestPlaceEnderChest:
         self, cleanup, local_root
     ):
         place.place_enderchest(local_root, cleanup=cleanup)
-        assert not (local_root / "instances" / "cow").exists()
+        assert not (local_root / "instances" / "Chest Boat").exists()
 
     @pytest.mark.parametrize("cleanup", (True, False))
-    def test_placing_doesnt_make_broken_links(self, cleanup, local_root):
+    def test_placing_doesnt_create_folders_for_missing_servers(
+        self, cleanup, local_root
+    ):
+        place.place_enderchest(local_root, cleanup=cleanup)
+        assert not (local_root / "servers" / "bee").exists()
 
+    @pytest.mark.parametrize("cleanup", (True, False))
+    @pytest.mark.parametrize("minecraft_type", ("instance", "server"))
+    def test_placing_doesnt_make_broken_links(
+        self, cleanup, minecraft_type, local_root
+    ):
         global_config = local_root / "EnderChest" / "global" / "config"
         global_config.mkdir(parents=True, exist_ok=True)
         (global_config / "BME.txt@axolotl").symlink_to(
@@ -156,15 +200,25 @@ class TestPlaceEnderChest:
 
         place.place_enderchest(local_root, cleanup=cleanup)
 
+        if minecraft_type == "instance":
+            minecraft_folder = local_root / "instances" / "axolotl" / ".minecraft"
+        else:
+            minecraft_folder = local_root / "servers" / "axolotl"
+
         assert "BME.txt" not in [
-            path.name
-            for path in (
-                local_root / "instances" / "axolotl" / ".minecraft" / "config"
-            ).glob("*")
+            path.name for path in (minecraft_folder / "config").glob("*")
         ]
 
-    def test_existing_broken_links_are_cleaned_up_by_default(self, local_root):
-        config_folder = local_root / "instances" / "axolotl" / ".minecraft" / "config"
+    @pytest.mark.parametrize("minecraft_type", ("instance", "server"))
+    def test_existing_broken_links_are_cleaned_up_by_default(
+        self, minecraft_type, local_root
+    ):
+        if minecraft_type == "instance":
+            minecraft_folder = local_root / "instances" / "axolotl" / ".minecraft"
+        else:
+            minecraft_folder = local_root / "servers" / "axolotl"
+
+        config_folder = minecraft_folder / "config"
         config_folder.mkdir(parents=True, exist_ok=True)
         (config_folder / "BME.txt").symlink_to(
             local_root / "workspace" / "BestModEver" / "there_is_no_config_here.txt"
@@ -174,8 +228,16 @@ class TestPlaceEnderChest:
 
         assert "BME.txt" not in [path.name for path in config_folder.glob("*")]
 
-    def test_cleanup_of_existing_broken_links_can_be_disabled(self, local_root):
-        config_folder = local_root / "instances" / "axolotl" / ".minecraft" / "config"
+    @pytest.mark.parametrize("minecraft_type", ("instance", "server"))
+    def test_cleanup_of_existing_broken_links_can_be_disabled(
+        self, minecraft_type, local_root
+    ):
+        if minecraft_type == "instance":
+            minecraft_folder = local_root / "instances" / "axolotl" / ".minecraft"
+        else:
+            minecraft_folder = local_root / "servers" / "axolotl"
+
+        config_folder = minecraft_folder / "config"
         config_folder.mkdir(parents=True, exist_ok=True)
         (config_folder / "BME.txt").symlink_to(
             local_root / "workspace" / "BestModEver" / "there_is_no_config_here.txt"
@@ -195,3 +257,14 @@ class TestPlaceEnderChest:
         place.place_enderchest(local_root, cleanup=cleanup)
 
         assert list((local_root / "instances").rglob("banlist.txt")) == []
+
+    @pytest.mark.parametrize("cleanup", (True, False))
+    def test_client_only_assets_dont_go_in_servers(self, cleanup, local_root):
+
+        (local_root / "EnderChest" / "client-only" / "options.txt@axolotl").write_text(
+            "render_distance=ALL THE CHUNKS\n"
+        )
+
+        place.place_enderchest(local_root, cleanup=cleanup)
+
+        assert list((local_root / "servers").rglob("options.txt")) == []
