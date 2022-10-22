@@ -234,7 +234,7 @@ def parse_args(argv: Sequence[str]) -> tuple[_Action, str, dict[str, Any]]:
     action_parsers["place"].add_argument(
         "-k",
         "--keep-broken",
-        action="store_true",
+        action="store_false",
         dest="cleanup",
         help="do not remove broken links when performing place",
     )
