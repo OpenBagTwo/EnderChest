@@ -4,22 +4,23 @@ A system for managing your minecraft installations across instances and installa
 
 ## Motivation
 
-With the arrival of my Steam Deck, I find myself in the very First World problem of having a few too
-many Minecraft installations  across a few too many computers that I want to keep synced and backed up.
-This isn't as simple of a problem as just having a  central repository of files to keep in sync,
-as the machines I've got running Minecraft range fromn an Rasperry Pi, to an M1 Macbook to the
-controller-operated Steam Deck to an absolute beast of a desktop battlestation, so
-each need their own settings and client mod tweaks for optimal gameplay.
+With the arrival of my Steam Deck, I find myself with the very First World problem of having too
+many Minecraft installations across a too many computers, and I really want to
+keep everything synced and backed up.
+This isn't as simple of a problem as just having a central repository on a NAS,
+as the machines I've got running Minecraft range from an Raspberry Pi, to an M1 Macbook to the
+controller-operated Steam Deck to an absolute beast of a desktop battlestation. Each machine
+needs its own settings, client mods and tweaks for optimal gameplay.
 
 Furthermore, since I do mod development and have content creation aspirations, several of my machines
-each have multiple instance variants that are, for example, streamlined for development and testing,
-or optimized for ReplayMod rendering, but that will will want share some mods, resourcepacks and worlds
-between them.
+have multiple instance variants that are, for example, streamlined for development and testing
+or optimized for ReplayMod rendering, but for which I still want to share some mods,
+resourcepacks and worlds with other instances.
 
 And finally, there are some instances that I want to run on a server--either local or hosted--and keeping
 resource packs, mods and other assets synced between servers and clients is a giant pain.
 
-In short, there are three different levels of file-sharing that need to take place:
+In short, there are three different levels of coordination that need to take place:
 1. Selective sharing across different computers
 1. Selective sharing across different instances on the same computer
 1. Selective sharing across server and client installations
