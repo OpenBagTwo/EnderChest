@@ -1,21 +1,23 @@
 # EnderChest
 
-A folder structure and series of accompanying scripts to manage your minecraft installations across instances and installations
+A system for managing your minecraft installations across instances and installations
 
 ## Motivation
 
-With the arrival of my Steam Deck, I find myself in the very First World problem of having a few too many Minecraft installations
-across a few too many computers that I want to keep synced and backed up. This isn't as simple of a problem as just having a
-central repository of files to keep in sync, as the machines I've got running Minecraft range fromn an Rasperry Pi, to an
-M1 Mac to the controller-operated Steam Deck to an absolute beast of a desktop battlestation, so even though all run some
-variant of MultiMC, each need their own settings and client mod tweaks for optimal gameplay.
+With the arrival of my Steam Deck, I find myself in the very First World problem of having a few too
+many Minecraft installations  across a few too many computers that I want to keep synced and backed up.
+This isn't as simple of a problem as just having a  central repository of files to keep in sync,
+as the machines I've got running Minecraft range fromn an Rasperry Pi, to an M1 Macbook to the
+controller-operated Steam Deck to an absolute beast of a desktop battlestation, so
+each need their own settings and client mod tweaks for optimal gameplay.
 
-Futhermore, since I do mod development and have content creation aspirations, several of my machines each have multiple instance
-variants that are, for example, streamlined for development and testing, or otpimized for ReplayMod rendering, but that will
-will want share some mods, resourcepacks and worlds between them.
+Furthermore, since I do mod development and have content creation aspirations, several of my machines
+each have multiple instance variants that are, for example, streamlined for development and testing,
+or optimized for ReplayMod rendering, but that will will want share some mods, resourcepacks and worlds
+between them.
 
-And finally, there are some instances that I want to run on a server--either local or hosted--that I want to be able to play on
-with my wife and kid.
+And finally, there are some instances that I want to run on a server--either local or hosted--and keeping
+resource packs, mods and other assets synced between servers and clients is a giant pain.
 
 In short, there are three different levels of file-sharing that need to take place:
 1. Selective sharing across different computers
@@ -23,7 +25,8 @@ In short, there are three different levels of file-sharing that need to take pla
 1. Selective sharing across server and client installations
 
 ## Directory Tree
-To that end, the basic folder layout is split out by the context of which instances / installations will need to sync these files.
+To that end, the basic folder layout is split out by the context of which instances / installations
+will need to sync these files.
 
 ```
 <minecraft root>: a single folder where all your minecraft data will live
@@ -36,6 +39,12 @@ To that end, the basic folder layout is split out by the context of which instan
 ├── instances: this is where EnderChest will assume your curseforge / Multi-MC-fork instances live
 ├── servers: this is where EnderChest will assume all your server installations live
 ```
+
+Having a centrally-managed "instances" folder that contains all your Minecraft (client) instances is something
+that's natively supported by MultiMC variants as well as the command-line clients
+[`portablemc`](https://github.com/mindstorm38/portablemc) and [`ferium`](https://github.com/gorilla-devs/ferium), but
+other launchers like GDLauncher, CurseForge and the official launcher might require you to use symlinks to store
+your instances in a convenient place.
 
 ## Linking to instances by tagging through file names
 
@@ -70,7 +79,6 @@ This is most applicable to world saves--if you create a new world, you will need
 1. Append the tags for the original instance and any instances that should share access to the world **to the world's folder name**
 1. Run the command to regenerate all the links.
 
-
 ### Name Collisions and Conflicts
 
 Let's say you have four files:
@@ -93,11 +101,40 @@ Similarly, if your setup were the following:
 
 I'm not exactly sure what it should do, but I can pretty much guarantee that it's not doing what you wanted.
 
+### Y Tho?
+
+If you're a Windows or MacOS user, you may be wondering _why the heck_ I thought it was a **good idea**
+to create a system that relied on _giving files weird and unreadable extensions_. And, friend, you're not
+wrong, but here's the advantages of this system:
+
+- inside your _actual_ Minecraft folders, the symbolic links generated _will_ have the expected extensions
+  and will function normally
+- centralizing assets makes it easy to share and update assets across multiple instances
+- centrally managing assets enforces that the instance folders and _the launchers themselves_ contain
+  very little actual and important content, thus making it easy to switch to new launcher--instead of
+  having to "import" an instance from the old launcher, you can just create a new instance in the new
+  launcher, symlink the `.minecraft` folder they create to your centralized minecraft root, then run
+  `enderchest place` to put everything into the new instances.
+- tagging the filenames of each and every asset guarantees that you don't have a bunch of unused
+  and unneeded assets sitting around--it's encoded _right in the filename and folder structure_
+  which instances need that asset and for what.
+- Doing everything through filenames ensures that **you don't need a special app or UI** to manage
+  your assets--any file browser (that will let you see and edit extensions) will do.
+- This design makes EnderChest **stateless**--there are no configuration files and no setup process
+  beyond running `enderchest craft` to create the EnderChest folder
+
+
+### All that being said...
+
+I am planning on exploring an alternative implementation--call it "ChestMonster"--where all your
+assets would be stored in a centralized and easy to sync place, but where the linking is managed
+via a simple text file.
+
 
 ## Installation
 
-EnderChest has no package dependencies but does require **python 3.10 or greater.** So unless your system Python
-is already 3.10+, you'll need to first create a virtual environment (releasing as a stand-alone binary
+EnderChest has no package dependencies but does require **python 3.10 or greater.** So unless your system
+Python is already 3.10+, you'll need to first create a virtual environment (releasing as a stand-alone binary
 is planned). Assuming that you're starting from zero, the recommended installation steps are:
 
 1. Download and install a [`conda`](https://docs.conda.io/en/latest/) distribution
@@ -115,6 +152,8 @@ is planned). Assuming that you're starting from zero, the recommended installati
    ```bash
    $ python -m pip install --user git://github.com/OpenBagTwo/EnderChest.git@release
    ```
+
+(`poetry` support is planned)
    
 ## Usage
 
@@ -124,7 +163,8 @@ EnderChest is a command-line utility. With your `enderchest` virtual environment
 $ enderchest --help
 ```
 
-for full documentation on how to run this package.
+for full documentation on how to run this package. Full examples and tutorials will be available with
+the docs.
 
 ## Contributing
 
@@ -157,5 +197,5 @@ Once you're ready to contribute your code change back, open a PR into this repo,
 
 ## License
 
-This package is licensed under GPLv3. If you have a use case for adapting this code that requires a more permissive
-license, please post an issue, and I'd be more than willing to consider a dual license.
+This package is licensed under GPLv3. If you have a use case for adapting this code that requires a more
+permissive license, please post an issue, and I'd be more than willing to consider a dual license.
