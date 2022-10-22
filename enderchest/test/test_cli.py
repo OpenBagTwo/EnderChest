@@ -141,6 +141,24 @@ class TestCraft:
 
 
 class TestPlace:
+    @pytest.fixture
+    def place_log(self, monkeypatch):
+        place_log: list[tuple[Path, bool]] = []
+
+        def mock_place(path, cleanup):
+            place_log.append((path, cleanup))
+
+        patched_actions = []
+        for action in cli.ACTIONS:
+            if action[0] != "place":
+                patched_actions.append(action)
+            else:
+                patched_actions.append((action[0], action[1], mock_place))
+
+        monkeypatch.setattr(cli, "ACTIONS", tuple(patched_actions))
+
+        yield place_log
+
     def test_default_root_is_cwd(self, monkeypatch):
         monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
         _, root, _ = cli.parse_args(["enderchest", "place"])
@@ -154,15 +172,16 @@ class TestPlace:
         _, root, _ = cli.parse_args(["enderchest", "place", "/home"])
         assert root == Path("/home")
 
-    @pytest.mark.parametrize("flag", ("-k", "--keep-broken"))
-    def test_keep_broken_links(self, monkeypatch, flag):
-        def mock_place(path, cleanup):
-            assert not cleanup
-
-        monkeypatch.setattr(cli, "place_enderchest", mock_place)
-
+    def test_remove_broken_links_by_default(self, place_log):
         action, root, options = cli.parse_args(["enderchest", "place", "/home"])
         action(root, **options)
+        assert place_log == [(Path("/home"), True)]
+
+    @pytest.mark.parametrize("flag", ("-k", "--keep-broken"))
+    def test_keep_broken_links(self, place_log, flag):
+        action, root, options = cli.parse_args(["enderchest", "place", "/home", flag])
+        action(root, **options)
+        assert place_log == [(Path("/home"), False)]
 
 
 @pytest.mark.parametrize("command", ("open", "close"))
