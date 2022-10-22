@@ -144,7 +144,7 @@ is planned). Assuming that you're starting from zero, the recommended installati
    ```bash
    $ mamba create -n enderchest "python>=3.10" "pip>22"
    ```
-   (substitute `conda` for `mamba` if as needed)
+   (substitute `conda` for `mamba` as needed)
 3. Activate your new environment:
    ```bash
    $ conda activate enderchest
