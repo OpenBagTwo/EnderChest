@@ -1,18 +1,19 @@
 site_name: EnderChest Documentation
 repo_url: https://github.com/OpenBagTwo/EnderChest
 repo_name: EnderChest
+site_author: Gili "OpenBagTwo" Barlev
 docs_dir: docs
 theme:
   name: material
+  favicon: img/favicon.png
+  logo: img/enderchest.png
 nav:
   - Home: index.md
   - About: about.md
   - API: reference/
-markdown_extensions:
-  - pymdownx.superfences
-  - codehilite
 plugins:
   - search
+  - autorefs
   - mike
   - gen-files:
       scripts:
@@ -20,8 +21,12 @@ plugins:
   - literate-nav:
       nav_file: SUMMARY.md
   - mkdocstrings:
-#      handlers:
-#        python:
-#          docstring_style: numpy
-      watch:
-        - enderchest
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+watch:
+  - enderchest
+extra:
+  version:
+    provider: mike
