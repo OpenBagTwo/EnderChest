@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "enderchest"
+version = "0.0.0.0"
+description = "syncing and linking for all your Minecraft instances"
+authors = ["Gili \"OpenBagTwo\" Barlev <openbagtwo@gmail.com>"]
+license = "GNU General Public License v3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+ipython = ">=8"
+jupyterlab = ">=3"
+black = "^22.10.0"
+isort = "^5.10.1"
+mypy = "^0.982"
+versioneer = "^0.28"
+pre-commit = "^2.20.0"
+pytest = ">=7"
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "enderchest/_version.py"
+versionfile_build = "enderchest/_version.py"
+tag_prefix = "v"
+parentdir_prefix = "enderchest-"
+
+[build-system]
+requires = ["poetry-core", "versioneer[toml]"]
+build-backend = "poetry.core.masonry.api"
