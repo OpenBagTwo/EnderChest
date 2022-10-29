@@ -16,3 +16,7 @@ dependencies:
   - pytest>=7
   - mkdocs
   - mike
+  - mkdocstrings
+  - mkdocstrings-python
+  - mkdocs-literate-nav
+  - mkdocs-material
