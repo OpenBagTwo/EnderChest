@@ -1,0 +1,24 @@
+# Rebuild the docs on changes to dev or on a new release
+
+name: Update the dev version of the docs
+
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  docs_rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up development environment
+        run: |
+          $CONDA/bin/conda env create -f environment.yml
+      - name: configure git
+        run: |
+          git config --global user.name docs-golem
+          git config --global user.email losthemobvote@openbagtwo.net
+      - name: deploy current branch
+        run: |
+          $CONDA/bin/conda activate enderchest
+          mike deploy dev --push
