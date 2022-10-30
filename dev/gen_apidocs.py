@@ -10,13 +10,13 @@ for path in Path("enderchest").rglob("*.py"):
     if Path("enderchest") / "test" in path.parents:
         continue
     if path == Path("enderchest") / "__init__.py":
+        doc_file_path = Path("reference") / "enderchest.md"
         py_path: tuple[str, ...] = ("enderchest",)
     elif path.name.startswith("_"):
         continue
     else:
+        doc_file_path = Path("reference") / path.with_suffix(".md")
         py_path = path.with_suffix("").parts
-
-    doc_file_path = Path("reference") / path.with_suffix(".md")
 
     with mkdocs_gen_files.open(doc_file_path, "w") as doc_file:
         doc_file.write(f":::{'.'.join(py_path)}\n")
