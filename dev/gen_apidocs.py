@@ -9,14 +9,15 @@ nav = mkdocs_gen_files.Nav()
 for path in Path("enderchest").rglob("*.py"):
     if Path("enderchest") / "test" in path.parents:
         continue
-    if path == Path("enderchest") / "__init__.py":
-        doc_file_path = Path("reference") / "enderchest.md"
-        py_path: tuple[str, ...] = ("enderchest",)
-    elif path.name.startswith("_"):
+    if path.name.startswith("_") and path.name != "__init__.py":
         continue
-    else:
-        doc_file_path = Path("reference") / path.with_suffix(".md")
-        py_path = path.with_suffix("").parts
+
+    doc_file_path = Path("reference") / path.with_suffix(".md")
+    py_path: tuple[str, ...] = path.with_suffix("").parts
+
+    if path.name == "__init__.py":
+        doc_file_path = doc_file_path.with_name("index.md")
+        py_path = py_path[:-1]
 
     with mkdocs_gen_files.open(doc_file_path, "w") as doc_file:
         doc_file.write(f":::{'.'.join(py_path)}\n")
