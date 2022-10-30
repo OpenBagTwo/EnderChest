@@ -20,4 +20,5 @@ dependencies:
   - mkdocstrings-python
   - mkdocs-literate-nav
   - mkdocs-material
-  - mkdocs-section-index
+  pip:
+    - mkdocs-section-index
