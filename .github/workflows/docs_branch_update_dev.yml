@@ -21,4 +21,4 @@ jobs:
       - name: deploy current branch
         run: |
           source $CONDA/bin/activate enderchest
-          mike deploy dev --push
+          mike deploy dev --push --rebase
