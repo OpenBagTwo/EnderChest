@@ -3,6 +3,7 @@ repo_url: https://github.com/OpenBagTwo/EnderChest
 repo_name: EnderChest
 site_author: Gili "OpenBagTwo" Barlev
 docs_dir: docs
+edit_uri: ""
 theme:
   name: material
   favicon: img/favicon.png
@@ -18,6 +19,7 @@ plugins:
   - gen-files:
       scripts:
       - docs/gen_apidocs.py
+  - section-index
   - literate-nav:
       nav_file: SUMMARY.md
   - mkdocstrings:
@@ -25,6 +27,7 @@ plugins:
         python:
           options:
             docstring_style: numpy
+            enable_inventory: true
 watch:
   - enderchest
 extra:
