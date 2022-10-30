@@ -20,5 +20,5 @@ jobs:
           git config --global user.email losthemobvote@openbagtwo.net
       - name: deploy current branch
         run: |
-          $CONDA/bin/activate enderchest
+          source $CONDA/bin/activate enderchest
           mike deploy dev --push
