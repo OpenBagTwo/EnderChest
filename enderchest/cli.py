@@ -171,6 +171,11 @@ def parse_args(argv: Sequence[str]) -> tuple[_Action, str, dict[str, Any]]:
         ),
         formatter_class=argparse.RawTextHelpFormatter,
     )
+
+    enderchest_parser.add_argument(
+        "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
+    )
+
     enderchest_parser.add_argument(
         "action",
         help=f"the action to perform. Options are:{root_description}",

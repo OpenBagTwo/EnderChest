@@ -37,6 +37,23 @@ class TestHelp:
         assert f"enderchest {action} [-h]" in stdout
 
 
+class TestVersion:
+    @pytest.mark.parametrize("version_flag", ("-v", "--version"))
+    def test_version_displays_version(self, capsys, version_flag):
+        with pytest.raises(SystemExit):
+            cli.parse_args(["enderchest", version_flag])
+
+        assert enderchest.__version__ in capsys.readouterr().out
+
+    @pytest.mark.parametrize("version_flag", ("-v", "--version"))
+    def test_help_ignores_arguments_that_follow(self, capsys, version_flag):
+        with pytest.raises(SystemExit):
+            cli.parse_args(["enderchest", version_flag, "foo"])
+
+        assert "foo" not in capsys.readouterr().out
+        assert "foo" not in capsys.readouterr().err
+
+
 class TestCraft:
     def test_default_root_is_cwd(self, monkeypatch):
         monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
