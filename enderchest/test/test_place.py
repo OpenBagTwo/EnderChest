@@ -60,7 +60,6 @@ class TestLink:
     def test_link_instance_can_be_made_to_create_folders(
         self, tmp_path, aether_dot_zip, linker
     ):
-
         getattr(place, linker)(
             Path("backups") / "aether.zip",
             tmp_path / "makeme",
@@ -249,7 +248,6 @@ class TestPlaceEnderChest:
 
     @pytest.mark.parametrize("cleanup", (True, False))
     def test_server_only_assets_dont_go_in_instances(self, cleanup, local_root):
-
         (local_root / "EnderChest" / "server-only" / "banlist.txt@axolotl").write_text(
             "openbagtwo\n"
         )
@@ -260,7 +258,6 @@ class TestPlaceEnderChest:
 
     @pytest.mark.parametrize("cleanup", (True, False))
     def test_client_only_assets_dont_go_in_servers(self, cleanup, local_root):
-
         (local_root / "EnderChest" / "client-only" / "options.txt@axolotl").write_text(
             "render_distance=ALL THE CHUNKS\n"
         )

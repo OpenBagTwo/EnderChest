@@ -98,7 +98,6 @@ class TestCraft:
 
     @pytest.mark.parametrize("remote_flag", ("-r", "--remote"))
     def test_passing_in_a_single_remote(self, monkeypatch, remote_flag):
-
         remotes = []
 
         def wrong_method(*args, **kwargs):
