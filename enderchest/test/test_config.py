@@ -406,7 +406,6 @@ post_close=[
 
 class TestParseConfig:
     def test_parse_config_from_string(self):
-
         simple_config = """
 [local]
 root=~/minecraft

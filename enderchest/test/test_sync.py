@@ -153,7 +153,6 @@ rsync -az --delete \
 
 
 class TestScriptGeneration:
-
     # TODO: test that script generation expands ~ when generating local root
 
     @pytest.mark.parametrize("script", ("open.sh", "close.sh"))
@@ -449,7 +448,6 @@ class TestSyncing:
             )
 
     def test_close_backs_up_this_local(self, local_enderchest, remote):
-
         sync.link_to_other_chests(
             local_enderchest / "..", remote, local_alias="this", omit_scare_message=True
         )
@@ -479,7 +477,6 @@ class TestSyncing:
 
     @pytest.mark.parametrize("operation", ("open", "close"))
     def test_wrapper_commands(self, local_enderchest, remote, operation):
-
         remote_sync = RemoteSync(
             remote,
             pre_open=["echo 1"],
