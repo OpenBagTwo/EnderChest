@@ -1,10 +1,7 @@
 """Useful setup / teardown fixtures"""
-import importlib.resources
 from pathlib import Path
 
 import pytest
-
-from enderchest.craft import craft_ender_chest
 
 
 @pytest.fixture
@@ -65,21 +62,12 @@ def local_enderchest(local_root):
     """An existing EnderChest directory within the local root that's got some stuff
     in it (but critically no sync scripts)
     """
-    craft_ender_chest(local_root, craft_folders_only=True)
-
     chest_folder = local_root / "EnderChest"
 
     do_not_touch: dict[Path, str] = {
         chest_folder / ".git" / "log": "i committed some stuff\n",
-        (
-            chest_folder / "client-only" / "resourcepacks" / "stuff.zip@axolotl"
-        ): "dfgwhgsadfhsd",
-        (
-            chest_folder
-            / "local-only"
-            / "shaderpacks"
-            / "Seuss CitH.zip.txt@axolotl@bee@Chest Boat"
-        ): (
+        (chest_folder / "client-only" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
+        (chest_folder / "local-only" / "shaderpacks" / "Seuss CitH.zip.txt"): (
             "with settings at max"
             "\nits important to note"
             "\nthe lag is real bad"
@@ -87,15 +75,15 @@ def local_enderchest(local_root):
         ),
     }
 
-    (
-        chest_folder / "global" / "resourcepacks" / "neat_resource_pack@axolotl@bee"
-    ).symlink_to(local_root / "workspace" / "neat_resource_pack")
+    (chest_folder / "global" / "resourcepacks" / "neat_resource_pack").symlink_to(
+        local_root / "workspace" / "neat_resource_pack"
+    )
 
     symlinks: dict[Path, Path] = {  # map of links to targets
-        (chest_folder / "client-only" / "saves" / "olam@axolotl@bee@Chest Boat"): (
+        (chest_folder / "client-only" / "saves" / "olam"): (
             local_root / "worlds" / "olam"
         ),
-        (chest_folder / "global" / "mods" / "BME.jar@axolotl"): (
+        (chest_folder / "1.19.0" / "mods" / "BME.jar"): (
             local_root
             / "workspace"
             / "BestModEver"
@@ -103,7 +91,7 @@ def local_enderchest(local_root):
             / "libs"
             / "BME_1.19_alpha.jar"
         ),
-        (chest_folder / "global" / "mods" / "BME.jar@bee"): (
+        (chest_folder / "1.19.1" / "mods" / "BME.jar"): (
             local_root
             / "workspace"
             / "BestModEver"
@@ -111,7 +99,7 @@ def local_enderchest(local_root):
             / "libs"
             / "BME_1.19.1_beta.jar"
         ),
-        (chest_folder / "global" / "mods" / "BME.jar@Chest Boat"): (
+        (chest_folder / "1.19.2" / "mods" / "BME.jar"): (
             local_root
             / "workspace"
             / "BestModEver"
@@ -136,11 +124,3 @@ def local_enderchest(local_root):
 
     for path, contents in do_not_touch.items():
         assert path.read_text() == contents
-
-
-@pytest.fixture
-def example_config_path():
-    with importlib.resources.path(
-        "enderchest.test", "example_configs"
-    ) as example_configs:
-        yield example_configs / "example.cfg"
