@@ -3,33 +3,33 @@ repo_url: https://github.com/OpenBagTwo/EnderChest
 repo_name: EnderChest
 site_author: Gili "OpenBagTwo" Barlev
 docs_dir: docs
-edit_uri: ""
+edit_uri: ''
 theme:
   name: material
   favicon: img/favicon.png
   logo: img/enderchest.png
 nav:
-  - Home: index.md
-  - About: about.md
-  - API: reference/
+- Home: index.md
+- About: about.md
+- API: reference/
 plugins:
-  - search
-  - autorefs
-  - mike
-  - gen-files:
-      scripts:
-      - docs/gen_apidocs.py
-  - section-index
-  - literate-nav:
-      nav_file: SUMMARY.md
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            docstring_style: numpy
-            enable_inventory: true
+- search
+- autorefs
+- mike
+- gen-files:
+    scripts:
+    - docs/gen_apidocs.py
+- section-index
+- literate-nav:
+    nav_file: SUMMARY.md
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_style: numpy
+          enable_inventory: true
 watch:
-  - enderchest
+- enderchest
 extra:
   version:
     provider: mike

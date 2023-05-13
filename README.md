@@ -36,7 +36,7 @@ will need to sync these files.
 │   ├── client-only: put anything here that should only go in a client-side installation and not a server
 │   ├── local-only: anything that's only for THIS PARTICULAR INSTALLATION and not for sharing across different computers
 │   └── server-only: anything that's only needed on a server (properties file, banlist, etc.)
-│   
+│
 ├── instances: this is where EnderChest will assume your curseforge / Multi-MC-fork instances live
 ├── servers: this is where EnderChest will assume all your server installations live
 ```
@@ -155,7 +155,7 @@ is planned). Assuming that you're starting from zero, the recommended installati
    ```
 
 (`poetry` support is planned)
-   
+
 ## Usage
 
 EnderChest is a command-line utility. With your `enderchest` virtual environment activated, run the command
@@ -184,7 +184,7 @@ Once you've done that, navigate to the repo root and:
    (substitute `conda` if you so choose)
 2. Install the package in editable mode:
    ```bash
-   python -m pip install --user -e . 
+   python -m pip install --user -e .
    ```
 3. Set up pre-commit:
    ```bash
