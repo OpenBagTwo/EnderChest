@@ -171,7 +171,7 @@ def create_mmc_pack_file(
             }
         )
 
-    instance_folder.mkdir(parents=True)
+    instance_folder.mkdir(parents=True, exist_ok=True)
 
     with (instance_folder / "mmc_pack.json").open("w") as pack_file:
         json.dump(
@@ -278,12 +278,10 @@ def pre_populate_enderchest(
           - name : the folder name of the shulker
           - config : the contents of the config file
     """
-    enderchest_folder.mkdir(parents=True)
+    enderchest_folder.mkdir(parents=True, exist_ok=True)
     with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
         shutil.copy(enderchest_cfg, enderchest_folder)
     for shulker_name, shulker_config in shulkers:
-        (enderchest_folder / shulker_name).mkdir(parents=True)
-        with (enderchest_folder / shulker_config / "shulker.cfg").open(
-            "w"
-        ) as config_file:
+        (enderchest_folder / shulker_name).mkdir(parents=True, exist_ok=True)
+        with (enderchest_folder / "shulker.cfg").open("w") as config_file:
             config_file.write(shulker_config)
