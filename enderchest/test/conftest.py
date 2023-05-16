@@ -3,40 +3,49 @@ from pathlib import Path
 
 import pytest
 
+from .utils import populate_instances_folder, populate_official_minecraft_folder
+
 
 @pytest.fixture
-def local_root(tmp_path):
-    """A temporary local minecraft root folder (initially instantiated without an
-    EnderChest)"""
-    local_root = tmp_path / "minecraft"
-    (local_root / "instances").mkdir(parents=True)
-    (local_root / "servers").mkdir(parents=True)
-    (local_root / "worlds").mkdir(
+def file_system(tmp_path):
+    """Create a testing file system and throw a bunch of random files across
+    it.
+
+    This method serves as both a setup and a teardown, as nothing
+    in EnderChest's operations should be messing with these files, and
+    this fixture asserts as such"""
+
+    minecraft_root = tmp_path / "minecraft"
+    minecraft_root.mkdirs(parents=True)
+
+    populate_instances_folder(minecraft_root / "instances")
+
+    home = tmp_path / "home"
+    home.mkdirs(parents=True)
+
+    populate_official_minecraft_folder(home / ".minecraft")
+
+    (minecraft_root / "worlds").mkdir(
         parents=True
     )  # makes sense to store the actual saves outside the EnderChest folder
-    (local_root / "workspace").mkdir(
+    (minecraft_root / "workspace").mkdir(
         parents=True
     )  # generic other stuff that exists in the minecraft root
 
+    # files that EnderChest should not touch
+    # (map) of file paths to their contents
     do_not_touch: dict[Path, str] = {
-        local_root / "README.md": "#Hello\n\nI'm your friendly neighborhood README!\n",
+        minecraft_root
+        / "README.md": "#Hello\n\nI'm your friendly neighborhood README!\n",
         (
-            local_root / "workspace" / "cool_project.py"
+            minecraft_root / "workspace" / "cool_project.py"
         ): 'print("Gosh, I hope no one deletes or overwrites me")\n',
+        minecraft_root / "worlds" / "olam" / "level.dat": "level dis\n",
         (
-            local_root
-            / "instances"
-            / "worlds_best_modpack"
-            / ".minecraft"
-            / "mods"
-            / "worldsbestmod.jar"
-        ): "beepboop",
-        local_root / "worlds" / "olam" / "level.dat": "level dis\n",
-        (
-            local_root / "workspace" / "neat_resource_pack" / "pack.mcmeta"
+            minecraft_root / "workspace" / "neat_resource_pack" / "pack.mcmeta"
         ): '{"so": "meta"}\n',
     }
-    mod_builds_folder = local_root / "workspace" / "BestModEver" / "build" / "libs"
+    mod_builds_folder = minecraft_root / "workspace" / "BestModEver" / "build" / "libs"
 
     do_not_touch.update(
         {
@@ -46,66 +55,18 @@ def local_root(tmp_path):
         }
     )
 
-    for path, contents in do_not_touch.items():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(contents)
+    chest_folder = minecraft_root / "EnderChest"
 
-    yield local_root
-
-    # check on teardown that all those "do_not_touch" files are untouched
-    for path, contents in do_not_touch.items():
-        assert path.read_text() == contents
-
-
-@pytest.fixture
-def local_enderchest(local_root):
-    """An existing EnderChest directory within the local root that's got some stuff
-    in it (but critically no sync scripts)
-    """
-    chest_folder = local_root / "EnderChest"
-
-    do_not_touch: dict[Path, str] = {
-        chest_folder / ".git" / "log": "i committed some stuff\n",
-        (chest_folder / "client-only" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
-        (chest_folder / "local-only" / "shaderpacks" / "Seuss CitH.zip.txt"): (
-            "with settings at max"
-            "\nits important to note"
-            "\nthe lag is real bad"
-            "\nbut just look at that goat!"
-        ),
-    }
-
-    (chest_folder / "global" / "resourcepacks" / "neat_resource_pack").symlink_to(
-        local_root / "workspace" / "neat_resource_pack"
+    do_not_touch.update(
+        {
+            chest_folder / ".git" / "log": "i committed some stuff\n",
+        }
     )
 
     symlinks: dict[Path, Path] = {  # map of links to targets
+        minecraft_root / "official_launcher": home / ".minecraft",
         (chest_folder / "client-only" / "saves" / "olam"): (
-            local_root / "worlds" / "olam"
-        ),
-        (chest_folder / "1.19.0" / "mods" / "BME.jar"): (
-            local_root
-            / "workspace"
-            / "BestModEver"
-            / "build"
-            / "libs"
-            / "BME_1.19_alpha.jar"
-        ),
-        (chest_folder / "1.19.1" / "mods" / "BME.jar"): (
-            local_root
-            / "workspace"
-            / "BestModEver"
-            / "build"
-            / "libs"
-            / "BME_1.19.1_beta.jar"
-        ),
-        (chest_folder / "1.19.2" / "mods" / "BME.jar"): (
-            local_root
-            / "workspace"
-            / "BestModEver"
-            / "build"
-            / "libs"
-            / "BME_1.19.2_nightly.jar"
+            minecraft_root / "worlds" / "olam"
         ),
     }
 
@@ -117,10 +78,31 @@ def local_enderchest(local_root):
         link_path.parent.mkdir(parents=True, exist_ok=True)
         link_path.symlink_to(target)
 
-    yield chest_folder
+    yield home, minecraft_root
 
+    # check on teardown that all the symlinks still point to the right places
     for link_path, target in symlinks.items():
         assert link_path.resolve() == target.resolve()
 
+    # check on teardown that all those "do_not_touch" files are untouched
     for path, contents in do_not_touch.items():
         assert path.read_text() == contents
+
+
+@pytest.fixture
+def minecraft_root(file_system):
+    """Direct fixture pointing to the parent of the EnderChest folder"""
+    yield file_system[1]
+
+
+@pytest.fixture
+def home(file_system, monkeypatch):
+    """Direct fixture poinint to the user's "home" folder (with monkeypatching
+    used to make it home)
+    """
+    home = file_system[0]
+
+    monkeypatch.setenv("HOME", str(home))  # posix
+    monkeypatch.setenv("USERPROFILE", str(home))  # windows
+
+    yield home

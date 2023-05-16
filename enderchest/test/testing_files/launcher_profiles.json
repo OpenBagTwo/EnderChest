@@ -1,0 +1,23 @@
+{
+    "profiles": {
+        "dontreadme_1": {
+            "created": "dontreadme",
+            "icon": "dontreadme",
+            "lastUsed": "dontreadme",
+            "lastVersionId": "latest-snapshot",
+            "name": "dontreadme",
+            "type": "dontreadme"
+        },
+        "dontreadme_2": {
+            "lastVersionId": "latest-release"
+        },
+        "dontreadme_3": {
+            "lastVersionId": "23w13a_or_b"
+        },
+        "dontreadme_4": {
+            "lastVersionId": "1.16.5-forge-36.2.39"
+        }
+    },
+    "settings": "dontreadme",
+    "version": 3
+}

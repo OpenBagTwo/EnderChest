@@ -1,0 +1,9 @@
+isini:false
+isyaml:nope
+maxFps:60
+graphicsMode:1
+autoJump:hellno
+renderDistance:1000
+simulationDistance:2
+resourcePacks:["vanilla","file/Phoenix SC chan v1.1.1.zip"]
+key_key.drop:key.keyboard.down
