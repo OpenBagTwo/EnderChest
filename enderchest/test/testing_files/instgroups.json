@@ -1,0 +1,16 @@
+{
+    "formatVersion": "1",
+    "groups": {
+        "Vanilla Plus": {
+            "hidden": "dontreadme",
+            "instances": [
+                "axolotl"
+            ]
+        },
+        "Modded": {
+            "instances": [
+                "bee"
+            ]
+        }
+    }
+}
