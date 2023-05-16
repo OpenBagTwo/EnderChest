@@ -16,12 +16,12 @@ def file_system(tmp_path):
     this fixture asserts as such"""
 
     minecraft_root = tmp_path / "minecraft"
-    minecraft_root.mkdirs(parents=True)
+    minecraft_root.mkdir(parents=True)
 
     populate_instances_folder(minecraft_root / "instances")
 
     home = tmp_path / "home"
-    home.mkdirs(parents=True)
+    home.mkdir(parents=True)
 
     populate_official_minecraft_folder(home / ".minecraft")
 
