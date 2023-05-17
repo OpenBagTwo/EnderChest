@@ -1,47 +1,55 @@
-import os
 from pathlib import Path
-from typing import NamedTuple
 
 from . import _version
 
 __version__ = _version.get_versions()["version"]
 
 
-class Contexts(NamedTuple):
-    universal: Path
-    client_only: Path
-    server_only: Path
-    local_only: Path
-    other_locals: Path
+from .config import InstanceSpec, ShulkerBox, parse_instance_metadata
 
 
-def contexts(root: str | os.PathLike) -> Contexts:
-    """Centrally define context directories based on the root folder
+def load_instance_metadata(minecraft_root: Path) -> dict[str, InstanceSpec]:
+    """Load the instance metadata from the enderchest.cfg file in the EnderChest
+    folder.
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
 
     Returns
     -------
-    Tuple of Paths
-        The contexts, in order,
-        - global : for syncing across all instances and servers
-        - client-only : for syncing across all client instances
-        - server-only : for syncing across all server instances
-        - local-only : for local use only (don't sync)
-        - other-locals : "local-only" folders from other installations
-                         (for distributed backups)
+    dict of str to InstanceSpec
+        The map of instance names to their metadata
 
-    Notes
-    -----
-    - Because "global" is a restricted keyword in Python, the namedtuple key for
-      this context is "universal"
-    - For all other contexts, the namedtuple key replaces a dash (not a valid token
-      character) with an underscore   `
+    Raises
+    ------
+    FileNotFoundError
+        If no EnderChest folder exists in the given minecraft root or if no
+        enderchest.cfg file exists within that EnderChest folder
     """
-    ender_chest = Path(root).expanduser().resolve() / "EnderChest"
+    return parse_instance_metadata(minecraft_root / "EnderChest" / "enderchest.cfg")
 
-    return Contexts(
-        ender_chest / "global",
-        ender_chest / "client-only",
-        ender_chest / "server-only",
-        ender_chest / "local-only",
-        ender_chest / "other-locals",
-    )
+
+def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
+    """Load all shulker boxes in the EnderChest folder and return them in the
+    order in which they should be linked.
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+
+    Returns
+    -------
+    list of ShulkerBoxes
+        The shulker boxes found in the EnderChest folder, ordered in terms of
+        the sequence in which they should be linked
+    """
+    shulker_boxes: list[ShulkerBox] = []
+    for shulker_config in (minecraft_root / "EnderChest").glob("*/shulkerbox.cfg"):
+        shulker_boxes.append(ShulkerBox.from_cfg(shulker_config))
+
+    return sorted(shulker_boxes)

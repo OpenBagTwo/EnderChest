@@ -1,10 +1,10 @@
 """Testing utilities"""
-import configparser
 import json
 import shutil
 from importlib.resources import as_file
 from pathlib import Path
-from typing import Mapping, NamedTuple
+
+from enderchest.config import InstanceSpec, parse_instance_metadata
 
 from . import testing_files
 
@@ -41,84 +41,9 @@ MMC_FOLDERS: tuple[str, ...] = (
 )
 
 
-# TODO: the next few methods / classes are almost certainly going in enderchest proper
-class InstanceSpec(NamedTuple):
-    """Specification of a Minecraft instance
-
-    Parameters
-    ----------
-    root : Path
-        The path to its ".minecraft" folder
-    minecraft_versions : list-like of str
-        The minecraft versions of this instance. This is typically a 1-tuple,
-        but some loaders (such as the official one) will just comingle all
-        your assets together across all profiles
-    modloader : str or None
-        The (display) name of the modloader, or None if this is a vanilla
-        instance
-    tags : list-like of str
-        The tags assigned to this instance
-    """
-
-    root: Path
-    minecraft_versions: tuple[str, ...]
-    modloader: str | None
-    tags: tuple[str, ...]
-
-    @classmethod
-    def from_cfg(cls, section: Mapping[str, str]) -> "InstanceSpec":
-        """Parse an instance spec as read in from an enderchest.cfg file
-
-        Parameters
-        ----------
-        section : dict-like of str to str
-            The section in the enderchest.cfg file parsed from an
-            enderchest.cfg file by a ConfigParser
-
-        Returns
-        -------
-        InstanceSpec
-            The resulting InstanceSpec
-
-        Raises
-        ------
-        KeyError
-            If a required key is absent
-        ValueError
-            If a required entry cannot be parsed
-        """
-        return cls(
-            Path(section["root"]),
-            tuple(section["minecraft_version"].strip().split()),
-            section.get("modloader", None),
-            tuple(section.get("tags", "").strip().split()),
-        )
-
-
-def get_instance_metadata(enderchest_cfg: Path) -> dict[str, InstanceSpec]:
-    """Parse an enderchest.cfg file to get the relevant instance metadata.
-
-    Parameters
-    ----------
-    enderchest_cfg : Path
-        The enderchest config file to read
-
-    Returns
-    -------
-    dict of str to InstanceSpec
-        The map of instance names to their metadata
-    """
-    instances = configparser.ConfigParser()
-    instances.read(enderchest_cfg)
-    return {
-        instance_name: InstanceSpec.from_cfg(instances[instance_name])
-        for instance_name in instances.sections()
-    }
-
-
 with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
     TESTING_INSTANCES: tuple[tuple[str, InstanceSpec], ...] = tuple(
-        get_instance_metadata(enderchest_cfg).items()
+        parse_instance_metadata(enderchest_cfg).items()
     )
 
 
@@ -283,5 +208,29 @@ def pre_populate_enderchest(
         shutil.copy(enderchest_cfg, enderchest_folder)
     for shulker_name, shulker_config in shulkers:
         (enderchest_folder / shulker_name).mkdir(parents=True, exist_ok=True)
-        with (enderchest_folder / "shulker.cfg").open("w") as config_file:
+        with (enderchest_folder / shulker_name / "shulkerbox.cfg").open(
+            "w"
+        ) as config_file:
             config_file.write(shulker_config)
+
+
+def resolve(path: Path, minecraft_root: Path) -> Path:
+    """With all of this file system mocking, path resolution can be a pain
+    in the toucans. This method means we should just have to solve for it
+    once.
+
+    Parameters
+    ----------
+    path : Path
+        The path you're wanting to check
+    minecraft_root : Path
+        The minecraft root (from the fixture)
+
+    Returns
+    -------
+    Path
+        The absolute path to the thing you're wanting to check
+    """
+    if path.expanduser().is_absolute():
+        return path.expanduser()
+    return (minecraft_root / path).absolute()
