@@ -319,6 +319,10 @@ class TestShulkerInstanceMatching:
 WILD_UPDATE_SHULKER = (
     "1.19",
     """; 1.19/shulkerbox.cfg
+[properties]
+priority = 1
+notes = Writing it all down
+
 [minecraft]
 >=1.19.0,<1.20
 
@@ -330,6 +334,11 @@ mods
 VANILLA_SHULKER = (
     "vanilla",
     """; vanilla/shulkerbox.cfg
+
+[properties]
+priority = 2
+last_modified = 1970-1-1 00:00:00.000000
+
 [minecraft]
 *
 
@@ -340,7 +349,10 @@ vanilla
 
 OPTIFINE_SHULKER = (
     "optifine",
-    """; optifile/shulkerbox.cfg
+    """; optifine/shulkerbox.cfg
+[properties]
+priority = 3
+
 [minecraft]
 *
 
