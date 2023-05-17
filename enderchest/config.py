@@ -1,11 +1,13 @@
 """Functionality around EnderChest and Shulker Box configuration / specification"""
+import datetime as dt
 import fnmatch
-import warnings
 from configparser import ConfigParser, SectionProxy
 from pathlib import Path
 from typing import NamedTuple
 
 import semantic_version as semver
+
+from . import __version__
 
 
 # TODO: the next few methods / classes are almost certainly going in enderchest proper
@@ -133,7 +135,7 @@ class ShulkerBox(NamedTuple):
         ShulkerBox
             The resulting ShulkerBox
         """
-        priority = 0  # TODO: figure out how priority is stored in the config
+        priority = 0
         root = config_file.parent
         name = root.name
         parser = ConfigParser(allow_no_value=True)
@@ -143,12 +145,46 @@ class ShulkerBox(NamedTuple):
         match_criteria: dict[str, tuple[str, ...]] = {}
 
         for section in parser.sections():
-            if section == "link-folders":
+            if section == "properties":
+                # most of this section gets ignored
+                priority = parser[section].getint("priority", 0)
+            elif section == "link-folders":
                 link_folders = tuple(parser[section].keys())
             else:
                 match_criteria[section] = tuple(parser[section].keys())
 
-        return cls(0, name, root, tuple(match_criteria.items()), link_folders)
+        return cls(priority, name, root, tuple(match_criteria.items()), link_folders)
+
+    def write_to_cfg(self, config_file: Path) -> None:
+        """Write this shulker's configuration to file
+
+        Parameters
+        ----------
+        config_file : Path
+            The path to the config file
+
+        Notes
+        -----
+        The "root" attribute is ignored for this method
+        """
+        config = ConfigParser(allow_no_value=True)
+        config.add_section("properties")
+        config.set("properties", "priority", str(self.priority))
+        config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
+        config.set("properties", "generated_by_enderchest_version", __version__)
+
+        for condition, values in self.match_criteria:
+            config.add_section(condition)
+            for value in values:
+                config.set(condition, value)
+
+        config.add_section("link-folders")
+        for folder in self.link_folders:
+            config.set("link-folders", folder)
+
+        with open(config_file, "w") as f:
+            f.write(f"; {self.name}/shulker_box.cfg\n")
+            config.write(f)
 
     def matches(self, instance: InstanceSpec) -> bool:
         """Determine whether the shulker box matches the given instance
