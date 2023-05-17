@@ -1,4 +1,5 @@
 """Functionality around EnderChest and Shulker Box configuration / specification"""
+import fnmatch
 from configparser import ConfigParser, SectionProxy
 from pathlib import Path
 from typing import NamedTuple
@@ -161,12 +162,68 @@ class ShulkerBox(NamedTuple):
             otherwise.
         """
         for condition, values in self.match_criteria:
-            if "*" in values:  # trivially met
-                continue
             match condition:
+                case "instances" | "instance":
+                    for value in values:
+                        if fnmatch.fnmatch(instance.name, value):
+                            break
+                    else:
+                        return False
+                case "tags" | "tag":
+                    for value in values:
+                        if fnmatch.filter(instance.tags, value):
+                            break
+                    else:
+                        return False
+                case "modloader" | "modloaders" | "loader" | "loaders":
+                    normalized: list[str] = sum(
+                        [_normalize_modloader(value) for value in values], []
+                    )
+                    for value in normalized:
+                        if fnmatch.filter(
+                            _normalize_modloader(instance.modloader), value
+                        ):
+                            break
+                    else:
+                        return False
                 case _:
                     raise NotImplementedError(
                         f"Don't know how to apply match condition {condition}."
                     )
 
         return True
+
+
+def _normalize_modloader(loader: str | None) -> list[str]:
+    """Implement common modloader aliases
+
+    Parameters
+    ----------
+    loader : str
+        User-provided modloader name
+
+    Returns
+    -------
+    list of str
+        The modloader values that should be checked against to match the user's
+        intent
+    """
+    if loader is None:  # vanilla
+        return [""]
+    match loader.lower().replace(" ", "").replace("-", "").replace("_", "").replace(
+        "/", ""
+    ):
+        case "fabric" | "fabricloader":
+            return ["Fabric Loader"]
+        case "quilt" | "quiltloader":
+            return [
+                "Quilt Loader",
+            ]
+        case "fabricquilt" | "quiltfabric" | "fabriclike" | "fabriccompatible":
+            return ["Fabric Loader", "Quilt Loader"]
+        case "forge" | "forgeloader" | "minecraftforge":
+            return [
+                "Forge",
+            ]
+        case _:
+            return [loader]
