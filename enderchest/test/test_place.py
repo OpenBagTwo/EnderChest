@@ -94,6 +94,19 @@ class TestSingleShulkerPlace:
 
         assert broken_link not in broken_link.parent.glob("*")
 
+    @utils.parametrize_over_instances("axolotl")
+    def test_place_can_be_told_to_leave_broken_links_alone(
+        self, minecraft_root, instance
+    ):
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+        broken_link = instance_folder / "shaderpacks" / "Seuss CitH.zip.txt"
+        broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
+        assert broken_link in broken_link.parent.glob("*")
+
+        link.place_enderchest(minecraft_root, cleanup=False)
+
+        assert broken_link in broken_link.parent.glob("*")
+
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_will_not_overwrite_a_non_empty_folder(
         self, minecraft_root, instance
