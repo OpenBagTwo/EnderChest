@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from .. import place
+from enderchest import link
+
 from . import utils
 
 GLOBAL_SHULKER = (
@@ -26,7 +27,7 @@ class TestGlobalPlace:
     go into every instance"""
 
     @pytest.fixture(autouse=True)
-    def setup_teardown(self, minecraft_root):
+    def setup_teardown(self, minecraft_root, home):
         """Setup / teardown for this test class"""
         chest_folder = minecraft_root / "EnderChest"
         utils.pre_populate_enderchest(chest_folder, GLOBAL_SHULKER)
@@ -57,55 +58,62 @@ class TestGlobalPlace:
     def test_place_is_willing_to_replace_empty_folders_by_default(
         self, minecraft_root, instance_name, instance_spec
     ):
-        place.place_enderchest(minecraft_root)
+        link.place_enderchest(minecraft_root)
+        print(minecraft_root)
+        instance_folder = utils.resolve(instance_spec.root, minecraft_root)
+        print(instance_folder)
 
-        assert (
-            instance_spec.root / "logs"
-        ).resolve() == minecraft_root / "EnderChest" / "global" / "logs"
+        assert (instance_folder / "logs").resolve() == (
+            minecraft_root / "EnderChest" / "global" / "logs"
+        ).resolve()
 
         # also, just to be explicit
-        assert (instance_spec.root / "logs" / "bumpona.log").exists()
+        assert (instance_folder / "logs" / "bumpona.log").exists()
 
     @pytest.mark.parametrize(
         "instance_name, instance_spec", utils.TESTING_INSTANCES[:2]
     )
-    def place_is_able_to_place_individual_files(
+    def test_place_is_able_to_place_individual_files(
         self, minecraft_root, instance_name, instance_spec
     ):
-        place.place_enderchest(minecraft_root)
+        link.place_enderchest(minecraft_root)
 
-        assert not (instance_spec.root / "resourcepacks").is_symlink()
+        instance_folder = utils.resolve(instance_spec.root, minecraft_root)
 
-        assert (instance_spec.root / "resourcepacks" / "stuff.zip").resolve() == (
+        assert not (instance_folder / "resourcepacks").is_symlink()
+
+        assert (instance_folder / "resourcepacks" / "stuff.zip").resolve() == (
             minecraft_root / "EnderChest" / "global" / "resourcepacks" / "stuff.zip"
         )
 
     @pytest.mark.parametrize(
-        "instance_name, instance_spec", utils.TESTING_INSTANCES[:2]
+        "instance_name, instance_spec", utils.TESTING_INSTANCES[1:3]
     )
-    def place_cleans_up_broken_symlinks_by_default(
+    def test_place_cleans_up_broken_symlinks_by_default(
         self, minecraft_root, instance_name, instance_spec
     ):
-        broken_link = instance_spec.root / "shaderpacks" / "Seuss CitH.zip.txt"
+        instance_folder = utils.resolve(instance_spec.root, minecraft_root)
+        broken_link = instance_folder / "shaderpacks" / "Seuss CitH.zip.txt"
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
 
-        place.place_enderchest(minecraft_root)
+        link.place_enderchest(minecraft_root)
 
         assert not broken_link.exists()
 
     @pytest.mark.parametrize(
         "instance_name, instance_spec", utils.TESTING_INSTANCES[:2]
     )
-    def place_will_not_overwrite_a_non_empty_folder(
+    def test_place_will_not_overwrite_a_non_empty_folder(
         self, minecraft_root, instance_name, instance_spec
     ):
-        existing_file = instance_spec.root / "screenshots" / "thumbs.db"
+        instance_folder = utils.resolve(instance_spec.root, minecraft_root)
+        existing_file = instance_folder / "screenshots" / "thumbs.db"
         existing_file.write_text("opposable")
 
         with pytest.raises(
-            RuntimeError, match=rf"{instance_name}(.*)screenshots(.*)is not empty"
+            RuntimeError, match=rf"{instance_name}((.|\n)*)screenshots((.|\n)*)empty"
         ):
-            place.place_enderchest(minecraft_root)
+            link.place_enderchest(minecraft_root)
 
         # make sure the file is still there afterwards
         assert existing_file.exists()
@@ -115,16 +123,17 @@ class TestGlobalPlace:
     @pytest.mark.parametrize(
         "instance_name, instance_spec", utils.TESTING_INSTANCES[:2]
     )
-    def place_will_not_overwrite_a_file(
+    def test_place_will_not_overwrite_a_file(
         self, minecraft_root, instance_name, instance_spec
     ):
-        existing_file = instance_spec.root / "resourcepacks" / "stuff.zip"
+        instance_folder = utils.resolve(instance_spec.root, minecraft_root)
+        existing_file = instance_folder / "resourcepacks" / "stuff.zip"
         existing_file.write_text("other_stuff")
 
         with pytest.raises(
-            RuntimeError, match=rf"{instance_name}(.*)stuff.zip(.*)exists"
+            RuntimeError, match=rf"{instance_name}((.|\n)*)stuff.zip((.|\n)*)exists"
         ):
-            place.place_enderchest(minecraft_root)
+            link.place_enderchest(minecraft_root)
 
         # make sure the file is still there afterwards
         assert existing_file.exists()
@@ -134,14 +143,15 @@ class TestGlobalPlace:
     @pytest.mark.parametrize(
         "instance_name, instance_spec", utils.TESTING_INSTANCES[:2]
     )
-    def place_will_overwrite_an_existing_symlink(
+    def test_place_will_overwrite_an_existing_symlink(
         self, minecraft_root, instance_name, instance_spec
     ):
+        instance_folder = utils.resolve(instance_spec.root, minecraft_root)
         (minecraft_root / "workspace" / "other_stuff.zip").write_text("working stuff")
-        existing_symlink = instance_spec.root / "resourcepacks" / "stuff.zip"
+        existing_symlink = instance_folder / "resourcepacks" / "stuff.zip"
         existing_symlink.symlink_to(minecraft_root / "workspace" / "other_stuff.zip")
 
-        place.place_enderchest(minecraft_root)
+        link.place_enderchest(minecraft_root)
 
         assert (
             existing_symlink.resolve()
