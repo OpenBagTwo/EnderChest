@@ -18,4 +18,8 @@ setup(
     include_package_data=True,
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
+    install_requires=[
+        "semantic-version",
+    ],
+    extras_require={"test": ["pytest>=7"]},
 )
