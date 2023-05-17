@@ -88,6 +88,7 @@ class TestSingleShulkerPlace:
         instance_folder = utils.resolve(instance.root, minecraft_root)
         broken_link = instance_folder / "shaderpacks" / "Seuss CitH.zip.txt"
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
+        assert broken_link.exists()
 
         link.place_enderchest(minecraft_root)
 
