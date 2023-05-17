@@ -1,8 +1,11 @@
 """Functionality around EnderChest and Shulker Box configuration / specification"""
 import fnmatch
+import warnings
 from configparser import ConfigParser, SectionProxy
 from pathlib import Path
 from typing import NamedTuple
+
+import semantic_version as semver
 
 
 # TODO: the next few methods / classes are almost certainly going in enderchest proper
@@ -186,6 +189,17 @@ class ShulkerBox(NamedTuple):
                             break
                     else:
                         return False
+                case "minecraft" | "version" | "minecraft_version" | "versions" | "minecraft_versions":
+                    for value in values:
+                        if any(
+                            (
+                                _matches_version(value, version)
+                                for version in instance.minecraft_versions
+                            )
+                        ):
+                            break
+                    else:
+                        return False
                 case _:
                     raise NotImplementedError(
                         f"Don't know how to apply match condition {condition}."
@@ -227,3 +241,32 @@ def _normalize_modloader(loader: str | None) -> list[str]:
             ]
         case _:
             return [loader]
+
+
+def _matches_version(version_spec: str, version_string: str) -> bool:
+    """Determine whether a version spec matches a version string, taking into
+    account that neither users nor Mojang rigidly follow semver (or at least
+    PEP440)
+
+    Parameters
+    ----------
+    version_spec : str
+        A version specification provided by a user
+    version_string : str
+        A version string, likely parsed from an instance's configuration
+
+    Returns
+    -------
+    bool
+        True if the spec matches the version, False otherwise
+
+    Notes
+    -----
+    This method *does not* match snapshots to their corresponding version
+    range--for that you're just going to have to be explicit.
+    """
+    try:
+        return semver.SimpleSpec(version_spec).match(semver.Version(version_string))
+    except ValueError:
+        # fall back to simple fnmatching
+        return fnmatch.fnmatch(version_spec, version_string)

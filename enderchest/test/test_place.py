@@ -255,6 +255,38 @@ class TestShulkerInstanceMatching:
 
         assert self.matchall(loader_matching_shulker) == ["Chest Boat"]
 
+    def test_explicit_version_matching(self):
+        minecraft_specific_shulker = ShulkerBox(
+            0,
+            "votey",
+            Path("ignoreme"),
+            (("minecraft", ("23w13a_or_b",)),),
+            (),
+        )
+
+        assert self.matchall(minecraft_specific_shulker) == ["official"]
+
+    @pytest.mark.parametrize(
+        "version_spec",
+        (
+            ("1.19.0", "1.19.1", "1.19.2", "1.19.3", "1.19.4"),
+            ("1.19",),
+            ("1.19.*",),
+            (">=1.19,<1.20",),
+        ),
+        ids=("explicit", "minor-version", "wildcard", "bounding"),
+    )
+    def test_version_bounding(self, version_spec):
+        minecraft_specific_shulker = ShulkerBox(
+            0,
+            "votey",
+            Path("ignoreme"),
+            (("minecraft", version_spec),),
+            (),
+        )
+
+        assert self.matchall(minecraft_specific_shulker) == ["official", "Chest Boat"]
+
     def test_instance_must_match_all_conditions(self):
         multi_condition_shulker = ShulkerBox(
             0,
