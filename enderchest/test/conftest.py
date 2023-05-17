@@ -76,7 +76,7 @@ def file_system(tmp_path):
 
     for link_path, target in symlinks.items():
         link_path.parent.mkdir(parents=True, exist_ok=True)
-        link_path.symlink_to(target)
+        link_path.symlink_to(target, target_is_directory=target.is_dir())
 
     yield home, minecraft_root
 
