@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Sequence
 
 from . import _version
 
@@ -8,7 +9,7 @@ __version__ = _version.get_versions()["version"]
 from .config import InstanceSpec, ShulkerBox, parse_instance_metadata
 
 
-def load_instance_metadata(minecraft_root: Path) -> dict[str, InstanceSpec]:
+def load_instance_metadata(minecraft_root: Path) -> Sequence[InstanceSpec]:
     """Load the instance metadata from the enderchest.cfg file in the EnderChest
     folder.
 
@@ -20,8 +21,8 @@ def load_instance_metadata(minecraft_root: Path) -> dict[str, InstanceSpec]:
 
     Returns
     -------
-    dict of str to InstanceSpec
-        The map of instance names to their metadata
+    list-like of InstanceSpec
+        The instance metadata loaded from the enderchest config
 
     Raises
     ------

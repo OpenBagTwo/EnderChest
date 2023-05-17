@@ -4,6 +4,8 @@ import shutil
 from importlib.resources import as_file
 from pathlib import Path
 
+import pytest
+
 from enderchest.config import InstanceSpec, parse_instance_metadata
 
 from . import testing_files
@@ -42,8 +44,8 @@ MMC_FOLDERS: tuple[str, ...] = (
 
 
 with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
-    TESTING_INSTANCES: tuple[tuple[str, InstanceSpec], ...] = tuple(
-        parse_instance_metadata(enderchest_cfg).items()
+    TESTING_INSTANCES: tuple[InstanceSpec, ...] = tuple(
+        parse_instance_metadata(enderchest_cfg)
     )
 
 
@@ -174,12 +176,12 @@ def populate_instances_folder(instances_folder: Path) -> None:
         The path of the instances folder
     """
     instances_folder.mkdir(parents=True)
-    for instance_name, instance_spec in TESTING_INSTANCES:
-        if instance_name == "official":
+    for instance_spec in TESTING_INSTANCES:
+        if instance_spec.name == "official":
             continue
 
         populate_mmc_instance_folder(
-            instances_folder / instance_name,
+            instances_folder / instance_spec.name,
             instance_spec.minecraft_versions[0],
             instance_spec.modloader,
         )
@@ -234,3 +236,27 @@ def resolve(path: Path, minecraft_root: Path) -> Path:
     if path.expanduser().is_absolute():
         return path.expanduser()
     return (minecraft_root / path).absolute()
+
+
+def parametrize_over_instances(*instance_names: str):
+    """Apply a pytest.mark.parametrize decorator to a test to apply the test
+    to each of the specified instances (and apply clear and simple test IDs).
+
+    Parameters
+    ----------
+    *instance_names : str
+        The instances to test. If no instance names are provided, then all
+        instances will be included
+
+    Notes
+    -----
+      - The parametrized tests will be ordered as provided
+      - The name of the parametrized argument provided to the test will be "instance"
+    """
+    instance_lookup = {instance.name: instance for instance in TESTING_INSTANCES}
+    if len(instance_names) == 0:
+        instance_names = tuple(instance_lookup.keys())
+
+    instances = [instance_lookup[name] for name in instance_names]
+
+    return pytest.mark.parametrize("instance", instances, ids=instance_names)

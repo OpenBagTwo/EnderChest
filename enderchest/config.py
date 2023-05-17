@@ -1,7 +1,7 @@
 """Functionality around EnderChest and Shulker Box configuration / specification"""
-from configparser import ConfigParser
+from configparser import ConfigParser, SectionProxy
 from pathlib import Path
-from typing import Mapping, NamedTuple
+from typing import NamedTuple
 
 
 # TODO: the next few methods / classes are almost certainly going in enderchest proper
@@ -10,6 +10,8 @@ class InstanceSpec(NamedTuple):
 
     Parameters
     ----------
+    name : str
+        The "display name" for the instance
     root : Path
         The path to its ".minecraft" folder
     minecraft_versions : list-like of str
@@ -23,13 +25,14 @@ class InstanceSpec(NamedTuple):
         The tags assigned to this instance
     """
 
+    name: str
     root: Path
     minecraft_versions: tuple[str, ...]
     modloader: str | None
     tags: tuple[str, ...]
 
     @classmethod
-    def from_cfg(cls, section: Mapping[str, str]) -> "InstanceSpec":
+    def from_cfg(cls, section: SectionProxy) -> "InstanceSpec":
         """Parse an instance spec as read in from an enderchest.cfg file
 
         Parameters
@@ -51,6 +54,7 @@ class InstanceSpec(NamedTuple):
             If a required entry cannot be parsed
         """
         return cls(
+            section.name,
             Path(section["root"]),
             tuple(section["minecraft_version"].strip().split()),
             section.get("modloader", None),
@@ -58,7 +62,7 @@ class InstanceSpec(NamedTuple):
         )
 
 
-def parse_instance_metadata(enderchest_cfg: Path) -> dict[str, InstanceSpec]:
+def parse_instance_metadata(enderchest_cfg: Path) -> list[InstanceSpec]:
     """Parse an enderchest.cfg file to get the relevant instance metadata.
 
     Parameters
@@ -68,15 +72,16 @@ def parse_instance_metadata(enderchest_cfg: Path) -> dict[str, InstanceSpec]:
 
     Returns
     -------
-    dict of str to InstanceSpec
-        The map of instance names to their metadata
+    list of InstanceSpec
+        The instances parsed from the metadata file, in the order listed in
+        the metadata file
     """
     instances = ConfigParser()
     instances.read(enderchest_cfg)
-    return {
-        instance_name: InstanceSpec.from_cfg(instances[instance_name])
+    return [
+        InstanceSpec.from_cfg(instances[instance_name])
         for instance_name in instances.sections()
-    }
+    ]
 
 
 class ShulkerBox(NamedTuple):
