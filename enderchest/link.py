@@ -81,6 +81,12 @@ def place_enderchest(
                     # TODO: optiuon to record failure but keep going
                     raise RuntimeError(failure_message) from oh_no
 
+            if cleanup:
+                # we clean up as we go, just in case of a failure
+                for file in instance_root.rglob("*"):
+                    if not file.exists():
+                        file.unlink()
+
 
 def link_resource(
     resource_path: str | Path, shulker_root: Path, instance_root: Path
