@@ -37,14 +37,14 @@ def place_enderchest(
     shulker_boxes = load_shulker_boxes(minecraft_root)
 
     for shulker_box in shulker_boxes:
-        for instance_name, instance_spec in instances.items():
-            if not shulker_box.matches(instance_spec):
+        for instance in instances:
+            if not shulker_box.matches(instance):
                 continue
 
-            if instance_spec.root.expanduser().is_absolute():
-                instance_root = instance_spec.root
+            if instance.root.expanduser().is_absolute():
+                instance_root = instance.root
             else:
-                instance_root = minecraft_root / instance_spec.root
+                instance_root = minecraft_root / instance.root
 
             resources = set(shulker_box.root.expanduser().absolute().rglob("*"))
             for link_folder in shulker_box.link_folders:
@@ -55,7 +55,7 @@ def place_enderchest(
                 except (OSError, NotADirectoryError) as oh_no:
                     failure_message = (
                         f"Error linking shulker box {shulker_box.name}"
-                        f" to instance {instance_name}:"
+                        f" to instance {instance.name}:"
                         f"\n{link_folder} is a non-empty directory."
                     )
                     # TODO: option to record failure but keep going
@@ -75,7 +75,7 @@ def place_enderchest(
                 except (OSError, NotADirectoryError) as oh_no:
                     failure_message = (
                         f"Error linking shulker box {shulker_box.name}"
-                        f" to instance {instance_name}:"
+                        f" to instance {instance.name}:"
                         f"\n{resource_path} already exists."
                     )
                     # TODO: optiuon to record failure but keep going
