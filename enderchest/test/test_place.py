@@ -11,8 +11,10 @@ from . import utils
 GLOBAL_SHULKER = (
     "global",
     """; global/shulkerbox.cfg
-[minecraft]
-*
+
+; temporarily disabling
+;[minecraft]
+;*
 
 [link-folders]
 screenshots
