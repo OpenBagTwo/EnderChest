@@ -3,8 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from enderchest import craft, load_shulker_boxes
-from enderchest.config import ShulkerBox
+from enderchest import ShulkerBox, craft, load_shulker_boxes
 
 from . import utils
 
