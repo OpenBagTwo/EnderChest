@@ -1,28 +1,314 @@
 """Tests for setting up folders and files"""
+from pathlib import Path
+
+import pytest
+
 from enderchest import craft, load_shulker_boxes
 from enderchest.config import ShulkerBox
 
 from . import utils
 
 
-def test_config_roundtrip(minecraft_root):
-    original_shulker = ShulkerBox(
-        3,
-        "original",
-        minecraft_root / "EnderChest" / "original",
-        match_criteria=(
-            ("minecraft", (">1.12,<2.0",)),
+class TestConfigWriting:
+    def test_config_roundtrip(self, minecraft_root):
+        original_shulker = ShulkerBox(
+            3,
+            "original",
+            minecraft_root / "EnderChest" / "original",
+            match_criteria=(
+                ("minecraft", (">1.12,<2.0",)),
+                ("modloader", ("*",)),
+                ("tags", ("aether", "optifine")),
+                ("instances", ("aether legacy", "paradise lost")),
+            ),
+            link_folders=("screenshots", "logs"),
+        )
+
+        utils.pre_populate_enderchest(minecraft_root / "EnderChest")
+
+        craft.craft_shulker_box(minecraft_root, original_shulker)
+
+        parsed_shulkers = load_shulker_boxes(minecraft_root)
+
+        assert parsed_shulkers == [original_shulker]
+
+
+class TestPromptByFilter:
+    def test_using_default_responses_results_in_the_expected_shulker_box(
+        self, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt([""] * 6)
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_filters(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        assert shulker_box.match_criteria == (
+            ("minecraft", ("*",)),
             ("modloader", ("*",)),
-            ("tags", ("aether", "optifine")),
-            ("instances", ("aether legacy", "paradise lost")),
-        ),
-        link_folders=("screenshots", "logs"),
-    )
+            ("tags", ("*",)),
+        )
 
-    utils.pre_populate_enderchest(minecraft_root / "EnderChest")
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
 
-    craft.craft_shulker_box(minecraft_root, original_shulker)
+    def test_filter_prompt_doesnt_confirm_when_there_are_no_instances(
+        self, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(
+            (
+                "22w14infinite",
+                "N",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
 
-    parsed_shulkers = load_shulker_boxes(minecraft_root)
+        shulker_box = craft._prompt_for_filters(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), []
+        )
 
-    assert parsed_shulkers == [original_shulker]
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("minecraft", ("22w14infinite",)),
+            ("modloader", ("None",)),
+            ("tags", ("*",)),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_filter_prompt_stops_confirming_once_youre_out_of_instances(
+        self, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(
+            (
+                "22w14infinite",
+                "y",
+                "b",
+                "april-fools*",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_filters(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("minecraft", ("22w14infinite",)),
+            ("modloader", ("Fabric Loader",)),
+            ("tags", ("april-fools*",)),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_filter_prompt_lets_you_back_out_of_a_mistake(self, monkeypatch, capsys):
+        script_reader = utils.scripted_prompt(
+            (
+                "1.19.5",
+                "",  # default is no
+                "1.19",
+                "",  # default is yes
+                "N,B,Q",
+                "",
+                "vanilla*",
+                "",
+            )
+        )
+
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_filters(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        record = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("minecraft", ("1.19",)),
+            ("modloader", ("None", "Fabric Loader", "Quilt Loader")),
+            ("tags", ("vanilla*",)),
+        )
+
+        # check that it was showing the right instances right up until the end
+        assert record.out.strip().endswith(
+            """Filters matches the instances:
+  - official
+  - Chest Boat
+==> Do you wish to continue?
+==> [Y/n]"""
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+
+class TestPromptByName:
+    def test_confirms_selections(self, monkeypatch, capsys):
+        script_reader = utils.scripted_prompt(
+            (
+                "abra, kadabra, alakazam",
+                "",  # default should be yes here
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_instance_names(
+            ShulkerBox(0, "tester", Path("ignored"), (), ())
+        )
+
+        record = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("instances", ("abra", "kadabra", "alakazam")),
+        )
+
+        assert record.out.strip().endswith(
+            """You specified the following instances:
+  - abra
+  - kadabra
+  - alakazam
+==> Do you wish to continue?
+==> [Y/n]"""
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_default_for_confirmation_is_no_if_empty_response(
+        self, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(
+            (
+                "",
+                "",
+                "",
+                "yes",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_instance_names(
+            ShulkerBox(0, "tester", Path("ignored"), (), ())
+        )
+
+        record = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (("instances", ("*",)),)
+
+        assert record.out.strip().endswith(
+            """This shulker box will be applied to all instances.
+==> Do you wish to continue?
+==> [y/N] yes"""
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+
+class TestPromptByNumber:
+    def test_defaults_results_in_explicit_enumeration(self, monkeypatch, capsys):
+        script_reader = utils.scripted_prompt(
+            (
+                "",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_instance_numbers(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("instances", tuple(instance.name for instance in utils.TESTING_INSTANCES)),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_number_selection_supports_explicit_numbers_and_ranges(
+        self, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(
+            (
+                "4, 2 - 3",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_instance_numbers(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            (
+                "instances",
+                tuple(instance.name for instance in utils.TESTING_INSTANCES[1:4]),
+            ),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_invalid_selection_reminds_you_of_the_instance_list(
+        self, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(
+            (
+                "7",
+                "1, 3",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_instance_numbers(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        record = capsys.readouterr()
+
+        assert (
+            """Invalid selection: 7 is out of range
+
+These are the instances that are currently registered:
+  1. official (~/.minecraft)
+  2. axolotl (instances/axolotl/.minecraft)
+  3. bee (instances/bee/.minecraft)
+  4. Chest Boat (instances/chest-boat/.minecraft)
+==> Which instances would you like to include?"""
+            in record.out
+        )
+
+        assert shulker_box.match_criteria == (
+            (
+                "instances",
+                ("official", "bee"),
+            ),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()

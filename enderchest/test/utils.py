@@ -3,6 +3,7 @@ import json
 import shutil
 from importlib.resources import as_file
 from pathlib import Path
+from typing import Callable, Iterable
 
 import pytest
 
@@ -260,3 +261,27 @@ def parametrize_over_instances(*instance_names: str):
     instances = [instance_lookup[name] for name in instance_names]
 
     return pytest.mark.parametrize("instance", instances, ids=instance_names)
+
+
+def scripted_prompt(responses: Iterable[str]) -> Callable[..., str]:
+    """Create a replacement for the built-in input() method for use in
+    monkeypatching that will process inputs given from a script of responses
+
+    Parameters
+    ----------
+    responses : list-like of str
+        The scripted responses
+
+    Returns
+    -------
+    function
+        A drop-in replacement for the built-in input method
+    """
+    script = iter(responses)
+
+    def read_from_script(prompt: str | None = None) -> str:
+        line = next(script)
+        print((prompt or "") + line)
+        return line
+
+    return read_from_script
