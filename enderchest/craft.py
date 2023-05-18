@@ -8,6 +8,7 @@ from pathvalidate import is_valid_filename
 
 from . import load_instance_metadata, load_shulker_boxes
 from .config import InstanceSpec, ShulkerBox
+from .filesystem import shulker_box_config, shulker_box_root
 from .prompt import confirm, prompt
 
 DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
@@ -45,15 +46,13 @@ def craft_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
     The "root" attribute of the ShulkerBox config will be ignored--instead the
     Shulker Box will be created at <minecraft_root>/EnderChest/<shulker box name>
     """
-    shulker_root = minecraft_root / "EnderChest" / shulker_box.name
+    config_path = shulker_box_config(minecraft_root, shulker_box.name)
+    config_path.parent.mkdir(exist_ok=True)
 
-    (minecraft_root / "EnderChest" / shulker_box.name).mkdir(
-        parents=True, exist_ok=True
-    )
     for folder in (*DEFAULT_SHULKER_FOLDERS, *shulker_box.link_folders):
-        (shulker_root / folder).mkdir(exist_ok=True)
+        (config_path.parent).mkdir(exist_ok=True)
 
-    shulker_box.write_to_cfg(shulker_root / "shulkerbox.cfg")
+    shulker_box.write_to_cfg(config_path)
 
 
 def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
@@ -75,7 +74,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
         if not is_valid_filename(name):
             print("Name must be useable as a valid filename.")
             continue
-        shulker_root = minecraft_root / "EnderChest" / name
+        shulker_root = shulker_box_root(minecraft_root, name)
         if shulker_root in shulker_root.parent.glob("*"):
             if not shulker_root.is_dir():
                 print(f"A file named {name} already exists in your EnderChest folder.")
