@@ -7,6 +7,7 @@ __version__ = _version.get_versions()["version"]
 
 
 from .config import InstanceSpec, ShulkerBox, parse_instance_metadata
+from .filesystem import ender_chest_config, shulker_box_configs
 
 
 def load_instance_metadata(minecraft_root: Path) -> Sequence[InstanceSpec]:
@@ -30,7 +31,7 @@ def load_instance_metadata(minecraft_root: Path) -> Sequence[InstanceSpec]:
         If no EnderChest folder exists in the given minecraft root or if no
         enderchest.cfg file exists within that EnderChest folder
     """
-    return parse_instance_metadata(minecraft_root / "EnderChest" / "enderchest.cfg")
+    return parse_instance_metadata(ender_chest_config(minecraft_root))
 
 
 def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
@@ -50,7 +51,7 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
         the sequence in which they should be linked
     """
     shulker_boxes: list[ShulkerBox] = []
-    for shulker_config in (minecraft_root / "EnderChest").glob("*/shulkerbox.cfg"):
+    for shulker_config in shulker_box_configs(minecraft_root):
         shulker_boxes.append(ShulkerBox.from_cfg(shulker_config))
 
     return sorted(shulker_boxes)

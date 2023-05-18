@@ -8,6 +8,7 @@ from typing import NamedTuple
 import semantic_version as semver
 
 from . import __version__
+from .filesystem import shulker_box_config
 
 
 # TODO: the next few methods / classes are almost certainly going in enderchest proper
@@ -39,13 +40,12 @@ class InstanceSpec(NamedTuple):
 
     @classmethod
     def from_cfg(cls, section: SectionProxy) -> "InstanceSpec":
-        """Parse an instance spec as read in from an enderchest.cfg file
+        """Parse an instance spec as read in from the enderchest config file
 
         Parameters
         ----------
         section : dict-like of str to str
-            The section in the enderchest.cfg file parsed from an
-            enderchest.cfg file by a ConfigParser
+            The section in the enderchest config as parsed by a ConfigParser
 
         Returns
         -------
@@ -69,7 +69,7 @@ class InstanceSpec(NamedTuple):
 
 
 def parse_instance_metadata(enderchest_cfg: Path) -> list[InstanceSpec]:
-    """Parse an enderchest.cfg file to get the relevant instance metadata.
+    """Parse an enderchest config file to get the relevant instance metadata
 
     Parameters
     ----------
@@ -183,7 +183,7 @@ class ShulkerBox(NamedTuple):
             config.set("link-folders", folder)
 
         with open(config_file, "w") as f:
-            f.write(f"; {self.name}/shulker_box.cfg\n")
+            f.write(f"; {shulker_box_config(Path(), self.name)}\n")
             config.write(f)
 
     def matches(self, instance: InstanceSpec) -> bool:
