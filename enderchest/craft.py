@@ -1,4 +1,5 @@
 """Functionality for setting up the folder structure of both chests and shulker boxes"""
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -80,15 +81,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
 
     explicit_type = "name"
     if len(instances) > 0:
-        print(
-            "These are the instances that are currently registered:\n"
-            + "\n".join(
-                [
-                    f"  {i + 1}. {instance.name} ({instance.root})"
-                    for i, instance in enumerate(instances)
-                ]
-            )
-        )
+        _print_instance_list(instances)
         explicit_type = "number"
     while True:
         selection_type = prompt(
@@ -285,10 +278,145 @@ def _prompt_for_filters(
 
 
 def _prompt_for_instance_names(shulker_box: ShulkerBox) -> ShulkerBox:
-    raise NotImplementedError
+    """Prompt a user for the names of specific instances, then add that list
+    to the shulker box spec.
+
+    Parameters
+    ----------
+    shulker_box : ShulkerBox
+        The starting ShulkerBox, presumably with limited or no match criteria
+
+    Returns
+    -------
+    ShulkerBox
+        The updated shulker box (with explicit criteria based on instance names)
+
+    Notes
+    -----
+    This method does not validate against lists of known instances
+    """
+    instances = tuple(
+        entry.strip()
+        for entry in prompt(
+            "Specify instances by name, separated by commas."
+            "\nYou can also use wildcards (? and *)",
+            suggestion="*",
+        ).split(",")
+    )
+    if instances == ("",):
+        instances = ("*",)
+
+    if instances == ("*",):
+        print("This shulker box will be applied to all instances.")
+        default = False
+    else:
+        print(
+            "You specified the following instances:\n"
+            + "\n".join([f"  - {name}" for name in instances])
+        )
+        default = True
+
+    if not confirm(default=default):
+        return _prompt_for_instance_names(shulker_box)
+
+    return shulker_box._replace(
+        match_criteria=shulker_box.match_criteria + (("instances", instances),)
+    )
 
 
 def _prompt_for_instance_numbers(
     shulker_box: ShulkerBox, instances: Sequence[InstanceSpec]
 ) -> ShulkerBox:
-    raise NotImplementedError
+    """Prompt the user to specify the instances they'd like by number
+
+    Parameters
+    ----------
+    shulker_box : ShulkerBox
+        The starting ShulkerBox, presumably with limited or no match criteria
+    instances : list-like of InstanceSpec
+        The names of the  available instances
+
+    Returns
+    -------
+    ShulkerBox
+        The updated shulker box (with explicit criteria based on instance names)
+    """
+    selections = prompt(
+        (
+            "Which instances would you like to include?"
+            '\ne.g. "1,2,3", "1-3", "1-6" or "*" to specify all'
+        ),
+        suggestion="*",
+    )
+    selections = re.sub("/s", " ", selections)  # normalize whitespace
+    if selections == "":
+        selections = "*"
+
+    if re.search("[^0-9-,* ]", selections):  # check for invalid characters
+        print("Invalid selection\n")
+        _print_instance_list(instances)
+        return _prompt_for_instance_numbers(shulker_box, instances)
+
+    selected_instances: set[str] = set()
+    for entry in selections.split(","):
+        match entry.replace(" ", ""):
+            case "*":
+                selected_instances.update(instance.name for instance in instances)
+                break  # because it's not like there's any that can be added
+            case value if value.isdigit():
+                # luckily we don't need to worry about negative numbers
+                index = int(value) - 1
+                if index < 0 or index >= len(instances):
+                    print(f"Invalid selection: {entry} is out of range\n")
+                    _print_instance_list(instances)
+                    return _prompt_for_instance_numbers(shulker_box, instances)
+                selected_instances.add(instances[index].name)
+            case value if match := re.match("([0-9]+)-([0-9]+)$", value):
+                bounds = tuple(int(bound) for bound in match.groups())
+                print(bounds)
+                if bounds[0] > bounds[1]:
+                    print(f"Invalid selection: {entry} is not a valid range\n")
+                    _print_instance_list(instances)
+                    return _prompt_for_instance_numbers(shulker_box, instances)
+                if max(bounds) > len(instances) or min(bounds) < 1:
+                    print(f"Invalid selection: {entry} is out of range\n")
+                    _print_instance_list(instances)
+                    return _prompt_for_instance_numbers(shulker_box, instances)
+                selected_instances.update(
+                    instance.name for instance in instances[bounds[0] - 1 : bounds[1]]
+                )
+
+    choices = tuple(
+        instance.name for instance in instances if instance.name in selected_instances
+    )
+
+    print(
+        "You selected the instances:\n" + "\n".join([f"  - {name}" for name in choices])
+    )
+    if not confirm(default=True):
+        _print_instance_list(instances)
+        return _prompt_for_instance_numbers(shulker_box, instances)
+
+    return shulker_box._replace(
+        match_criteria=shulker_box.match_criteria + (("instances", choices),)
+    )
+
+
+def _print_instance_list(instances: Sequence[InstanceSpec]) -> None:
+    """Just centralizing the implementation of how the instance list gets
+    displayed
+
+    Parameters
+    ----------
+    instances : list-like of InstanceSpec
+        The available instances
+    """
+    print(
+        "These are the instances that are currently registered:\n"
+        + "\n".join(
+            [
+                f"  {i + 1}. {instance.name} ({instance.root})"
+                for i, instance in enumerate(instances)
+            ]
+        )
+    )
