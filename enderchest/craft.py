@@ -6,16 +6,26 @@ from typing import Iterable, Sequence
 
 from pathvalidate import is_valid_filename
 
-from . import load_instance_metadata
+from . import load_instance_metadata, load_shulker_boxes
 from .config import InstanceSpec, ShulkerBox
 from .prompt import confirm, prompt
 
-DEFAULT_SHULKER_FOLDERS = (
+DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
     "config",
     "mods",
     "resourcepacks",
     "saves",
     "shaderpacks",
+)
+
+STANDARD_LINK_FOLDERS = (  # TODO: customize in enderchest.cfg
+    "backups",
+    "cachedImages",
+    "crash-reports",
+    "logs",
+    "replay_recordings",
+    "screenshots",
+    ".bobby",
 )
 
 
@@ -77,6 +87,8 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
 
     shulker_box = ShulkerBox(0, name, shulker_root, (), ())
 
+    # TODO: hosts
+
     instances = load_instance_metadata(minecraft_root)
 
     explicit_type = "name"
@@ -106,9 +118,57 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
                 continue
         break
 
-    # TODO: prompt for linked folders
+    while True:
+        selection_type = prompt(
+            "Folders to Link?"
+            "\nUse the [S]tandard set, [M]anually specify or do [N]one?"
+            "\nThe standard set is: " + ", ".join(STANDARD_LINK_FOLDERS)
+        ).lower()
+        match selection_type:
+            case "n" | "none":
+                link_folders: tuple[str, ...] = ()
+            case "s" | "standard" | "standard set":
+                link_folders = STANDARD_LINK_FOLDERS
+            case "m" | "manual" | "manually specify":
+                folder_choices = prompt(
+                    "Specify the folders to link using a comma-separated list"
+                    " (wildcards are not allowed)"
+                )
+                link_folders = tuple(
+                    folder.strip() for folder in folder_choices.split(",")
+                )
+            case _:
+                continue
+        break
 
-    # TODO: prompt for priority
+    shulker_box = shulker_box._replace(link_folders=link_folders)
+
+    while True:
+        existing_shulkers = load_shulker_boxes(minecraft_root)
+        if len(existing_shulkers) > 0:
+            print(
+                "Shulker box linking is currently applied in the following order:\n"
+                + "\n".join(
+                    f"  {shulker.priority}. {shulker.name}"
+                    for shulker in existing_shulkers
+                )
+            )
+        value = prompt(
+            (
+                "What priority value should be assigned to this shulker box?"
+                "\nhigher number = applied later"
+            ),
+            suggestion="0",
+        )
+        if value == "":
+            value = "0"
+        try:
+            priority = int(value)
+        except ValueError:
+            continue
+        break
+
+    shulker_box = shulker_box._replace(priority=priority)
 
     return shulker_box
 
