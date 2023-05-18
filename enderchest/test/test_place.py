@@ -342,8 +342,8 @@ last_modified = 1970-1-1 00:00:00.000000
 [minecraft]
 *
 
-[tags]
-vanilla
+[modloader]
+none
 """,
 )
 

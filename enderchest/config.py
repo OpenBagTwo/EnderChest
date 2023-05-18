@@ -258,23 +258,21 @@ def _normalize_modloader(loader: str | None) -> list[str]:
         The modloader values that should be checked against to match the user's
         intent
     """
-    if loader is None:  # vanilla
+    if loader is None:  # this would be from the instance spec
         return [""]
     match loader.lower().replace(" ", "").replace("-", "").replace("_", "").replace(
         "/", ""
     ):
+        case "none" | "vanilla":
+            return [""]
         case "fabric" | "fabricloader":
             return ["Fabric Loader"]
         case "quilt" | "quiltloader":
-            return [
-                "Quilt Loader",
-            ]
+            return ["Quilt Loader"]
         case "fabricquilt" | "quiltfabric" | "fabriclike" | "fabriccompatible":
             return ["Fabric Loader", "Quilt Loader"]
         case "forge" | "forgeloader" | "minecraftforge":
-            return [
-                "Forge",
-            ]
+            return ["Forge"]
         case _:
             return [loader]
 
