@@ -1,93 +1,14 @@
-"""Functionality around EnderChest and Shulker Box configuration / specification"""
+"""Specification and configuration of a shulker box"""
 import datetime as dt
 import fnmatch
-from configparser import ConfigParser, SectionProxy
+from configparser import ConfigParser
 from pathlib import Path
 from typing import NamedTuple
 
 import semantic_version as semver
 
 from . import __version__
-from .filesystem import shulker_box_config
-
-
-# TODO: the next few methods / classes are almost certainly going in enderchest proper
-class InstanceSpec(NamedTuple):
-    """Specification of a Minecraft instance
-
-    Parameters
-    ----------
-    name : str
-        The "display name" for the instance
-    root : Path
-        The path to its ".minecraft" folder
-    minecraft_versions : list-like of str
-        The minecraft versions of this instance. This is typically a 1-tuple,
-        but some loaders (such as the official one) will just comingle all
-        your assets together across all profiles
-    modloader : str or None
-        The (display) name of the modloader, or None if this is a vanilla
-        instance
-    tags : list-like of str
-        The tags assigned to this instance
-    """
-
-    name: str
-    root: Path
-    minecraft_versions: tuple[str, ...]
-    modloader: str | None
-    tags: tuple[str, ...]
-
-    @classmethod
-    def from_cfg(cls, section: SectionProxy) -> "InstanceSpec":
-        """Parse an instance spec as read in from the enderchest config file
-
-        Parameters
-        ----------
-        section : dict-like of str to str
-            The section in the enderchest config as parsed by a ConfigParser
-
-        Returns
-        -------
-        InstanceSpec
-            The resulting InstanceSpec
-
-        Raises
-        ------
-        KeyError
-            If a required key is absent
-        ValueError
-            If a required entry cannot be parsed
-        """
-        return cls(
-            section.name,
-            Path(section["root"]),
-            tuple(section["minecraft_version"].strip().split()),
-            section.get("modloader", None),
-            tuple(section.get("tags", "").strip().split()),
-        )
-
-
-def parse_instance_metadata(enderchest_cfg: Path) -> list[InstanceSpec]:
-    """Parse an enderchest config file to get the relevant instance metadata
-
-    Parameters
-    ----------
-    enderchest_cfg : Path
-        The enderchest config file to read
-
-    Returns
-    -------
-    list of InstanceSpec
-        The instances parsed from the metadata file, in the order listed in
-        the metadata file
-    """
-    instances = ConfigParser()
-    instances.read(enderchest_cfg)
-    return [
-        InstanceSpec.from_cfg(instances[instance_name])
-        for instance_name in instances.sections()
-    ]
+from .instance import InstanceSpec
 
 
 class ShulkerBox(NamedTuple):
@@ -183,7 +104,7 @@ class ShulkerBox(NamedTuple):
             config.set("link-folders", folder)
 
         with open(config_file, "w") as f:
-            f.write(f"; {shulker_box_config(Path(), self.name)}\n")
+            f.write(f"; {config_file.relative_to(config_file.parent.parent)}\n")
             config.write(f)
 
     def matches(self, instance: InstanceSpec) -> bool:

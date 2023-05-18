@@ -7,9 +7,10 @@ from typing import Iterable, Sequence
 from pathvalidate import is_valid_filename
 
 from . import load_instance_metadata, load_shulker_boxes
-from .config import InstanceSpec, ShulkerBox
 from .filesystem import shulker_box_config, shulker_box_root
+from .instance import InstanceSpec
 from .prompt import confirm, prompt
+from .shulker_box import ShulkerBox
 
 DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
     "config",
