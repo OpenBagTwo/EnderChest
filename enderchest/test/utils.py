@@ -7,7 +7,8 @@ from typing import Callable, Iterable
 
 import pytest
 
-from enderchest.config import InstanceSpec, parse_instance_metadata
+from enderchest import InstanceSpec
+from enderchest.instance import parse_instance_metadata
 
 from . import testing_files
 

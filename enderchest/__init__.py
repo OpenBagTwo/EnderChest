@@ -2,12 +2,13 @@ from pathlib import Path
 from typing import Sequence
 
 from . import _version
+from .instance import InstanceSpec, parse_instance_metadata
 
 __version__ = _version.get_versions()["version"]
 
 
-from .config import InstanceSpec, ShulkerBox, parse_instance_metadata
 from .filesystem import ender_chest_config, shulker_box_configs
+from .shulker_box import ShulkerBox
 
 
 def load_instance_metadata(minecraft_root: Path) -> Sequence[InstanceSpec]:
@@ -55,3 +56,6 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
         shulker_boxes.append(ShulkerBox.from_cfg(shulker_config))
 
     return sorted(shulker_boxes)
+
+
+__all__ = ["InstanceSpec", "ShulkerBox", "load_instance_metadata", "load_shulker_boxes"]
