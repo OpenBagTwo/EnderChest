@@ -54,7 +54,7 @@ with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
 def create_mmc_pack_file(
     instance_folder: Path, minecraft_version: str, loader: str | None
 ) -> None:
-    """Generate an MMC pack file and write it to file
+    """Generate an MMC pack json and write it to file
 
     Parameters
     ----------
@@ -110,6 +110,32 @@ def create_mmc_pack_file(
         )
 
 
+def create_instance_cfg(instance_folder: Path, name: str) -> None:
+    """Generate a MultiMC instance config and write it to file
+
+    Parameters
+    ----------
+    instance_folder : Path
+        The folder where the pack file should be generated (the parent of
+        the .minecraft folder)
+    name : str
+        The name of the instance
+    """
+    instance_folder.mkdir(parents=True, exist_ok=True)
+
+    (instance_folder / "instance.cfg").write_text(
+        f"""InstanceType=SevenEightNine
+boring=blahblah
+iconKey=iconlock
+lastLaunchTime=1673878714535
+lastTimePlayed=159
+name={name}
+notes=
+totalTimePlayed=2552
+"""
+    )
+
+
 def _set_up_minecraft_folder(minecraft_folder: Path, official: bool) -> None:
     """Populate a minecraft folder with a bunch of dummy folders. You probably
     want to use `populate_official_minecraft_folder` or `populate_mmc_instance`
@@ -144,11 +170,15 @@ def populate_official_minecraft_folder(minecraft_folder: Path) -> None:
     with as_file(testing_files.LAUNCHER_PROFILES) as launcher_profiles:
         shutil.copy(launcher_profiles, minecraft_folder)
     with as_file(testing_files.VERSION_MANIFEST) as version_manifest:
-        shutil.copy(version_manifest, minecraft_folder)
+        (minecraft_folder / "versions").mkdir(exist_ok=True)
+        shutil.copy(version_manifest, minecraft_folder / "versions")
 
 
 def populate_mmc_instance_folder(
-    instance_folder: Path, minecraft_version: str, loader: str | None
+    instance_folder: Path,
+    minecraft_version: str,
+    loader: str | None,
+    name: str | None = None,
 ) -> None:
     """Populate the .minecraft folder created by an MMC-like launcher
 
@@ -161,11 +191,14 @@ def populate_mmc_instance_folder(
         The minecraft version
     loader : str | None
         The loader (if vanilla this will be None)
+    name : str, optional
+        The name of the instance (if different from the name of the folder)
     """
     _set_up_minecraft_folder(instance_folder / ".minecraft", official=False)
     create_mmc_pack_file(
         instance_folder, minecraft_version=minecraft_version, loader=loader
     )
+    create_instance_cfg(instance_folder, name or instance_folder.name)
 
 
 def populate_instances_folder(instances_folder: Path) -> None:
