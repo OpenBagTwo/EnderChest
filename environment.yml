@@ -15,6 +15,7 @@ dependencies:
 - pip>=22
 - pre-commit
 - pytest>=7
+- pytest-cov>=4
 - mkdocs
 - mike
 - mkdocstrings
