@@ -7,8 +7,7 @@ from typing import Callable, Iterable
 
 import pytest
 
-from enderchest import InstanceSpec
-from enderchest.instance import parse_instance_metadata
+from enderchest import EnderChest, InstanceSpec
 
 from . import testing_files
 
@@ -47,7 +46,7 @@ MMC_FOLDERS: tuple[str, ...] = (
 
 with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
     TESTING_INSTANCES: tuple[InstanceSpec, ...] = tuple(
-        parse_instance_metadata(enderchest_cfg)
+        EnderChest.from_cfg(enderchest_cfg).instances
     )
 
 

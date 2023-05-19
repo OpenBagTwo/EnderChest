@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Sequence
 
 from . import _version, loggers
+from .enderchest import EnderChest
 from .instance import (
     InstanceSpec,
     gather_metadata_for_mmc_instance,
     gather_metadata_for_official_instance,
-    parse_instance_metadata,
 )
 
 __version__ = _version.get_versions()["version"]
@@ -104,7 +104,7 @@ def load_instance_metadata(minecraft_root: Path) -> Sequence[InstanceSpec]:
         If no EnderChest folder exists in the given minecraft root or if no
         enderchest.cfg file exists within that EnderChest folder
     """
-    return parse_instance_metadata(ender_chest_config(minecraft_root))
+    return EnderChest.from_cfg(ender_chest_config(minecraft_root)).instances
 
 
 def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
@@ -131,6 +131,7 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
 
 
 __all__ = [
+    "EnderChest",
     "InstanceSpec",
     "ShulkerBox",
     "gather_minecraft_instances",

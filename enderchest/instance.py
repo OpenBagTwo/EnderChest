@@ -59,27 +59,6 @@ class InstanceSpec(NamedTuple):
         )
 
 
-def parse_instance_metadata(enderchest_cfg: Path) -> list[InstanceSpec]:
-    """Parse an enderchest config file to get the relevant instance metadata
-    Parameters
-    ----------
-    enderchest_cfg : Path
-        The enderchest config file to read
-
-    Returns
-    -------
-    list of InstanceSpec
-        The instances parsed from the metadata file, in the order listed in
-        the metadata file
-    """
-    instances = ConfigParser()
-    instances.read(enderchest_cfg)
-    return [
-        InstanceSpec.from_cfg(instances[instance_name])
-        for instance_name in instances.sections()
-    ]
-
-
 def gather_metadata_for_official_instance(
     minecraft_folder: Path, name: str = "official"
 ) -> InstanceSpec:
