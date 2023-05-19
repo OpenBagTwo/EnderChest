@@ -7,7 +7,7 @@ from typing import NamedTuple
 
 import semantic_version as semver
 
-from . import __version__
+from ._version import get_versions
 from .instance import InstanceSpec
 
 
@@ -34,6 +34,12 @@ class ShulkerBox(NamedTuple):
         for each condition (so it's ANDing a collection of ORs)
     link_folders : list-like of str
         The folders that should be linked in their entirety
+
+    Notes
+    -----
+    A shulker box specification is immutable, so making changes (such as
+    updating the match critera) can only be done on copies created via the
+    `_replace` method, inherited from the NamedTuple parent class.
     """
 
     priority: int
@@ -59,7 +65,7 @@ class ShulkerBox(NamedTuple):
         priority = 0
         root = config_file.parent
         name = root.name
-        parser = ConfigParser(allow_no_value=True)
+        parser = ConfigParser(allow_no_value=True, inline_comment_prefixes=(";",))
         parser.read(config_file)
 
         link_folders: tuple[str, ...] = ()
@@ -92,7 +98,9 @@ class ShulkerBox(NamedTuple):
         config.add_section("properties")
         config.set("properties", "priority", str(self.priority))
         config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
-        config.set("properties", "generated_by_enderchest_version", __version__)
+        config.set(
+            "properties", "generated_by_enderchest_version", get_versions()["version"]
+        )
 
         for condition, values in self.match_criteria:
             config.add_section(condition)
