@@ -3,13 +3,13 @@ from pathlib import Path
 
 import pytest
 
-from enderchest import ShulkerBox, craft, load_shulker_boxes
+from enderchest import EnderChest, ShulkerBox, craft, load_shulker_boxes
 
 from . import utils
 
 
 class TestConfigWriting:
-    def test_config_roundtrip(self, minecraft_root):
+    def test_shulker_box_config_roundtrip(self, minecraft_root):
         original_shulker = ShulkerBox(
             3,
             "original",
@@ -30,6 +30,29 @@ class TestConfigWriting:
         parsed_shulkers = load_shulker_boxes(minecraft_root)
 
         assert parsed_shulkers == [original_shulker]
+
+    def test_ender_chest_config_roundtrip(self, tmpdir):
+        (tmpdir / "EnderChest").mkdir()
+
+        original_ender_chest = EnderChest(
+            f"IPoAC://openbagtwo@localhost{tmpdir}",
+            name="tester",
+            remotes=[
+                "irc://you@irl/home/upstairs",
+                ("file:///lockbox", "undisclosed location"),
+            ],
+            instances=utils.TESTING_INSTANCES,
+        )
+
+        original_ender_chest.write_to_cfg(
+            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
+        )
+
+        parsed_ender_chest = EnderChest.from_cfg(
+            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
+        )
+
+        assert parsed_ender_chest == original_ender_chest
 
 
 class TestPromptByFilter:
