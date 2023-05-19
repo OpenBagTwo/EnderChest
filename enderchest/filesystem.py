@@ -1,4 +1,6 @@
 """Functionality for discovering and managing files across the file system"""
+import os
+from itertools import chain
 from pathlib import Path
 from typing import Iterable
 
@@ -140,3 +142,24 @@ def shulker_box_configs(minecraft_root: Path) -> Iterable[Path]:
     just that they exist
     """
     return ender_chest_folder(minecraft_root).glob(f"*/{SHULKER_BOX_CONFIG_NAME}")
+
+
+def minecraft_folders(search_path: Path) -> Iterable[Path]:
+    """Find all .minecraft folders within a given search path
+
+    Parameters
+    ----------
+    search_path : Path
+        The directory to search
+
+    Returns
+    -------
+    list-like of paths
+        The paths to all the .minecraft folders this method could find
+
+    Notes
+    -----
+    This method does not check to make sure that those .minecraft folders
+    contain valid minecraft instances, just that they exist
+    """
+    return search_path.rglob(".minecraft")
