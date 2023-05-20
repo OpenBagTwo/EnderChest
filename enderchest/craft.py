@@ -2,14 +2,19 @@
 import re
 from collections import Counter
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Iterable, Sequence
+from urllib.parse import ParseResult
 
 from pathvalidate import is_valid_filename
 
-from . import load_instance_metadata, load_shulker_boxes
-from .filesystem import shulker_box_config, shulker_box_root
+from . import enderchest
+from . import filesystem as fs
+from . import gather_minecraft_instances, load_ender_chest, load_shulker_boxes, sync
+from .enderchest import EnderChest
 from .instance import InstanceSpec
-from .prompt import confirm, prompt
+from .loggers import CRAFT_LOGGER, SYNC_LOGGER
+from .prompt import NO, YES, confirm, prompt
 from .shulker_box import ShulkerBox
 
 DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
@@ -31,6 +36,205 @@ STANDARD_LINK_FOLDERS = (  # TODO: customize in enderchest.cfg
 )
 
 
+def craft_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
+    """Create an EnderChest based on the provided configuration
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff is in (or, at least, the
+        one inside which you want to create your EnderChest)
+    ender_chest : EnderChest
+        The spec of the chest to create
+
+    Notes
+    -----
+    - The "root" attribute of the EnderChest config will be ignored--instead
+      the EnderChest will be created at <minecraft_root>/EnderChest
+    - This method does not check to see if there is already an EnderChest set
+      up at the specified location--if one exists, its config will
+      be overwritten
+    """
+    root = fs.ender_chest_folder(minecraft_root, check_exists=False)
+    root.mkdir(exist_ok=True)
+
+    config_path = fs.ender_chest_config(minecraft_root, check_exists=False)
+    ender_chest.write_to_cfg(config_path)
+    CRAFT_LOGGER.debug(f"EnderChest configuration written to {config_path}")
+
+
+def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
+    """Parse an EnderChest based on interactive user input
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff is in (or, at least, the
+        one inside which you want to create your EnderChest)
+
+    Returns
+    -------
+    EnderChest
+        The resulting EnderChest
+    """
+    try:
+        root = fs.ender_chest_folder(minecraft_root)
+        CRAFT_LOGGER.info(
+            f"This will overwrite the EnderChest configuration at {root}."
+        )
+        if not confirm(default=False):
+            message = f"Aborting: {fs.ender_chest_config(minecraft_root)} exists."
+            raise FileExistsError(message)
+    except FileNotFoundError:
+        # good! Then we don't already have an EnderChest here
+        CRAFT_LOGGER.debug(f"{minecraft_root} does not already contain an EnderChest")
+        pass
+
+    instances: list[InstanceSpec] = []
+
+    while True:
+        search_home = prompt(
+            "Would you like to search your home directory for the official launcher?",
+            suggestion="Y/n",
+        ).lower()
+        if search_home == "" or search_home in YES:
+            instances.extend(
+                gather_minecraft_instances(minecraft_root, Path.home(), official=True)
+            )
+        elif search_home not in NO:
+            continue
+        break
+
+    while True:
+        search_here = prompt(
+            "Would you like to search the current directory for MultiMC-type instances?",
+            suggestion="Y/n",
+        ).lower()
+        if search_here == "" or search_here in YES:
+            instances.extend(
+                gather_minecraft_instances(minecraft_root, Path(), official=False)
+            )
+        elif search_here not in NO:
+            continue
+        break
+
+    if minecraft_root != Path():
+        while True:
+            search_mc_folder = prompt(
+                f"Would you like to search {minecraft_root} for MultiMC-type instances?",
+                suggestion="Y/n",
+            ).lower()
+            if search_mc_folder == "" or search_here in YES:
+                instances.extend(
+                    gather_minecraft_instances(
+                        minecraft_root, minecraft_root, official=False
+                    )
+                )
+            elif search_mc_folder not in NO:
+                continue
+            break
+
+    CRAFT_LOGGER.info(
+        "You can always add more instances later using\n$ enderchest gather"
+    )
+
+    while True:
+        remotes: list[tuple[str, str]] = []
+        remote_uri = prompt(
+            "Would you like to grab the list of remotes from another EnderChest?"
+            "\nIf so, enter the URI of that EnderChest now (leave empty to skip)."
+        )
+        if remote_uri == "":
+            break
+        try:
+            remote_chest = enderchest.load_remote_ender_chest(remote_uri)
+            remotes.append((remote_chest.name, remote_chest.uri))
+            remotes.extend(
+                (alias, uri.geturl()) for alias, uri in remote_chest.remotes.items()
+            )
+            SYNC_LOGGER.info(
+                "Loaded the following remotes:\n"
+                + "\n".join("  - {}: {}".format(*remote) for remote in remotes)
+            )
+        except Exception as grab_fail:
+            SYNC_LOGGER.error(
+                f"Could not parse or access the remote EnderChest\n{grab_fail}"
+            )
+            continue
+        aliases: set[str] = set(alias for alias, _ in remotes)
+        if len(aliases) != len(remotes):
+            SYNC_LOGGER.error("There are duplicates aliases in the list of remotes")
+            continue
+        break
+
+    while True:
+        protocol = prompt(
+            (
+                "Specify the method for syncing with this EnderChest."
+                "\nSupported protocols are: " + ", ".join(sync.SUPPORTED_PROTOCOLS)
+            ),
+            suggestion=sync.DEFAULT_PROTOCOL,
+        ).lower()
+        if protocol == "":
+            protocol = sync.DEFAULT_PROTOCOL
+        if protocol not in sync.SUPPORTED_PROTOCOLS:
+            SYNC_LOGGER.error("Unsupported protocol\n")
+            continue
+        break
+
+    while True:
+        default_netloc = sync.get_default_netloc()
+        netloc = prompt(
+            (
+                "What's the address for accessing this machine?"
+                "\n(hostname or IP address, plus often a username)"
+            ),
+            suggestion=default_netloc,
+        )
+        if netloc == "":
+            netloc = default_netloc
+
+        uri = ParseResult(
+            scheme=protocol,
+            netloc=netloc,
+            path=str(minecraft_root),
+            params="",
+            query="",
+            fragment="",
+        )
+        if not uri.hostname:
+            CRAFT_LOGGER.error("Invalid hostname")
+            continue
+        break
+
+    while True:
+        name = prompt("Provide a name for this EnderChest", suggestion=uri.hostname)
+        if name == "":
+            name = uri.hostname
+        if name in aliases:
+            CRAFT_LOGGER.error(
+                f"The name {name} is already in use. Choose a different name."
+            )
+            continue
+        break
+
+    ender_chest = EnderChest(uri, name, remotes, instances)
+
+    with NamedTemporaryFile("w") as test_file:
+        ender_chest.write_to_cfg(Path(test_file.name))
+
+        # TODO: capture as logs?
+        CRAFT_LOGGER.info("\n\n" + test_file.read())
+        CRAFT_LOGGER.info(
+            "\nPreparing to generate an EnderChest with the above configuration."
+        )
+
+        if not confirm(default=True):
+            raise RuntimeError("EnderChest creation aborted.")
+
+    return ender_chest
+
+
 def craft_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
     """Create a shulker box folder based on the provided configuration
 
@@ -44,16 +248,25 @@ def craft_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
 
     Notes
     -----
-    The "root" attribute of the ShulkerBox config will be ignored--instead the
-    Shulker Box will be created at <minecraft_root>/EnderChest/<shulker box name>
+    - The "root" attribute of the ShulkerBox config will be ignored--instead
+      the shulker box will be created at
+      <minecraft_root>/EnderChest/<shulker box name>
+    - This method will fail if there is no EnderChest set up in the minecraft
+      root
+    - This method does not check to see if there is already a shulker box
+      set up at the specificed location--if one exists, its config will
+      be overwritten
     """
-    config_path = shulker_box_config(minecraft_root, shulker_box.name)
-    config_path.parent.mkdir(exist_ok=True)
+    root = fs.shulker_box_root(minecraft_root, shulker_box.name)
+    root.mkdir(exist_ok=True)
 
     for folder in (*DEFAULT_SHULKER_FOLDERS, *shulker_box.link_folders):
-        (config_path.parent).mkdir(exist_ok=True)
+        CRAFT_LOGGER.debug(f"Creating {root / folder}")
+        (root / folder).mkdir(exist_ok=True, parents=True)
 
+    config_path = fs.shulker_box_config(minecraft_root, shulker_box.name)
     shulker_box.write_to_cfg(config_path)
+    CRAFT_LOGGER.debug(f"Shulker box configuration written to {config_path}")
 
 
 def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
@@ -73,14 +286,18 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
     while True:
         name = prompt("Provide a name for the shulker box")
         if not is_valid_filename(name):
-            print("Name must be useable as a valid filename.")
+            CRAFT_LOGGER.error("Name must be useable as a valid filename.")
             continue
-        shulker_root = shulker_box_root(minecraft_root, name)
+        shulker_root = fs.shulker_box_root(minecraft_root, name)
         if shulker_root in shulker_root.parent.glob("*"):
             if not shulker_root.is_dir():
-                print(f"A file named {name} already exists in your EnderChest folder.")
+                CRAFT_LOGGER.error(
+                    f"A file named {name} already exists in your EnderChest folder."
+                )
                 continue
-            print(f"There is already a folder named {name} in your EnderChest folder.")
+            CRAFT_LOGGER.warning(
+                f"There is already a folder named {name} in your EnderChest folder."
+            )
             if not confirm(default=False):
                 continue
         break
@@ -89,7 +306,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
 
     # TODO: hosts
 
-    instances = load_instance_metadata(minecraft_root)
+    instances = load_ender_chest(minecraft_root).instances
 
     explicit_type = "name"
     if len(instances) > 0:
@@ -146,7 +363,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
     while True:
         existing_shulkers = load_shulker_boxes(minecraft_root)
         if len(existing_shulkers) > 0:
-            print(
+            CRAFT_LOGGER.info(
                 "Shulker box linking is currently applied in the following order:\n"
                 + "\n".join(
                     f"  {shulker.priority}. {shulker.name}"
@@ -238,12 +455,12 @@ def _prompt_for_filters(
 
         default = True
         if len(matches) == 0:
-            print("Filters do not match any known instance.")
+            CRAFT_LOGGER.error("Filters do not match any known instance.")
             default = False
         elif len(matches) == 1:
-            print(f"Filters matches the instance: {matches[0]}")
+            CRAFT_LOGGER.info(f"Filters matches the instance: {matches[0]}")
         else:
-            print(
+            CRAFT_LOGGER.info(
                 "Filters matches the instances:\n"
                 + "\n".join([f"  - {name}" for name in matches])
             )
@@ -306,6 +523,10 @@ def _prompt_for_filters(
         tag_count = Counter(sum((instance.tags for instance in instances), ()))
         # TODO: should this be most common among matches?
         example_tags: list[str] = [tag for tag, _ in tag_count.most_common(5)]
+        CRAFT_LOGGER.debug(
+            "Tag counts:\n"
+            + "\n".join(f"  - {tag}: {count}" for tag, count in tag_count.items())
+        )
 
         if len(example_tags) == 0:
             # provide examples if the user isn't using tags
@@ -367,16 +588,20 @@ def _prompt_for_instance_names(shulker_box: ShulkerBox) -> ShulkerBox:
         instances = ("*",)
 
     if instances == ("*",):
-        print("This shulker box will be applied to all instances.")
+        CRAFT_LOGGER.warning(
+            "This shulker box will be applied to all instances,"
+            " including ones you create in the future."
+        )
         default = False
     else:
-        print(
+        CRAFT_LOGGER.info(
             "You specified the following instances:\n"
             + "\n".join([f"  - {name}" for name in instances])
         )
         default = True
 
     if not confirm(default=default):
+        CRAFT_LOGGER.debug("Trying again to prompt for instance names")
         return _prompt_for_instance_names(shulker_box)
 
     return shulker_box._replace(
@@ -413,7 +638,7 @@ def _prompt_for_instance_numbers(
         selections = "*"
 
     if re.search("[^0-9-,* ]", selections):  # check for invalid characters
-        print("Invalid selection\n")
+        CRAFT_LOGGER.error("Invalid selection")
         _print_instance_list(instances)
         return _prompt_for_instance_numbers(shulker_box, instances)
 
@@ -427,19 +652,20 @@ def _prompt_for_instance_numbers(
                 # luckily we don't need to worry about negative numbers
                 index = int(value) - 1
                 if index < 0 or index >= len(instances):
-                    print(f"Invalid selection: {entry} is out of range\n")
+                    CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range")
                     _print_instance_list(instances)
                     return _prompt_for_instance_numbers(shulker_box, instances)
                 selected_instances.add(instances[index].name)
             case value if match := re.match("([0-9]+)-([0-9]+)$", value):
                 bounds = tuple(int(bound) for bound in match.groups())
-                print(bounds)
                 if bounds[0] > bounds[1]:
-                    print(f"Invalid selection: {entry} is not a valid range\n")
+                    CRAFT_LOGGER.error(
+                        f"Invalid selection: {entry} is not a valid range"
+                    )
                     _print_instance_list(instances)
                     return _prompt_for_instance_numbers(shulker_box, instances)
                 if max(bounds) > len(instances) or min(bounds) < 1:
-                    print(f"Invalid selection: {entry} is out of range\n")
+                    CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
                     _print_instance_list(instances)
                     return _prompt_for_instance_numbers(shulker_box, instances)
                 selected_instances.update(
@@ -450,10 +676,11 @@ def _prompt_for_instance_numbers(
         instance.name for instance in instances if instance.name in selected_instances
     )
 
-    print(
+    CRAFT_LOGGER.info(
         "You selected the instances:\n" + "\n".join([f"  - {name}" for name in choices])
     )
     if not confirm(default=True):
+        CRAFT_LOGGER.debug("Trying again to prompt for instance numbers")
         _print_instance_list(instances)
         return _prompt_for_instance_numbers(shulker_box, instances)
 
@@ -471,8 +698,8 @@ def _print_instance_list(instances: Sequence[InstanceSpec]) -> None:
     instances : list-like of InstanceSpec
         The available instances
     """
-    print(
-        "These are the instances that are currently registered:\n"
+    CRAFT_LOGGER.info(
+        "\nThese are the instances that are currently registered:\n"
         + "\n".join(
             [
                 f"  {i + 1}. {instance.name} ({instance.root})"

@@ -135,7 +135,9 @@ class TestPromptByFilter:
         with pytest.raises(StopIteration):
             script_reader()
 
-    def test_filter_prompt_lets_you_back_out_of_a_mistake(self, monkeypatch, capsys):
+    def test_filter_prompt_lets_you_back_out_of_a_mistake(
+        self, monkeypatch, capsys, caplog
+    ):
         script_reader = utils.scripted_prompt(
             (
                 "1.19.5",
@@ -155,7 +157,7 @@ class TestPromptByFilter:
             ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
         )
 
-        record = capsys.readouterr()
+        _ = capsys.readouterr()
 
         assert shulker_box.match_criteria == (
             ("minecraft", ("1.19",)),
@@ -164,12 +166,10 @@ class TestPromptByFilter:
         )
 
         # check that it was showing the right instances right up until the end
-        assert record.out.strip().endswith(
+        assert caplog.records[-1].msg == (
             """Filters matches the instances:
   - official
-  - Chest Boat
-==> Do you wish to continue?
-==> [Y/n]"""
+  - Chest Boat"""
         )
 
         # make sure all responses were used
@@ -178,7 +178,7 @@ class TestPromptByFilter:
 
 
 class TestPromptByName:
-    def test_confirms_selections(self, monkeypatch, capsys):
+    def test_confirms_selections(self, monkeypatch, capsys, caplog):
         script_reader = utils.scripted_prompt(
             (
                 "abra, kadabra, alakazam",
@@ -191,19 +191,17 @@ class TestPromptByName:
             ShulkerBox(0, "tester", Path("ignored"), (), ())
         )
 
-        record = capsys.readouterr()
+        _ = capsys.readouterr()
 
         assert shulker_box.match_criteria == (
             ("instances", ("abra", "kadabra", "alakazam")),
         )
 
-        assert record.out.strip().endswith(
+        assert caplog.records[-1].msg == (
             """You specified the following instances:
   - abra
   - kadabra
-  - alakazam
-==> Do you wish to continue?
-==> [Y/n]"""
+  - alakazam"""
         )
 
         # make sure all responses were used
@@ -211,7 +209,10 @@ class TestPromptByName:
             script_reader()
 
     def test_default_for_confirmation_is_no_if_empty_response(
-        self, monkeypatch, capsys
+        self,
+        monkeypatch,
+        capsys,
+        caplog,
     ):
         script_reader = utils.scripted_prompt(
             (
@@ -227,14 +228,13 @@ class TestPromptByName:
             ShulkerBox(0, "tester", Path("ignored"), (), ())
         )
 
-        record = capsys.readouterr()
+        _ = capsys.readouterr()
 
         assert shulker_box.match_criteria == (("instances", ("*",)),)
 
-        assert record.out.strip().endswith(
-            """This shulker box will be applied to all instances.
-==> Do you wish to continue?
-==> [y/N] yes"""
+        assert (
+            "This shulker box will be applied to all instances"
+            in caplog.records[-1].msg
         )
 
         # make sure all responses were used
@@ -295,7 +295,7 @@ class TestPromptByNumber:
             script_reader()
 
     def test_invalid_selection_reminds_you_of_the_instance_list(
-        self, monkeypatch, capsys
+        self, monkeypatch, capsys, caplog
     ):
         script_reader = utils.scripted_prompt(
             (
@@ -310,18 +310,16 @@ class TestPromptByNumber:
             ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
         )
 
-        record = capsys.readouterr()
+        _ = capsys.readouterr()
 
-        assert (
-            """Invalid selection: 7 is out of range
+        assert """Invalid selection: 7 is out of range
 
 These are the instances that are currently registered:
   1. official (~/.minecraft)
   2. axolotl (instances/axolotl/.minecraft)
   3. bee (instances/bee/.minecraft)
-  4. Chest Boat (instances/chest-boat/.minecraft)
-==> Which instances would you like to include?"""
-            in record.out
+  4. Chest Boat (instances/chest-boat/.minecraft)""" in "\n".join(
+            record.msg for record in caplog.records
         )
 
         assert shulker_box.match_criteria == (

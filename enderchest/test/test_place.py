@@ -59,9 +59,7 @@ class TestSingleShulkerPlace:
         self, minecraft_root, instance
     ):
         link.place_enderchest(minecraft_root)
-        print(minecraft_root)
         instance_folder = utils.resolve(instance.root, minecraft_root)
-        print(instance_folder)
 
         assert (instance_folder / "logs").resolve() == (
             minecraft_root / "EnderChest" / "global" / "logs"

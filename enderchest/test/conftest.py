@@ -106,3 +106,9 @@ def home(file_system, monkeypatch):
     monkeypatch.setenv("USERPROFILE", str(home))  # windows
 
     yield home
+
+
+@pytest.fixture(autouse=True)
+def set_log_levels(caplog):
+    with caplog.at_level(20):
+        yield
