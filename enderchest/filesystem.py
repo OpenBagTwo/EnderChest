@@ -1,6 +1,4 @@
 """Functionality for discovering and managing files across the file system"""
-import os
-from itertools import chain
 from pathlib import Path
 from typing import Iterable
 
