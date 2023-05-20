@@ -1,17 +1,16 @@
 """Specification and configuration of an EnderChest"""
 import datetime as dt
 from configparser import ConfigParser
-from dataclasses import dataclass, field
-from getpass import getuser
+from dataclasses import dataclass
 from pathlib import Path
 from socket import gethostname
 from typing import Iterable, Sequence
 from urllib.parse import ParseResult, urlparse
 
+from . import filesystem as fs
+from . import sync
 from ._version import get_versions
-from .filesystem import ender_chest_folder
 from .instance import InstanceSpec
-from .sync import DEFAULT_SYNC_PROTOCOL
 
 
 @dataclass(init=False, repr=False)
@@ -105,7 +104,7 @@ class EnderChest:
 
     @property
     def root(self) -> Path:
-        return ender_chest_folder(Path(self._uri.path))
+        return fs.ender_chest_folder(Path(self._uri.path))
 
     @classmethod
     def from_cfg(cls, config_file: Path) -> "EnderChest":
@@ -149,15 +148,15 @@ class EnderChest:
             else:
                 instances.append(InstanceSpec.from_cfg(parser[section]))
 
-        scheme = scheme or DEFAULT_SYNC_PROTOCOL
-        netloc = netloc or f"{getuser()}@{gethostname()}"
+        scheme = scheme or sync.DEFAULT_PROTOCOL
+        netloc = netloc or sync.get_default_netloc()
         uri = ParseResult(
             scheme=scheme, netloc=netloc, path=path, params="", query="", fragment=""
         )
 
         return EnderChest(uri, name, remotes, instances)
 
-    def write_to_cfg(self, config_file) -> None:
+    def write_to_cfg(self, config_file: Path) -> None:
         """Write this shulker's configuration to file
 
         Parameters
@@ -200,7 +199,31 @@ class EnderChest:
                 _list_to_ini(instance.tags),
             )
         with config_file.open("w") as f:
+            f.write(f"; {fs.ENDER_CHEST_CONFIG_NAME}\n")
             config.write(f)
+
+
+def load_remote_ender_chest(uri: str) -> EnderChest:
+    """Load an EnderChest configuration from another machine
+
+    Parameters
+    ----------
+    uri : str
+        The URI to the remote Minecraft root
+
+    Returns
+    -------
+    EnderChest
+        The remote EnderChest configuration
+    """
+    parsed = urlparse(uri)
+    remote_root = Path(parsed.path)
+    remote_config_path = fs.ender_chest_config(remote_root, check_exists=False)
+
+    with sync.remote_file(
+        parsed._replace(path=str(remote_config_path)).geturl()
+    ) as remote_config:
+        return EnderChest.from_cfg(remote_config)
 
 
 def _list_to_ini(values: Sequence) -> str:

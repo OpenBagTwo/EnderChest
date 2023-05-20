@@ -2,6 +2,11 @@
 
 CURSOR = "==>"
 
+# https://stackoverflow.com/a/18472142
+YES = ("y", "yes", "t", "true", "on", "1")
+
+NO = ("n", "no", "f", "false", "off", "0")
+
 
 def prompt(message: str, suggestion: str | None = None) -> str:
     """Prompt the user and return the response
@@ -52,8 +57,7 @@ def confirm(default: bool) -> bool:
     if confirm == "":
         return default
 
-    # https://stackoverflow.com/a/18472142
-    if confirm in ("y", "yes", "t", "true", "on", "1"):
+    if confirm in YES:
         return True
 
     return False
