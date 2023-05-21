@@ -1,4 +1,6 @@
 """Tests around file discovery and registration"""
+import re
+
 import pytest
 
 from enderchest import filesystem as fs
@@ -35,6 +37,4 @@ class TestListShulkerBoxes:
         warnings = [
             record for record in caplog.records if record.levelname == "WARNING"
         ]
-        assert (
-            "not_ini/shulkerbox.cfg is not a valid shulker config:" in warnings[-1].msg
-        )
+        assert re.search("Could not parse(.*)not_ini/shulkerbox.cfg", warnings[-1].msg)

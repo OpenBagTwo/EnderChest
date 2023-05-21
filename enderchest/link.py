@@ -78,7 +78,7 @@ def place_enderchest(
                         f" to instance {instance.name}:"
                         f"\n{resource_path} already exists."
                     )
-                    # TODO: optiuon to record failure but keep going
+                    # TODO: option to record failure but keep going
                     raise RuntimeError(failure_message) from oh_no
 
             if cleanup:

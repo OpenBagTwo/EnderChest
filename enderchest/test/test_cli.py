@@ -47,6 +47,8 @@ class TestVersion:
 
 
 class ActionTestSuite:
+    required_args: tuple[str, ...] = ()
+
     @pytest.mark.parametrize("help_flag", ("-h", "--help"))
     def test_help_gives_action_specific_help(
         self,
@@ -61,16 +63,20 @@ class ActionTestSuite:
 
     def test_default_root_is_cwd(self, monkeypatch):
         monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
-        _, root, _, _ = cli.parse_args(["enderchest", *self.action.split()])
+        _, root, _, _ = cli.parse_args(
+            ["enderchest", *self.action.split(), *self.required_args]
+        )
         assert root == Path("~~dummy~~")
 
     def test_first_argument_is_root(self):
-        _, root, _, _ = cli.parse_args(["enderchest", *self.action.split(), "/home"])
+        _, root, _, _ = cli.parse_args(
+            ["enderchest", *self.action.split(), "/home", *self.required_args]
+        )
         assert root == Path("/home")
 
     def test_root_can_also_be_provided_by_flag(self):
         _, root, _, _ = cli.parse_args(
-            ["enderchest", *self.action.split(), "--root", "/home"]
+            ["enderchest", *self.action.split(), *self.required_args, "--root", "/home"]
         )
         assert root == Path("/home")
 
@@ -88,7 +94,7 @@ class ActionTestSuite:
     )
     def test_altering_verbosity(self, verbosity_flag, expected_verbosity):
         _, _, log_level, _ = cli.parse_args(
-            ["enderchest", *self.action.split(), verbosity_flag]
+            ["enderchest", *self.action.split(), verbosity_flag, *self.required_args]
         )
 
         assert log_level == expected_verbosity
@@ -150,6 +156,11 @@ class TestPlace(ActionTestSuite):
     def test_keep_broken_links(self, flag):
         _, root, _, options = cli.parse_args(["enderchest", "place", "/home", flag])
         assert (root, options["cleanup"]) == (Path("/home"), False)
+
+
+class TestShulkerInventory(ActionTestSuite):
+    action = "inventory shulker_box"
+    required_args = ("nombre",)
 
 
 class TestOpen:
