@@ -3,7 +3,7 @@ import re
 from collections import Counter
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Iterable, Sequence
+from typing import Callable, Iterable, Sequence
 from urllib.parse import ParseResult
 
 from pathvalidate import is_valid_filename
@@ -16,7 +16,7 @@ from .instance import InstanceSpec
 from .loggers import CRAFT_LOGGER, SYNC_LOGGER
 from .orchestrate import (
     gather_minecraft_instances,
-    load_ender_chest,
+    load_ender_chest_instances,
     load_shulker_boxes,
 )
 from .prompt import NO, YES, confirm, prompt
@@ -140,7 +140,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
             break
 
     CRAFT_LOGGER.info(
-        "You can always add more instances later using\n$ enderchest gather"
+        "You can always add more instances later using\n$ enderchest gather minecraft"
     )
 
     while True:
@@ -311,11 +311,14 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
 
     # TODO: hosts
 
-    instances = load_ender_chest(minecraft_root).instances
+    def refresh_ender_chest_instance_list() -> list[InstanceSpec]:
+        """The primary reason to lambda-fy this is to re-print the instance list."""
+        return load_ender_chest_instances(minecraft_root)
+
+    instances = refresh_ender_chest_instance_list()
 
     explicit_type = "name"
     if len(instances) > 0:
-        _print_instance_list(instances)
         explicit_type = "number"
     while True:
         selection_type = prompt(
@@ -328,14 +331,18 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
                 if explicit_type == "name":
                     shulker_box = _prompt_for_instance_names(shulker_box)
                 else:  # if explicit_type == "number"
-                    shulker_box = _prompt_for_instance_numbers(shulker_box, instances)
+                    shulker_box = _prompt_for_instance_numbers(
+                        shulker_box, instances, refresh_ender_chest_instance_list
+                    )
             case "name":
                 # yeah, this is always available
                 shulker_box = _prompt_for_instance_names(shulker_box)
             case "number":
                 if explicit_type == "name":
                     continue
-                shulker_box = _prompt_for_instance_numbers(shulker_box, instances)
+                shulker_box = _prompt_for_instance_numbers(
+                    shulker_box, instances, refresh_ender_chest_instance_list
+                )
             case _:
                 continue
         break
@@ -396,8 +403,8 @@ def _prompt_for_filters(
     ----------
     shulker_box : ShulkerBox
         The starting ShulkerBox (with no match critera)
-    instances : list-like of InstanceSpec
-        The list of known instances
+    instances : list of InstanceSpec
+       The list of instances registered to the EnderChest
 
     Returns
     -------
@@ -607,7 +614,9 @@ def _prompt_for_instance_names(shulker_box: ShulkerBox) -> ShulkerBox:
 
 
 def _prompt_for_instance_numbers(
-    shulker_box: ShulkerBox, instances: Sequence[InstanceSpec]
+    shulker_box: ShulkerBox,
+    instances: Sequence[InstanceSpec],
+    instance_loader: Callable[[], Sequence[InstanceSpec]],
 ) -> ShulkerBox:
     """Prompt the user to specify the instances they'd like by number
 
@@ -615,8 +624,11 @@ def _prompt_for_instance_numbers(
     ----------
     shulker_box : ShulkerBox
         The starting ShulkerBox, presumably with limited or no match criteria
-    instances : list-like of InstanceSpec
-        The names of the  available instances
+    instances : list of InstanceSpec
+       The list of instances registered to the EnderChest
+    instance_loader : method that returns a list of InstanceSpec
+        A method that when called, prints and returns a refreshed list of instances
+        registered to the EnderChest
 
     Returns
     -------
@@ -635,9 +647,10 @@ def _prompt_for_instance_numbers(
         selections = "*"
 
     if re.search("[^0-9-,* ]", selections):  # check for invalid characters
-        CRAFT_LOGGER.error("Invalid selection")
-        _print_instance_list(instances)
-        return _prompt_for_instance_numbers(shulker_box, instances)
+        CRAFT_LOGGER.error("Invalid selection\n")
+        return _prompt_for_instance_numbers(
+            shulker_box, instance_loader(), instance_loader
+        )
 
     selected_instances: set[str] = set()
     for entry in selections.split(","):
@@ -649,22 +662,25 @@ def _prompt_for_instance_numbers(
                 # luckily we don't need to worry about negative numbers
                 index = int(value) - 1
                 if index < 0 or index >= len(instances):
-                    CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range")
-                    _print_instance_list(instances)
-                    return _prompt_for_instance_numbers(shulker_box, instances)
+                    CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
+                    return _prompt_for_instance_numbers(
+                        shulker_box, instance_loader(), instance_loader
+                    )
                 selected_instances.add(instances[index].name)
             case value if match := re.match("([0-9]+)-([0-9]+)$", value):
                 bounds = tuple(int(bound) for bound in match.groups())
                 if bounds[0] > bounds[1]:
                     CRAFT_LOGGER.error(
-                        f"Invalid selection: {entry} is not a valid range"
+                        f"Invalid selection: {entry} is not a valid range\n"
                     )
-                    _print_instance_list(instances)
-                    return _prompt_for_instance_numbers(shulker_box, instances)
+                    return _prompt_for_instance_numbers(
+                        shulker_box, instance_loader(), instance_loader
+                    )
                 if max(bounds) > len(instances) or min(bounds) < 1:
                     CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
-                    _print_instance_list(instances)
-                    return _prompt_for_instance_numbers(shulker_box, instances)
+                    return _prompt_for_instance_numbers(
+                        shulker_box, instance_loader(), instance_loader
+                    )
                 selected_instances.update(
                     instance.name for instance in instances[bounds[0] - 1 : bounds[1]]
                 )
@@ -678,29 +694,11 @@ def _prompt_for_instance_numbers(
     )
     if not confirm(default=True):
         CRAFT_LOGGER.debug("Trying again to prompt for instance numbers")
-        _print_instance_list(instances)
-        return _prompt_for_instance_numbers(shulker_box, instances)
+        CRAFT_LOGGER.info("")  # just making a newline
+        return _prompt_for_instance_numbers(
+            shulker_box, instance_loader(), instance_loader
+        )
 
     return shulker_box._replace(
         match_criteria=shulker_box.match_criteria + (("instances", choices),)
-    )
-
-
-def _print_instance_list(instances: Sequence[InstanceSpec]) -> None:
-    """Just centralizing the implementation of how the instance list gets
-    displayed
-
-    Parameters
-    ----------
-    instances : list-like of InstanceSpec
-        The available instances
-    """
-    CRAFT_LOGGER.info(
-        "\nThese are the instances that are currently registered:\n"
-        + "\n".join(
-            [
-                f"  {i + 1}. {instance.name} ({instance.root})"
-                for i, instance in enumerate(instances)
-            ]
-        )
     )
