@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from .orchestrate import load_ender_chest, load_shulker_boxes
+from .orchestrate import load_ender_chest_instances, load_shulker_boxes
 
 
 def place_enderchest(
@@ -32,7 +32,7 @@ def place_enderchest(
     if stop_at_first_failure is not True:
         raise NotImplementedError
 
-    instances = load_ender_chest(minecraft_root).instances
+    instances = load_ender_chest_instances(minecraft_root)
 
     shulker_boxes = load_shulker_boxes(minecraft_root)
 

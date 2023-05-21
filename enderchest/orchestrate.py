@@ -18,22 +18,91 @@ class Action(Protocol):
 def load_ender_chest(minecraft_root: Path) -> EnderChest:
     """Load the configuration from the enderchest.cfg file in the EnderChest
     folder.
+
     Parameters
     ----------
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+
     Returns
     -------
     EnderChest
         The EnderChest configuration
+
     Raises
     ------
     FileNotFoundError
         If no EnderChest folder exists in the given minecraft root or if no
         enderchest.cfg file exists within that EnderChest folder
     """
-    return EnderChest.from_cfg(fs.ender_chest_config(minecraft_root))
+    config_path = fs.ender_chest_config(minecraft_root)
+    loggers.GATHER_LOGGER.debug(f"Loading {config_path}")
+    ender_chest = EnderChest.from_cfg(config_path)
+    loggers.GATHER_LOGGER.debug(f"Parsed EnderChest installation from {minecraft_root}")
+    return ender_chest
+
+
+def load_ender_chest_instances(minecraft_root: Path) -> list[InstanceSpec]:
+    """Get the list of instances registered with the EnderChest located in the
+    minecraft root
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+
+    Returns
+    -------
+    list of InstanceSpec
+        The instances registered with the EnderChest
+
+    Notes
+    -----
+    If no EnderChest is installed in the given location, then this will return
+    an empty list rather than failing outright.
+    """
+    try:
+        ender_chest = load_ender_chest(minecraft_root)
+        instances: list[InstanceSpec] = ender_chest.instances
+    except (FileNotFoundError, ValueError) as bad_chest:
+        loggers.GATHER_LOGGER.error(
+            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+        )
+        instances = []
+    if len(instances) == 0:
+        loggers.GATHER_LOGGER.info(
+            f"There are no instances registered to the {minecraft_root} EnderChest"
+        )
+    else:
+        loggers.GATHER_LOGGER.info(
+            "These are the instances that are currently registered"
+            f" to the {minecraft_root} EnderChest:\n"
+            + "\n".join(
+                [
+                    f"  {i + 1}. {_render_instance(instance)})"
+                    for i, instance in enumerate(instances)
+                ]
+            )
+        )
+    return instances
+
+
+def _render_instance(instance: InstanceSpec) -> str:
+    """Render an instance spec to a descriptive string
+
+    Parameters
+    ----------
+    instance : InstanceSpec
+        The instance spec to render
+
+    Returns
+    -------
+    str
+        {instance.name} ({instance.root})
+    """
+    return f"{instance.name} ({instance.root})"
 
 
 def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
@@ -86,7 +155,7 @@ def _render_shulker_box(shulker_box: ShulkerBox) -> str:
     Parameters
     ----------
     shulker_box : ShulkerBox
-        shulker box spec
+        The shulker box spec to render
 
     Returns
     -------

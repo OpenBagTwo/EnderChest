@@ -1,4 +1,5 @@
 """Tests for setting up folders and files"""
+import logging
 from pathlib import Path
 
 import pytest
@@ -253,8 +254,13 @@ class TestPromptByNumber:
         )
         monkeypatch.setattr("builtins.input", script_reader)
 
+        def get_instances():
+            return utils.TESTING_INSTANCES
+
         shulker_box = craft._prompt_for_instance_numbers(
-            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+            ShulkerBox(0, "tester", Path("ignored"), (), ()),
+            get_instances(),
+            get_instances,
         )
 
         _ = capsys.readouterr()
@@ -278,8 +284,13 @@ class TestPromptByNumber:
         )
         monkeypatch.setattr("builtins.input", script_reader)
 
+        def get_instances():
+            return utils.TESTING_INSTANCES
+
         shulker_box = craft._prompt_for_instance_numbers(
-            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+            ShulkerBox(0, "tester", Path("ignored"), (), ()),
+            get_instances(),
+            get_instances,
         )
 
         _ = capsys.readouterr()
@@ -307,8 +318,20 @@ class TestPromptByNumber:
         )
         monkeypatch.setattr("builtins.input", script_reader)
 
+        def get_instances():
+            logging.info(
+                """These are the instances that are currently registered:
+  1. official (~/.minecraft)
+  2. axolotl (instances/axolotl/.minecraft)
+  3. bee (instances/bee/.minecraft)
+  4. Chest Boat (instances/chest-boat/.minecraft)"""
+            )
+            return utils.TESTING_INSTANCES
+
         shulker_box = craft._prompt_for_instance_numbers(
-            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+            ShulkerBox(0, "tester", Path("ignored"), (), ()),
+            get_instances(),
+            get_instances,
         )
 
         _ = capsys.readouterr()
