@@ -4,7 +4,7 @@ import re
 import pytest
 
 from enderchest import filesystem as fs
-from enderchest import orchestrate as o
+from enderchest import gather
 
 from . import utils
 
@@ -22,7 +22,7 @@ class TestListShulkerBoxes:
         bad_ini.write_text("is_this_valid_ini=no")
 
     def test_list_shulker_box_reports_the_boxes_in_order(self, minecraft_root, caplog):
-        _ = o.load_shulker_boxes(minecraft_root)
+        _ = gather.load_shulker_boxes(minecraft_root)
         assert (
             """0. global
   1. 1.19
@@ -32,7 +32,7 @@ class TestListShulkerBoxes:
         )
 
     def test_list_shulker_box_warns_if_theres_a_bad_box(self, minecraft_root, caplog):
-        _ = o.load_shulker_boxes(minecraft_root)
+        _ = gather.load_shulker_boxes(minecraft_root)
 
         warnings = [
             record for record in caplog.records if record.levelname == "WARNING"

@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from .orchestrate import load_ender_chest_instances, load_shulker_boxes
+from .gather import load_ender_chest_instances, load_shulker_boxes
 
 
 def place_enderchest(

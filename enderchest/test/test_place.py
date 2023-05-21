@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from enderchest import ShulkerBox, link
+from enderchest import ShulkerBox, place
 
 from . import utils
 
@@ -42,7 +42,7 @@ class TestSingleShulkerPlace:
     def test_place_is_willing_to_replace_empty_folders_by_default(
         self, minecraft_root, instance
     ):
-        link.place_enderchest(minecraft_root)
+        place.place_enderchest(minecraft_root)
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
         assert (instance_folder / "logs").resolve() == (
@@ -54,7 +54,7 @@ class TestSingleShulkerPlace:
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_is_able_to_place_individual_files(self, minecraft_root, instance):
-        link.place_enderchest(minecraft_root)
+        place.place_enderchest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
@@ -71,7 +71,7 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.glob("*")
 
-        link.place_enderchest(minecraft_root)
+        place.place_enderchest(minecraft_root)
 
         assert broken_link not in broken_link.parent.glob("*")
 
@@ -84,7 +84,7 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.glob("*")
 
-        link.place_enderchest(minecraft_root, cleanup=False)
+        place.place_enderchest(minecraft_root, cleanup=False)
 
         assert broken_link in broken_link.parent.glob("*")
 
@@ -99,7 +99,7 @@ class TestSingleShulkerPlace:
         with pytest.raises(
             RuntimeError, match=rf"{instance.name}((.|\n)*)screenshots((.|\n)*)empty"
         ):
-            link.place_enderchest(minecraft_root)
+            place.place_enderchest(minecraft_root)
 
         # make sure the file is still there afterwards
         assert existing_file.exists()
@@ -115,7 +115,7 @@ class TestSingleShulkerPlace:
         with pytest.raises(
             RuntimeError, match=rf"{instance.name}((.|\n)*)stuff.zip((.|\n)*)exists"
         ):
-            link.place_enderchest(minecraft_root)
+            place.place_enderchest(minecraft_root)
 
         # make sure the file is still there afterwards
         assert existing_file.exists()
@@ -129,7 +129,7 @@ class TestSingleShulkerPlace:
         existing_symlink = instance_folder / "resourcepacks" / "stuff.zip"
         existing_symlink.symlink_to(minecraft_root / "workspace" / "other_stuff.zip")
 
-        link.place_enderchest(minecraft_root)
+        place.place_enderchest(minecraft_root)
 
         assert (
             existing_symlink.resolve()

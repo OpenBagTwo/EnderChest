@@ -4,11 +4,10 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Protocol, Sequence
 
-from . import orchestrate as o
+from . import gather
 from ._version import get_versions
-from .orchestrate import Action
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
 _instance_aliases = tuple(
@@ -31,7 +30,12 @@ def _load_shulker_box_matches(
 ) -> None:
     """Wrapper around the orchestrator method to coalesce name vs. name_flag"""
     shulker_box_name: str = name or name_flag  # type: ignore[assignment]
-    _ = o.load_shulker_box_matches(minecraft_root, shulker_box_name)
+    _ = gather.load_shulker_box_matches(minecraft_root, shulker_box_name)
+
+
+class Action(Protocol):
+    def __call__(self, minecraft_root: Path, /) -> Any:
+        ...
 
 
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
@@ -71,7 +75,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             (),
         ),
         "list the minecraft instances registered with your Enderchest",
-        o.load_ender_chest_instances,
+        gather.load_ender_chest_instances,
     ),
     (
         tuple(
@@ -81,7 +85,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             for alias in ("shulker_boxes", "shulkerboxes", "shulkers")
         ),
         "list the shulker boxes inside your Enderchest",
-        o.load_shulker_boxes,
+        gather.load_shulker_boxes,
     ),
     (
         tuple(
@@ -93,7 +97,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         tuple(f"{verb} {alias}" for verb in _list_aliases for alias in _remote_aliases),
         "list the other EnderChest installations registered with this EnderChest",
-        o.load_ender_chest_remotes,
+        gather.load_ender_chest_remotes,
     ),
     (
         ("open",),
@@ -413,13 +417,12 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
 
 def main():
     logger = logging.getLogger(__package__)
-
     cli_handler = logging.StreamHandler()
-
     logger.addHandler(cli_handler)
 
     action, root, log_level, kwargs = parse_args(sys.argv)
 
+    # TODO: set log levels per logger based on the command
     cli_handler.setLevel(log_level)
 
     # TODO: when we add log files, set this to minimum log level across all handlers

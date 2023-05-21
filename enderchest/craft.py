@@ -12,13 +12,13 @@ from . import enderchest
 from . import filesystem as fs
 from . import sync
 from .enderchest import EnderChest
-from .instance import InstanceSpec
-from .loggers import CRAFT_LOGGER, SYNC_LOGGER
-from .orchestrate import (
+from .gather import (
     gather_minecraft_instances,
     load_ender_chest_instances,
     load_shulker_boxes,
 )
+from .instance import InstanceSpec
+from .loggers import CRAFT_LOGGER, SYNC_LOGGER
 from .prompt import NO, YES, confirm, prompt
 from .shulker_box import ShulkerBox
 

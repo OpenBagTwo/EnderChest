@@ -1,4 +1,4 @@
-"""Functionality for discovering and managing files across the file system"""
+"""Functionality for managing the EnderChest and shulker box config files and folders"""
 from pathlib import Path
 from typing import Iterable
 
