@@ -17,7 +17,7 @@ class TestConfigWriting:
             "original",
             minecraft_root / "EnderChest" / "original",
             match_criteria=(
-                ("minecraft", (">1.12,<2.0",)),
+                ("minecraft", (">=1.12,<2.0",)),
                 ("modloader", ("*",)),
                 ("tags", ("aether", "optifine")),
                 ("instances", ("aether legacy", "paradise lost")),

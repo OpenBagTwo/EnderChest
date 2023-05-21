@@ -76,17 +76,47 @@ class ShulkerBox(NamedTuple):
         except ParsingError as bad_cfg:
             raise ValueError(f"Could not parse {config_file}") from bad_cfg
 
-        link_folders: tuple[str, ...] = ()
         match_criteria: dict[str, tuple[str, ...]] = {}
 
         for section in parser.sections():
-            if section == "properties":
+            normalized = (
+                section.lower().replace(" ", "").replace("-", "").replace("_", "")
+            )
+            if normalized.endswith("s"):
+                normalized = normalized[:-1]  # lazy de-pluralization
+            if normalized in ("linkfolder", "folder"):
+                normalized = "link-folders"
+            if normalized in ("minecraft", "version", "minecraftversion"):
+                normalized = "minecraft"
+            if normalized in ("modloader", "loader"):
+                normalized = "modloader"
+            if normalized in ("instance", "tag"):
+                normalized += "s"  # lazy re-pluralization
+
+            if normalized == "propertie":  # lulz
+                # TODO check to make sure properties hasn't been read before
                 # most of this section gets ignored
                 priority = parser[section].getint("priority", 0)
-            elif section == "link-folders":
-                link_folders = tuple(parser[section].keys())
+                # TODO: support specifying filters (and link-folders) in the properties section
+                continue
+            if normalized in match_criteria.keys():
+                raise ValueError(f"{config_file} specifies {normalized} more than once")
+
+            if normalized == "minecraft":
+                minecraft_versions = []
+                for key, value in parser[section].items():
+                    if value is None:
+                        minecraft_versions.append(key)
+                    elif key.lower().strip().startswith("version"):
+                        minecraft_versions.append(value)
+                    else:  # what happens if you specify ">=1.19" or "=1.12"
+                        minecraft_versions.append("=".join((key, value)))
+                match_criteria["minecraft"] = tuple(minecraft_versions)
             else:
-                match_criteria[section] = tuple(parser[section].keys())
+                # really hoping delimiter shenanigans doesn't show up anywhere else
+                match_criteria[normalized] = tuple(parser[section].keys())
+
+        link_folders = match_criteria.pop("link-folders", ())
 
         return cls(priority, name, root, tuple(match_criteria.items()), link_folders)
 
@@ -138,20 +168,20 @@ class ShulkerBox(NamedTuple):
             otherwise.
         """
         for condition, values in self.match_criteria:
-            match condition:
-                case "instances" | "instance":
+            match condition:  # these should have been normalized on read-in
+                case "instances":
                     for value in values:
                         if fnmatch.fnmatch(instance.name, value):
                             break
                     else:
                         return False
-                case "tags" | "tag":
+                case "tags":
                     for value in values:
                         if fnmatch.filter(instance.tags, value):
                             break
                     else:
                         return False
-                case "modloader" | "modloaders" | "loader" | "loaders":
+                case "modloader":
                     normalized: list[str] = sum(
                         [_normalize_modloader(value) for value in values], []
                     )
@@ -162,7 +192,7 @@ class ShulkerBox(NamedTuple):
                             break
                     else:
                         return False
-                case "minecraft" | "version" | "minecraft_version" | "versions" | "minecraft_versions":
+                case "minecraft":
                     for value in values:
                         if any(
                             (
@@ -239,5 +269,6 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
     try:
         return semver.SimpleSpec(version_spec).match(semver.Version(version_string))
     except ValueError:
+        print("FML", version_spec, version_string)
         # fall back to simple fnmatching
         return fnmatch.fnmatch(version_spec, version_string)
