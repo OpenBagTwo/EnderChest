@@ -1,7 +1,7 @@
 """Specification and configuration of a shulker box"""
 import datetime as dt
 import fnmatch
-from configparser import ConfigParser
+from configparser import ConfigParser, ParsingError
 from pathlib import Path
 from typing import NamedTuple
 
@@ -61,12 +61,20 @@ class ShulkerBox(NamedTuple):
         -------
         ShulkerBox
             The resulting ShulkerBox
+
+        Raises
+        ------
+        ValueError
+            If the config file at that location cannot be parsed
         """
         priority = 0
         root = config_file.parent
         name = root.name
         parser = ConfigParser(allow_no_value=True, inline_comment_prefixes=(";",))
-        parser.read(config_file)
+        try:
+            parser.read(config_file)
+        except ParsingError as bad_cfg:
+            raise ValueError(f"Could not parse {config_file}") from bad_cfg
 
         link_folders: tuple[str, ...] = ()
         match_criteria: dict[str, tuple[str, ...]] = {}

@@ -10,10 +10,15 @@ from pathvalidate import is_valid_filename
 
 from . import enderchest
 from . import filesystem as fs
-from . import gather_minecraft_instances, load_ender_chest, load_shulker_boxes, sync
+from . import sync
 from .enderchest import EnderChest
 from .instance import InstanceSpec
 from .loggers import CRAFT_LOGGER, SYNC_LOGGER
+from .orchestrate import (
+    gather_minecraft_instances,
+    load_ender_chest,
+    load_shulker_boxes,
+)
 from .prompt import NO, YES, confirm, prompt
 from .shulker_box import ShulkerBox
 
@@ -361,15 +366,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
     shulker_box = shulker_box._replace(link_folders=link_folders)
 
     while True:
-        existing_shulkers = load_shulker_boxes(minecraft_root)
-        if len(existing_shulkers) > 0:
-            CRAFT_LOGGER.info(
-                "Shulker box linking is currently applied in the following order:\n"
-                + "\n".join(
-                    f"  {shulker.priority}. {shulker.name}"
-                    for shulker in existing_shulkers
-                )
-            )
+        _ = load_shulker_boxes(minecraft_root)  # to display some log messages
         value = prompt(
             (
                 "What priority value should be assigned to this shulker box?"
