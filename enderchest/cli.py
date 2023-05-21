@@ -26,6 +26,14 @@ def _todo(minecraft_root: Path, **kwargs) -> None:
     raise NotImplementedError("This action is not yet implemented")
 
 
+def _load_shulker_box_matches(
+    minecraft_root: Path, name: str | None = None, name_flag: str | None = None
+) -> None:
+    """Wrapper around the orchestrator method to coalesce name vs. name_flag"""
+    shulker_box_name: str = name or name_flag  # type: ignore[assignment]
+    _ = o.load_shulker_box_matches(minecraft_root, shulker_box_name)
+
+
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     # action names (first one is canonical), action description, action method
     (
@@ -80,12 +88,12 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             f"{verb} {alias}" for verb in _list_aliases for alias in _shulker_aliases
         ),
         "list the instances that match the specified shulker box",
-        _todo,
+        _load_shulker_box_matches,
     ),
     (
         tuple(f"{verb} {alias}" for verb in _list_aliases for alias in _remote_aliases),
         "list the other EnderChest installations registered with this EnderChest",
-        _todo,
+        o.load_ender_chest_remotes,
     ),
     (
         ("open",),
