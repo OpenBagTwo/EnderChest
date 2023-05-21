@@ -1,7 +1,6 @@
-"""Implementation of common workflows"""
+"""Functionality for finding, resolving and parsing local installations and instances"""
 import logging
 from pathlib import Path
-from typing import Any, Protocol
 from urllib.parse import ParseResult
 
 from . import filesystem as fs
@@ -9,11 +8,6 @@ from . import instance, loggers
 from .enderchest import EnderChest
 from .instance import InstanceSpec
 from .shulker_box import ShulkerBox
-
-
-class Action(Protocol):
-    def __call__(self, minecraft_root: Path, /) -> Any:
-        ...
 
 
 def load_ender_chest(minecraft_root: Path) -> EnderChest:
