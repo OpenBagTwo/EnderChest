@@ -1,6 +1,6 @@
 """Specification and configuration of an EnderChest"""
 import datetime as dt
-from configparser import ConfigParser
+from configparser import ConfigParser, ParsingError
 from dataclasses import dataclass
 from pathlib import Path
 from socket import gethostname
@@ -119,11 +119,19 @@ class EnderChest:
         -------
         EnderChest
             The resulting EnderChest
+
+        Raises
+        ------
+        ValueError
+            If the config file at that location cannot be parsed
         """
         parser = ConfigParser(
             allow_no_value=True, delimiters=("=",), inline_comment_prefixes=(";",)
         )
-        parser.read(config_file)
+        try:
+            parser.read(config_file)
+        except ParsingError as bad_cfg:
+            raise ValueError(f"Could not parse {config_file}") from bad_cfg
 
         path = str(config_file.absolute().parent.parent)
 

@@ -63,7 +63,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             (),
         ),
         "list the minecraft instances registered with your Enderchest",
-        _todo,
+        o.load_ender_chest_instances,
     ),
     (
         tuple(
