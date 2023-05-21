@@ -7,22 +7,6 @@ from enderchest import ShulkerBox, link
 
 from . import utils
 
-GLOBAL_SHULKER = (
-    "global",
-    """; global/shulkerbox.cfg
-
-; temporarily disabling
-;[minecraft]
-;*
-
-[link-folders]
-screenshots
-backups
-crash-reports
-logs
-""",
-)
-
 
 class TestSingleShulkerPlace:
     """Test the simplest case of linking--where the files in the shulker should
@@ -32,7 +16,7 @@ class TestSingleShulkerPlace:
     def setup_teardown(self, minecraft_root, home):
         """Setup / teardown for this test class"""
         chest_folder = minecraft_root / "EnderChest"
-        utils.pre_populate_enderchest(chest_folder, GLOBAL_SHULKER)
+        utils.pre_populate_enderchest(chest_folder, utils.GLOBAL_SHULKER)
 
         do_not_touch = {
             (chest_folder / "global" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
@@ -311,52 +295,3 @@ class TestShulkerInstanceMatching:
             (),
         )
         assert self.matchall(multi_condition_shulker) == ["Chest Boat"]
-
-
-WILD_UPDATE_SHULKER = (
-    "1.19",
-    """; 1.19/shulkerbox.cfg
-[properties]
-priority = 1
-notes = Writing it all down
-
-[minecraft]
->=1.19.0,<1.20
-
-[link-folders]
-mods
-""",
-)
-
-VANILLA_SHULKER = (
-    "vanilla",
-    """; vanilla/shulkerbox.cfg
-
-[properties]
-priority = 2
-last_modified = 1970-1-1 00:00:00.000000
-
-[minecraft]
-*
-
-[modloader]
-none
-""",
-)
-
-OPTIFINE_SHULKER = (
-    "optifine",
-    """; optifine/shulkerbox.cfg
-[properties]
-priority = 3
-
-[minecraft]
-*
-
-[modloader]
-Forge
-
-[link-folders]
-shaderpacks
-""",
-)

@@ -7,7 +7,8 @@ from typing import Callable, Iterable
 
 import pytest
 
-from enderchest import EnderChest, InstanceSpec
+from enderchest import EnderChest, InstanceSpec, ShulkerBox
+from enderchest import filesystem as fs
 
 from . import testing_files
 
@@ -42,7 +43,6 @@ MMC_FOLDERS: tuple[str, ...] = (
     "texturepacks",
     ".bobby",
 )
-
 
 with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
     TESTING_INSTANCES: tuple[InstanceSpec, ...] = tuple(
@@ -226,7 +226,7 @@ def populate_instances_folder(instances_folder: Path) -> None:
 def pre_populate_enderchest(
     enderchest_folder: Path,
     *shulkers: tuple[str, str],
-) -> None:
+) -> list[ShulkerBox]:
     """Create an EnderChest folder, pre-populated with the testing enderchest.cfg
     folder and the specified shulker boxes
 
@@ -238,16 +238,99 @@ def pre_populate_enderchest(
         Shulker boxes to populate, with tuple members of:
           - name : the folder name of the shulker
           - config : the contents of the config file
+
+    Returns
+    -------
+    list of ShulkerBox
+        A list of parsed shulker boxes corresponding to the ones rendered
+        on the system
     """
     enderchest_folder.mkdir(parents=True, exist_ok=True)
     with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
         shutil.copy(enderchest_cfg, enderchest_folder)
+    shulker_boxes: list[ShulkerBox] = []
     for shulker_name, shulker_config in shulkers:
         (enderchest_folder / shulker_name).mkdir(parents=True, exist_ok=True)
-        with (enderchest_folder / shulker_name / "shulkerbox.cfg").open(
-            "w"
-        ) as config_file:
+        config_path = enderchest_folder / shulker_name / fs.SHULKER_BOX_CONFIG_NAME
+        with config_path.open("w") as config_file:
             config_file.write(shulker_config)
+        shulker_boxes.append(ShulkerBox.from_cfg(config_path))
+    return shulker_boxes
+
+
+# some sample shulker box configs to use with the above
+GLOBAL_SHULKER = (
+    "global",
+    """; global/shulkerbox.cfg
+
+; temporarily disabling
+;[minecraft]
+;*
+
+[link-folders]
+screenshots
+backups
+crash-reports
+logs
+""",
+)
+
+WILD_UPDATE_SHULKER = (
+    "1.19",
+    """; 1.19/shulkerbox.cfg
+[properties]
+name = wild update
+priority = 1
+notes = Writing it all down
+
+[minecraft]
+>=1.19.0,<1.20
+
+[link-folders]
+mods
+""",
+)
+
+VANILLA_SHULKER = (
+    "vanilla",
+    """; vanilla/shulkerbox.cfg
+
+[properties]
+priority = 2
+last_modified = 1970-1-1 00:00:00.000000
+
+[minecraft]
+*
+
+[modloader]
+none
+""",
+)
+
+OPTIFINE_SHULKER = (
+    "optifine",
+    """; optifine/shulkerbox.cfg
+[properties]
+priority = 3
+
+[minecraft]
+*
+
+[modloader]
+Forge
+
+[link-folders]
+shaderpacks
+""",
+)
+
+
+TESTING_SHULKER_CONFIGS = (
+    GLOBAL_SHULKER,
+    WILD_UPDATE_SHULKER,
+    VANILLA_SHULKER,
+    OPTIFINE_SHULKER,
+)
 
 
 def resolve(path: Path, minecraft_root: Path) -> Path:

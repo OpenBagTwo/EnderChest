@@ -1,12 +1,14 @@
 """Command-line interface"""
 import argparse
+import logging
 import os
 import sys
-from collections import defaultdict
 from pathlib import Path
-from typing import Any, Protocol, Sequence
+from typing import Any, Sequence
 
+from . import orchestrate as o
 from ._version import get_versions
+from .orchestrate import Action
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
 _instance_aliases = tuple(
@@ -19,17 +21,12 @@ _remote_aliases = tuple(
 _list_aliases = ("inventory", "list")
 
 
-class _Action(Protocol):
-    def __call__(self, minecraft_root: Path, /) -> None:
-        ...
-
-
 def _todo(minecraft_root: Path, **kwargs) -> None:
     """Placeholder for functionality that is still, well, #TODO"""
     raise NotImplementedError("This action is not yet implemented")
 
 
-ACTIONS: tuple[tuple[tuple[str, ...], str, _Action], ...] = (
+ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     # action names (first one is canonical), action description, action method
     (
         ("craft", "craft enderchest"),
@@ -70,12 +67,13 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, _Action], ...] = (
     ),
     (
         tuple(
-            f"{verb} {alias}es"  # got lucky on this
+            f"{verb} {alias}"
             for verb in _list_aliases
-            for alias in _shulker_aliases
+            # pluralization is hard
+            for alias in ("shulker_boxes", "shulkerboxes", "shulkers")
         ),
-        "list the shulker boxes registered with your Enderchest",
-        _todo,
+        "list the shulker boxes inside your Enderchest",
+        o.load_shulker_boxes,
     ),
     (
         tuple(
@@ -102,7 +100,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, _Action], ...] = (
 )
 
 
-def parse_args(argv: Sequence[str]) -> tuple[_Action, Path, dict[str, Any]]:
+def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     """Parse the provided command-line options to determine the action to perform and
     the arguments to pass to the action
 
@@ -118,11 +116,13 @@ def parse_args(argv: Sequence[str]) -> tuple[_Action, Path, dict[str, Any]]:
     str
         The root of the minecraft folder (parent of the EnderChest)
         where the action will be perfomed
+    int
+        The verbosity level of the operation (in terms of log levels)
     dict
         Any additional options that will be given to the action method
 
     """
-    actions: dict[str, _Action] = {}
+    actions: dict[str, Action] = {}
     aliases: dict[str, str] = {}
     descriptions: dict[str, str] = {}
     root_description: str = ""
@@ -377,8 +377,7 @@ def parse_args(argv: Sequence[str]) -> tuple[_Action, Path, dict[str, Any]]:
     _ = enderchest_parser.parse_args(argv[1:2])  # check for --help and --version
 
     for command in sorted(aliases.keys(), key=lambda x: -len(x)):  # longest first
-        if " ".join(argv[1:]).startswith(command):
-            action: _Action = actions[aliases[command]]
+        if " ".join((*argv[1:], "")).startswith(command + " "):
             action_kwargs = vars(
                 action_parsers[aliases[command]].parse_args(
                     argv[1 + len(command.split()) :]
@@ -386,12 +385,36 @@ def parse_args(argv: Sequence[str]) -> tuple[_Action, Path, dict[str, Any]]:
             )
             root_arg = action_kwargs.pop("root")
             root_flag = action_kwargs.pop("root_flag")
-            return action, Path(root_arg or root_flag or os.getcwd()), action_kwargs
+
+            verbosity = action_kwargs.pop("verbose") - action_kwargs.pop("quiet")
+
+            log_level = logging.INFO - 10 * verbosity
+            if log_level == logging.NOTSET:  # that's 0, annoyingly enough
+                log_level -= 1
+
+            return (
+                actions[aliases[command]],
+                Path(root_arg or root_flag or os.getcwd()),
+                log_level,
+                action_kwargs,
+            )
     else:
         enderchest_parser.print_help(sys.stderr)
         sys.exit(1)
 
 
 def main():
-    action, root, kwargs = parse_args(sys.argv)
+    logger = logging.getLogger(__package__)
+
+    cli_handler = logging.StreamHandler()
+
+    logger.addHandler(cli_handler)
+
+    action, root, log_level, kwargs = parse_args(sys.argv)
+
+    cli_handler.setLevel(log_level)
+
+    # TODO: when we add log files, set this to minimum log level across all handlers
+    logger.setLevel(log_level)
+
     action(root, **kwargs)
