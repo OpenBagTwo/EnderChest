@@ -44,6 +44,9 @@ def file_system(tmp_path):
         (
             minecraft_root / "workspace" / "neat_resource_pack" / "pack.mcmeta"
         ): '{"so": "meta"}\n',
+        (
+            minecraft_root / "instances" / "axolotl" / ".minecraft" / "options.txt"
+        ): "renderDistance:1",
     }
     mod_builds_folder = minecraft_root / "workspace" / "BestModEver" / "build" / "libs"
 
@@ -65,7 +68,15 @@ def file_system(tmp_path):
 
     symlinks: dict[Path, Path] = {  # map of links to targets
         minecraft_root / "official_launcher": home / ".minecraft",
-        (chest_folder / "client-only" / "saves" / "olam"): (
+        (
+            minecraft_root
+            / "instances"
+            / "chest-boat"
+            / ".minecraft"
+            / "mods"
+            / "BME.jar"
+        ): (mod_builds_folder / "BME_1.19_alpha.jar"),
+        (chest_folder / "1.19" / "saves" / "olam"): (
             minecraft_root / "worlds" / "olam"
         ),
     }

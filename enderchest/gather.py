@@ -4,9 +4,10 @@ from pathlib import Path
 from urllib.parse import ParseResult
 
 from . import filesystem as fs
-from . import instance, loggers
+from . import instance
 from .enderchest import EnderChest
 from .instance import InstanceSpec
+from .loggers import GATHER_LOGGER
 from .shulker_box import ShulkerBox
 
 
@@ -32,9 +33,9 @@ def load_ender_chest(minecraft_root: Path) -> EnderChest:
         enderchest.cfg file exists within that EnderChest folder
     """
     config_path = fs.ender_chest_config(minecraft_root)
-    loggers.GATHER_LOGGER.debug(f"Loading {config_path}")
+    GATHER_LOGGER.debug(f"Loading {config_path}")
     ender_chest = EnderChest.from_cfg(config_path)
-    loggers.GATHER_LOGGER.debug(f"Parsed EnderChest installation from {minecraft_root}")
+    GATHER_LOGGER.debug(f"Parsed EnderChest installation from {minecraft_root}")
     return ender_chest
 
 
@@ -62,16 +63,16 @@ def load_ender_chest_instances(minecraft_root: Path) -> list[InstanceSpec]:
         ender_chest = load_ender_chest(minecraft_root)
         instances: list[InstanceSpec] = ender_chest.instances
     except (FileNotFoundError, ValueError) as bad_chest:
-        loggers.GATHER_LOGGER.error(
+        GATHER_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
         instances = []
     if len(instances) == 0:
-        loggers.GATHER_LOGGER.info(
+        GATHER_LOGGER.info(
             f"There are no instances registered to the {minecraft_root} EnderChest"
         )
     else:
-        loggers.GATHER_LOGGER.info(
+        GATHER_LOGGER.info(
             "These are the instances that are currently registered"
             f" to the {minecraft_root} EnderChest:\n"
             + "\n".join(
@@ -128,19 +129,17 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
             if shulker_box is not None:
                 shulker_boxes.append(shulker_box)
     except FileNotFoundError:
-        loggers.GATHER_LOGGER.error(
-            f"There is no EnderChest installed within {minecraft_root}"
-        )
+        GATHER_LOGGER.error(f"There is no EnderChest installed within {minecraft_root}")
         return []
 
     shulker_boxes = sorted(shulker_boxes)
 
     if len(shulker_boxes) == 0:
-        loggers.GATHER_LOGGER.info(
+        GATHER_LOGGER.info(
             f"There are no shulker boxes within the {minecraft_root} EnderChest"
         )
     else:
-        loggers.GATHER_LOGGER.info(
+        GATHER_LOGGER.info(
             f"These are the shulker boxes within the {minecraft_root} EnderChest,"
             "\nlisted in the order in which they are linked:\n"
             + "\n".join(
@@ -165,14 +164,12 @@ def _load_shulker_box(config_file: Path) -> ShulkerBox | None:
         The parsed shulker box or None, if the shulker box couldn't be parsed
     """
     try:
-        loggers.GATHER_LOGGER.debug(f"Attempting to parse {config_file}")
+        GATHER_LOGGER.debug(f"Attempting to parse {config_file}")
         shulker_box = ShulkerBox.from_cfg(config_file)
-        loggers.GATHER_LOGGER.debug(
-            f"Successfully parsed {_render_shulker_box(shulker_box)}"
-        )
+        GATHER_LOGGER.debug(f"Successfully parsed {_render_shulker_box(shulker_box)}")
         return shulker_box
     except (FileNotFoundError, ValueError) as bad_box:
-        loggers.GATHER_LOGGER.warning(
+        GATHER_LOGGER.warning(
             f"Could not load shulker box from {config_file}:\n  {bad_box}"
         )
     return None
@@ -222,13 +219,13 @@ def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, st
         ender_chest = load_ender_chest(minecraft_root)
         remotes: dict[str, ParseResult] = ender_chest.remotes
     except (FileNotFoundError, ValueError) as bad_chest:
-        loggers.GATHER_LOGGER.error(
+        GATHER_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
         remotes = {}
 
     if len(remotes) == 0:
-        loggers.GATHER_LOGGER.info(
+        GATHER_LOGGER.info(
             f"There are no remotes registered to the {minecraft_root} EnderChest"
         )
         return []
@@ -241,7 +238,7 @@ def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, st
     for alias, remote in remotes.items():
         report += f"\n  - {_render_remote(alias, remote)}"
         remote_list.append((remote, alias))
-    loggers.GATHER_LOGGER.info(report)
+    GATHER_LOGGER.info(report)
     return remote_list
 
 
@@ -303,9 +300,7 @@ def load_shulker_box_matches(
             f"  - {_render_instance(instance)}" for instance in matches
         )
 
-    loggers.GATHER_LOGGER.info(
-        f"The shulker box {_render_shulker_box(shulker_box)} {report}"
-    )
+    GATHER_LOGGER.info(f"The shulker box {_render_shulker_box(shulker_box)} {report}")
 
     return matches
 
@@ -339,7 +334,7 @@ def gather_minecraft_instances(
     instances: list[InstanceSpec] = []
     for folder in fs.minecraft_folders(search_path):
         folder_path = folder.absolute()
-        loggers.GATHER_LOGGER.info(f"Found {folder}")
+        GATHER_LOGGER.info(f"Found {folder}")
         if official is not False:
             try:
                 instances.append(
@@ -347,7 +342,7 @@ def gather_minecraft_instances(
                 )
                 continue
             except ValueError as not_official:
-                loggers.GATHER_LOGGER.log(
+                GATHER_LOGGER.log(
                     logging.INFO if official is None else logging.WARNING,
                     (f"{folder} is not an official instance:" f"\n{not_official}",),
                 )
@@ -356,11 +351,11 @@ def gather_minecraft_instances(
                 instances.append(instance.gather_metadata_for_mmc_instance(folder_path))
                 continue
             except ValueError as not_mmc:
-                loggers.GATHER_LOGGER.log(
+                GATHER_LOGGER.log(
                     logging.INFO if official is None else logging.WARNING,
                     f"{folder} is not an MMC-like instance:\n{not_mmc}",
                 )
-        loggers.GATHER_LOGGER.warn(
+        GATHER_LOGGER.warn(
             f"{folder_path} does not appear to be a valid Minecraft instance"
         )
     official_count = 0
