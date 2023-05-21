@@ -1,4 +1,5 @@
 """Test the command-line interface"""
+import logging
 import os
 from pathlib import Path
 
@@ -6,6 +7,9 @@ import pytest
 
 import enderchest
 from enderchest import cli
+from enderchest import filesystem as fs
+
+from . import utils
 
 
 class TestHelp:
@@ -57,15 +61,15 @@ class ActionTestSuite:
 
     def test_default_root_is_cwd(self, monkeypatch):
         monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
-        _, root, _ = cli.parse_args(["enderchest", *self.action.split()])
+        _, root, _, _ = cli.parse_args(["enderchest", *self.action.split()])
         assert root == Path("~~dummy~~")
 
     def test_first_argument_is_root(self):
-        _, root, _ = cli.parse_args(["enderchest", *self.action.split(), "/home"])
+        _, root, _, _ = cli.parse_args(["enderchest", *self.action.split(), "/home"])
         assert root == Path("/home")
 
     def test_root_can_also_be_provided_by_flag(self):
-        _, root, _ = cli.parse_args(
+        _, root, _, _ = cli.parse_args(
             ["enderchest", *self.action.split(), "--root", "/home"]
         )
         assert root == Path("/home")
@@ -73,21 +77,21 @@ class ActionTestSuite:
     @pytest.mark.parametrize(
         "verbosity_flag, expected_verbosity",
         (
-            ("-v", 1),
-            ("-q", -1),
-            ("--verbose", 1),
-            ("--quiet", -1),
-            ("-vv", 2),
-            ("-qq", -2),
-            ("-vvqvqqvqv", 1),
+            ("-v", logging.DEBUG),
+            ("-q", logging.WARNING),
+            ("--verbose", logging.DEBUG),
+            ("--quiet", logging.WARNING),
+            ("-vv", -1),
+            ("-qq", logging.ERROR),
+            ("-vvqvqqvqv", logging.DEBUG),
         ),
     )
     def test_altering_verbosity(self, verbosity_flag, expected_verbosity):
-        _, _, options = cli.parse_args(
+        _, _, log_level, _ = cli.parse_args(
             ["enderchest", *self.action.split(), verbosity_flag]
         )
 
-        assert options["verbose"] - options["quiet"] == expected_verbosity
+        assert log_level == expected_verbosity
 
 
 class TestCraft(ActionTestSuite):
@@ -95,7 +99,7 @@ class TestCraft(ActionTestSuite):
 
     @pytest.mark.parametrize("remote_flag", ("-r", "--remote"))
     def test_passing_in_a_single_remote(self, remote_flag):
-        _, _, options = cli.parse_args(
+        _, _, _, options = cli.parse_args(
             [
                 "enderchest",
                 "craft",
@@ -114,7 +118,7 @@ class TestCraft(ActionTestSuite):
     def test_passing_in_a_multiple_remotes_plus_other_kwargs(
         self, remote_flag_1, remote_flag_2, remote_flag_3
     ):
-        _, _, options = cli.parse_args(
+        _, _, _, options = cli.parse_args(
             [
                 "enderchest",
                 "craft",
@@ -139,12 +143,12 @@ class TestPlace(ActionTestSuite):
     action = "place"
 
     def test_remove_broken_links_by_default(self):
-        _, _, options = cli.parse_args(["enderchest", "place", "/home"])
+        _, _, _, options = cli.parse_args(["enderchest", "place", "/home"])
         assert options["cleanup"] is True
 
     @pytest.mark.parametrize("flag", ("-k", "--keep-broken"))
     def test_keep_broken_links(self, flag):
-        _, root, options = cli.parse_args(["enderchest", "place", "/home", flag])
+        _, root, _, options = cli.parse_args(["enderchest", "place", "/home", flag])
         assert (root, options["cleanup"]) == (Path("/home"), False)
 
 
