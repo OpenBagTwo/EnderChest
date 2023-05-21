@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from . import gather
+from . import gather, place
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
@@ -33,6 +33,23 @@ def _load_shulker_box_matches(
     _ = gather.load_shulker_box_matches(minecraft_root, shulker_box_name)
 
 
+def _place(
+    minecraft_root: Path,
+    errors: str = "prompt",
+    cleanup: bool = False,
+    stop_at_first_failure: bool = False,
+    ignore_errors: bool = False,
+) -> None:
+    """Wrapper around the orchestrator method to coalesce error-handling flags"""
+
+    if stop_at_first_failure:
+        errors = "abort"
+    if ignore_errors:  # elif?
+        errors = "ignore"
+    # else: errors = errors
+    place.place_ender_chest(minecraft_root, cleanup=cleanup, error_handling=errors)
+
+
 class Action(Protocol):
     def __call__(self, minecraft_root: Path, /) -> Any:
         ...
@@ -53,7 +70,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         ("place",),
         "link (or update the links) from your instances to your EnderChest",
-        _todo,
+        _place,
     ),
     (
         tuple("gather " + alias for alias in _instance_aliases),
@@ -308,17 +325,34 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     place_parser = action_parsers["place"]
     place_parser.add_argument(
         "-k",
-        "--keep-broken",
+        "--keep-broken-links",
         action="store_false",
         dest="cleanup",
-        help="do not remove broken links when performing place",
+        help="do not remove broken links from instances",
     )
-    place_parser.add_argument(
-        "-x",
+    error_handling = place_parser.add_mutually_exclusive_group()
+    error_handling.add_argument(
         "--stop-at-first-failure",
+        "-x",
         action="store_true",
-        dest="stop_at_first_failure",
         help="stop linking at the first issue",
+    )
+    error_handling.add_argument(
+        "--ignore-errors", action="store_true", help="ignore any linking errors"
+    )
+    error_handling.add_argument(
+        "--errors",
+        "-e",
+        choices=(
+            "prompt",
+            "ignore",
+            "skip",
+            "skip-instance",
+            "skip-shulker-box",
+            "abort",
+        ),
+        default="prompt",
+        help="specify how to handle linking errors (default behavior is to prompt after every error)",
     )
 
     # gather instance options

@@ -1,4 +1,5 @@
 """Tests around instance-linking functionality"""
+import re
 from pathlib import Path
 
 import pytest
@@ -39,10 +40,8 @@ class TestSingleShulkerPlace:
             assert path.read_text() == contents
 
     @utils.parametrize_over_instances("official", "axolotl")
-    def test_place_is_willing_to_replace_empty_folders_by_default(
-        self, minecraft_root, instance
-    ):
-        place.place_enderchest(minecraft_root)
+    def test_place_replaces_empty_folders(self, minecraft_root, instance):
+        place.place_ender_chest(minecraft_root)
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
         assert (instance_folder / "logs").resolve() == (
@@ -54,7 +53,7 @@ class TestSingleShulkerPlace:
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_is_able_to_place_individual_files(self, minecraft_root, instance):
-        place.place_enderchest(minecraft_root)
+        place.place_ender_chest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
@@ -71,7 +70,7 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.glob("*")
 
-        place.place_enderchest(minecraft_root)
+        place.place_ender_chest(minecraft_root)
 
         assert broken_link not in broken_link.parent.glob("*")
 
@@ -84,22 +83,26 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.glob("*")
 
-        place.place_enderchest(minecraft_root, cleanup=False)
+        place.place_ender_chest(minecraft_root, cleanup=False)
 
         assert broken_link in broken_link.parent.glob("*")
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_will_not_overwrite_a_non_empty_folder(
-        self, minecraft_root, instance
+        self, minecraft_root, instance, caplog
     ):
         instance_folder = utils.resolve(instance.root, minecraft_root)
         existing_file = instance_folder / "screenshots" / "thumbs.db"
         existing_file.write_text("opposable")
 
-        with pytest.raises(
-            RuntimeError, match=rf"{instance.name}((.|\n)*)screenshots((.|\n)*)empty"
-        ):
-            place.place_enderchest(minecraft_root)
+        place.place_ender_chest(minecraft_root)
+
+        error_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "ERROR"
+        )
+        assert re.search(
+            rf"{instance.name}((.|\n)*)screenshots((.|\n)*)empty", error_log
+        )
 
         # make sure the file is still there afterwards
         assert existing_file.exists()
@@ -107,15 +110,19 @@ class TestSingleShulkerPlace:
         assert existing_file.read_text() == "opposable"
 
     @utils.parametrize_over_instances("official", "axolotl")
-    def test_place_will_not_overwrite_a_file(self, minecraft_root, instance):
+    def test_place_will_not_overwrite_a_file(self, minecraft_root, instance, caplog):
         instance_folder = utils.resolve(instance.root, minecraft_root)
         existing_file = instance_folder / "resourcepacks" / "stuff.zip"
         existing_file.write_text("other_stuff")
 
-        with pytest.raises(
-            RuntimeError, match=rf"{instance.name}((.|\n)*)stuff.zip((.|\n)*)exists"
-        ):
-            place.place_enderchest(minecraft_root)
+        place.place_ender_chest(minecraft_root)
+
+        error_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "ERROR"
+        )
+        assert re.search(
+            rf"{instance.name}((.|\n)*)stuff.zip((.|\n)*)exists", error_log
+        )
 
         # make sure the file is still there afterwards
         assert existing_file.exists()
@@ -129,7 +136,7 @@ class TestSingleShulkerPlace:
         existing_symlink = instance_folder / "resourcepacks" / "stuff.zip"
         existing_symlink.symlink_to(minecraft_root / "workspace" / "other_stuff.zip")
 
-        place.place_enderchest(minecraft_root)
+        place.place_ender_chest(minecraft_root)
 
         assert (
             existing_symlink.resolve()
@@ -267,7 +274,7 @@ class TestShulkerInstanceMatching:
             ("1.19.0", "1.19.1", "1.19.2", "1.19.3", "1.19.4"),
             ("1.19",),
             ("1.19.*",),
-            (">=1.19,<1.20",),
+            (">=1.19.0,<1.20",),
         ),
         ids=("explicit", "minor-version", "wildcard", "bounding"),
     )
@@ -295,3 +302,139 @@ class TestShulkerInstanceMatching:
             (),
         )
         assert self.matchall(multi_condition_shulker) == ["Chest Boat"]
+
+
+class TestMultiShulkerPlacing:
+    @pytest.fixture(autouse=True)
+    def setup_teardown(self, minecraft_root, home):
+        """Setup / teardown for this test class"""
+        chest_folder = minecraft_root / "EnderChest"
+        utils.pre_populate_enderchest(chest_folder, *utils.TESTING_SHULKER_CONFIGS)
+
+        do_not_touch = {
+            (chest_folder / "global" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
+            (chest_folder / "global" / "logs" / "bumpona.log"): (
+                "Like a bump on a bump on a log, baby.\n"
+                "Like I'm in a fist fight with a fog, baby.\n"
+                "Step-ball-change and a pirouette.\n"
+                "And I regret, I regret.\n"
+            ),
+            (chest_folder / "1.19" / "mods" / "FoxNap.jar"): "hello-maestro",
+            (chest_folder / "1.19" / "options.txt"): "autoJump:true",
+            (
+                chest_folder / "vanilla" / "data" / "achievements.txt"
+            ): "Spelled acheivements correctly!",
+            (chest_folder / "optifine" / "mods" / "optifine"): "sodium4life",
+            (chest_folder / "optifine" / "shaderpacks" / "Seuss CitH.zip"): (
+                "But those trees! Oh those trees! But those truffula trees!"
+                "\nAll resplendent and gorgeous in ray-traced 3Ds"
+            ),
+            (
+                chest_folder / "optifine" / "resourcepacks" / "stuff.zip"
+            ): "optifine-optimized!",
+            (
+                minecraft_root
+                / "instances"
+                / "bee"
+                / ".minecraft"
+                / "shaderpacks"
+                / "Seuss CitH.zip.txt"
+            ): (
+                "with settings at max"
+                "\nits important to note"
+                "\nthe lag is real bad"
+                "\nbut just look at that goat!"
+            ),
+        }
+
+        for path, contents in do_not_touch.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(contents)
+
+        yield
+
+        # check on teardown that all those "do_not_touch" files are untouched
+        for path, contents in do_not_touch.items():
+            assert path.read_text() == contents
+
+    @pytest.mark.parametrize("error_handling", ("ignore", "skip"))
+    @pytest.mark.parametrize(
+        "shulker_box, instance, should_match", utils.TESTING_SHULKER_INSTANCE_MATCHES
+    )
+    def test_multi_shulker_place_correctly_identifies_matches(
+        self,
+        minecraft_root,
+        caplog,
+        shulker_box,
+        instance,
+        should_match,
+        error_handling,
+    ):
+        place.place_ender_chest(minecraft_root, error_handling=error_handling)
+
+        link_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "INFO"
+        )
+
+        assert (f"{instance}/.minecraft to {shulker_box}" in link_log) is should_match
+
+    @pytest.mark.parametrize("error_handling", ("ignore", "skip"))
+    def test_multi_shulker_place_overwrites_overlapping_symlinks(
+        self, minecraft_root, error_handling
+    ):
+        place.place_ender_chest(minecraft_root, error_handling=error_handling)
+
+        assert (
+            minecraft_root
+            / "instances"
+            / "bee"
+            / ".minecraft"
+            / "resourcepacks"
+            / "stuff.zip"
+        ).read_text() == "optifine-optimized!"
+
+    def test_default_behavior_is_to_stop_at_first_error(self, minecraft_root, caplog):
+        place.place_ender_chest(minecraft_root)
+
+        assert not (
+            minecraft_root
+            / "instances"
+            / "chest_boat"
+            / ".minecraft"
+            / "mods"
+            / "FoxNap.jar"
+        ).exists()
+
+        error_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "ERROR"
+        )
+
+        assert error_log.endswith("~/.minecraft/options.txt already exists\nAborting")
+
+    def test_skip_match(self, home, minecraft_root):
+        place.place_ender_chest(minecraft_root, error_handling="skip")
+
+        assert (
+            home / ".minecraft" / "data" / "achievements.txt"
+        ).read_text() == "Spelled acheivements correctly!"
+
+        assert not (home / ".minecraft" / "saves" / "olam").exists()
+
+    def test_skip_instance(self, home, minecraft_root):
+        place.place_ender_chest(minecraft_root, error_handling="skip-instance")
+
+        assert (
+            minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
+        ).read_text() == "autoJump:true"
+        assert not (home / ".minecraft" / "data" / "achievements.txt").exists()
+
+    def test_skip_shulker(self, home, minecraft_root):
+        place.place_ender_chest(minecraft_root, error_handling="skip-shulker")
+
+        assert (
+            home / ".minecraft" / "data" / "achievements.txt"
+        ).read_text() == "Spelled acheivements correctly!"
+
+        assert not (
+            minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
+        ).exists()

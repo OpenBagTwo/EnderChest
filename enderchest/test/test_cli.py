@@ -8,6 +8,7 @@ import pytest
 import enderchest
 from enderchest import cli
 from enderchest import filesystem as fs
+from enderchest import place
 
 from . import utils
 
@@ -105,7 +106,7 @@ class TestCraft(ActionTestSuite):
 
     @pytest.mark.parametrize("remote_flag", ("-r", "--remote"))
     def test_passing_in_a_single_remote(self, remote_flag):
-        _, _, _, options = cli.parse_args(
+        *_, options = cli.parse_args(
             [
                 "enderchest",
                 "craft",
@@ -124,7 +125,7 @@ class TestCraft(ActionTestSuite):
     def test_passing_in_a_multiple_remotes_plus_other_kwargs(
         self, remote_flag_1, remote_flag_2, remote_flag_3
     ):
-        _, _, _, options = cli.parse_args(
+        *_, options = cli.parse_args(
             [
                 "enderchest",
                 "craft",
@@ -148,14 +149,53 @@ class TestCraft(ActionTestSuite):
 class TestPlace(ActionTestSuite):
     action = "place"
 
+    @pytest.fixture
+    def place_log(self, monkeypatch):
+        place_log: list[tuple[Path, dict]] = []
+
+        def mock_place(path, **kwargs):
+            place_log.append((path, kwargs))
+
+        monkeypatch.setattr(place, "place_ender_chest", mock_place)
+
+        yield place_log
+
     def test_remove_broken_links_by_default(self):
-        _, _, _, options = cli.parse_args(["enderchest", "place", "/home"])
+        *_, options = cli.parse_args(["enderchest", "place", "/home"])
         assert options["cleanup"] is True
 
     @pytest.mark.parametrize("flag", ("-k", "--keep-broken"))
     def test_keep_broken_links(self, flag):
-        _, root, _, options = cli.parse_args(["enderchest", "place", "/home", flag])
-        assert (root, options["cleanup"]) == (Path("/home"), False)
+        *_, options = cli.parse_args(["enderchest", "place", "/home", flag])
+        assert options["cleanup"] is False
+
+    def test_prompt_on_error_by_default(self):
+        *_, options = cli.parse_args(["enderchest", "place"])
+        assert (
+            options["errors"],
+            options["stop_at_first_failure"],
+            options["ignore_errors"],
+        ) == ("prompt", False, False)
+
+    @pytest.mark.parametrize(
+        "flags",
+        (("-x",), ("--stop-at-first-failure",), ("--errors", "abort")),
+        ids=("-x", "--stop-at-first-failure", "--errors=abort"),
+    )
+    def test_stop_on_error(self, place_log, flags):
+        action, *_, options = cli.parse_args(["enderchest", "place", *flags])
+        action(Path(), **options)
+        assert place_log[0][1]["error_handling"] == "abort"
+
+    @pytest.mark.parametrize(
+        "flags",
+        (("--ignore-errors",), ("--errors", "ignore")),
+        ids=("--ignore-errors", "--errors=ignore"),
+    )
+    def test_ignore_errors(self, place_log, flags):
+        action, *_, options = cli.parse_args(["enderchest", "place", *flags])
+        action(Path(), **options)
+        assert place_log[0][1]["error_handling"] == "ignore"
 
 
 class TestShulkerInventory(ActionTestSuite):

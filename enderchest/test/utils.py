@@ -263,7 +263,7 @@ GLOBAL_SHULKER = (
     "global",
     """; global/shulkerbox.cfg
 
-; temporarily disabling
+; truly global--could even link to non-minecrafts (one day)
 ;[minecraft]
 ;*
 
@@ -287,7 +287,6 @@ notes = Writing it all down
 >=1.19.0,<1.20
 
 [link-folders]
-mods
 """,
 )
 
@@ -320,7 +319,7 @@ priority = 3
 Forge
 
 [link-folders]
-shaderpacks
+shadercache  ; not that I think this is a thing
 """,
 )
 
@@ -331,6 +330,31 @@ TESTING_SHULKER_CONFIGS = (
     VANILLA_SHULKER,
     OPTIFINE_SHULKER,
 )
+
+# sometimes you just need a CSV
+MATCH_CSV = """, global, 1.19, vanilla, optifine
+~              ,   True, True,    True, False
+axolotl        ,   True, False,   True, False
+bee            ,   True, False,  False, True
+chest-boat     ,   True, True,   False, False
+"""
+
+
+def _parse_match_csv() -> list[tuple[str, str, bool]]:
+    """Parse the above table of shulker-to-instance matches"""
+    matches: list[tuple[str, str, bool]] = []
+    rows = MATCH_CSV.splitlines()
+    header = rows.pop(0)
+    shulker_boxes = [cell.strip() for cell in header.split(",")[1:]]
+    for row in rows:
+        cells = [cell.strip() for cell in row.split(",")]
+        instance = cells.pop(0)
+        for i, cell in enumerate(cells):
+            matches.append((shulker_boxes[i], instance, cell == "True"))
+    return matches
+
+
+TESTING_SHULKER_INSTANCE_MATCHES = tuple(_parse_match_csv())
 
 
 def resolve(path: Path, minecraft_root: Path) -> Path:
