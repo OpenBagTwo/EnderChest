@@ -1,10 +1,11 @@
-"""Functionality for synchronizing chests across different machines"""
+"""Low-level functionality for synchronizing across different machines"""
 import getpass
 import socket
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from urllib.parse import ParseResult
 
 SUPPORTED_PROTOCOLS = ("rsync",)
 
@@ -23,12 +24,12 @@ def get_default_netloc() -> str:
 
 
 @contextmanager
-def remote_file(uri: str) -> Generator[Path, None, None]:
+def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
     """Grab a file from a remote filesystem by its URI and read its contents
 
     Parameters
     ----------
-    uri : str
+    uri : parsed URI
         The URI of the file to read
 
     Yields
@@ -36,4 +37,27 @@ def remote_file(uri: str) -> Generator[Path, None, None]:
     Path
         A path to a local (temp) copy of the file
     """
-    raise NotImplementedError
+    raise NotImplementedError("Remote file access is not currently implemented")
+
+
+def render_remote(alias: str, uri: ParseResult) -> str:
+    """Render a remote to a descriptive string
+
+    Parameters
+    ----------
+    alias : str
+        The name of the remote
+    uri : ParseResult
+        The parsed URI for the remote
+
+    Returns
+    -------
+    str
+        {uri_string} [({alias})]}
+            (if different from the URI hostname)
+    """
+    uri_string = uri.geturl()
+
+    if uri.hostname != alias:
+        uri_string += f" ({alias})"
+    return uri_string
