@@ -68,9 +68,8 @@ def craft_ender_chest(
         (URI, str) tuple is provided, the second value will be used as the
         name/alias of the remote.
     overwrite : bool, optional
-        This method will not overwrite an EnderChest instance
-        installed within the `minecraft_root` unless `overwrite=True` is passed
-        to it.
+        This method will not overwrite an EnderChest instance installed within
+        the `minecraft_root` unless the user provides `overwrite=True`
 
     Notes
     -----
@@ -130,6 +129,107 @@ def craft_ender_chest(
     CRAFT_LOGGER.info(
         "\nNow craft some shulker boxes via\n$ enderchest craft shulker_box\n"
     )
+
+
+def craft_shulker_box(
+    minecraft_root: Path,
+    name: str,
+    priority: int | None = None,
+    link_folders: Sequence[str] | None = None,
+    instances: Sequence[str] | None = None,
+    tags: Sequence[str] | None = None,
+    hosts: Sequence[str] | None = None,
+    overwrite: bool = False,
+):
+    """Craft a shulker box, either from the specified keyword arguments, or
+    interactively via prompts
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+    name : str
+        A name to give to this shulker box
+    priority : int, optional
+        The priority for linking assets in the shulker box (higher priority
+        shulkers are linked last)
+    link_folders : list of str, optional
+        The folders that should be linked in their entirety
+    instances : list of str, optional
+        The names of the instances you'd like to link to this shulker box
+    tags : list of str, optional
+        You can instead (see notes) provide a list of tags where any instances
+        with those tags will be linked to this shulker box
+    hosts : list of str, optional
+        The EnderChest installations that this shulker box should be applied to
+    overwrite : bool, optional
+        This method will not overwrite an existing shulker box unless the user
+        provides `overwrite=True`
+
+    Notes
+    -----
+    - The guided / interactive specifier will only be used if no other keyword
+      arguments are provided (not even `overwrite=True`)
+    - The conditions specified by instances, tags and hosts are ANDed
+      together--that is, if an instance is listed explicitly, but it doesn't
+      match a provided tag, it will not link to this shulker box
+    - Wildcards are supported for instances, tags and hosts (but not link-folders)
+    - Not specifying instances, tags or hosts is equivalent to providing `["*"]`
+    - When values are provided to the keyword arguments, no validation is performed
+      to ensure that they are valid or actively in use
+    """
+    if not is_valid_filename(name):
+        CRAFT_LOGGER.error(f"{name} is not a valid name: must be useable as a filename")
+        return
+
+    try:
+        if (
+            priority is None
+            and link_folders is None
+            and instances is None
+            and tags is None
+            and hosts is None
+            and not overwrite
+        ):
+            try:
+                shulker_box = specify_shulker_box_from_prompt(minecraft_root, name)
+            except FileExistsError as seat_taken:
+                CRAFT_LOGGER.error(seat_taken)
+                CRAFT_LOGGER.error("Aborting")
+                return
+        else:
+            config_path = fs.shulker_box_config(minecraft_root, name)
+            if config_path.exists():
+                exist_message = (
+                    f"There is already a shulker box named {name}"
+                    f" in {fs.ender_chest_folder(minecraft_root)}"
+                )
+            if overwrite:
+                CRAFT_LOGGER.warning(exist_message)
+            else:
+                CRAFT_LOGGER.error(exist_message)
+                CRAFT_LOGGER.error("Aborting")
+                return
+            match_criteria: list[tuple[str, tuple[str, ...]]] = []
+            if instances is not None:
+                match_criteria.append(("instances", tuple(instances)))
+            if tags is not None:
+                match_criteria.append(("tags", tuple(tags)))
+            if hosts is not None:
+                match_criteria.append(("hosts", tuple(hosts)))
+            shulker_box = ShulkerBox(
+                priority=priority or 0,
+                name=name,
+                root=minecraft_root,
+                match_criteria=tuple(match_criteria),
+                link_folders=tuple(link_folders or ()),
+            )
+    except FileNotFoundError as no_ender_chest:
+        CRAFT_LOGGER.error(no_ender_chest)
+        return
+
+    create_shulker_box(minecraft_root, shulker_box)
 
 
 def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
@@ -359,7 +459,7 @@ def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
     CRAFT_LOGGER.info(f"Shulker box configuration written to {config_path}")
 
 
-def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
+def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerBox:
     """Parse a shulker box based on interactive user input
 
     Parameters
@@ -367,30 +467,27 @@ def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+    name : str
+        The name to give to the shulker box
 
     Returns
     -------
     ShulkerBox
         The resulting ShulkerBox
     """
-    while True:
-        name = prompt("Provide a name for the shulker box")
-        if not is_valid_filename(name):
-            CRAFT_LOGGER.error("Name must be useable as a valid filename.")
-            continue
-        shulker_root = fs.shulker_box_root(minecraft_root, name)
-        if shulker_root in shulker_root.parent.glob("*"):
-            if not shulker_root.is_dir():
-                CRAFT_LOGGER.error(
-                    f"A file named {name} already exists in your EnderChest folder."
-                )
-                continue
-            CRAFT_LOGGER.warning(
+    shulker_root = fs.shulker_box_root(minecraft_root, name)
+    if shulker_root in shulker_root.parent.glob("*"):
+        if not shulker_root.is_dir():
+            raise FileExistsError(
+                f"A file named {name} already exists in your EnderChest folder."
+            )
+        CRAFT_LOGGER.warning(
+            f"There is already a folder named {name} in your EnderChest folder."
+        )
+        if not confirm(default=False):
+            raise FileExistsError(
                 f"There is already a folder named {name} in your EnderChest folder."
             )
-            if not confirm(default=False):
-                continue
-        break
 
     shulker_box = ShulkerBox(0, name, shulker_root, (), ())
 
