@@ -8,7 +8,6 @@ from urllib.parse import ParseResult
 
 from pathvalidate import is_valid_filename
 
-from . import enderchest
 from . import filesystem as fs
 from . import sync
 from .enderchest import EnderChest
@@ -18,8 +17,9 @@ from .gather import (
     load_shulker_boxes,
 )
 from .instance import InstanceSpec
-from .loggers import CRAFT_LOGGER, SYNC_LOGGER
+from .loggers import CRAFT_LOGGER
 from .prompt import NO, YES, confirm, prompt
+from .remote import fetch_remotes_from_a_remote_ender_chest
 from .shulker_box import ShulkerBox
 
 DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
@@ -41,7 +41,98 @@ STANDARD_LINK_FOLDERS = (  # TODO: customize in enderchest.cfg
 )
 
 
-def craft_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
+def craft_ender_chest(
+    minecraft_root: Path,
+    copy_from: str | ParseResult | None = None,
+    instance_search_paths: Sequence[str | Path] | None = None,
+    remotes: Sequence[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
+    | None = None,
+    overwrite: bool = False,
+) -> None:
+    """Craft an EnderChest, either from the specified keyword arguments, or
+    interactively via prompts
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff is in (or, at least, the
+        one inside which you want to create your EnderChest)
+    copy_from : URI, optional
+        Optionally bootstrap your configuration by pulling the list of remotes
+        from an existing remote EnderChest
+    instance_search_paths : list of Paths, optional
+        Any paths to search for Minecraft instances
+    remotes : list of URIs or (URI, str) tuples, optional
+        Any remotes you wish you manually specify. If used with `copy_from`, these
+        will overwrite any remotes pulled from the remote EnderChest. When a
+        (URI, str) tuple is provided, the second value will be used as the
+        name/alias of the remote.
+    overwrite : bool, optional
+        This method will not overwrite an EnderChest instance
+        installed within the `minecraft_root` unless `overwrite=True` is passed
+        to it.
+
+    Notes
+    -----
+    - The guided / interactive specifier will only be used if no other keyword
+      arguments are provided (not even `overwrite=True`)
+    - The instance searcher will first attempt to parse any instances it finds
+      as official-launcher Minecrafts and then, if that doesn't work, will try
+      parsing them as MultiMC-style instances.
+    - The instance searcher is fully recursive, so keep that in mind before
+      passing in, say "/"
+    """
+    if not copy_from and not instance_search_paths and not remotes and not overwrite:
+        # then we go interactive
+        try:
+            ender_chest = specify_ender_chest_from_prompt(minecraft_root)
+        except FileExistsError:
+            CRAFT_LOGGER.error("Aborting")
+            return
+    else:
+        try:
+            fs.ender_chest_config(minecraft_root, check_exists=True)
+            exist_message = (
+                f"There is already an EnderChest installed to {minecraft_root}"
+            )
+            if overwrite:
+                CRAFT_LOGGER.warning(exist_message)
+            else:
+                CRAFT_LOGGER.error(exist_message)
+                CRAFT_LOGGER.error("Aborting")
+                return
+        except FileNotFoundError:
+            pass  # no existing chest? no problem!
+
+        ender_chest = EnderChest(minecraft_root)
+
+        for search_path in instance_search_paths or ():
+            ender_chest.instances.extend(
+                gather_minecraft_instances(minecraft_root, Path(search_path), None)
+            )
+
+        if copy_from:
+            try:
+                for remote, alias in fetch_remotes_from_a_remote_ender_chest(copy_from):
+                    ender_chest.register_remote(remote, alias)
+            except (RuntimeError, ValueError) as fetch_fail:
+                CRAFT_LOGGER.warning(
+                    f"Could not fetch remotes from {copy_from}:\n  {fetch_fail}"
+                )
+
+        for extra_remote in remotes or ():
+            if isinstance(extra_remote, (str, ParseResult)):
+                ender_chest.register_remote(extra_remote)
+            else:
+                ender_chest.register_remote(*extra_remote)
+
+    create_ender_chest(minecraft_root, ender_chest)
+    CRAFT_LOGGER.info(
+        "\nNow craft some shulker boxes via\n$ enderchest craft shulker_box\n"
+    )
+
+
+def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
     """Create an EnderChest based on the provided configuration
 
     Parameters
@@ -65,7 +156,7 @@ def craft_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
 
     config_path = fs.ender_chest_config(minecraft_root, check_exists=False)
     ender_chest.write_to_cfg(config_path)
-    CRAFT_LOGGER.debug(f"EnderChest configuration written to {config_path}")
+    CRAFT_LOGGER.info(f"EnderChest configuration written to {config_path}")
 
 
 def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
@@ -123,7 +214,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
             continue
         break
 
-    if minecraft_root != Path():
+    if minecraft_root.absolute() != Path().absolute():
         while True:
             search_mc_folder = prompt(
                 f"Would you like to search {minecraft_root} for MultiMC-type instances?",
@@ -140,11 +231,12 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
             break
 
     CRAFT_LOGGER.info(
-        "You can always add more instances later using\n$ enderchest gather minecraft"
+        "\nYou can always add more instances later using"
+        "\n$ enderchest gather minecraft\n"
     )
 
     while True:
-        remotes: list[tuple[str, str]] = []
+        remotes: list[tuple[ParseResult, str]] = []
         remote_uri = prompt(
             "Would you like to grab the list of remotes from another EnderChest?"
             "\nIf so, enter the URI of that EnderChest now (leave empty to skip)."
@@ -152,25 +244,18 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         if remote_uri == "":
             break
         try:
-            remote_chest = enderchest.load_remote_ender_chest(remote_uri)
-            remotes.append((remote_chest.name, remote_chest.uri))
-            remotes.extend(
-                (alias, uri.geturl()) for alias, uri in remote_chest.remotes.items()
+            remotes.extend(fetch_remotes_from_a_remote_ender_chest(remote_uri))
+        except Exception as fetch_fail:
+            CRAFT_LOGGER.error(
+                f"Could not fetch remotes from {remote_uri}\n  {fetch_fail}"
             )
-            SYNC_LOGGER.info(
-                "Loaded the following remotes:\n"
-                + "\n".join("  - {}: {}".format(*remote) for remote in remotes)
-            )
-        except Exception as grab_fail:
-            SYNC_LOGGER.error(
-                f"Could not parse or access the remote EnderChest\n{grab_fail}"
-            )
-            continue
-        aliases: set[str] = set(alias for alias, _ in remotes)
-        if len(aliases) != len(remotes):
-            SYNC_LOGGER.error("There are duplicates aliases in the list of remotes")
-            continue
-        break
+            if confirm(default=True):
+                break
+
+    CRAFT_LOGGER.info(
+        "\nYou can always add more remotes later using"
+        "\n$ enderchest gather enderchest\n"
+    )
 
     while True:
         protocol = prompt(
@@ -183,7 +268,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         if protocol == "":
             protocol = sync.DEFAULT_PROTOCOL
         if protocol not in sync.SUPPORTED_PROTOCOLS:
-            SYNC_LOGGER.error("Unsupported protocol\n")
+            CRAFT_LOGGER.error("Unsupported protocol\n")
             continue
         break
 
@@ -216,7 +301,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         name = prompt("Provide a name for this EnderChest", suggestion=uri.hostname)
         if name == "":
             name = uri.hostname
-        if name in aliases:
+        if name in (alias for _, alias in remotes):
             CRAFT_LOGGER.error(
                 f"The name {name} is already in use. Choose a different name."
             )
@@ -225,7 +310,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
 
     ender_chest = EnderChest(uri, name, remotes, instances)
 
-    with NamedTemporaryFile("w") as test_file:
+    with NamedTemporaryFile("w+") as test_file:
         ender_chest.write_to_cfg(Path(test_file.name))
 
         # TODO: capture as logs?
@@ -240,7 +325,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     return ender_chest
 
 
-def craft_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
+def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
     """Create a shulker box folder based on the provided configuration
 
     Parameters
@@ -271,7 +356,7 @@ def craft_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
 
     config_path = fs.shulker_box_config(minecraft_root, shulker_box.name)
     shulker_box.write_to_cfg(config_path)
-    CRAFT_LOGGER.debug(f"Shulker box configuration written to {config_path}")
+    CRAFT_LOGGER.info(f"Shulker box configuration written to {config_path}")
 
 
 def specify_shulker_box_from_prompt(minecraft_root: Path) -> ShulkerBox:

@@ -5,6 +5,8 @@ from configparser import ConfigParser, ParsingError
 from pathlib import Path
 from urllib.parse import ParseResult
 
+from enderchest.sync import render_remote
+
 from . import filesystem as fs
 from .enderchest import EnderChest
 from .instance import InstanceSpec
@@ -237,33 +239,10 @@ def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, st
     )
     remote_list: list[tuple[ParseResult, str]] = []
     for alias, remote in remotes.items():
-        report += f"\n  - {_render_remote(alias, remote)}"
+        report += f"\n  - {render_remote(alias, remote)}"
         remote_list.append((remote, alias))
     GATHER_LOGGER.info(report)
     return remote_list
-
-
-def _render_remote(alias: str, uri: ParseResult) -> str:
-    """Render a remote to a descriptive string
-
-    Parameters
-    ----------
-    alias : str
-        The name of the remote
-    uri : ParseResult
-        The parsed URI for the remote
-
-    Returns
-    -------
-    str
-        {uri_string} [({alias})]}
-            (if different from the URI hostname)
-    """
-    uri_string = uri.geturl()
-
-    if uri.hostname != alias:
-        uri_string += f" ({alias})"
-    return uri_string
 
 
 def load_shulker_box_matches(
@@ -309,7 +288,8 @@ def load_shulker_box_matches(
 def gather_minecraft_instances(
     minecraft_root: Path, search_path: Path, official: bool | None
 ) -> list[InstanceSpec]:
-    """Search the specified directory for Minecraft installations
+    """Search the specified directory for Minecraft installations and return
+    any that are can be found and parsed
 
     Parameters
     ----------
@@ -317,10 +297,8 @@ def gather_minecraft_instances(
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder). This will be used to
         construct relative paths.
-
     search_path : Path
         The path to search
-
     official : bool or None
         Whether we expect that the instances found in this location will be:
           - from the official launcher (official=True)
@@ -331,30 +309,44 @@ def gather_minecraft_instances(
     -------
     list of InstanceSpec
         A list of parsed instances
+
+    Notes
+    -----
+    - If a minecraft installation is found but cannot be parsed
+      (or parsed as specified) this method will report that failure but then
+      continue on.
+    - As a corollary, if _no_ valid Minecraft installations can be found, this
+      method will return an empty list.
     """
     instances: list[InstanceSpec] = []
     for folder in fs.minecraft_folders(search_path):
         folder_path = folder.absolute()
-        GATHER_LOGGER.info(f"Found {folder}")
+        GATHER_LOGGER.debug(f"Found minecraft installation at {folder}")
         if official is not False:
             try:
                 instances.append(gather_metadata_for_official_instance(folder_path))
+                GATHER_LOGGER.info(
+                    f"Gathered official Minecraft installation from {folder}"
+                )
                 continue
             except ValueError as not_official:
                 GATHER_LOGGER.log(
-                    logging.INFO if official is None else logging.WARNING,
+                    logging.DEBUG if official is None else logging.WARNING,
                     (f"{folder} is not an official instance:" f"\n{not_official}",),
                 )
         if official is not True:
             try:
                 instances.append(gather_metadata_for_mmc_instance(folder_path))
+                GATHER_LOGGER.info(
+                    f"Gathered MMC-like Minecraft installation from {folder}"
+                )
                 continue
             except ValueError as not_mmc:
                 GATHER_LOGGER.log(
-                    logging.INFO if official is None else logging.WARNING,
+                    logging.DEBUG if official is None else logging.WARNING,
                     f"{folder} is not an MMC-like instance:\n{not_mmc}",
                 )
-        GATHER_LOGGER.warn(
+        GATHER_LOGGER.warning(
             f"{folder_path} does not appear to be a valid Minecraft instance"
         )
     official_count = 0

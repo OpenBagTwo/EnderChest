@@ -19,13 +19,14 @@ class EnderChest:
 
     Parameters
     ----------
-    uri : URI
-        The "address" of this EnderChest as it can be accessed from other
-        EnderChest installations. This should include both the path to where
+    uri : URI or Path
+        The "address" of this EnderChest, ideally as it can be accessed from other
+        EnderChest installations, including both the path to where
         the EnderChest folder can be found (that is, the parent of the
         EnderChest folder itself, aka the "minecraft_root"), its net location
         including credentials, and the protocol that should be used to perform
-        the syncing.
+        the syncing. All that being said, if just a path is provided, the
+        constructor will try to figure out the rest.
     name : str, optional
         A unique name to give to this EnderChest installation. If None is
         provided, this will be taken from the hostname of the supplied URI.
@@ -49,7 +50,7 @@ class EnderChest:
         The path to this EnderChest folder
     instances : list of InstanceSpec
         The instances registered with this EnderChest
-    remotes : dict of str to tuple
+    remotes : dict of str to parsed URIs
         The other EnderChest installations this EnderChest is aware of
     """
 
@@ -61,16 +62,26 @@ class EnderChest:
 
     def __init__(
         self,
-        uri: str | ParseResult,
+        uri: str | ParseResult | Path,
         name: str | None = None,
         remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
         | None = None,
         instances: Iterable[InstanceSpec] | None = None,
     ):
         try:
-            self._uri = uri if isinstance(uri, ParseResult) else urlparse(uri)
+            if isinstance(uri, ParseResult):
+                self._uri = uri
+            elif isinstance(uri, Path):
+                self._uri = urlparse(str(uri.absolute()))
+            else:
+                self._uri = urlparse(uri)
         except AttributeError as parse_problem:
             raise ValueError(f"{uri} is not a valid URI") from parse_problem
+
+        if self._uri.netloc is None:
+            self._uri.netloc = sync.get_default_netloc()
+        if self._uri.scheme is None:
+            self._uri.scheme = sync.DEFAULT_PROTOCOL
 
         self.name = name or self._uri.hostname or gethostname()
 
@@ -78,22 +89,10 @@ class EnderChest:
         self.remotes = {}
 
         for remote in remotes or ():
-            try:
-                if isinstance(remote, str):
-                    remote = urlparse(remote)
-                if isinstance(remote, ParseResult):
-                    if not remote.hostname:
-                        raise AttributeError(f"{remote.geturl()} has no hostname")
-                    self.remotes[remote.hostname] = remote
-                else:
-                    remote_uri, alias = remote
-                    if isinstance(remote_uri, str):
-                        remote_uri = urlparse(remote_uri)
-                    self.remotes[alias] = remote_uri
-            except AttributeError as parse_problem:
-                raise ValueError(
-                    f"{remote} is not a valid remote spec"
-                ) from parse_problem
+            if isinstance(remote, (str, ParseResult)):
+                self.register_remote(remote)
+            else:
+                self.register_remote(*remote)
 
     @property
     def uri(self) -> str:
@@ -105,6 +104,34 @@ class EnderChest:
     @property
     def root(self) -> Path:
         return fs.ender_chest_folder(Path(self._uri.path))
+
+    def register_remote(
+        self, remote: str | ParseResult, alias: str | None = None
+    ) -> None:
+        """Register a new remote EnderChest installation (or update an existing
+        registry)
+
+        Parameters
+        ----------
+        remote : URI
+            The URI of the remote
+        alias : str, optional
+            an alias to give to this remote. If None is provided, the URI's hostname
+            will be used
+
+        Raises
+        ------
+        ValueError
+            If the provided remote is invalid
+        """
+        try:
+            remote = remote if isinstance(remote, ParseResult) else urlparse(remote)
+            alias = alias or remote.hostname
+            if not alias:
+                raise AttributeError(f"{remote.geturl()} has no hostname")
+            self.remotes[alias] = remote
+        except AttributeError as parse_problem:
+            raise ValueError(f"{remote} is not a valid URI") from parse_problem
 
     @classmethod
     def from_cfg(cls, config_file: Path) -> "EnderChest":
@@ -209,29 +236,6 @@ class EnderChest:
         with config_file.open("w") as f:
             f.write(f"; {fs.ENDER_CHEST_CONFIG_NAME}\n")
             config.write(f)
-
-
-def load_remote_ender_chest(uri: str) -> EnderChest:
-    """Load an EnderChest configuration from another machine
-
-    Parameters
-    ----------
-    uri : str
-        The URI to the remote Minecraft root
-
-    Returns
-    -------
-    EnderChest
-        The remote EnderChest configuration
-    """
-    parsed = urlparse(uri)
-    remote_root = Path(parsed.path)
-    remote_config_path = fs.ender_chest_config(remote_root, check_exists=False)
-
-    with sync.remote_file(
-        parsed._replace(path=str(remote_config_path)).geturl()
-    ) as remote_config:
-        return EnderChest.from_cfg(remote_config)
 
 
 def _list_to_ini(values: Sequence) -> str:
