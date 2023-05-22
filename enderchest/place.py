@@ -1,4 +1,5 @@
 """Symlinking functionality"""
+import logging
 import os
 from pathlib import Path
 
@@ -44,9 +45,9 @@ def place_ender_chest(
     if rollback is not False:
         raise NotImplementedError("Rollbacks are not currently supported")
 
-    instances = load_ender_chest_instances(minecraft_root)
+    instances = load_ender_chest_instances(minecraft_root, log_level=logging.DEBUG)
 
-    shulker_boxes = load_shulker_boxes(minecraft_root)
+    shulker_boxes = load_shulker_boxes(minecraft_root, log_level=logging.DEBUG)
 
     skip_instances: list[InstanceSpec] = []
 

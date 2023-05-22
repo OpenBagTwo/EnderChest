@@ -146,6 +146,58 @@ class TestCraft(ActionTestSuite):
         ]
 
 
+class TestCraftShulker(ActionTestSuite):
+    action = "craft shulker_box"
+    required_args = ("nombre",)
+
+    @pytest.mark.parametrize("instance_flag", ("-i", "--instance"))
+    def test_passing_in_a_single_instance(self, instance_flag):
+        *_, options = cli.parse_args(
+            ["enderchest", "craft", "shulker_box", instance_flag, "endcity", "spitty"]
+        )
+
+        # remove unset stuff
+        options = {key: value for key, value in options.items() if value}
+        assert options == {
+            "instances": ["endcity"],
+            "name": "spitty",
+        }
+
+    def test_passing_in_a_mix_of_multi_kwargs(
+        self,
+    ):
+        _, root, _, options = cli.parse_args(
+            [
+                "enderchest",
+                "craft",
+                "shulker_box",
+                "--overwrite",
+                "--instance",
+                "onion",
+                "rooty",
+                "-t",
+                "allium*" "rutabaga",
+                "--instance",
+                "turnip",
+                # "--host",
+                # "farm",
+            ]
+        )
+
+        # remove unset stuff
+        options = {key: value for key, value in options.items() if value}
+        assert root, options == (
+            "rooty",
+            {
+                "name": "rutabaga",
+                "instances": ["onion", "turnip"],
+                "tags": ["allium"],
+                # "hosts": ["farm"],
+                "overwrite": True,
+            },
+        )
+
+
 class TestPlace(ActionTestSuite):
     action = "place"
 

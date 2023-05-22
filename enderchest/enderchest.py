@@ -151,14 +151,18 @@ class EnderChest:
         ------
         ValueError
             If the config file at that location cannot be parsed
+        FileNotFoundError
+            If there is no config file at the specified location
         """
         parser = ConfigParser(
             allow_no_value=True, delimiters=("=",), inline_comment_prefixes=(";",)
         )
         try:
-            parser.read(config_file)
+            assert parser.read(config_file)
         except ParsingError as bad_cfg:
             raise ValueError(f"Could not parse {config_file}") from bad_cfg
+        except AssertionError:
+            raise FileNotFoundError(f"Could not open {config_file}")
 
         path = str(config_file.absolute().parent.parent)
 

@@ -42,7 +42,9 @@ def load_ender_chest(minecraft_root: Path) -> EnderChest:
     return ender_chest
 
 
-def load_ender_chest_instances(minecraft_root: Path) -> list[InstanceSpec]:
+def load_ender_chest_instances(
+    minecraft_root: Path, log_level: int = logging.INFO
+) -> list[InstanceSpec]:
     """Get the list of instances registered with the EnderChest located in the
     minecraft root
 
@@ -51,6 +53,11 @@ def load_ender_chest_instances(minecraft_root: Path) -> list[InstanceSpec]:
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+    log_level : int, optional
+        By default, this method will report out the minecraft instances it
+        finds at the INFO level. You can optionally pass in a lower (or higher)
+        level if this method is being called from another method where that
+        information is redundant or overly verbose.
 
     Returns
     -------
@@ -71,11 +78,12 @@ def load_ender_chest_instances(minecraft_root: Path) -> list[InstanceSpec]:
         )
         instances = []
     if len(instances) == 0:
-        GATHER_LOGGER.info(
-            f"There are no instances registered to the {minecraft_root} EnderChest"
+        GATHER_LOGGER.warning(
+            f"There are no instances registered to the {minecraft_root} EnderChest",
         )
     else:
-        GATHER_LOGGER.info(
+        GATHER_LOGGER.log(
+            log_level,
             "These are the instances that are currently registered"
             f" to the {minecraft_root} EnderChest:\n"
             + "\n".join(
@@ -83,7 +91,7 @@ def load_ender_chest_instances(minecraft_root: Path) -> list[InstanceSpec]:
                     f"  {i + 1}. {_render_instance(instance)})"
                     for i, instance in enumerate(instances)
                 ]
-            )
+            ),
         )
     return instances
 
@@ -104,7 +112,9 @@ def _render_instance(instance: InstanceSpec) -> str:
     return f"{instance.name} ({instance.root})"
 
 
-def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
+def load_shulker_boxes(
+    minecraft_root: Path, log_level: int = logging.INFO
+) -> list[ShulkerBox]:
     """Load all shulker boxes in the EnderChest folder and return them in the
     order in which they should be linked.
 
@@ -113,6 +123,11 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+    log_level : int, optional
+        By default, this method will report out the minecraft instances it
+        finds at the INFO level. You can optionally pass in a lower (or higher)
+        level if this method is being called from another method where that
+        information is redundant or overly verbose.
 
     Returns
     -------
@@ -126,11 +141,16 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
     an empty list rather than failing outright.
     """
     shulker_boxes: list[ShulkerBox] = []
+
     try:
         for shulker_config in fs.shulker_box_configs(minecraft_root):
-            shulker_box = _load_shulker_box(shulker_config)
-            if shulker_box is not None:
-                shulker_boxes.append(shulker_box)
+            try:
+                shulker_boxes.append(_load_shulker_box(shulker_config))
+            except (FileNotFoundError, ValueError) as bad_shulker:
+                GATHER_LOGGER.warning(
+                    f"{bad_shulker}\n  Skipping shulker box {shulker_config.parent.name}"
+                )
+
     except FileNotFoundError:
         GATHER_LOGGER.error(f"There is no EnderChest installed within {minecraft_root}")
         return []
@@ -138,21 +158,23 @@ def load_shulker_boxes(minecraft_root: Path) -> list[ShulkerBox]:
     shulker_boxes = sorted(shulker_boxes)
 
     if len(shulker_boxes) == 0:
-        GATHER_LOGGER.info(
+        GATHER_LOGGER.warning(
             f"There are no shulker boxes within the {minecraft_root} EnderChest"
         )
     else:
-        GATHER_LOGGER.info(
+        GATHER_LOGGER.log(
+            log_level,
             f"These are the shulker boxes within the {minecraft_root} EnderChest,"
             "\nlisted in the order in which they are linked:\n"
             + "\n".join(
-                f"  {_render_shulker_box(shulker_box)}" for shulker_box in shulker_boxes
-            )
+                f"  {shulker_box.priority}. {_render_shulker_box(shulker_box)}"
+                for shulker_box in shulker_boxes
+            ),
         )
     return shulker_boxes
 
 
-def _load_shulker_box(config_file: Path) -> ShulkerBox | None:
+def _load_shulker_box(config_file: Path) -> ShulkerBox:
     """Attempt to load a shulker box from a config file, and if you can't,
     at least log why the loading failed.
 
@@ -165,17 +187,18 @@ def _load_shulker_box(config_file: Path) -> ShulkerBox | None:
     -------
     ShulkerBox | None
         The parsed shulker box or None, if the shulker box couldn't be parsed
+
+    Raises
+    ------
+    FileNotFoundError
+        If the given config file could not be found
+    ValueError
+        If there was a problem parsing the config file
     """
-    try:
-        GATHER_LOGGER.debug(f"Attempting to parse {config_file}")
-        shulker_box = ShulkerBox.from_cfg(config_file)
-        GATHER_LOGGER.debug(f"Successfully parsed {_render_shulker_box(shulker_box)}")
-        return shulker_box
-    except (FileNotFoundError, ValueError) as bad_box:
-        GATHER_LOGGER.warning(
-            f"Could not load shulker box from {config_file}:\n  {bad_box}"
-        )
-    return None
+    GATHER_LOGGER.debug(f"Attempting to parse {config_file}")
+    shulker_box = ShulkerBox.from_cfg(config_file)
+    GATHER_LOGGER.debug(f"Successfully parsed {_render_shulker_box(shulker_box)}")
+    return shulker_box
 
 
 def _render_shulker_box(shulker_box: ShulkerBox) -> str:
@@ -192,7 +215,7 @@ def _render_shulker_box(shulker_box: ShulkerBox) -> str:
         {priority}. {folder_name} [({name})]
             (if different from folder name)
     """
-    stringified = f"{shulker_box.priority}. {shulker_box.root.name}"
+    stringified = f"{shulker_box.root.name}"
     if shulker_box.root.name != shulker_box.name:
         # note: this is not a thing
         stringified += f" ({shulker_box.name})"
@@ -263,12 +286,23 @@ def load_shulker_box_matches(
     list of InstanceSpec
         The instances that are / should be linked to the specified shulker box
     """
-    instances = load_ender_chest_instances(minecraft_root)
+    try:
+        config_file = fs.shulker_box_config(minecraft_root, shulker_box_name)
+    except FileNotFoundError:
+        GATHER_LOGGER.error(f"No EnderChest is installed in {minecraft_root}")
+        return []
+    try:
+        shulker_box = _load_shulker_box(config_file)
+    except (FileNotFoundError, ValueError) as bad_box:
+        GATHER_LOGGER.error(
+            f"Could not load shulker box {shulker_box_name}\n  {bad_box}"
+        )
+        return []
+
+    instances = load_ender_chest_instances(minecraft_root, log_level=logging.DEBUG)
     if not instances:
         return instances
 
-    config_file = fs.shulker_box_config(minecraft_root, shulker_box_name)
-    shulker_box = _load_shulker_box(config_file)
     if shulker_box is None:
         return []
     matches = [instance for instance in instances if shulker_box.matches(instance)]
