@@ -1,6 +1,7 @@
 """Tests for setting up folders and files"""
 import logging
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -27,7 +28,7 @@ class TestConfigWriting:
 
         utils.pre_populate_enderchest(minecraft_root / "EnderChest")
 
-        craft.craft_shulker_box(minecraft_root, original_shulker)
+        craft.create_shulker_box(minecraft_root, original_shulker)
 
         parsed_shulkers = load_shulker_boxes(minecraft_root)
 
@@ -55,6 +56,69 @@ class TestConfigWriting:
         )
 
         assert parsed_ender_chest == original_ender_chest
+
+
+class TestEnderChestCrafting:
+    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch):
+        prompt_log: list[Path] = []
+
+        def mock_prompt(root) -> Any:
+            prompt_log.append(root)
+            return "MockEnderChest"
+
+        create_log: list[tuple[Path, Any]] = []
+
+        def mock_create(root, chest) -> None:
+            create_log.append((root, chest))
+
+        monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
+        monkeypatch.setattr(craft, "create_ender_chest", mock_create)
+
+        craft.craft_ender_chest(Path("/root/root/for/the/home/team"))
+
+        assert prompt_log == [Path("/root/root/for/the/home/team")]
+        assert create_log == [(Path("/root/root/for/the/home/team"), "MockEnderChest")]
+
+    @pytest.mark.parametrize(
+        "argument, value",
+        (
+            ("instance_search_paths", ("~",)),
+            ("overwrite", True),
+            ("remotes", ("earworm://somewhere/beyond/the-sea",)),
+        ),
+        ids=("instances", "overwrite", "remotes"),
+    )
+    def test_any_kwarg_avoids_the_interactive_prompter(
+        self, monkeypatch, argument, value
+    ):
+        prompt_log: list[Path] = []
+
+        def mock_prompt(root) -> Any:
+            raise AssertionError("I was not to be called.")
+
+        create_log: list[tuple[Path, Any]] = []
+
+        def mock_create(root, chest) -> None:
+            create_log.append((root, chest))
+
+        def mock_gather(*args, **kwargs) -> list[Any]:
+            return []
+
+        monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
+        monkeypatch.setattr(craft, "create_ender_chest", mock_create)
+        monkeypatch.setattr(craft, "gather_minecraft_instances", mock_gather)
+        monkeypatch.setattr(
+            craft, "fetch_remotes_from_a_remote_ender_chest", mock_gather
+        )
+
+        craft.craft_ender_chest(Path("here/"), **{argument: value})
+        assert len(create_log) == 1
+
+    # TODO: test overwrite protection
+
+    # TODO: test the prompter
+
+    # TODO: test the non-interactive router
 
 
 class TestPromptByFilter:

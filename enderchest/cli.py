@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from . import gather, place
+from . import craft, gather, place
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
@@ -60,7 +60,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         ("craft", "craft enderchest"),
         "create and configure a new EnderChest installation",
-        _todo,
+        craft.craft_ender_chest,
     ),
     (
         tuple("craft " + alias for alias in _shulker_aliases),
@@ -255,7 +255,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     craft_parser.add_argument(
         "-i",
         "--instance",
-        dest="instances",
+        dest="instance_search_paths",
         action="append",
         type=Path,
         help="specify a folder to search for Minecraft installations in",
