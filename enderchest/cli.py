@@ -25,14 +25,6 @@ def _todo(minecraft_root: Path, **kwargs) -> None:
     raise NotImplementedError("This action is not yet implemented")
 
 
-def _load_shulker_box_matches(
-    minecraft_root: Path, name: str | None = None, name_flag: str | None = None
-) -> None:
-    """Wrapper around the orchestrator method to coalesce name vs. name_flag"""
-    shulker_box_name: str = name or name_flag  # type: ignore[assignment]
-    _ = gather.load_shulker_box_matches(minecraft_root, shulker_box_name)
-
-
 def _place(
     minecraft_root: Path,
     errors: str = "prompt",
@@ -40,7 +32,7 @@ def _place(
     stop_at_first_failure: bool = False,
     ignore_errors: bool = False,
 ) -> None:
-    """Wrapper around the orchestrator method to coalesce error-handling flags"""
+    """Wrapper to coalesce error-handling flags"""
 
     if stop_at_first_failure:
         errors = "abort"
@@ -48,6 +40,18 @@ def _place(
         errors = "ignore"
     # else: errors = errors
     place.place_ender_chest(minecraft_root, cleanup=cleanup, error_handling=errors)
+
+
+def _craft_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
+    """Wrapper to handle the fact that name is a required argument"""
+    assert name  # it's required by the parser, so this should be fine
+    craft.craft_shulker_box(minecraft_root, name, **kwargs)
+
+
+def _list_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
+    """Wrapper to handle the fact that name is a required argument"""
+    assert name  # it's required by the parser, so this should be fine
+    gather.load_shulker_box_matches(minecraft_root, name, **kwargs)
 
 
 class Action(Protocol):
@@ -65,7 +69,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         tuple("craft " + alias for alias in _shulker_aliases),
         "create and configure a new shulker box",
-        _todo,
+        _craft_shulker_box,
     ),
     (
         ("place",),
@@ -109,7 +113,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             f"{verb} {alias}" for verb in _list_aliases for alias in _shulker_aliases
         ),
         "list the instances that match the specified shulker box",
-        _load_shulker_box_matches,
+        _list_shulker_box,
     ),
     (
         tuple(f"{verb} {alias}" for verb in _list_aliases for alias in _remote_aliases),
@@ -271,16 +275,8 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
 
     # shulker box craft options
     shulker_craft_parser = action_parsers[f"craft {_shulker_aliases[0]}"]
-    name = shulker_craft_parser.add_mutually_exclusive_group()
-    name.add_argument(
+    shulker_craft_parser.add_argument(
         "name",
-        nargs="?",
-        help="specify the name for this shulker box",
-    )
-    name.add_argument(
-        "-n",
-        "--named",
-        dest="name_flag",
         help="specify the name for this shulker box",
     )
     shulker_craft_parser.add_argument(
@@ -413,7 +409,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     # list shulker options
     list_shulker_parser = action_parsers[f"{_list_aliases[0]} {_shulker_aliases[0]}"]
     list_shulker_parser.add_argument(
-        "name", help="The name of the shulker box to query"
+        "shulker_box_name", help="The name of the shulker box to query"
     )
 
     # open options
