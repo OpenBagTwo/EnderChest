@@ -48,10 +48,12 @@ def _craft_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
     craft.craft_shulker_box(minecraft_root, name, **kwargs)
 
 
-def _list_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
+def _list_shulker_box(
+    minecraft_root: Path, shulker_box_name: str | None = None, **kwargs
+):
     """Wrapper to handle the fact that name is a required argument"""
-    assert name  # it's required by the parser, so this should be fine
-    gather.load_shulker_box_matches(minecraft_root, name, **kwargs)
+    assert shulker_box_name  # it's required by the parser, so this should be fine
+    gather.load_shulker_box_matches(minecraft_root, shulker_box_name, **kwargs)
 
 
 class Action(Protocol):
@@ -289,14 +291,24 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
         "--instance",
         dest="instances",
         action="append",
-        help="provide the name of an instance that should be linked to this shulker box",
+        help="only link instances with one of the provided names to this shulker box",
     )
     shulker_craft_parser.add_argument(
         "-t",
         "--tag",
         dest="tags",
         action="append",
-        help="link all instances with the provided tag to this shulker box",
+        help="only link instances with one of the provided tags to this shulker box",
+    )
+    shulker_craft_parser.add_argument(
+        "-e",
+        "--enderchest",
+        dest="hosts",
+        action="append",
+        help=(
+            "only link instances registered to one of the provided EnderChest"
+            " installations with this shulker box"
+        ),
     )
     shulker_craft_parser.add_argument(
         "-l",

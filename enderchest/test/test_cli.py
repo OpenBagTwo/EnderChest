@@ -179,8 +179,8 @@ class TestCraftShulker(ActionTestSuite):
                 "allium*" "rutabaga",
                 "--instance",
                 "turnip",
-                # "--host",
-                # "farm",
+                "--enderchest",
+                "farm",
             ]
         )
 
@@ -192,7 +192,7 @@ class TestCraftShulker(ActionTestSuite):
                 "name": "rutabaga",
                 "instances": ["onion", "turnip"],
                 "tags": ["allium"],
-                # "hosts": ["farm"],
+                "hosts": ["farm"],
                 "overwrite": True,
             },
         )

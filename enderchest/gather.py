@@ -222,7 +222,9 @@ def _render_shulker_box(shulker_box: ShulkerBox) -> str:
     return stringified
 
 
-def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, str]]:
+def load_ender_chest_remotes(
+    minecraft_root: Path, log_level: int = logging.INFO
+) -> list[tuple[ParseResult, str]]:
     """Load all remote EnderChest installations registered with this one
 
     Parameters
@@ -235,6 +237,11 @@ def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, st
     -------
     list of (URI, str) tuples
         The URIs of the remote EnderChests, paired with their aliases
+    log_level : int, optional
+        By default, this method will report out the minecraft instances it
+        finds at the INFO level. You can optionally pass in a lower (or higher)
+        level if this method is being called from another method where that
+        information is redundant or overly verbose.
 
     Notes
     -----
@@ -251,7 +258,7 @@ def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, st
         remotes = {}
 
     if len(remotes) == 0:
-        GATHER_LOGGER.info(
+        GATHER_LOGGER.warning(
             f"There are no remotes registered to the {minecraft_root} EnderChest"
         )
         return []
@@ -264,7 +271,7 @@ def load_ender_chest_remotes(minecraft_root: Path) -> list[tuple[ParseResult, st
     for alias, remote in remotes.items():
         report += f"\n  - {render_remote(alias, remote)}"
         remote_list.append((remote, alias))
-    GATHER_LOGGER.info(report)
+    GATHER_LOGGER.log(log_level, report)
     return remote_list
 
 
