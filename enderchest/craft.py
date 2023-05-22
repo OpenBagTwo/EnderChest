@@ -13,7 +13,9 @@ from . import sync
 from .enderchest import EnderChest
 from .gather import (
     gather_minecraft_instances,
+    load_ender_chest,
     load_ender_chest_instances,
+    load_ender_chest_remotes,
     load_shulker_boxes,
 )
 from .instance import InstanceSpec
@@ -205,12 +207,12 @@ def craft_shulker_box(
                     f"There is already a shulker box named {name}"
                     f" in {fs.ender_chest_folder(minecraft_root)}"
                 )
-            if overwrite:
-                CRAFT_LOGGER.warning(exist_message)
-            else:
-                CRAFT_LOGGER.error(exist_message)
-                CRAFT_LOGGER.error("Aborting")
-                return
+                if overwrite:
+                    CRAFT_LOGGER.warning(exist_message)
+                else:
+                    CRAFT_LOGGER.error(exist_message)
+                    CRAFT_LOGGER.error("Aborting")
+                    return
             match_criteria: list[tuple[str, tuple[str, ...]]] = []
             if instances is not None:
                 match_criteria.append(("instances", tuple(instances)))
@@ -358,15 +360,17 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     )
 
     while True:
-        protocol = prompt(
-            (
-                "Specify the method for syncing with this EnderChest."
-                "\nSupported protocols are: " + ", ".join(sync.SUPPORTED_PROTOCOLS)
-            ),
-            suggestion=sync.DEFAULT_PROTOCOL,
-        ).lower()
-        if protocol == "":
-            protocol = sync.DEFAULT_PROTOCOL
+        protocol = (
+            prompt(
+                (
+                    "Specify the method for syncing with this EnderChest."
+                    "\nSupported protocols are: " + ", ".join(sync.SUPPORTED_PROTOCOLS)
+                ),
+                suggestion=sync.DEFAULT_PROTOCOL,
+            ).lower()
+            or sync.DEFAULT_PROTOCOL
+        )
+
         if protocol not in sync.SUPPORTED_PROTOCOLS:
             CRAFT_LOGGER.error("Unsupported protocol\n")
             continue
@@ -374,15 +378,16 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
 
     while True:
         default_netloc = sync.get_default_netloc()
-        netloc = prompt(
-            (
-                "What's the address for accessing this machine?"
-                "\n(hostname or IP address, plus often a username)"
-            ),
-            suggestion=default_netloc,
+        netloc = (
+            prompt(
+                (
+                    "What's the address for accessing this machine?"
+                    "\n(hostname or IP address, plus often a username)"
+                ),
+                suggestion=default_netloc,
+            )
+            or default_netloc
         )
-        if netloc == "":
-            netloc = default_netloc
 
         uri = ParseResult(
             scheme=protocol,
@@ -398,9 +403,10 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         break
 
     while True:
-        name = prompt("Provide a name for this EnderChest", suggestion=uri.hostname)
-        if name == "":
-            name = uri.hostname
+        name = (
+            prompt("Provide a name for this EnderChest", suggestion=uri.hostname)
+            or uri.hostname
+        )
         if name in (alias for _, alias in remotes):
             CRAFT_LOGGER.error(
                 f"The name {name} is already in use. Choose a different name."
@@ -413,7 +419,6 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     with NamedTemporaryFile("w+") as test_file:
         ender_chest.write_to_cfg(Path(test_file.name))
 
-        # TODO: capture as logs?
         CRAFT_LOGGER.info("\n\n" + test_file.read())
         CRAFT_LOGGER.info(
             "\nPreparing to generate an EnderChest with the above configuration."
@@ -491,8 +496,6 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
 
     shulker_box = ShulkerBox(0, name, shulker_root, (), ())
 
-    # TODO: hosts
-
     def refresh_ender_chest_instance_list() -> list[InstanceSpec]:
         """The primary reason to lambda-fy this is to re-print the instance list."""
         return load_ender_chest_instances(minecraft_root)
@@ -556,22 +559,52 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
 
     while True:
         _ = load_shulker_boxes(minecraft_root)  # to display some log messages
-        value = prompt(
-            (
-                "What priority value should be assigned to this shulker box?"
-                "\nhigher number = applied later"
-            ),
-            suggestion="0",
+        value = (
+            prompt(
+                (
+                    "What priority value should be assigned to this shulker box?"
+                    "\nhigher number = applied later"
+                ),
+                suggestion="0",
+            )
+            or "0"
         )
-        if value == "":
-            value = "0"
         try:
             priority = int(value)
         except ValueError:
             continue
         break
 
+    _ = load_ender_chest_remotes(minecraft_root)  # to display some log messages
+    values = (
+        prompt(
+            (
+                "What hosts (EnderChest installations) should use this shulker box?"
+                "\nProvide a comma-separated list (wildcards are allowed)"
+                "\nand remember to include the name of this EnderChest"
+                f'("{load_ender_chest(minecraft_root).name}")'
+            ),
+            suggestion="*",
+        )
+        or "*"
+    )
+    shulker_box._replace(
+        match_criteria=shulker_box.match_criteria
+        + (("hosts", tuple(host.strip() for host in values.split(","))),)
+    )
+
     shulker_box = shulker_box._replace(priority=priority)
+
+    with NamedTemporaryFile("w+") as test_file:
+        shulker_box.write_to_cfg(Path(test_file.name))
+
+        CRAFT_LOGGER.info("\n\n" + test_file.read())
+        CRAFT_LOGGER.info(
+            "\nPreparing to generate a shulker box with the above configuration."
+        )
+
+        if not confirm(default=True):
+            raise RuntimeError("Shulker box creation aborted.")
 
     return shulker_box
 
@@ -653,15 +686,16 @@ def _prompt_for_filters(
         return tester if confirm(default=default) else None, matches
 
     while True:
-        version_spec = prompt(
-            (
-                "Minecraft versions:"
-                ' (e.g: "*", "1.19.1, 1.19.2, 1.19.3", "1.19.*", ">=1.19.0,<1.20")'
-            ),
-            suggestion="*",
+        version_spec = (
+            prompt(
+                (
+                    "Minecraft versions:"
+                    ' (e.g: "*", "1.19.1, 1.19.2, 1.19.3", "1.19.*", ">=1.19.0,<1.20")'
+                ),
+                suggestion="*",
+            )
+            or "*"
         )
-        if version_spec == "":
-            version_spec = "*"
 
         updated, matches = check_progress(
             "minecraft", (version.strip() for version in version_spec.split(", "))
@@ -672,16 +706,17 @@ def _prompt_for_filters(
             break
 
     while True:
-        modloader = prompt(
-            (
-                "Modloader?"
-                "\n[N]one, For[G]e, Fa[B]ric, [Q]uilt, [L]iteLoader"
-                ' (or multiple, e.g: "B,Q", or any using "*")'
-            ),
-            suggestion="*",
+        modloader = (
+            prompt(
+                (
+                    "Modloader?"
+                    "\n[N]one, For[G]e, Fa[B]ric, [Q]uilt, [L]iteLoader"
+                    ' (or multiple, e.g: "B,Q", or any using "*")'
+                ),
+                suggestion="*",
+            )
+            or "*"
         )
-        if modloader == "":
-            modloader = "*"
 
         modloaders: list[str] = []
         for entry in modloader.split(","):
@@ -724,14 +759,15 @@ def _prompt_for_filters(
                 "april-fools",
             ]
 
-        tags = prompt(
-            "Tags?"
-            f'\ne.g.{", ".join(example_tags)}'
-            "\n(or multiple using comma-separated lists or wildcards)",
-            suggestion="*",
+        tags = (
+            prompt(
+                "Tags?"
+                f'\ne.g.{", ".join(example_tags)}'
+                "\n(or multiple using comma-separated lists or wildcards)",
+                suggestion="*",
+            )
+            or "*"
         )
-        if tags == "":
-            tags = "*"
 
         updated, matches = check_progress(
             "tags", (tag.strip() for tag in tags.split(","))

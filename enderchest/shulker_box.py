@@ -94,7 +94,7 @@ class ShulkerBox(NamedTuple):
                 normalized = "minecraft"
             if normalized in ("modloader", "loader"):
                 normalized = "modloader"
-            if normalized in ("instance", "tag"):
+            if normalized in ("instance", "tag", "host"):
                 normalized += "s"  # lazy re-pluralization
 
             if normalized == "propertie":  # lulz
@@ -207,6 +207,9 @@ class ShulkerBox(NamedTuple):
                             break
                     else:
                         return False
+                case "hosts":
+                    # this is handled at a higher level
+                    pass
                 case _:
                     raise NotImplementedError(
                         f"Don't know how to apply match condition {condition}."
@@ -273,6 +276,5 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
     try:
         return semver.SimpleSpec(version_spec).match(semver.Version(version_string))
     except ValueError:
-        print("FML", version_spec, version_string)
         # fall back to simple fnmatching
         return fnmatch.fnmatch(version_spec, version_string)

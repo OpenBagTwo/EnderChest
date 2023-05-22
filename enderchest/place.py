@@ -1,12 +1,14 @@
 """Symlinking functionality"""
+import fnmatch
 import logging
 import os
 from pathlib import Path
 
-from .gather import load_ender_chest_instances, load_shulker_boxes
+from .gather import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
 from .instance import InstanceSpec
 from .loggers import PLACE_LOGGER
 from .prompt import prompt
+from .shulker_box import ShulkerBox
 
 
 def place_ender_chest(
@@ -45,9 +47,28 @@ def place_ender_chest(
     if rollback is not False:
         raise NotImplementedError("Rollbacks are not currently supported")
 
+    try:
+        host = load_ender_chest(minecraft_root).name
+    except (FileNotFoundError, ValueError) as bad_chest:
+        PLACE_LOGGER.error(
+            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+        )
+        return
+
     instances = load_ender_chest_instances(minecraft_root, log_level=logging.DEBUG)
 
-    shulker_boxes = load_shulker_boxes(minecraft_root, log_level=logging.DEBUG)
+    shulker_boxes: list[ShulkerBox] = []
+
+    for shulker_box in load_shulker_boxes(minecraft_root, log_level=logging.DEBUG):
+        for condition, values in shulker_box.match_criteria:
+            if condition == "hosts":
+                if not any(fnmatch.fnmatch(host_spec, host) for host_spec in values):
+                    PLACE_LOGGER.debug(
+                        f"{shulker_box.name} is not intended for linking to this host ({host})"
+                    )
+                    break
+        else:
+            shulker_boxes.append(shulker_box)
 
     skip_instances: list[InstanceSpec] = []
 

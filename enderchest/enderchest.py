@@ -78,10 +78,10 @@ class EnderChest:
         except AttributeError as parse_problem:
             raise ValueError(f"{uri} is not a valid URI") from parse_problem
 
-        if self._uri.netloc is None:
-            self._uri.netloc = sync.get_default_netloc()
-        if self._uri.scheme is None:
-            self._uri.scheme = sync.DEFAULT_PROTOCOL
+        if not self._uri.netloc:
+            self._uri = self._uri._replace(netloc=sync.get_default_netloc())
+        if not self._uri.scheme:
+            self._uri = self._uri._replace(scheme=sync.DEFAULT_PROTOCOL)
 
         self.name = name or self._uri.hostname or gethostname()
 

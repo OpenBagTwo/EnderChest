@@ -323,20 +323,32 @@ shadercache  ; not that I think this is a thing
 """,
 )
 
+STEAMDECK_SHULKER = (
+    "steamdeck",
+    """; steamdeck/shulkerbox.cfg
+[properties]
+priority = 20
+
+[hosts]
+steamdeck
+""",
+)
+
 
 TESTING_SHULKER_CONFIGS = (
     GLOBAL_SHULKER,
     WILD_UPDATE_SHULKER,
     VANILLA_SHULKER,
     OPTIFINE_SHULKER,
+    STEAMDECK_SHULKER,
 )
 
 # sometimes you just need a CSV
-MATCH_CSV = """, global, 1.19, vanilla, optifine
-~              ,   True, True,    True, False
-axolotl        ,   True, False,   True, False
-bee            ,   True, False,  False, True
-chest-boat     ,   True, True,   False, False
+MATCH_CSV = """, global, 1.19, vanilla, optifine, steamdeck
+~              ,   True, True,    True,    False,     False
+axolotl        ,   True, False,   True,    False,     False
+bee            ,   True, False,  False,     True,     False
+chest-boat     ,   True, True,   False,    False,     False
 """
 
 
