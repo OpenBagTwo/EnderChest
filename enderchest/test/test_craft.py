@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from enderchest import EnderChest, ShulkerBox, craft
+from enderchest import EnderChest, ShulkerBox, craft, filesystem
 from enderchest.gather import load_shulker_boxes
 
 from . import utils
@@ -119,6 +119,66 @@ class TestEnderChestCrafting:
     # TODO: test the prompter
 
     # TODO: test the non-interactive router
+
+
+class TestShulkerBoxCrafting:
+    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch):
+        prompt_log: list[tuple[Path, str]] = []
+
+        def mock_prompt(root, name) -> Any:
+            prompt_log.append((root, name))
+            return "MockShulkerBox"
+
+        create_log: list[tuple[Path, Any]] = []
+
+        def mock_create(root, box) -> None:
+            create_log.append((root, box))
+
+        monkeypatch.setattr(craft, "specify_shulker_box_from_prompt", mock_prompt)
+        monkeypatch.setattr(craft, "create_shulker_box", mock_create)
+
+        craft.craft_shulker_box(Path("/"), "spitty")
+
+        assert prompt_log == [(Path("/"), "spitty")]
+        assert create_log == [(Path("/"), "MockShulkerBox")]
+
+    @pytest.mark.parametrize(
+        "argument, value",
+        (
+            ("instances", ("official",)),
+            ("overwrite", True),
+            ("tags", ("youre", "it")),
+            ("hosts", ("elsewhere", "here")),
+            ("priority", -12),
+        ),
+        ids=("instances", "overwrite", "tags", "hosts", "priority"),
+    )
+    def test_any_kwarg_avoids_the_interactive_prompter(
+        self, monkeypatch, argument, value
+    ):
+        prompt_log: list[Path] = []
+
+        def mock_prompt(root) -> Any:
+            raise AssertionError("I was not to be called.")
+
+        create_log: list[tuple[Path, Any]] = []
+
+        def mock_create(root, box) -> None:
+            create_log.append((root, box))
+
+        class FakePath:
+            def exists(self) -> bool:
+                return False
+
+        def mock_fs(*args, **kwargs) -> Any:
+            return FakePath()
+
+        monkeypatch.setattr(craft, "specify_shulker_box_from_prompt", mock_prompt)
+        monkeypatch.setattr(craft, "create_shulker_box", mock_create)
+        monkeypatch.setattr(filesystem, "shulker_box_config", mock_fs)
+
+        craft.craft_shulker_box(Path("minceraft"), "bacon", **{argument: value})
+        assert len(create_log) == 1
 
 
 class TestPromptByFilter:
