@@ -42,7 +42,7 @@ class TestConfigWriting:
         (tmpdir / "EnderChest").mkdir()
 
         original_ender_chest = EnderChest(
-            f"IPoAC://openbagtwo@localhost{tmpdir}",
+            f"IPoAC://openbagtwo@localhost{Path(tmpdir).absolute().as_posix()}",
             name="tester",
             remotes=[
                 "irc://you@irl/home/upstairs",
