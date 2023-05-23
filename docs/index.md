@@ -1,31 +1,13 @@
 # EnderChest
 
-syncing and linking for all your Minecraft instances
+Welcome to the documentation for EnderChest, a python package for syncing
+and linking all your Minecraft instances.
 
-## Registering Instances
+Use the nav bar on the side of the page to access tutorials, how-to guides
+or the full API docs.
 
-_TODO_
+The source code for this project is
+[freely available on GitHub](https://github.com/OpenBagTwo/EnderChest).
 
-## Creating Shulker Boxes
-
-_TODO_
-
-### Linking Entire Folders
-
-_TODO_
-
-### Collisions and Conflicts
-
-_TODO_
-
-## Syncing
-
-_TODO_
-
-### Managing Backups
-
-_TODO_
-
-## Integration with Auto-Update Tools
-
-_TODO_
+If you encounter a bug or have a suggestion,
+[open an issue](https://github.com/OpenBagTwo/EnderChest/issues/new/choose)!
