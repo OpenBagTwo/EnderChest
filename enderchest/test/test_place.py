@@ -416,7 +416,9 @@ class TestMultiShulkerPlacing:
             record.msg for record in caplog.records if record.levelname == "ERROR"
         )
 
-        assert error_log.endswith("~/.minecraft/options.txt already exists\nAborting")
+        assert error_log.endswith(
+            os.path.join("~", ".minecraft", "options.txt") + " already exists\nAborting"
+        )
 
     def test_skip_match(self, home, minecraft_root):
         place.place_ender_chest(minecraft_root, error_handling="skip")
