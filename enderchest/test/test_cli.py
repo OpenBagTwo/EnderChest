@@ -6,11 +6,7 @@ from pathlib import Path
 import pytest
 
 import enderchest
-from enderchest import cli
-from enderchest import filesystem as fs
-from enderchest import place
-
-from . import utils
+from enderchest import cli, place
 
 
 class TestHelp:

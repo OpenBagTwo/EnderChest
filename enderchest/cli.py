@@ -56,6 +56,18 @@ def _list_shulker_box(
     gather.load_shulker_box_matches(minecraft_root, shulker_box_name, **kwargs)
 
 
+def _update_ender_chest(
+    minecraft_root: Path,
+    official: bool | None = None,
+    mmc: bool | None = None,
+    **kwargs,
+):
+    """Wrapper to resolve the official vs. MultiMC flag"""
+    if mmc:
+        official = False
+    gather.update_ender_chest(minecraft_root, official=official, **kwargs)
+
+
 class Action(Protocol):
     def __call__(self, minecraft_root: Path, /) -> Any:
         ...
@@ -81,12 +93,12 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         tuple("gather " + alias for alias in _instance_aliases),
         "register (or update the registry of) a Minecraft installation",
-        _todo,
+        _update_ender_chest,
     ),
     (
         tuple("gather " + alias for alias in _remote_aliases),
         "register (or update the registry of) a remote EnderChest",
-        _todo,
+        _update_ender_chest,
     ),
     (
         # I freely admit this is ridiculous
@@ -367,17 +379,10 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     gather_instance_parser = action_parsers[f"gather {_instance_aliases[0]}"]
     gather_instance_parser.add_argument(
         "search_paths",
-        nargs="*",
-        action="append",
+        nargs="+",
+        action="extend",
         type=Path,
         help="specify a folder or folders to search for Minecraft installations",
-    )
-    gather_instance_parser.add_argument(
-        "--from",
-        dest="search_paths",
-        action="append",
-        type=Path,
-        help="specify a folder to search for Minecraft installations in",
     )
     instance_type = gather_instance_parser.add_mutually_exclusive_group()
     instance_type.add_argument(
@@ -397,20 +402,14 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     gather_remote_parser = action_parsers[f"gather {_remote_aliases[0]}"]
     gather_remote_parser.add_argument(
         "remotes",
-        nargs="*",
-        action="append",
+        nargs="+",
+        action="extend",
         help=(
             "provide URIs (e.g. rsync://deck@my-steam-deck/home/deck/) of any"
-            " remote EnderChest installation to register with this one"
-        ),
-    )
-    gather_remote_parser.add_argument(
-        "--from",
-        dest="remotes",
-        action="append",
-        help=(
-            "provide the URI (e.g. rsync://deck@my-steam-deck/home/deck/) of a"
-            " remote EnderChest installation to register with this one"
+            " remote EnderChest installation to register with this one."
+            "Note: you should not use this method if the alias (name) of the"
+            "remote does not match the remote's hostname (in this example,"
+            '"my-steam-deck").'
         ),
     )
 

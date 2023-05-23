@@ -9,6 +9,7 @@ import pytest
 
 from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import filesystem as fs
+from enderchest.shulker_box import _normalize_modloader
 
 from . import testing_files
 
@@ -101,7 +102,7 @@ def create_mmc_pack_file(
 
     instance_folder.mkdir(parents=True, exist_ok=True)
 
-    with (instance_folder / "mmc_pack.json").open("w") as pack_file:
+    with (instance_folder / "mmc-pack.json").open("w") as pack_file:
         json.dump(
             {"components": components, "formatVersion": 1},
             pack_file,
@@ -151,10 +152,6 @@ def _set_up_minecraft_folder(minecraft_folder: Path, official: bool) -> None:
     """
     for folder in OFFICIAL_FOLDERS if official else MMC_FOLDERS:
         (minecraft_folder / folder).mkdir(parents=True)
-    with as_file(testing_files.CLIENT_OPTIONS) as options_txt:
-        # this is silly, as shutil.copy would accept the Traversable,
-        # but mypy complains, so eh.
-        shutil.copy(options_txt, minecraft_folder)
 
 
 def populate_official_minecraft_folder(minecraft_folder: Path) -> None:
@@ -215,7 +212,7 @@ def populate_instances_folder(instances_folder: Path) -> None:
             continue
 
         populate_mmc_instance_folder(
-            instances_folder / instance_spec.name,
+            instances_folder / instance_spec.root.parent.name,
             instance_spec.minecraft_versions[0],
             instance_spec.modloader,
         )
@@ -437,3 +434,29 @@ def scripted_prompt(responses: Iterable[str]) -> Callable[..., str]:
         return line
 
     return read_from_script
+
+
+def instance(
+    name: str,
+    root: Path,
+    minecraft_versions: Iterable[str] | None = None,
+    modloader: str | None = None,
+    tags: Iterable[str] | None = None,
+) -> InstanceSpec:
+    """Shortcut constructor"""
+    return InstanceSpec(
+        name, root, tuple(minecraft_versions or ()), modloader, tuple(tags or ())
+    )
+
+
+def normalize_instance(instance: InstanceSpec) -> InstanceSpec:
+    """Normalize the values inside an instance tuple"""
+    return instance._replace(
+        # this should be fully checked by instance.equals()
+        root=instance.root.expanduser().relative_to(
+            instance.root.expanduser().parent.parent
+        ),
+        modloader=_normalize_modloader(instance.modloader)[0],
+        minecraft_versions=tuple(sorted(instance.minecraft_versions)),
+        tags=tuple(sorted(tag.lower() for tag in instance.tags)),
+    )

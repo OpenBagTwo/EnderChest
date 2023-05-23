@@ -7,6 +7,7 @@ import pytest
 
 from enderchest import EnderChest, ShulkerBox, craft, filesystem
 from enderchest.gather import load_shulker_boxes
+from enderchest.shulker_box import create_shulker_box
 
 from . import utils
 
@@ -28,7 +29,7 @@ class TestConfigWriting:
 
         utils.pre_populate_enderchest(minecraft_root / "EnderChest")
 
-        craft.create_shulker_box(minecraft_root, original_shulker)
+        create_shulker_box(minecraft_root, original_shulker)
 
         parsed_shulkers = load_shulker_boxes(minecraft_root)
 
@@ -293,7 +294,7 @@ class TestPromptByFilter:
 
         # check that it was showing the right instances right up until the end
         assert caplog.records[-1].msg == (
-            """Filters matches the instances:
+            """Filters match the instances:
   - official
   - Chest Boat"""
         )

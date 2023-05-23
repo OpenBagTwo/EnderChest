@@ -3,12 +3,13 @@ import json
 import logging
 from configparser import ConfigParser, ParsingError
 from pathlib import Path
+from typing import Iterable, Sequence
 from urllib.parse import ParseResult
 
 from enderchest.sync import render_remote
 
 from . import filesystem as fs
-from .enderchest import EnderChest
+from .enderchest import EnderChest, create_ender_chest
 from .instance import InstanceSpec
 from .loggers import GATHER_LOGGER
 from .shulker_box import ShulkerBox
@@ -44,7 +45,7 @@ def load_ender_chest(minecraft_root: Path) -> EnderChest:
 
 def load_ender_chest_instances(
     minecraft_root: Path, log_level: int = logging.INFO
-) -> list[InstanceSpec]:
+) -> Sequence[InstanceSpec]:
     """Get the list of instances registered with the EnderChest located in the
     minecraft root
 
@@ -71,7 +72,7 @@ def load_ender_chest_instances(
     """
     try:
         ender_chest = load_ender_chest(minecraft_root)
-        instances: list[InstanceSpec] = ender_chest.instances
+        instances: Sequence[InstanceSpec] = ender_chest.instances
     except (FileNotFoundError, ValueError) as bad_chest:
         GATHER_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
@@ -250,12 +251,12 @@ def load_ender_chest_remotes(
     """
     try:
         ender_chest = load_ender_chest(minecraft_root)
-        remotes: dict[str, ParseResult] = ender_chest.remotes
+        remotes: Sequence[tuple[ParseResult, str]] = ender_chest.remotes
     except (FileNotFoundError, ValueError) as bad_chest:
         GATHER_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
-        remotes = {}
+        remotes = ()
 
     if len(remotes) == 0:
         GATHER_LOGGER.warning(
@@ -268,7 +269,7 @@ def load_ender_chest_remotes(
         f" to the one installed at {minecraft_root}"
     )
     remote_list: list[tuple[ParseResult, str]] = []
-    for alias, remote in remotes.items():
+    for remote, alias in remotes:
         report += f"\n  - {render_remote(alias, remote)}"
         remote_list.append((remote, alias))
     GATHER_LOGGER.log(log_level, report)
@@ -277,7 +278,7 @@ def load_ender_chest_remotes(
 
 def load_shulker_box_matches(
     minecraft_root: Path, shulker_box_name: str
-) -> list[InstanceSpec]:
+) -> Sequence[InstanceSpec]:
     """Get the list of registered instances that link to the specified shulker box
 
     Parameters
@@ -297,21 +298,21 @@ def load_shulker_box_matches(
         config_file = fs.shulker_box_config(minecraft_root, shulker_box_name)
     except FileNotFoundError:
         GATHER_LOGGER.error(f"No EnderChest is installed in {minecraft_root}")
-        return []
+        return ()
     try:
         shulker_box = _load_shulker_box(config_file)
     except (FileNotFoundError, ValueError) as bad_box:
         GATHER_LOGGER.error(
             f"Could not load shulker box {shulker_box_name}\n  {bad_box}"
         )
-        return []
+        return ()
 
     instances = load_ender_chest_instances(minecraft_root, log_level=logging.DEBUG)
     if not instances:
         return instances
 
     if shulker_box is None:
-        return []
+        return ()
     matches = [instance for instance in instances if shulker_box.matches(instance)]
 
     if len(matches) == 0:
@@ -390,12 +391,7 @@ def gather_minecraft_instances(
         GATHER_LOGGER.warning(
             f"{folder_path} does not appear to be a valid Minecraft instance"
         )
-    official_count = 0
     for i, mc_instance in enumerate(instances):
-        if mc_instance.name == "official":
-            if official_count > 0:
-                instances[i] = mc_instance._replace(name=f"official.{official_count}")
-            official_count += 1
         try:
             instances[i] = mc_instance._replace(
                 root=mc_instance.root.relative_to(minecraft_root)
@@ -525,7 +521,7 @@ def gather_metadata_for_mmc_instance(
         for component in components:
             match component.get("uid"), component.get("cachedName", ""):
                 case "net.minecraft", _:
-                    version = component["cachedVersion"]
+                    version = component["version"]
                 case "net.fabricmc.fabric-loader", _:
                     modloader = "Fabric Loader"
                 case "org.quiltmc.quilt-loader", _:
@@ -603,3 +599,55 @@ def gather_metadata_for_mmc_instance(
         raise ValueError("Could not determine the name of the instance.")
 
     return InstanceSpec(name, minecraft_folder, (version,), modloader, tuple(tags))
+
+
+def update_ender_chest(
+    minecraft_root: Path,
+    search_paths: Iterable[str | Path] | None = None,
+    official: bool | None = None,
+    remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
+    | None = None,
+) -> None:
+    """Orchestration method that coordinates the onboarding of new instances or
+    EnderChest installations
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder).
+    search_paths : list of Paths, optional
+        The local search paths to look for Minecraft installations within.
+        Be warned that this search is performed recursively.
+    official : bool | None, optional
+        Optionally specify whether the Minecraft instances you expect to find
+        are from the official launcher (`official=True`) or a MultiMC-derivative
+        (`official=False`).
+    remotes : list of URIs or (URI, str) tuples, optional
+        Any remotes you wish to register to this instance. When a (URI, str) tuple
+        is provided, the second value will be used as the name/alias of the remote.
+        If there is already a remote specified with the given alias, this method will
+        replace it.
+    """
+    try:
+        ender_chest = load_ender_chest(minecraft_root)
+    except (FileNotFoundError, ValueError) as bad_chest:
+        GATHER_LOGGER.error(
+            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+        )
+        return
+    for search_path in search_paths or ():
+        for instance in gather_minecraft_instances(
+            minecraft_root, Path(search_path), official=official
+        ):
+            _ = ender_chest.register_instance(instance)
+    for remote in remotes or ():
+        try:
+            if isinstance(remote, (str, ParseResult)):
+                ender_chest.register_remote(remote)
+            else:
+                ender_chest.register_remote(*remote)
+        except ValueError as bad_remote:
+            GATHER_LOGGER.warning(bad_remote)
+
+    create_ender_chest(minecraft_root, ender_chest)
