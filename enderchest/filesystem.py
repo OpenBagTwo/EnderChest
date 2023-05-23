@@ -95,7 +95,7 @@ def shulker_box_root(minecraft_root: Path, shulker_box_name: str) -> Path:
 
     Notes
     -----
-    This method does not check a shulker box exists at that location
+    This method does not check if a shulker box exists at that location
     """
     return ender_chest_folder(minecraft_root) / shulker_box_name
 
@@ -117,7 +117,7 @@ def shulker_box_config(minecraft_root: Path, shulker_box_name: str) -> Path:
 
     Notes
     -----
-    This method does not check a shulker box config exists at that location
+    This method does not check if a shulker box config exists at that location
     """
     return shulker_box_root(minecraft_root, shulker_box_name) / SHULKER_BOX_CONFIG_NAME
 

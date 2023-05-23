@@ -1,8 +1,8 @@
 """Command-line interface"""
-import argparse
 import logging
 import os
 import sys
+from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
@@ -147,46 +147,30 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
 )
 
 
-def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
-    """Parse the provided command-line options to determine the action to perform and
-    the arguments to pass to the action
-
-    Parameters
-    ----------
-    argv : list-like of str (sys.argv)
-        The options passed into the command line
+def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
+    """Generate the command-line parsers
 
     Returns
     -------
-    Callable
-        The action method that will be called
-    str
-        The root of the minecraft folder (parent of the EnderChest)
-        where the action will be perfomed
-    int
-        The verbosity level of the operation (in terms of log levels)
-    dict
-        Any additional options that will be given to the action method
-
+    enderchest_parser : ArgumentParser
+        The top-level argument parser responsible for routing arguments to
+        specific action parsers
+    action_parsers : dict of str to ArgumentParser
+        The verb-specific argument parsers
     """
-    actions: dict[str, Action] = {}
-    aliases: dict[str, str] = {}
     descriptions: dict[str, str] = {}
     root_description: str = ""
     for commands, description, method in ACTIONS:
-        for command in commands:
-            aliases[command] = commands[0]
-        actions[commands[0]] = method
         descriptions[commands[0]] = description
         root_description += f"\n\t{commands[0]}\n\t\tto {description}"
 
-    enderchest_parser = argparse.ArgumentParser(
+    enderchest_parser = ArgumentParser(
         prog="enderchest",
         description=(
             f"v{get_versions()['version']}\n"
             "\nsyncing and linking for all your Minecraft instances"
         ),
-        formatter_class=argparse.RawTextHelpFormatter,
+        formatter_class=RawTextHelpFormatter,
     )
 
     enderchest_parser.add_argument(
@@ -210,10 +194,11 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
         " To learn more, try: enderchest {action} -h",
     )
 
-    action_parsers: dict[str, argparse.ArgumentParser] = {}
-    for command in actions.keys():
-        parser = argparse.ArgumentParser(
-            prog=f"enderchest {command}", description=descriptions[command]
+    action_parsers: dict[str, ArgumentParser] = {}
+    for verb, description in descriptions.items():
+        parser = ArgumentParser(
+            prog=f"enderchest {verb}",
+            description=description,
         )
         root = parser.add_mutually_exclusive_group()
         root.add_argument(
@@ -247,7 +232,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
             default=0,
             help="decrease the amount of information that's printed",
         )
-        action_parsers[command] = parser
+        action_parsers[verb] = parser
 
     # craft options
     craft_parser = action_parsers["craft"]
@@ -426,6 +411,39 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     # open options
 
     # close options
+    return enderchest_parser, action_parsers
+
+
+def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
+    """Parse the provided command-line options to determine the action to perform and
+    the arguments to pass to the action
+
+    Parameters
+    ----------
+    argv : list-like of str (sys.argv)
+        The options passed into the command line
+
+    Returns
+    -------
+    Callable
+        The action method that will be called
+    str
+        The root of the minecraft folder (parent of the EnderChest)
+        where the action will be performed
+    int
+        The verbosity level of the operation (in terms of log levels)
+    dict
+        Any additional options that will be given to the action method
+
+    """
+    actions: dict[str, Action] = {}
+    aliases: dict[str, str] = {}
+    for commands, description, method in ACTIONS:
+        for command in commands:
+            aliases[command] = commands[0]
+        actions[commands[0]] = method
+
+    enderchest_parser, action_parsers = generate_parsers()
 
     _ = enderchest_parser.parse_args(argv[1:2])  # check for --help and --version
 
