@@ -246,6 +246,94 @@ class TestPlace(ActionTestSuite):
         assert place_log[0][1]["error_handling"] == "ignore"
 
 
+class TestGather(ActionTestSuite):
+    action = "gather"
+    required_args = ("~",)
+
+    @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
+    def test_gather_requires_at_least_one_search_path(self, with_root):
+        more_args = ("--root", "/minecraft") if with_root else ()
+        with pytest.raises(SystemExit):
+            cli.parse_args(["enderchest", *self.action.split(), *more_args])
+
+    @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
+    def test_single_arg_interpreted_as_search_path(self, with_root):
+        more_args = ("--root", ".") if with_root else ()
+
+        _, root, _, options = cli.parse_args(
+            ["enderchest", *self.action.split(), *more_args, "~"]
+        )
+        assert (root.resolve(), options["search_paths"]) == (
+            Path(".").resolve(),
+            [Path("~")],
+        )
+
+    def test_first_arg_interpreted_as_root(self):  # I actually really don't like this
+        _, root, _, options = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                ".",
+                "~",
+                "/here",
+                "/there",
+                "everywhere",
+            ]
+        )
+        assert (root.resolve(), options["search_paths"]) == (
+            Path(".").resolve(),
+            [Path("~"), Path("/here"), Path("/there"), Path("everywhere")],
+        )
+
+
+class TestGatherRemote(ActionTestSuite):
+    action = "gather enderchests"
+    required_args = ("sftp://openbagtwo@steamdeck/home/deck",)
+
+    @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
+    def test_gather_requires_at_least_one_remote(self, with_root):
+        more_args = ("--root", "/minecraft") if with_root else ()
+        with pytest.raises(SystemExit):
+            cli.parse_args(["enderchest", *self.action.split(), *more_args])
+
+    @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
+    def test_single_arg_interpreted_as_remote(self, with_root):
+        more_args = ("--root", ".") if with_root else ()
+
+        _, root, _, options = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                *more_args,
+                "sftp://openbagtwo@steamdeck:~",
+            ]
+        )
+        assert (root.resolve(), options["remotes"]) == (
+            Path(".").resolve(),
+            ["sftp://openbagtwo@steamdeck:~"],
+        )
+
+    def test_first_arg_interpreted_as_root(self):  # I actually really don't like this
+        _, root, _, options = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                "~",
+                "sftp://openbagtwo@steamdeck/home/deck",
+                "ipoac://birdhouse/your/soul",
+                "sneakernet://123.fake.street/mailbox",
+            ]
+        )
+        assert (root.expanduser().resolve(), options["remotes"]) == (
+            Path("~").expanduser().resolve(),
+            [
+                "sftp://openbagtwo@steamdeck/home/deck",
+                "ipoac://birdhouse/your/soul",
+                "sneakernet://123.fake.street/mailbox",
+            ],
+        )
+
+
 class TestShulkerInventory(ActionTestSuite):
     action = "inventory shulker_box"
     required_args = ("nombre",)

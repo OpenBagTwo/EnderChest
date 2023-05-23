@@ -1,12 +1,15 @@
 """Tests for setting up folders and files"""
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from enderchest import EnderChest, ShulkerBox, craft, filesystem
-from enderchest.gather import load_shulker_boxes
+from enderchest import EnderChest, ShulkerBox, craft
+from enderchest import filesystem as fs
+from enderchest.enderchest import create_ender_chest
+from enderchest.gather import load_ender_chest, load_shulker_boxes
 from enderchest.shulker_box import create_shulker_box
 
 from . import utils
@@ -92,8 +95,6 @@ class TestEnderChestCrafting:
     def test_any_kwarg_avoids_the_interactive_prompter(
         self, monkeypatch, argument, value
     ):
-        prompt_log: list[Path] = []
-
         def mock_prompt(root) -> Any:
             raise AssertionError("I was not to be called.")
 
@@ -115,11 +116,87 @@ class TestEnderChestCrafting:
         craft.craft_ender_chest(Path("here/"), **{argument: value})
         assert len(create_log) == 1
 
-    # TODO: test overwrite protection
+    def test_default_behavior_is_to_prevent_overwrite(self, minecraft_root, caplog):
+        create_ender_chest(
+            minecraft_root,
+            EnderChest("openbagtwo@battlestation" + str(minecraft_root.absolute())),
+        )
 
-    # TODO: test the prompter
+        original_config = fs.ender_chest_config(minecraft_root).read_text()
 
-    # TODO: test the non-interactive router
+        craft.craft_ender_chest(
+            minecraft_root, instance_search_paths=(minecraft_root / "instances",)
+        )
+        error_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "ERROR"
+        )
+        assert "There is already an EnderChest installed" in error_log
+
+        assert fs.ender_chest_config(minecraft_root).read_text() == original_config
+
+    def test_craft_chest_from_config(self, minecraft_root, home, caplog):
+        # we'll be testing overwriting
+        create_ender_chest(
+            minecraft_root,
+            EnderChest(
+                "sftp://openbagtwo@battlestation" + str(minecraft_root.absolute())
+            ),
+        )
+
+        craft.craft_ender_chest(
+            minecraft_root,
+            instance_search_paths=(minecraft_root / "instances", home),
+            remotes=("rsync://deck@steamdeck/home/deck/minecraft",),
+            overwrite=True,
+        )
+
+        assert not [record for record in caplog.records if record.levelname == "ERROR"]
+
+        chest = load_ender_chest(minecraft_root)
+        assert len(chest.instances) == 4
+        assert len(chest.remotes) == 1
+
+    def test_giving_default_responses_results_in_the_expected_chest(
+        self,
+        monkeypatch,
+        minecraft_root,
+        home,
+        capsys,
+        caplog,
+    ):
+        script_reader = utils.scripted_prompt([""] * 8)
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        chest = craft.specify_ender_chest_from_prompt(minecraft_root)
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        assert not [record for record in caplog.records if record.levelname == "ERROR"]
+
+        assert len(chest.instances) == 4
+        assert len(chest.remotes) == 0
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_prompter_gives_you_the_chance_to_back_out(
+        self, monkeypatch, tmpdir, capsys
+    ):
+        script_reader = utils.scripted_prompt(
+            ["n", "n", "", "", "me@here", "default", "n"]
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+        monkeypatch.setattr(os, "getcwd", lambda: tmpdir)
+
+        with pytest.raises(RuntimeError):
+            craft.specify_ender_chest_from_prompt(Path(tmpdir))
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
 
 
 class TestShulkerBoxCrafting:
@@ -157,8 +234,6 @@ class TestShulkerBoxCrafting:
     def test_any_kwarg_avoids_the_interactive_prompter(
         self, monkeypatch, argument, value
     ):
-        prompt_log: list[Path] = []
-
         def mock_prompt(root) -> Any:
             raise AssertionError("I was not to be called.")
 
@@ -176,14 +251,14 @@ class TestShulkerBoxCrafting:
 
         monkeypatch.setattr(craft, "specify_shulker_box_from_prompt", mock_prompt)
         monkeypatch.setattr(craft, "create_shulker_box", mock_create)
-        monkeypatch.setattr(filesystem, "shulker_box_config", mock_fs)
+        monkeypatch.setattr(fs, "shulker_box_config", mock_fs)
 
         craft.craft_shulker_box(Path("minceraft"), "bacon", **{argument: value})
         assert len(create_log) == 1
 
 
 class TestPromptByFilter:
-    def test_using_default_responses_results_in_the_expected_shulker_box(
+    def test_giving_default_responses_results_in_the_expected_shulker_box(
         self, monkeypatch, capsys
     ):
         script_reader = utils.scripted_prompt([""] * 6)
