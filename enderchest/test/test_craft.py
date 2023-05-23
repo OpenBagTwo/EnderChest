@@ -119,7 +119,9 @@ class TestEnderChestCrafting:
     def test_default_behavior_is_to_prevent_overwrite(self, minecraft_root, caplog):
         create_ender_chest(
             minecraft_root,
-            EnderChest("openbagtwo@battlestation" + str(minecraft_root.absolute())),
+            EnderChest(
+                "openbagtwo@battlestation" + minecraft_root.absolute().as_posix()
+            ),
         )
 
         original_config = fs.ender_chest_config(minecraft_root).read_text()
@@ -139,7 +141,7 @@ class TestEnderChestCrafting:
         create_ender_chest(
             minecraft_root,
             EnderChest(
-                "sftp://openbagtwo@battlestation" + str(minecraft_root.absolute())
+                "sftp://openbagtwo@battlestation" + minecraft_root.absolute().as_posix()
             ),
         )
 

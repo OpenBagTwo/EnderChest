@@ -353,7 +353,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         uri = ParseResult(
             scheme=protocol,
             netloc=netloc,
-            path=str(minecraft_root),
+            path=minecraft_root.as_posix(),
             params="",
             query="",
             fragment="",
