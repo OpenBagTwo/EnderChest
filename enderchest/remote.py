@@ -12,14 +12,17 @@ from .sync import remote_file, render_remote
 
 def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
     """Load an EnderChest configuration from another machine
+
     Parameters
     ----------
     uri : URI
         The URI to the remote Minecraft root
+
     Returns
     -------
     EnderChest
         The remote EnderChest configuration
+
     Raises
     ------
     ValueError
@@ -41,7 +44,8 @@ def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
             return EnderChest.from_cfg(remote_config)
         except ValueError as bad_chest:
             raise RuntimeError(
-                f"The remote EnderChest config downloaded from {uri.geturl()} could not be parsed."
+                "The remote EnderChest config downloaded"
+                f"from {uri.geturl()} could not be parsed."
             ) from bad_chest
 
 
@@ -49,14 +53,17 @@ def fetch_remotes_from_a_remote_ender_chest(
     uri: str | ParseResult,
 ) -> list[tuple[ParseResult, str]]:
     """Grab the list of EnderChests registered with the specified remote EnderChest
+
     Parameters
     ----------
     uri : URI
         The URI to the remote Minecraft root
+
     Returns
     -------
     list of (URI, str) tuples
         The URIs of the remote EnderChests, paired with their aliases
+
     Raises
     ------
     RuntimeError
