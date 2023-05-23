@@ -74,7 +74,7 @@ class EnderChest:
             if isinstance(uri, ParseResult):
                 self._uri = uri
             elif isinstance(uri, Path):
-                self._uri = urlparse(str(uri.absolute()))
+                self._uri = urlparse(uri.absolute().as_uri())
             else:
                 self._uri = urlparse(uri)
         except AttributeError as parse_problem:
@@ -217,7 +217,7 @@ class EnderChest:
         except AssertionError:
             raise FileNotFoundError(f"Could not open {config_file}")
 
-        path = str(config_file.absolute().parent.parent)
+        path = config_file.absolute().parent.parent.as_posix()
 
         instances: list[i.InstanceSpec] = []
         remotes: list[str | tuple[str, str]] = []
