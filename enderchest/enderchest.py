@@ -218,7 +218,8 @@ class EnderChest:
         except AssertionError:
             raise FileNotFoundError(f"Could not open {config_file}")
 
-        path = config_file.absolute().parent.parent.as_posix()
+        # All I'm gonna say is that Windows pathing is the worst
+        path = urlparse(config_file.absolute().parent.parent.as_uri()).path
 
         instances: list[i.InstanceSpec] = []
         remotes: list[str | tuple[str, str]] = []
