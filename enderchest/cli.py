@@ -6,7 +6,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from . import craft, gather, place
+from . import craft, gather, loggers, place
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
@@ -477,6 +477,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
 def main():
     logger = logging.getLogger(__package__)
     cli_handler = logging.StreamHandler()
+    cli_handler.setFormatter(loggers.CLIFormatter())
     logger.addHandler(cli_handler)
 
     action, root, log_level, kwargs = parse_args(sys.argv)
