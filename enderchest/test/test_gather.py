@@ -1,5 +1,4 @@
 """Tests around file discovery and registration"""
-import os
 import re
 
 import pytest
@@ -42,8 +41,7 @@ class TestListShulkerBoxes:
         ]
 
         assert re.search(
-            r"Could not parse(.*)"
-            + os.path.join("not_ini", fs.SHULKER_BOX_CONFIG_NAME),
+            rf"Could not parse(.*)not_ini(.*){fs.SHULKER_BOX_CONFIG_NAME}",
             warnings[-1].msg,
         )
 
