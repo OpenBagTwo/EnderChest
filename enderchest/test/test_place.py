@@ -417,7 +417,8 @@ class TestMultiShulkerPlacing:
         )
 
         assert error_log.endswith(
-            os.path.join("~", ".minecraft", "options.txt") + " already exists\nAborting"
+            f'{os.path.join("~", ".minecraft", "options.txt")}'  # fricking escape chars
+            + " already exists\nAborting"
         )
 
     def test_skip_match(self, home, minecraft_root):
