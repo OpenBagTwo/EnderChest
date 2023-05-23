@@ -91,7 +91,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
         _place,
     ),
     (
-        tuple("gather " + alias for alias in _instance_aliases),
+        ("gather",) + tuple("gather " + alias for alias in _instance_aliases),
         "register (or update the registry of) a Minecraft installation",
         _update_ender_chest,
     ),
@@ -376,7 +376,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     )
 
     # gather instance options
-    gather_instance_parser = action_parsers[f"gather {_instance_aliases[0]}"]
+    gather_instance_parser = action_parsers[f"gather"]
     gather_instance_parser.add_argument(
         "search_paths",
         nargs="+",
