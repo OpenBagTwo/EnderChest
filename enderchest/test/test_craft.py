@@ -3,6 +3,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import pytest
 
@@ -42,7 +43,7 @@ class TestConfigWriting:
         (tmpdir / "EnderChest").mkdir()
 
         original_ender_chest = EnderChest(
-            Path(tmpdir).absolute().as_uri(),
+            urlparse(Path(tmpdir).absolute().as_uri()),
             name="tester",
             remotes=[
                 "irc://you@irl/home/upstairs",
