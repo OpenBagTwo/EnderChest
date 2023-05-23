@@ -8,9 +8,10 @@ from typing import Iterable, Sequence
 from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs
+from . import instance as i
 from . import sync
 from ._version import get_versions
-from .instance import InstanceSpec
+from .loggers import CRAFT_LOGGER, GATHER_LOGGER
 
 
 @dataclass(init=False, repr=False)
@@ -48,17 +49,18 @@ class EnderChest:
         The complete URI of this instance
     root : Path
         The path to this EnderChest folder
-    instances : list of InstanceSpec
+    instances : list-like of InstanceSpec
         The instances registered with this EnderChest
-    remotes : dict of str to parsed URIs
-        The other EnderChest installations this EnderChest is aware of
+    remotes : list-like of (ParseResult, str) pairs
+        The other EnderChest installations this EnderChest is aware of, paired
+        with their aliases
     """
 
     name: str
     _uri: ParseResult
-    instances: list[InstanceSpec]
+    _instances: list[i.InstanceSpec]
 
-    remotes: dict[str, ParseResult]
+    _remotes: dict[str, ParseResult]
 
     def __init__(
         self,
@@ -66,7 +68,7 @@ class EnderChest:
         name: str | None = None,
         remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
         | None = None,
-        instances: Iterable[InstanceSpec] | None = None,
+        instances: Iterable[i.InstanceSpec] | None = None,
     ):
         try:
             if isinstance(uri, ParseResult):
@@ -85,8 +87,11 @@ class EnderChest:
 
         self.name = name or self._uri.hostname or gethostname()
 
-        self.instances = [instance for instance in instances or ()]
-        self.remotes = {}
+        self._instances = []
+        self._remotes = {}
+
+        for instance in instances or ():
+            self.register_instance(instance)
 
         for remote in remotes or ():
             if isinstance(remote, (str, ParseResult)):
@@ -105,6 +110,53 @@ class EnderChest:
     def root(self) -> Path:
         return fs.ender_chest_folder(Path(self._uri.path))
 
+    @property
+    def instances(self) -> tuple[i.InstanceSpec, ...]:
+        return tuple(self._instances)
+
+    def register_instance(self, instance: i.InstanceSpec) -> i.InstanceSpec:
+        """Register a new Minecraft installation
+
+        Parameters
+        ----------
+        instance : InstanceSpec
+            The instance to register
+
+        Returns
+        -------
+        InstanceSpec
+            The spec of the instance as it was actually registered (in case the
+            name changed or somesuch)
+
+        Notes
+        -----
+        - If the instance's name is already assigned to a registered instance,
+          this method will choose a new one
+        - If this instance shares a path with an existing instance, it will
+          replace that instance
+        """
+        self._instances = [
+            old_instance
+            for old_instance in self._instances
+            if not i.equals(Path(self._uri.path), instance, old_instance)
+        ]
+        name = instance.name
+        counter = 0
+        taken_names = {old_instance.name for old_instance in self._instances}
+        while True:
+            if name not in taken_names:
+                break
+            counter += 1
+            name = f"{instance.name}.{counter}"
+
+        GATHER_LOGGER.debug(f"Registering instance {instance.name} at {instance.root}")
+        self._instances.append(instance._replace(name=name))
+        return self._instances[-1]
+
+    @property
+    def remotes(self) -> tuple[tuple[ParseResult, str], ...]:
+        return tuple((remote, alias) for alias, remote in self._remotes.items())
+
     def register_remote(
         self, remote: str | ParseResult, alias: str | None = None
     ) -> None:
@@ -117,7 +169,7 @@ class EnderChest:
             The URI of the remote
         alias : str, optional
             an alias to give to this remote. If None is provided, the URI's hostname
-            will be used
+            will be used.
 
         Raises
         ------
@@ -129,7 +181,8 @@ class EnderChest:
             alias = alias or remote.hostname
             if not alias:
                 raise AttributeError(f"{remote.geturl()} has no hostname")
-            self.remotes[alias] = remote
+            GATHER_LOGGER.debug(f"Registering remote {remote.geturl()} ({alias})")
+            self._remotes[alias] = remote
         except AttributeError as parse_problem:
             raise ValueError(f"{remote} is not a valid URI") from parse_problem
 
@@ -166,7 +219,7 @@ class EnderChest:
 
         path = str(config_file.absolute().parent.parent)
 
-        instances: list[InstanceSpec] = []
+        instances: list[i.InstanceSpec] = []
         remotes: list[str | tuple[str, str]] = []
 
         scheme: str | None = None
@@ -185,7 +238,7 @@ class EnderChest:
                     else:
                         remotes.append((remote[1], remote[0]))
             else:
-                instances.append(InstanceSpec.from_cfg(parser[section]))
+                instances.append(i.InstanceSpec.from_cfg(parser[section]))
 
         scheme = scheme or sync.DEFAULT_PROTOCOL
         netloc = netloc or sync.get_default_netloc()
@@ -218,7 +271,7 @@ class EnderChest:
         )
 
         config.add_section("remotes")
-        for name, uri in self.remotes.items():
+        for uri, name in self.remotes:
             if name != uri.hostname:
                 config.set("remotes", name, uri.geturl())
             else:
@@ -260,3 +313,30 @@ def _list_to_ini(values: Sequence) -> str:
     if len(values) == 1:
         return values[0]
     return "\n" + "\n".join(values)
+
+
+def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
+    """Create an EnderChest based on the provided configuration
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff is in (or, at least, the
+        one inside which you want to create your EnderChest)
+    ender_chest : EnderChest
+        The spec of the chest to create
+
+    Notes
+    -----
+    - The "root" attribute of the EnderChest config will be ignored--instead
+      the EnderChest will be created at <minecraft_root>/EnderChest
+    - This method does not check to see if there is already an EnderChest set
+      up at the specified location--if one exists, its config will
+      be overwritten
+    """
+    root = fs.ender_chest_folder(minecraft_root, check_exists=False)
+    root.mkdir(exist_ok=True)
+
+    config_path = fs.ender_chest_config(minecraft_root, check_exists=False)
+    ender_chest.write_to_cfg(config_path)
+    CRAFT_LOGGER.info(f"EnderChest configuration written to {config_path}")

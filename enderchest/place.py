@@ -148,12 +148,9 @@ def place_ender_chest(
             if instance in skip_instances:
                 continue
 
-            if instance.root.expanduser().is_absolute():
-                instance_root = instance.root
-            else:
-                instance_root = minecraft_root / instance.root
+            instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
 
-            if not instance_root.expanduser().exists():
+            if not instance_root.exists():
                 PLACE_LOGGER.error(
                     f"No minecraft instance exists at {instance_root.expanduser().absolute()}"
                 )
@@ -165,7 +162,7 @@ def place_ender_chest(
                     case _:  # nothing to link, so might as well skip the rest
                         continue
 
-            PLACE_LOGGER.info(f"Linking {instance_root} to {shulker_box.name}")
+            PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
 
             resources = set(shulker_box.root.expanduser().absolute().rglob("*"))
 
@@ -179,7 +176,7 @@ def place_ender_chest(
                     PLACE_LOGGER.error(
                         f"Error linking shulker box {shulker_box.name}"
                         f" to instance {instance.name}:"
-                        f"\n{(instance_root / link_folder).absolute()} is a"
+                        f"\n{(instance.root / link_folder)} is a"
                         " non-empty directory"
                     )
                     match handle_error(instance):
@@ -211,7 +208,7 @@ def place_ender_chest(
                         PLACE_LOGGER.error(
                             f"Error linking shulker box {shulker_box.name}"
                             f" to instance {instance.name}:"
-                            f"\n{(instance_root / resource_path).absolute()}"
+                            f"\n{(instance.root / resource_path)}"
                             " already exists"
                         )
                         # TODO: option to record failure but keep going

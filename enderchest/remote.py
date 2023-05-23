@@ -65,7 +65,7 @@ def fetch_remotes_from_a_remote_ender_chest(
     remote_chest = load_remote_ender_chest(uri)
     remotes: list[tuple[ParseResult, str]] = [(remote_chest._uri, remote_chest.name)]
 
-    remotes.extend((uri, alias) for alias, uri in remote_chest.remotes.items())
+    remotes.extend(remote_chest.remotes)
     SYNC_LOGGER.info(
         "Loaded the following remotes:\n"
         + "\n".join(f"  - {render_remote(alias, uri)}" for uri, alias in remotes)

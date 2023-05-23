@@ -1,8 +1,10 @@
 """Useful setup / teardown fixtures"""
+from importlib.resources import as_file
 from pathlib import Path
 
 import pytest
 
+from .testing_files import CLIENT_OPTIONS
 from .utils import populate_instances_folder, populate_official_minecraft_folder
 
 
@@ -48,6 +50,10 @@ def file_system(tmp_path):
             minecraft_root / "instances" / "axolotl" / ".minecraft" / "options.txt"
         ): "renderDistance:1",
     }
+
+    with as_file(CLIENT_OPTIONS) as options_txt:
+        do_not_touch[home / ".minecraft" / "options.txt"] = options_txt.read_text()
+
     mod_builds_folder = minecraft_root / "workspace" / "BestModEver" / "build" / "libs"
 
     do_not_touch.update(
@@ -67,7 +73,7 @@ def file_system(tmp_path):
     )
 
     symlinks: dict[Path, Path] = {  # map of links to targets
-        minecraft_root / "official_launcher": home / ".minecraft",
+        minecraft_root / "official_launcher" / ".minecraft": home / ".minecraft",
         (
             minecraft_root
             / "instances"

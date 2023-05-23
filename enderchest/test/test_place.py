@@ -208,7 +208,7 @@ class TestShulkerInstanceMatching:
 
         assert self.matchall(tag_matching_shulker) == ["bee"]
 
-    def test_tag_matching_is_exact(self):
+    def test_tag_matching_ignores_case(self):
         tag_matching_shulker = ShulkerBox(
             0,
             "vanilla",
@@ -217,7 +217,11 @@ class TestShulkerInstanceMatching:
             (),
         )
 
-        assert self.matchall(tag_matching_shulker) == ["official", "axolotl"]
+        assert self.matchall(tag_matching_shulker) == [
+            "official",
+            "axolotl",
+            "Chest Boat",
+        ]
 
     def test_tag_matching_supports_wildcards(self):
         tag_matching_shulker = ShulkerBox(

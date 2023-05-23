@@ -1,7 +1,7 @@
 {
     "formatVersion": "1",
     "groups": {
-        "Vanilla Plus": {
+        "vanilla": {
             "hidden": "dontreadme",
             "instances": [
                 "axolotl"
@@ -10,6 +10,12 @@
         "Modded": {
             "instances": [
                 "bee"
+            ]
+        },
+        "Vanilla Plus": {
+            "hidden": "dontreadme",
+            "instances": [
+                "chest-boat"
             ]
         }
     }

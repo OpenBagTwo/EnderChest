@@ -32,14 +32,17 @@ class InstanceSpec(NamedTuple):
     @classmethod
     def from_cfg(cls, section: SectionProxy) -> "InstanceSpec":
         """Parse an instance spec as read in from the enderchest config file
+
         Parameters
         ----------
         section : dict-like of str to str
             The section in the enderchest config as parsed by a ConfigParser
+
         Returns
         -------
         InstanceSpec
             The resulting InstanceSpec
+
         Raises
         ------
         KeyError
@@ -52,5 +55,36 @@ class InstanceSpec(NamedTuple):
             Path(section["root"]),
             tuple(section["minecraft_version"].strip().split()),
             section.get("modloader", None),
-            tuple(section.get("tags", "").strip().split()),
+            tuple(
+                tag.strip()
+                for tag in section.get("tags", "")
+                .replace(",", "\n")
+                .strip()
+                .split("\n")
+            ),
         )
+
+
+def equals(
+    minecraft_root: Path, instance: InstanceSpec, other_instance: InstanceSpec
+) -> bool:
+    """Determine whether two instances point to the same location
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The starting location (the parent of where your EnderChest folder lives)
+    instance : InstanceSpec
+        the first instance
+    other_instance : InstanceSpec
+        the instance to compare it against
+
+    Returns
+    -------
+    bool
+        True if and only if the two instances have the same root, with regards
+        to the provided `minecraft_root`
+    """
+    path = minecraft_root / instance.root.expanduser()
+    other_path = minecraft_root / other_instance.root.expanduser()
+    return path.expanduser().resolve() == other_path.expanduser().resolve()

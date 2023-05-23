@@ -7,8 +7,10 @@ from typing import NamedTuple
 
 import semantic_version as semver
 
+from . import filesystem as fs
 from ._version import get_versions
 from .instance import InstanceSpec
+from .loggers import CRAFT_LOGGER
 
 
 class ShulkerBox(NamedTuple):
@@ -181,7 +183,9 @@ class ShulkerBox(NamedTuple):
                         return False
                 case "tags":
                     for value in values:
-                        if fnmatch.filter(instance.tags, value):
+                        if fnmatch.filter(
+                            [tag.lower() for tag in instance.tags], value.lower()
+                        ):
                             break
                     else:
                         return False
@@ -278,3 +282,56 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
     except ValueError:
         # fall back to simple fnmatching
         return fnmatch.fnmatch(version_spec, version_string)
+
+
+DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
+    "config",
+    "mods",
+    "resourcepacks",
+    "saves",
+    "shaderpacks",
+)
+
+STANDARD_LINK_FOLDERS = (  # TODO: customize in enderchest.cfg
+    "backups",
+    "cachedImages",
+    "crash-reports",
+    "logs",
+    "replay_recordings",
+    "screenshots",
+    ".bobby",
+)
+
+
+def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
+    """Create a shulker box folder based on the provided configuration
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+    shulker_box : ShulkerBox
+        The spec of the box to create
+
+    Notes
+    -----
+    - The "root" attribute of the ShulkerBox config will be ignored--instead
+      the shulker box will be created at
+      <minecraft_root>/EnderChest/<shulker box name>
+    - This method will fail if there is no EnderChest set up in the minecraft
+      root
+    - This method does not check to see if there is already a shulker box
+      set up at the specificed location--if one exists, its config will
+      be overwritten
+    """
+    root = fs.shulker_box_root(minecraft_root, shulker_box.name)
+    root.mkdir(exist_ok=True)
+
+    for folder in (*DEFAULT_SHULKER_FOLDERS, *shulker_box.link_folders):
+        CRAFT_LOGGER.debug(f"Creating {root / folder}")
+        (root / folder).mkdir(exist_ok=True, parents=True)
+
+    config_path = fs.shulker_box_config(minecraft_root, shulker_box.name)
+    shulker_box.write_to_cfg(config_path)
+    CRAFT_LOGGER.info(f"Shulker box configuration written to {config_path}")

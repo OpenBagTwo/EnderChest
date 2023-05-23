@@ -10,7 +10,7 @@ from pathvalidate import is_valid_filename
 
 from . import filesystem as fs
 from . import sync
-from .enderchest import EnderChest
+from .enderchest import EnderChest, create_ender_chest
 from .gather import (
     gather_minecraft_instances,
     load_ender_chest,
@@ -22,32 +22,14 @@ from .instance import InstanceSpec
 from .loggers import CRAFT_LOGGER
 from .prompt import NO, YES, confirm, prompt
 from .remote import fetch_remotes_from_a_remote_ender_chest
-from .shulker_box import ShulkerBox
-
-DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
-    "config",
-    "mods",
-    "resourcepacks",
-    "saves",
-    "shaderpacks",
-)
-
-STANDARD_LINK_FOLDERS = (  # TODO: customize in enderchest.cfg
-    "backups",
-    "cachedImages",
-    "crash-reports",
-    "logs",
-    "replay_recordings",
-    "screenshots",
-    ".bobby",
-)
+from .shulker_box import STANDARD_LINK_FOLDERS, ShulkerBox, create_shulker_box
 
 
 def craft_ender_chest(
     minecraft_root: Path,
     copy_from: str | ParseResult | None = None,
-    instance_search_paths: Sequence[str | Path] | None = None,
-    remotes: Sequence[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
+    instance_search_paths: Iterable[str | Path] | None = None,
+    remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
     | None = None,
     overwrite: bool = False,
 ) -> None:
@@ -83,7 +65,12 @@ def craft_ender_chest(
     - The instance searcher is fully recursive, so keep that in mind before
       passing in, say "/"
     """
-    if not copy_from and not instance_search_paths and not remotes and not overwrite:
+    if (
+        copy_from is None
+        and instance_search_paths is None
+        and remotes is None
+        and not overwrite
+    ):
         # then we go interactive
         try:
             ender_chest = specify_ender_chest_from_prompt(minecraft_root)
@@ -108,9 +95,10 @@ def craft_ender_chest(
         ender_chest = EnderChest(minecraft_root)
 
         for search_path in instance_search_paths or ():
-            ender_chest.instances.extend(
-                gather_minecraft_instances(minecraft_root, Path(search_path), None)
-            )
+            for instance in gather_minecraft_instances(
+                minecraft_root, Path(search_path), None
+            ):
+                ender_chest.register_instance(instance)
 
         if copy_from:
             try:
@@ -232,33 +220,6 @@ def craft_shulker_box(
         return
 
     create_shulker_box(minecraft_root, shulker_box)
-
-
-def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
-    """Create an EnderChest based on the provided configuration
-
-    Parameters
-    ----------
-    minecraft_root : Path
-        The root directory that your minecraft stuff is in (or, at least, the
-        one inside which you want to create your EnderChest)
-    ender_chest : EnderChest
-        The spec of the chest to create
-
-    Notes
-    -----
-    - The "root" attribute of the EnderChest config will be ignored--instead
-      the EnderChest will be created at <minecraft_root>/EnderChest
-    - This method does not check to see if there is already an EnderChest set
-      up at the specified location--if one exists, its config will
-      be overwritten
-    """
-    root = fs.ender_chest_folder(minecraft_root, check_exists=False)
-    root.mkdir(exist_ok=True)
-
-    config_path = fs.ender_chest_config(minecraft_root, check_exists=False)
-    ender_chest.write_to_cfg(config_path)
-    CRAFT_LOGGER.info(f"EnderChest configuration written to {config_path}")
 
 
 def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
@@ -430,40 +391,6 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     return ender_chest
 
 
-def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
-    """Create a shulker box folder based on the provided configuration
-
-    Parameters
-    ----------
-    minecraft_root : Path
-        The root directory that your minecraft stuff (or, at least, the one
-        that's the parent of your EnderChest folder)
-    shulker_box : ShulkerBox
-        The spec of the box to create
-
-    Notes
-    -----
-    - The "root" attribute of the ShulkerBox config will be ignored--instead
-      the shulker box will be created at
-      <minecraft_root>/EnderChest/<shulker box name>
-    - This method will fail if there is no EnderChest set up in the minecraft
-      root
-    - This method does not check to see if there is already a shulker box
-      set up at the specificed location--if one exists, its config will
-      be overwritten
-    """
-    root = fs.shulker_box_root(minecraft_root, shulker_box.name)
-    root.mkdir(exist_ok=True)
-
-    for folder in (*DEFAULT_SHULKER_FOLDERS, *shulker_box.link_folders):
-        CRAFT_LOGGER.debug(f"Creating {root / folder}")
-        (root / folder).mkdir(exist_ok=True, parents=True)
-
-    config_path = fs.shulker_box_config(minecraft_root, shulker_box.name)
-    shulker_box.write_to_cfg(config_path)
-    CRAFT_LOGGER.info(f"Shulker box configuration written to {config_path}")
-
-
 def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerBox:
     """Parse a shulker box based on interactive user input
 
@@ -496,7 +423,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
 
     shulker_box = ShulkerBox(0, name, shulker_root, (), ())
 
-    def refresh_ender_chest_instance_list() -> list[InstanceSpec]:
+    def refresh_ender_chest_instance_list() -> Sequence[InstanceSpec]:
         """The primary reason to lambda-fy this is to re-print the instance list."""
         return load_ender_chest_instances(minecraft_root)
 
@@ -677,10 +604,10 @@ def _prompt_for_filters(
             CRAFT_LOGGER.error("Filters do not match any known instance.")
             default = False
         elif len(matches) == 1:
-            CRAFT_LOGGER.info(f"Filters matches the instance: {matches[0]}")
+            CRAFT_LOGGER.info(f"Filters match the instance: {matches[0]}")
         else:
             CRAFT_LOGGER.info(
-                "Filters matches the instances:\n"
+                "Filters match the instances:\n"
                 + "\n".join([f"  - {name}" for name in matches])
             )
         return tester if confirm(default=default) else None, matches
@@ -763,7 +690,8 @@ def _prompt_for_filters(
             prompt(
                 "Tags?"
                 f'\ne.g.{", ".join(example_tags)}'
-                "\n(or multiple using comma-separated lists or wildcards)",
+                "\n(or multiple using comma-separated lists or wildcards)"
+                "\nNote: tag-matching is not case-sensitive.",
                 suggestion="*",
             )
             or "*"
