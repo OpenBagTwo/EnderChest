@@ -62,9 +62,13 @@ def place_ender_chest(
     for shulker_box in load_shulker_boxes(minecraft_root, log_level=logging.DEBUG):
         for condition, values in shulker_box.match_criteria:
             if condition == "hosts":
-                if not any(fnmatch.fnmatch(host_spec, host) for host_spec in values):
+                if not any(
+                    fnmatch.fnmatchcase(host_spec.lower(), host.lower())
+                    for host_spec in values
+                ):
                     PLACE_LOGGER.debug(
-                        f"{shulker_box.name} is not intended for linking to this host ({host})"
+                        f"{shulker_box.name} is not intended"
+                        f" for linking to this host ({host})"
                     )
                     break
         else:

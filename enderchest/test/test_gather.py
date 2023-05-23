@@ -1,6 +1,6 @@
 """Tests around file discovery and registration"""
+import os
 import re
-import shutil
 
 import pytest
 
@@ -40,7 +40,11 @@ class TestListShulkerBoxes:
         warnings = [
             record for record in caplog.records if record.levelname == "WARNING"
         ]
-        assert re.search("Could not parse(.*)not_ini/shulkerbox.cfg", warnings[-1].msg)
+
+        assert re.search(
+            "Could not parse(.*)" + os.path.join("not_ini", fs.SHULKER_BOX_CONFIG_NAME),
+            warnings[-1].msg,
+        )
 
 
 class TestGatherInstances:

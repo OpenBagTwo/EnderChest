@@ -191,7 +191,7 @@ class ShulkerBox(NamedTuple):
             match condition:  # these should have been normalized on read-in
                 case "instances":
                     for value in values:
-                        if fnmatch.fnmatch(instance.name, value):
+                        if fnmatch.fnmatchcase(instance.name, value):
                             break
                     else:
                         return False
@@ -209,7 +209,11 @@ class ShulkerBox(NamedTuple):
                     )
                     for value in normalized:
                         if fnmatch.filter(
-                            _normalize_modloader(instance.modloader), value
+                            [
+                                loader.lower()
+                                for loader in _normalize_modloader(instance.modloader)
+                            ],
+                            value.lower(),
                         ):
                             break
                     else:
@@ -295,7 +299,7 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
         return semver.SimpleSpec(version_spec).match(semver.Version(version_string))
     except ValueError:
         # fall back to simple fnmatching
-        return fnmatch.fnmatch(version_spec, version_string)
+        return fnmatch.fnmatchcase(version_spec.lower(), version_string.lower())
 
 
 DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
