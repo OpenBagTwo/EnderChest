@@ -74,7 +74,7 @@ def craft_ender_chest(
         # then we go interactive
         try:
             ender_chest = specify_ender_chest_from_prompt(minecraft_root)
-        except FileExistsError:
+        except (FileExistsError, RuntimeError):
             CRAFT_LOGGER.error("Aborting")
             return
     else:
