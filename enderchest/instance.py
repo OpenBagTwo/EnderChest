@@ -6,6 +6,7 @@ from typing import NamedTuple
 
 class InstanceSpec(NamedTuple):
     """Specification of a Minecraft instance
+
     Parameters
     ----------
     name : str
