@@ -11,17 +11,17 @@
       
       
       
-        <link rel="prev" href="../remote/">
+        <link rel="prev" href="../prompt/">
       
       
-        <link rel="next" href="../enderchest/">
+        <link rel="next" href="../sync/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
-        <title>sync - EnderChest Documentation</title>
+        <title>remote - EnderChest Documentation</title>
       
     
     
@@ -65,7 +65,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#enderchest.sync" class="md-skip">
+        <a href="#enderchest.remote" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              sync
+              remote
             
           </span>
         </div>
@@ -318,20 +318,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -342,12 +328,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          sync
+          remote
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        sync
+        remote
       </a>
       
         
@@ -364,29 +350,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#enderchest.sync" class="md-nav__link">
-    enderchest.sync
+  <a href="#enderchest.remote" class="md-nav__link">
+    enderchest.remote
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enderchest.sync.get_default_netloc" class="md-nav__link">
-    get_default_netloc()
+  <a href="#enderchest.remote.fetch_remotes_from_a_remote_ender_chest" class="md-nav__link">
+    fetch_remotes_from_a_remote_ender_chest()
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enderchest.sync.remote_file" class="md-nav__link">
-    remote_file()
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enderchest.sync.render_remote" class="md-nav__link">
-    render_remote()
+  <a href="#enderchest.remote.load_remote_ender_chest" class="md-nav__link">
+    load_remote_ender_chest()
   </a>
   
 </li>
@@ -395,6 +374,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sync/" class="md-nav__link">
+        sync
+      </a>
     </li>
   
 
@@ -564,29 +557,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#enderchest.sync" class="md-nav__link">
-    enderchest.sync
+  <a href="#enderchest.remote" class="md-nav__link">
+    enderchest.remote
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enderchest.sync.get_default_netloc" class="md-nav__link">
-    get_default_netloc()
+  <a href="#enderchest.remote.fetch_remotes_from_a_remote_ender_chest" class="md-nav__link">
+    fetch_remotes_from_a_remote_ender_chest()
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enderchest.sync.remote_file" class="md-nav__link">
-    remote_file()
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enderchest.sync.render_remote" class="md-nav__link">
-    render_remote()
+  <a href="#enderchest.remote.load_remote_ender_chest" class="md-nav__link">
+    load_remote_ender_chest()
   </a>
   
 </li>
@@ -606,15 +592,15 @@
                   
 
 
-  <h1>sync</h1>
+  <h1>remote</h1>
 
 <div class="doc doc-object doc-module">
 
 
-<a id="enderchest.sync"></a>
+<a id="enderchest.remote"></a>
   <div class="doc doc-contents first">
   
-      <p>Low-level functionality for synchronizing across different machines</p>
+      <p>Higher-level functionality around synchronizing with different EnderCherts</p>
 
   
 
@@ -632,72 +618,15 @@
 
 
 
-<h2 id="enderchest.sync.get_default_netloc" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_default_netloc</span><span class="p">()</span></code>
+<h2 id="enderchest.remote.fetch_remotes_from_a_remote_ender_chest" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fetch_remotes_from_a_remote_ender_chest</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span></code>
 
 </h2>
 
 
   <div class="doc doc-contents ">
   
-      <p>Compile a netloc from environment variables, etc.</p>
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>The default netloc, which is {user}@{hostname}</p></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>enderchest/sync.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_default_netloc</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compile a netloc from environment variables, etc.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        The default netloc, which is {user}@{hostname}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="enderchest.sync.remote_file" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">remote_file</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span></code>
-
-</h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Grab a file from a remote filesystem by its URI and read its contents</p>
+      <p>Grab the list of EnderChests registered with the specified remote EnderChest</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -713,147 +642,55 @@
         <tr>
           <td><code>uri</code></td>
           <td>
-                <code>parsed URI</code>
+                <code>URI</code>
           </td>
-          <td><p>The URI of the file to read</p></td>
+          <td><p>The URI to the remote Minecraft root</p></td>
           <td>
               <em>required</em>
           </td>
         </tr>
-    </tbody>
-  </table>
-
-  <p><strong>Yields:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
         <tr>
+          <td><code>Returns</code></td>
           <td>
-                <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>A path to a local (temp) copy of the file</p></td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>list</code></td>
+          <td>
+          </td>
+          <td><p>The URIs of the remote EnderChests, paired with their aliases</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Raises</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>RuntimeError</code></td>
+          <td>
+          </td>
+          <td><p>If the remote list could not be pulled</p></td>
+          <td>
+              <em>required</em>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>enderchest/sync.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">remote_file</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="n">ParseResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Grab a file from a remote filesystem by its URI and read its contents</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    uri : parsed URI</span>
-<span class="sd">        The URI of the file to read</span>
-
-<span class="sd">    Yields</span>
-<span class="sd">    ------</span>
-<span class="sd">    Path</span>
-<span class="sd">        A path to a local (temp) copy of the file</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Remote file access is not currently implemented&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="enderchest.sync.render_remote" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span></code>
-
-</h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Render a remote to a descriptive string</p>
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>alias</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>The name of the remote</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>uri</code></td>
-          <td>
-                <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
-          </td>
-          <td><p>The parsed URI for the remote</p></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>str</code>
-          </td>
-          <td><p>{uri_string} [({alias})]}
-(if different from the URI hostname)</p></td>
-        </tr>
-    </tbody>
-  </table>
-
-      <details class="quote">
-        <summary>Source code in <code>enderchest/sync.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
+        <summary>Source code in <code>enderchest/remote.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
@@ -867,27 +704,209 @@
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="n">ParseResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a remote to a descriptive string</span>
-
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fetch_remotes_from_a_remote_ender_chest</span><span class="p">(</span>
+    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ParseResult</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">ParseResult</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Grab the list of EnderChests registered with the specified remote EnderChest</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    alias : str</span>
-<span class="sd">        The name of the remote</span>
-<span class="sd">    uri : ParseResult</span>
-<span class="sd">        The parsed URI for the remote</span>
-
+<span class="sd">    uri : URI</span>
+<span class="sd">        The URI to the remote Minecraft root</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    str</span>
-<span class="sd">        {uri_string} [({alias})]}</span>
-<span class="sd">            (if different from the URI hostname)</span>
+<span class="sd">    list of (URI, str) tuples</span>
+<span class="sd">        The URIs of the remote EnderChests, paired with their aliases</span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the remote list could not be pulled</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">uri_string</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+    <span class="n">remote_chest</span> <span class="o">=</span> <span class="n">load_remote_ender_chest</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+    <span class="n">remotes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">ParseResult</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">remote_chest</span><span class="o">.</span><span class="n">_uri</span><span class="p">,</span> <span class="n">remote_chest</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
 
-    <span class="k">if</span> <span class="n">uri</span><span class="o">.</span><span class="n">hostname</span> <span class="o">!=</span> <span class="n">alias</span><span class="p">:</span>
-        <span class="n">uri_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">)&quot;</span>
-    <span class="k">return</span> <span class="n">uri_string</span>
+    <span class="n">remotes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">remote_chest</span><span class="o">.</span><span class="n">remotes</span><span class="p">)</span>
+    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;Loaded the following remotes:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">uri</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">uri</span><span class="p">,</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">alias</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">remotes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;There are duplicates aliases in the list of remotes pulled from </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">remotes</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="enderchest.remote.load_remote_ender_chest" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">load_remote_ender_chest</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Load an EnderChest configuration from another machine</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>uri</code></td>
+          <td>
+                <code>URI</code>
+          </td>
+          <td><p>The URI to the remote Minecraft root</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Returns</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>EnderChest</code></td>
+          <td>
+          </td>
+          <td><p>The remote EnderChest configuration</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Raises</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>ValueError</code></td>
+          <td>
+          </td>
+          <td><p>If the provided URI is invalid</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>RuntimeError</code></td>
+          <td>
+          </td>
+          <td><p>If the config from the remote EnderChest could not be parsed</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>enderchest/remote.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_remote_ender_chest</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ParseResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnderChest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load an EnderChest configuration from another machine</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    uri : URI</span>
+<span class="sd">        The URI to the remote Minecraft root</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    EnderChest</span>
+<span class="sd">        The remote EnderChest configuration</span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the provided URI is invalid</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the config from the remote EnderChest could not be parsed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">ParseResult</span><span class="p">)</span> <span class="k">else</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">bad_uri</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2"> is not a valid URI&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">bad_uri</span>
+
+    <span class="n">remote_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">remote_config_path</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ender_chest_config</span><span class="p">(</span><span class="n">remote_root</span><span class="p">,</span> <span class="n">check_exists</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">remote_config_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
+
+    <span class="k">with</span> <span class="n">remote_file</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">remote_config</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">EnderChest</span><span class="o">.</span><span class="n">from_cfg</span><span class="p">(</span><span class="n">remote_config</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">bad_chest</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The remote EnderChest config downloaded from </span><span class="si">{</span><span class="n">uri</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span><span class="si">}</span><span class="s2"> could not be parsed.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">bad_chest</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
