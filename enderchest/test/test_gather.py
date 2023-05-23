@@ -42,7 +42,8 @@ class TestListShulkerBoxes:
         ]
 
         assert re.search(
-            "Could not parse(.*)" + os.path.join("not_ini", fs.SHULKER_BOX_CONFIG_NAME),
+            r"Could not parse(.*)"
+            + os.path.join("not_ini", fs.SHULKER_BOX_CONFIG_NAME),
             warnings[-1].msg,
         )
 
