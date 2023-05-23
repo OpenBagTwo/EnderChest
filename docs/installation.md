@@ -31,6 +31,18 @@ Once you have python installed,
 
     If all tests pass, then you're good to go!
 
+1. If you'd like `enderchest` to be available outside of your virtual environment,
+   you can copy the executable to somewhere within your system path, _e.g._ for
+   Linux, starting with the virtual environment deactivated:
+   ```bash
+   $ echo $PATH
+   /home/openbagtwo/.mambaforge/condabin:/home/openbagtwo/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin
+   $ conda activate enderchest
+   $ which enderchest
+   /home/openbagtwo/.mambaforge/envs/enderchest/bin/enderchest
+   $ cp /home/openbagtwo/.mambaforge/envs/enderchest/bin/enderchest ~/.local/bin/
+   ```
+
 ## Bleeding Edge
 
 If you'd like to test out upcoming features or help with beta testing, you
