@@ -34,7 +34,7 @@ def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
 
     remote_root = Path(uri.path)
     remote_config_path = fs.ender_chest_config(remote_root, check_exists=False)
-    uri = uri._replace(path=str(remote_config_path))
+    uri = uri._replace(path=remote_config_path.as_posix())
 
     with remote_file(uri) as remote_config:
         try:
