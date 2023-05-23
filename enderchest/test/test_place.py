@@ -1,4 +1,5 @@
 """Tests around instance-linking functionality"""
+import os
 import re
 from pathlib import Path
 
@@ -380,7 +381,9 @@ class TestMultiShulkerPlacing:
             record.msg for record in caplog.records if record.levelname == "INFO"
         )
 
-        assert (f"{instance}/.minecraft to {shulker_box}" in link_log) is should_match
+        assert (
+            f'{os.path.join(instance, ".minecraft")} to {shulker_box}' in link_log
+        ) is should_match
 
     @pytest.mark.parametrize("error_handling", ("ignore", "skip"))
     def test_multi_shulker_place_overwrites_overlapping_symlinks(
