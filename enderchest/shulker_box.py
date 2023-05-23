@@ -1,7 +1,9 @@
 """Specification and configuration of a shulker box"""
 import datetime as dt
 import fnmatch
+import os
 from configparser import ConfigParser, ParsingError
+from io import StringIO
 from pathlib import Path
 from typing import NamedTuple
 
@@ -126,13 +128,19 @@ class ShulkerBox(NamedTuple):
 
         return cls(priority, name, root, tuple(match_criteria.items()), link_folders)
 
-    def write_to_cfg(self, config_file: Path) -> None:
-        """Write this shulker's configuration to file
+    def write_to_cfg(self, config_file: Path | None = None) -> str:
+        """Write this shulker's configuration to INI
 
         Parameters
         ----------
-        config_file : Path
-            The path to the config file
+        config_file : Path, optional
+            The path to the config file, assuming you'd like to write the
+            contents to file
+
+        Returns
+        -------
+        str
+            An INI-syntax rendering of this shulker box's config
 
         Notes
         -----
@@ -155,9 +163,15 @@ class ShulkerBox(NamedTuple):
         for folder in self.link_folders:
             config.set("link-folders", folder)
 
-        with open(config_file, "w") as f:
-            f.write(f"; {config_file.relative_to(config_file.parent.parent)}\n")
-            config.write(f)
+        buffer = StringIO()
+        buffer.write(f"; {os.path.join(self.name, fs.SHULKER_BOX_CONFIG_NAME)}\n")
+        config.write(buffer)
+        buffer.seek(0)  # rewind
+
+        if config_file:
+            config_file.write_text(buffer.read())
+            buffer.seek(0)
+        return buffer.read()
 
     def matches(self, instance: InstanceSpec) -> bool:
         """Determine whether the shulker box matches the given instance

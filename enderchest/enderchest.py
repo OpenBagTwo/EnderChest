@@ -2,6 +2,7 @@
 import datetime as dt
 from configparser import ConfigParser, ParsingError
 from dataclasses import dataclass
+from io import StringIO
 from pathlib import Path
 from socket import gethostname
 from typing import Iterable, Sequence
@@ -248,13 +249,19 @@ class EnderChest:
 
         return EnderChest(uri, name, remotes, instances)
 
-    def write_to_cfg(self, config_file: Path) -> None:
-        """Write this shulker's configuration to file
+    def write_to_cfg(self, config_file: Path | None = None) -> str:
+        """Write this EnderChest's configuration to INI
 
         Parameters
         ----------
-        config_file : Path
-            The path to the config file
+        config_file : Path, optional
+            The path to the config file, assuming you'd like to write the
+            contents to file
+
+        Returns
+        -------
+        str
+            An INI-syntax rendering of this EnderChest's config
 
         Notes
         -----
@@ -290,9 +297,16 @@ class EnderChest:
                 "tags",
                 _list_to_ini(instance.tags),
             )
-        with config_file.open("w") as f:
-            f.write(f"; {fs.ENDER_CHEST_CONFIG_NAME}\n")
-            config.write(f)
+
+        buffer = StringIO()
+        buffer.write(f"; {fs.ENDER_CHEST_CONFIG_NAME}\n")
+        config.write(buffer)
+        buffer.seek(0)  # rewind
+
+        if config_file:
+            config_file.write_text(buffer.read())
+            buffer.seek(0)
+        return buffer.read()
 
 
 def _list_to_ini(values: Sequence) -> str:

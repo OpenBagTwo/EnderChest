@@ -2,7 +2,6 @@
 import re
 from collections import Counter
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Sequence
 from urllib.parse import ParseResult
 
@@ -377,16 +376,14 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
 
     ender_chest = EnderChest(uri, name, remotes, instances)
 
-    with NamedTemporaryFile("w+") as test_file:
-        ender_chest.write_to_cfg(Path(test_file.name))
+    CRAFT_LOGGER.info(
+        "\n"
+        + ender_chest.write_to_cfg()
+        + "\nPreparing to generate an EnderChest with the above configuration."
+    )
 
-        CRAFT_LOGGER.info("\n\n" + test_file.read())
-        CRAFT_LOGGER.info(
-            "\nPreparing to generate an EnderChest with the above configuration."
-        )
-
-        if not confirm(default=True):
-            raise RuntimeError("EnderChest creation aborted.")
+    if not confirm(default=True):
+        raise RuntimeError("EnderChest creation aborted.")
 
     return ender_chest
 
@@ -522,16 +519,14 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
 
     shulker_box = shulker_box._replace(priority=priority)
 
-    with NamedTemporaryFile("w+") as test_file:
-        shulker_box.write_to_cfg(Path(test_file.name))
+    CRAFT_LOGGER.info(
+        "\n"
+        + shulker_box.write_to_cfg()
+        + "Preparing to generate a shulker box with the above configuration."
+    )
 
-        CRAFT_LOGGER.info("\n\n" + test_file.read())
-        CRAFT_LOGGER.info(
-            "\nPreparing to generate a shulker box with the above configuration."
-        )
-
-        if not confirm(default=True):
-            raise RuntimeError("Shulker box creation aborted.")
+    if not confirm(default=True):
+        raise RuntimeError("Shulker box creation aborted.")
 
     return shulker_box
 

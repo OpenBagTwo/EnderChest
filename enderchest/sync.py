@@ -4,7 +4,6 @@ import socket
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from urllib.parse import ParseResult
 
 SUPPORTED_PROTOCOLS = ("rsync",)
