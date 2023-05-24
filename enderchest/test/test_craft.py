@@ -291,6 +291,59 @@ class TestShulkerBoxCrafting:
         craft.craft_shulker_box(Path("minceraft"), "bacon", **{argument: value})
         assert len(create_log) == 1
 
+    def test_warns_if_you_forgot_to_add_yourself_as_the_host(
+        self, monkeypatch, minecraft_root, capsys, caplog
+    ):
+        utils.pre_populate_enderchest(minecraft_root / "EnderChest")
+        script_reader = utils.scripted_prompt(
+            [
+                "F",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "m",
+                # while we're here we might as well check setting
+                # the other shulker properties
+                "cachedImages, logs",
+                "-12",
+                "somewhere_out_there",
+                "",  # default false
+                "somewhere_out_there,*",
+                "",  # this is the final writeme confirmation
+            ]
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft.specify_shulker_box_from_prompt(minecraft_root, "q and a")
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        assert shulker_box == ShulkerBox(
+            -12,
+            "q and a",
+            minecraft_root / "EnderChest" / "q and a",
+            match_criteria=(
+                ("minecraft", ("*",)),
+                ("modloader", ("*",)),
+                ("tags", ("*",)),
+                ("hosts", ("somewhere_out_there", "*")),
+            ),
+            link_folders=("cachedImages", "logs"),
+        )
+
+        warn_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "WARNING"
+        )
+
+        assert (
+            "This shulker box will not link to any instances on this machine"
+            in warn_log
+        )
+
 
 class TestPromptByFilter:
     def test_giving_default_responses_results_in_the_expected_shulker_box(

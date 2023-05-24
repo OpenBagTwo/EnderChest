@@ -159,20 +159,30 @@ def load_shulker_boxes(
     shulker_boxes = sorted(shulker_boxes)
 
     if len(shulker_boxes) == 0:
-        GATHER_LOGGER.warning(
-            f"There are no shulker boxes within the {minecraft_root} EnderChest"
-        )
+        if log_level >= logging.INFO:
+            GATHER_LOGGER.warning(
+                f"There are no shulker boxes within the {minecraft_root} EnderChest"
+            )
     else:
-        GATHER_LOGGER.log(
-            log_level,
-            f"These are the shulker boxes within the {minecraft_root} EnderChest,"
-            "\nlisted in the order in which they are linked:\n"
-            + "\n".join(
-                f"  {shulker_box.priority}. {_render_shulker_box(shulker_box)}"
-                for shulker_box in shulker_boxes
-            ),
+        _report_shulker_boxes(
+            shulker_boxes, log_level, f"the {minecraft_root} EnderChest"
         )
     return shulker_boxes
+
+
+def _report_shulker_boxes(
+    shulker_boxes: Iterable[ShulkerBox], log_level: int, ender_chest_name: str
+) -> None:
+    """Log the list of shulker boxes in the order they'll be linked"""
+    GATHER_LOGGER.log(
+        log_level,
+        f"These are the shulker boxes within {ender_chest_name}"
+        "\nlisted in the order in which they are linked:\n"
+        + "\n".join(
+            f"  {shulker_box.priority}. {_render_shulker_box(shulker_box)}"
+            for shulker_box in shulker_boxes
+        ),
+    )
 
 
 def _load_shulker_box(config_file: Path) -> ShulkerBox:
@@ -233,16 +243,16 @@ def load_ender_chest_remotes(
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
-
-    Returns
-    -------
-    list of (URI, str) tuples
-        The URIs of the remote EnderChests, paired with their aliases
     log_level : int, optional
         By default, this method will report out the minecraft instances it
         finds at the INFO level. You can optionally pass in a lower (or higher)
         level if this method is being called from another method where that
         information is redundant or overly verbose.
+
+    Returns
+    -------
+    list of (URI, str) tuples
+        The URIs of the remote EnderChests, paired with their aliases
 
     Notes
     -----
@@ -259,9 +269,10 @@ def load_ender_chest_remotes(
         remotes = ()
 
     if len(remotes) == 0:
-        GATHER_LOGGER.warning(
-            f"There are no remotes registered to the {minecraft_root} EnderChest"
-        )
+        if log_level >= logging.INFO:
+            GATHER_LOGGER.warning(
+                f"There are no remotes registered to the {minecraft_root} EnderChest"
+            )
         return []
 
     report = (
@@ -360,6 +371,7 @@ def gather_minecraft_instances(
     - As a corollary, if _no_ valid Minecraft installations can be found, this
       method will return an empty list.
     """
+    GATHER_LOGGER.debug(f"Searching for Minecraft folders inside {search_path}")
     instances: list[InstanceSpec] = []
     for folder in fs.minecraft_folders(search_path):
         folder_path = folder.absolute()
@@ -399,6 +411,10 @@ def gather_minecraft_instances(
         except ValueError:
             # TODO: if not Windows, try making relative to "~"
             pass  # instance isn't inside the minecraft root
+    if not instances:
+        GATHER_LOGGER.warning(
+            f"Could not find any Minecraft instances inside {search_path}"
+        )
     return instances
 
 

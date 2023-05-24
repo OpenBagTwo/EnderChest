@@ -116,6 +116,23 @@ class TestGatherInstances:
             ]
         )
 
+    def test_instance_search_warns_if_no_instances_can_be_found(
+        self, minecraft_root, caplog
+    ):
+        empty_folder = minecraft_root / "nothing in there"
+        empty_folder.mkdir()
+        instances = gather.gather_minecraft_instances(
+            minecraft_root, empty_folder, official=None
+        )
+
+        assert len(instances) == 0
+
+        warn_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "WARNING"
+        )
+
+        assert "Could not find any Minecraft instances" in warn_log
+
     def test_onboarding_new_instances(self, minecraft_root, home):
         # start with a blank chest
         craft.craft_ender_chest(minecraft_root, remotes=())
