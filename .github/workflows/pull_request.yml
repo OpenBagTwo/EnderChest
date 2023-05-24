@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        py: [3.10, 3.11]
+        py: ['3.10', '3.11']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
