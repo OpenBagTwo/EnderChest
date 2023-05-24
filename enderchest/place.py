@@ -62,8 +62,9 @@ def place_ender_chest(
     for shulker_box in load_shulker_boxes(minecraft_root, log_level=logging.DEBUG):
         for condition, values in shulker_box.match_criteria:
             if condition == "hosts":
+                # TODO: DRY this into a dedicated function
                 if not any(
-                    fnmatch.fnmatchcase(host_spec.lower(), host.lower())
+                    fnmatch.fnmatchcase(host.lower(), host_spec.lower())
                     for host_spec in values
                 ):
                     PLACE_LOGGER.debug(
