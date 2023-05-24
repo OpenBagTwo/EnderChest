@@ -1,4 +1,6 @@
 """Functionality for setting up the folder structure of both chests and shulker boxes"""
+import fnmatch
+import logging
 import re
 from collections import Counter
 from pathlib import Path
@@ -11,6 +13,7 @@ from . import filesystem as fs
 from . import sync
 from .enderchest import EnderChest, create_ender_chest
 from .gather import (
+    _report_shulker_boxes,
     gather_minecraft_instances,
     load_ender_chest,
     load_ender_chest_instances,
@@ -483,10 +486,16 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
                 continue
         break
 
-    shulker_box = shulker_box._replace(link_folders=link_folders)
-
     while True:
-        _ = load_shulker_boxes(minecraft_root)  # to display some log messages
+        # this is such a kludge
+        existing_shulker_boxes = load_shulker_boxes(
+            minecraft_root, log_level=logging.DEBUG
+        )
+        if existing_shulker_boxes:
+            _report_shulker_boxes(
+                existing_shulker_boxes, logging.INFO, "the current EnderChest"
+            )
+
         value = (
             prompt(
                 (
@@ -503,25 +512,42 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
             continue
         break
 
-    _ = load_ender_chest_remotes(minecraft_root)  # to display some log messages
-    values = (
-        prompt(
-            (
-                "What hosts (EnderChest installations) should use this shulker box?"
-                "\nProvide a comma-separated list (wildcards are allowed)"
-                "\nand remember to include the name of this EnderChest"
-                f'("{load_ender_chest(minecraft_root).name}")'
-            ),
-            suggestion="*",
+    while True:
+        _ = load_ender_chest_remotes(minecraft_root)  # to display some log messages
+        values = (
+            prompt(
+                (
+                    "What hosts (EnderChest installations) should use this shulker box?"
+                    "\nProvide a comma-separated list (wildcards are allowed)"
+                    "\nand remember to include the name of this EnderChest"
+                    f'("{load_ender_chest(minecraft_root).name}")'
+                ),
+                suggestion="*",
+            )
+            or "*"
         )
-        or "*"
-    )
-    shulker_box._replace(
-        match_criteria=shulker_box.match_criteria
-        + (("hosts", tuple(host.strip() for host in values.split(","))),)
-    )
+        hosts = tuple(host.strip() for host in values.split(","))
 
-    shulker_box = shulker_box._replace(priority=priority)
+        # TODO: DRY this into a dedicated function
+
+        # TODO: stop wastefully reloading the cfg
+        host = load_ender_chest(minecraft_root).name
+        print(hosts, host)
+        if not any(
+            fnmatch.fnmatchcase(host.lower(), host_spec.lower()) for host_spec in hosts
+        ):
+            CRAFT_LOGGER.warning(
+                "This shulker box will not link to any instances on this machine"
+            )
+            if not confirm(default=False):
+                continue
+        break
+
+    shulker_box = shulker_box._replace(
+        priority=priority,
+        match_criteria=shulker_box.match_criteria + (("hosts", hosts),),
+        link_folders=link_folders,
+    )
 
     CRAFT_LOGGER.info(
         "\n"
@@ -600,7 +626,7 @@ def _prompt_for_filters(
 
         default = True
         if len(matches) == 0:
-            CRAFT_LOGGER.error("Filters do not match any known instance.")
+            CRAFT_LOGGER.warning("Filters do not match any known instance.")
             default = False
         elif len(matches) == 1:
             CRAFT_LOGGER.info(f"Filters match the instance: {matches[0]}")
