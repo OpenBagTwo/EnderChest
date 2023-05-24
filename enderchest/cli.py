@@ -10,6 +10,7 @@ from . import craft, gather, loggers, place
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
+_create_aliases = ("craft", "create")
 _instance_aliases = tuple(
     alias + plural for alias in ("minecraft", "instance") for plural in ("s", "")
 )
@@ -76,12 +77,14 @@ class Action(Protocol):
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     # action names (first one is canonical), action description, action method
     (
-        ("craft", "craft enderchest"),
+        sum(((verb, verb + " enderchest") for verb in _create_aliases), ()),
         "create and configure a new EnderChest installation",
         craft.craft_ender_chest,
     ),
     (
-        tuple("craft " + alias for alias in _shulker_aliases),
+        tuple(
+            f"{verb} {alias}" for verb in _create_aliases for alias in _shulker_aliases
+        ),
         "create and configure a new shulker box",
         _craft_shulker_box,
     ),
@@ -235,7 +238,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         action_parsers[verb] = parser
 
     # craft options
-    craft_parser = action_parsers["craft"]
+    craft_parser = action_parsers[_create_aliases[0]]
     craft_parser.add_argument(
         "--from",
         dest="copy_from",
@@ -273,7 +276,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     )
 
     # shulker box craft options
-    shulker_craft_parser = action_parsers[f"craft {_shulker_aliases[0]}"]
+    shulker_craft_parser = action_parsers[f"{_create_aliases[0]} {_shulker_aliases[0]}"]
     shulker_craft_parser.add_argument(
         "name",
         help="specify the name for this shulker box",
