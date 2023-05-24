@@ -10,6 +10,36 @@ from enderchest import ShulkerBox, place
 from . import utils
 
 
+class TestRglob:
+    def test_max_depth_of_one_is_equivalent_to_a_plain_glob(self, minecraft_root):
+        glob = sorted(minecraft_root.glob("*"))
+        assert len(glob) > 0  # meta-test
+
+        assert glob == sorted(place._rglob(minecraft_root, 1))
+
+    def test_max_depth_of_zero_finds_all_files_in_path(self, minecraft_root):
+        search_dir = minecraft_root / "workspace"  # choose someplace with no links
+        rglob = sorted([path for path in search_dir.rglob("*") if not path.is_dir()])
+        assert len(rglob) > 0  # meta-test
+
+        assert rglob == sorted(place._rglob(minecraft_root / "workspace", 0))
+
+    def test_max_depth_of_two_returns_subdirectories(self, minecraft_root):
+        instances_folder = minecraft_root / "instances"
+        expected: list[Path] = [instances_folder / "instgroups.json"]
+        for instance in utils.TESTING_INSTANCES[1:]:
+            expected.extend(
+                (
+                    instances_folder / instance.root.parent.name / ".minecraft",
+                    instances_folder / instance.root.parent.name / "instance.cfg",
+                    instances_folder / instance.root.parent.name / "mmc-pack.json",
+                )
+            )
+        expected.sort()
+
+        assert expected == sorted(place._rglob(instances_folder, 2))
+
+
 class TestSingleShulkerPlace:
     """Test the simplest case of linking--where the files in the shulker should
     go into every instance"""
