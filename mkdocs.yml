@@ -8,6 +8,8 @@ theme:
   name: material
   favicon: img/favicon.png
   logo: img/enderchest.png
+  features:
+  - content.code.copy
 nav:
 - Home: index.md
 - About: about.md
@@ -47,3 +49,5 @@ markdown_extensions:
 - pymdownx.inlinehilite
 - pymdownx.snippets
 - pymdownx.superfences
+- admonition
+- pymdownx.details
