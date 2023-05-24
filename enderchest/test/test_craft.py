@@ -85,7 +85,7 @@ class TestEnderChestCrafting:
 
         craft.craft_ender_chest(minecraft_root / "trunk")
 
-    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch):
+    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch, tmpdir):
         prompt_log: list[Path] = []
 
         def mock_prompt(root) -> Any:
@@ -100,17 +100,10 @@ class TestEnderChestCrafting:
         monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
         monkeypatch.setattr(craft, "create_ender_chest", mock_create)
 
-        stat_this = os.stat(".")
+        craft.craft_ender_chest(tmpdir)
 
-        def mock_stat(*args, **kwargs) -> Any:
-            return stat_this
-
-        monkeypatch.setattr(os, "stat", mock_stat)
-
-        craft.craft_ender_chest(Path("/root/root/for/the/home/team"))
-
-        assert prompt_log == [Path("/root/root/for/the/home/team")]
-        assert create_log == [(Path("/root/root/for/the/home/team"), "MockEnderChest")]
+        assert prompt_log == [tmpdir]
+        assert create_log == [(tmpdir, "MockEnderChest")]
 
     @pytest.mark.parametrize(
         "argument, value",
@@ -222,7 +215,7 @@ class TestEnderChestCrafting:
             ["n", "n", "", "", "me@here", "default", "n"]
         )
         monkeypatch.setattr("builtins.input", script_reader)
-        monkeypatch.setattr(os, "getcwd", lambda: tmpdir)
+        os.chdir(tmpdir)
 
         with pytest.raises(RuntimeError):
             craft.specify_ender_chest_from_prompt(Path(tmpdir))
