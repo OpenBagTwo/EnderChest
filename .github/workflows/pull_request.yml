@@ -44,26 +44,26 @@ jobs:
       run: |
         pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**"
     - name: configure git
-      if: ${{ matrix.os == 'ubuntu-latest' }} && ${{ matrix.py == '3.11' }}
+      if: ${{ (matrix.os == 'ubuntu-latest') }} && ${{ (matrix.py == '3.11') }}
       run: |
         git config --global user.name docs-golem
         git config --global user.email losthemobvote@openbagtwo.net
     - name: Create coverage badge
-      if: ${{ matrix.os == 'ubuntu-latest' }} && ${{ matrix.py == '3.11' }}
+      if: ${{ (matrix.os == 'ubuntu-latest') }} && ${{ (matrix.py == '3.11') }}
       uses: tj-actions/coverage-badge-py@v2
     - name: Verify Changed files
-      if: ${{ matrix.os == 'ubuntu-latest' }} && ${{ matrix.py == '3.11' }}
+      if: ${{ (matrix.os == 'ubuntu-latest') }} && ${{ (matrix.py == '3.11') }}
       uses: tj-actions/verify-changed-files@v14
       id: verify-changed-files
       with:
         files: coverage.svg
     - name: Commit files
-      if: ${{ matrix.os == 'ubuntu-latest' }} && ${{ matrix.py == '3.11' }} && ${{ steps.verify-changed-files.outputs.files_changed == 'true' }}
+      if: ${{ (matrix.os == 'ubuntu-latest') }} && ${{ (matrix.py == '3.11') }} && ${{ (steps.verify-changed-files.outputs.files_changed == 'true') }}
       run: |
         git add coverage.svg
         git commit -m "Update coverage badge"
     - name: Push changes
-      if: ${{ matrix.os == 'ubuntu-latest' }} && ${{ matrix.py == '3.11' }} && ${{ steps.verify-changed-files.outputs.files_changed == 'true' }}
+      if: ${{ (matrix.os == 'ubuntu-latest') }} && ${{ (matrix.py == '3.11') }} && ${{ (steps.verify-changed-files.outputs.files_changed == 'true') }}
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.github_token }}
