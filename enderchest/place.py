@@ -124,7 +124,7 @@ def place_ender_chest(
         else:
             proceed_how = error_handling
 
-        match error_handling:
+        match proceed_how:
             case "abort" | "stop" | "quit" | "exit":
                 PLACE_LOGGER.error("Aborting")
                 return "return"

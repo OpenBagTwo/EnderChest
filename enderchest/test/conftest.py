@@ -43,12 +43,18 @@ def file_system(tmp_path):
             minecraft_root / "workspace" / "cool_project.py"
         ): 'print("Gosh, I hope no one deletes or overwrites me")\n',
         minecraft_root / "worlds" / "olam" / "level.dat": "level dis\n",
+        minecraft_root / "worlds" / "testbench" / "level.dat": "hello world\n",
         (
             minecraft_root / "workspace" / "neat_resource_pack" / "pack.mcmeta"
         ): '{"so": "meta"}\n',
+        (minecraft_root / "resourcepacks" / "TEAVSRP.zip"): "Breaking News!\n",
+        (
+            minecraft_root / "crash-reports" / "20230524.log"
+        ): "ERROR: Everything is broken\nWARNING: And somehow also on fire\n",
         (
             minecraft_root / "instances" / "axolotl" / ".minecraft" / "options.txt"
-        ): "renderDistance:1",
+        ): "renderDistance:1\n",
+        home / "Pictures" / "Screenshots" / "sunrise.png": "PRETTY!!!\n",
     }
 
     with as_file(CLIENT_OPTIONS) as options_txt:
@@ -69,6 +75,10 @@ def file_system(tmp_path):
     do_not_touch.update(
         {
             chest_folder / ".git" / "log": "i committed some stuff\n",
+            chest_folder / "global" / "usercache.json": "alexander\nmomoa\nbateman\n",
+            (
+                chest_folder / "global" / "config" / "iris.properties"
+            ): "flower or aperture?\n",
         }
     )
 
@@ -82,6 +92,12 @@ def file_system(tmp_path):
             / "mods"
             / "BME.jar"
         ): (mod_builds_folder / "BME_1.19_alpha.jar"),
+        (chest_folder / "global" / "crash-reports"): (minecraft_root / "crash-reports"),
+        (chest_folder / "global" / "resourcepacks"): (minecraft_root / "resourcepacks"),
+        (chest_folder / "global" / "screenshots"): (home / "Pictures" / "Screenshots"),
+        (chest_folder / "global" / "saves" / "test"): (
+            minecraft_root / "worlds" / "testbench"
+        ),
         (chest_folder / "1.19" / "saves" / "olam"): (
             minecraft_root / "worlds" / "olam"
         ),
@@ -103,6 +119,7 @@ def file_system(tmp_path):
 
     # check on teardown that all those "do_not_touch" files are untouched
     for path, contents in do_not_touch.items():
+        assert not path.is_symlink()
         assert path.read_text() == contents
 
 
