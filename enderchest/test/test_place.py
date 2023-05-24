@@ -145,7 +145,7 @@ class TestSingleShulkerPlace:
             instance_folder / "saves" / "test" / "level.dat"
         ).read_text() == "hello world\n"
 
-        assert (instance_folder / "saves" / "test" / "level.dat").is_symlink()
+        assert not (instance_folder / "saves" / "test" / "level.dat").is_symlink()
 
         assert (instance_folder / "saves" / "test" / "level.dat").resolve() == (
             minecraft_root / "worlds" / "testbench" / "level.dat"
@@ -231,11 +231,13 @@ class TestSingleShulkerPlace:
         assert existing_symlink.read_text() == "Breaking News!\n"
         assert (
             existing_symlink.resolve()
-            == minecraft_root
-            / "EnderChest"
-            / "global"
-            / "resourcepacks"
-            / "TEAVSRP.zip"
+            == (
+                minecraft_root
+                / "EnderChest"
+                / "global"
+                / "resourcepacks"
+                / "TEAVSRP.zip"
+            ).resolve()
         )
 
         # also make sure the original file is okay
@@ -519,14 +521,32 @@ class TestMultiShulkerPlacing:
             + " already exists\nAborting"
         )
 
-    def test_skip_match(self, home, minecraft_root):
+    def test_skip_match(self, home, minecraft_root, caplog):
         place.place_ender_chest(minecraft_root, error_handling="skip")
+
+        errors = [
+            i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
+        ]
+        # meta-tests that I found the right line
+        assert len(errors) == 1
+        error_idx = errors[0]
+        assert "options.txt already exists" in caplog.records[error_idx].msg
+
+        assert (
+            caplog.records[error_idx + 1].levelname,
+            caplog.records[error_idx + 1].msg,
+        ) == ("WARNING", "Skipping the rest of this match")
+
+        # and then make sure that it actually did move on
+
+        assert caplog.records[error_idx + 2].levelname == "INFO"
+        assert caplog.records[error_idx + 2].msg.startswith("Linking")
+
+        # and now check for a subsequent place
 
         assert (
             home / ".minecraft" / "data" / "achievements.txt"
         ).read_text() == "Spelled acheivements correctly!"
-
-        assert not (home / ".minecraft" / "saves" / "olam").exists()
 
     def test_skip_instance(self, home, minecraft_root):
         place.place_ender_chest(minecraft_root, error_handling="skip-instance")
