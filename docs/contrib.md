@@ -22,7 +22,7 @@ then:
 
 1. Create the development environment via
    ```bash
-   $ mamba env create
+   mamba env create
    ```
    (substitute `conda` if you so choose)
 2. Install the package in editable mode:
