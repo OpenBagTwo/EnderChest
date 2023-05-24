@@ -64,6 +64,10 @@ def craft_ender_chest(
     - The instance searcher is fully recursive, so keep that in mind before
       passing in, say "/"
     """
+    if not minecraft_root.exists():
+        CRAFT_LOGGER.error(f"The directory {minecraft_root} does not exist")
+        CRAFT_LOGGER.error("Aborting")
+        return
     if (
         copy_from is None
         and instance_search_paths is None

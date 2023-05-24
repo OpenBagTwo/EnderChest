@@ -64,6 +64,27 @@ class TestConfigWriting:
 
 
 class TestEnderChestCrafting:
+    def test_ender_chest_aborts_right_away_if_minecraft_root_doesnt_exist(
+        self, monkeypatch, minecraft_root
+    ):
+        def mock_prompt(root) -> Any:
+            raise AssertionError("I was not to be called.")
+
+        def mock_create(root, chest) -> None:
+            raise AssertionError("I was not to be called.")
+
+        def mock_gather(*args, **kwargs) -> list[Any]:
+            raise AssertionError("I was not to be called.")
+
+        monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
+        monkeypatch.setattr(craft, "create_ender_chest", mock_create)
+        monkeypatch.setattr(craft, "gather_minecraft_instances", mock_gather)
+        monkeypatch.setattr(
+            craft, "fetch_remotes_from_a_remote_ender_chest", mock_gather
+        )
+
+        craft.craft_ender_chest(minecraft_root / "trunk")
+
     def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch):
         prompt_log: list[Path] = []
 
@@ -78,6 +99,13 @@ class TestEnderChestCrafting:
 
         monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
         monkeypatch.setattr(craft, "create_ender_chest", mock_create)
+
+        stat_this = os.stat(".")
+
+        def mock_stat(*args, **kwargs) -> Any:
+            return stat_this
+
+        monkeypatch.setattr(os, "stat", mock_stat)
 
         craft.craft_ender_chest(Path("/root/root/for/the/home/team"))
 
@@ -94,7 +122,11 @@ class TestEnderChestCrafting:
         ids=("instances", "overwrite", "remotes"),
     )
     def test_any_kwarg_avoids_the_interactive_prompter(
-        self, monkeypatch, argument, value
+        self,
+        monkeypatch,
+        argument,
+        value,
+        minecraft_root,
     ):
         def mock_prompt(root) -> Any:
             raise AssertionError("I was not to be called.")
@@ -114,7 +146,7 @@ class TestEnderChestCrafting:
             craft, "fetch_remotes_from_a_remote_ender_chest", mock_gather
         )
 
-        craft.craft_ender_chest(Path("here/"), **{argument: value})
+        craft.craft_ender_chest(minecraft_root, **{argument: value})
         assert len(create_log) == 1
 
     def test_default_behavior_is_to_prevent_overwrite(self, minecraft_root, caplog):
