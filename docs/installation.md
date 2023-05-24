@@ -10,23 +10,23 @@ Once you have python installed,
 
 1. Open a terminal and create a new virtual environment via:
    ```bash
-   $ mamba create -n enderchest "python>=3.11" "pip>22"
+   mamba create -n enderchest "python>=3.11" "pip>22"
    ```
    (substitute `conda` for `mamba` as needed)
 
 1. Activate your new environment:
     ```bash
-    $ conda activate enderchest
+    conda activate enderchest
     ```
 
 1. Install `enderchest` from GitHub using pip:
     ```bash
-    $ python -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@release#egg=enderchest[test]
+    python -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@release#egg=enderchest[test]
     ```
 
 1. Ensure that EnderChest is compatible with your system by running:
     ```bash
-    $ pytest --pyargs enderchest
+    pytest --pyargs enderchest
     ```
 
     If all tests pass, then you're good to go!
