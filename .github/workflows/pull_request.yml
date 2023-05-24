@@ -41,4 +41,4 @@ jobs:
         pip install .[test]
     - name: Run unit tests
       run: |
-        pytest -vv --doctest-modules --cov=enderchest --ignore-glob="**/gen_apidocs.py"
+        pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**"
