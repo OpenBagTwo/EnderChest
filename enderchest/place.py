@@ -1,8 +1,10 @@
 """Symlinking functionality"""
 import fnmatch
+import itertools
 import logging
 import os
 from pathlib import Path
+from typing import Iterable
 
 from .gather import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
 from .instance import InstanceSpec
@@ -292,4 +294,39 @@ def link_resource(
         relative_path,
         instance_path,
         target_is_directory=(shulker_root / resource_path).is_dir(),
+    )
+
+
+def _rglob(root: Path, max_depth: int) -> Iterable[Path]:
+    """Find all files (and directories* and symlinks) in the path up to the
+    specified depth
+
+    Parameters
+    ----------
+    root : Path
+        The path to search
+    max_depth : int
+        The maximum number of levels to go
+
+    Returns
+    -------
+    list-like of paths
+        The files (and directories and symlinks) in the path up to that depth
+
+    Notes
+    -----
+    - Unlike an actual rglob, this method does not return any directories that
+      are not at the maximum depth
+    - Setting max_depth to 0 (or below) will return all files in the root, but
+      ***be warned*** that because this method follows symlinks, you can very
+      easily find yourself in an infinite loop
+    """
+    top_level = root.glob("*")
+    if max_depth == 1:
+        return top_level
+    return itertools.chain(
+        *(
+            _rglob(path, max_depth - 1) if path.is_dir() else (path,)
+            for path in top_level
+        )
     )
