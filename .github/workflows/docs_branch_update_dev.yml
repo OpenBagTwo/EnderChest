@@ -16,6 +16,7 @@ jobs:
     - name: set up development environment
       run: |
         $CONDA/bin/conda env create -f environment.yml
+        pip install -e .
     - name: configure git
       run: |
         git config --global user.name docs-golem
