@@ -22,32 +22,6 @@ jobs:
     - name: Run code quality checks
       run: |
         pre-commit run --all
-    - name: Run unit tests
-      run: |
-        pytest --doctest-modules --cov=enderchest --ignore-glob="docs/**"
-    - name: configure git
-      run: |
-        git config --global user.name docs-golem
-        git config --global user.email losthemobvote@openbagtwo.net
-    - name: Create coverage badge
-      uses: tj-actions/coverage-badge-py@v2
-    - name: Verify Changed files
-      uses: tj-actions/verify-changed-files@v14
-      id: verify-changed-files
-      with:
-        files: coverage.svg
-    - name: Commit new badge
-      if: steps.verify-changed-files.outputs.files_changed == 'true'
-      run: |
-        git add coverage.svg
-        git commit -m "Update coverage badge"
-    - name: Push new badge
-      if: steps.verify-changed-files.outputs.files_changed == 'true'
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.github_token }}
-        branch: ${{ github.ref }}
-
   test:
     strategy:
       matrix:
