@@ -17,7 +17,7 @@
         <link rel="next" href="../usage/">
       
       <link rel="icon" href="../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -418,8 +418,36 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/cli/" class="md-nav__link">
-        cli
+      <a href="../reference/enderchest/prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/remote/" class="md-nav__link">
+        remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/" class="md-nav__link">
+        sync
       </a>
     </li>
   
@@ -446,8 +474,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/gather/" class="md-nav__link">
-        gather
+      <a href="../reference/enderchest/place/" class="md-nav__link">
+        place
       </a>
     </li>
   
@@ -460,8 +488,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/craft/" class="md-nav__link">
-        craft
+      <a href="../reference/enderchest/shulker_box/" class="md-nav__link">
+        shulker_box
       </a>
     </li>
   
@@ -502,6 +530,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/enderchest/gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/enderchest/loggers/" class="md-nav__link">
         loggers
       </a>
@@ -516,64 +572,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/prompt/" class="md-nav__link">
-        prompt
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/sync/" class="md-nav__link">
-        sync
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/remote/" class="md-nav__link">
-        remote
+      <a href="../reference/enderchest/craft/" class="md-nav__link">
+        craft
       </a>
     </li>
   
@@ -643,7 +643,7 @@
 
 <h1 id="installation">Installation</h1>
 <p>EnderChest has minimal package dependencies and should run on pretty much
-any computer or operating system. It does require <strong>Python 3.11 or greater,</strong>
+any computer or operating system. It does require <strong>Python 3.10 or greater,</strong>
 portable distributions (read: no need for admin privileges)  of which are
 available through miniconda and
 <a href="https://github.com/conda-forge/miniforge#mambaforge">mambaforge</a>.</p>
@@ -651,7 +651,7 @@ available through miniconda and
 <ol>
 <li>
 <p>Open a terminal and create a new virtual environment via:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>enderchest<span class="w"> </span><span class="s2">&quot;python&gt;=3.11&quot;</span><span class="w"> </span><span class="s2">&quot;pip&gt;22&quot;</span>
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>enderchest<span class="w"> </span><span class="s2">&quot;python&gt;=3.10&quot;</span><span class="w"> </span><span class="s2">&quot;pip&gt;22&quot;</span>
 </span></code></pre></div>
    (substitute <code>conda</code> for <code>mamba</code> as needed)</p>
 </li>
@@ -732,7 +732,7 @@ with this tool.</p>
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c2be25ad.min.js"></script>
+      <script src="../assets/javascripts/bundle.b4d07000.min.js"></script>
       
     
   </body>
