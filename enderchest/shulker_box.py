@@ -30,7 +30,8 @@ class ShulkerBox(NamedTuple):
         The path to the root of the shulker box
     match_criteria : list-like of tuples
         The parameters for matching instances to this shulker box. Each element
-        consistents of:
+        consists of:
+
           - the name of the condition
           - the matching values for that condition
 
@@ -38,6 +39,13 @@ class ShulkerBox(NamedTuple):
         for each condition (so it's ANDing a collection of ORs)
     link_folders : list-like of str
         The folders that should be linked in their entirety
+    max_link_depth : int, optional
+        By default, non-root-level folders (that is, folders inside of folders)
+        will be treated as files for the purpose of linking. Put another way,
+        only files with a depth of 2 or less from the shulker root will be
+        linked. This behavior can be overridden by explicitly setting
+        the `max_link_depth` value, but **this feature is highly experimental**,
+        so use it at your own risk.
 
     Notes
     -----
@@ -51,6 +59,7 @@ class ShulkerBox(NamedTuple):
     root: Path
     match_criteria: tuple[tuple[str, tuple[str, ...]], ...]
     link_folders: tuple[str, ...]
+    max_link_depth: int = 2
 
     @classmethod
     def from_cfg(cls, config_file: Path) -> "ShulkerBox":
@@ -74,6 +83,7 @@ class ShulkerBox(NamedTuple):
             If there is no config file at the specified location
         """
         priority = 0
+        max_link_depth = 2
         root = config_file.parent
         name = root.name
         parser = ConfigParser(allow_no_value=True, inline_comment_prefixes=(";",))
@@ -105,6 +115,7 @@ class ShulkerBox(NamedTuple):
                 # TODO check to make sure properties hasn't been read before
                 # most of this section gets ignored
                 priority = parser[section].getint("priority", 0)
+                max_link_depth = parser[section].getint("max-link-depth", 2)
                 # TODO: support specifying filters (and link-folders) in the properties section
                 continue
             if normalized in match_criteria.keys():
@@ -126,7 +137,14 @@ class ShulkerBox(NamedTuple):
 
         link_folders = match_criteria.pop("link-folders", ())
 
-        return cls(priority, name, root, tuple(match_criteria.items()), link_folders)
+        return cls(
+            priority,
+            name,
+            root,
+            tuple(match_criteria.items()),
+            link_folders,
+            max_link_depth=max_link_depth,
+        )
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
         """Write this shulker's configuration to INI
@@ -149,6 +167,8 @@ class ShulkerBox(NamedTuple):
         config = ConfigParser(allow_no_value=True)
         config.add_section("properties")
         config.set("properties", "priority", str(self.priority))
+        if self.max_link_depth != 2:
+            config.set("properties", "max-link-depth", str(self.max_link_depth))
         config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
         config.set(
             "properties", "generated_by_enderchest_version", get_versions()["version"]
