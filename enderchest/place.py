@@ -156,6 +156,7 @@ def place_ender_chest(
                 continue
 
             instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
+            box_root = shulker_box.root.expanduser().absolute()
 
             if not instance_root.exists():
                 PLACE_LOGGER.error(
@@ -171,19 +172,19 @@ def place_ender_chest(
 
             PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
 
-            resources = set(shulker_box.root.expanduser().absolute().rglob("*"))
+            resources = set(_rglob(box_root, shulker_box.max_link_depth))
 
             match_exit = "pass"
             for link_folder in shulker_box.link_folders:
-                resources -= {shulker_box.root / link_folder}
-                resources -= set((shulker_box.root / link_folder).rglob("*"))
+                resources -= {box_root / link_folder}
+                resources -= set((box_root / link_folder).rglob("*"))
                 try:
-                    link_resource(link_folder, shulker_box.root, instance_root)
+                    link_resource(link_folder, box_root, instance_root)
                 except (OSError, NotADirectoryError) as oh_no:
                     PLACE_LOGGER.error(
                         f"Error linking shulker box {shulker_box.name}"
                         f" to instance {instance.name}:"
-                        f"\n{(instance.root / link_folder)} is a"
+                        f"\n  {(instance.root / link_folder)} is a"
                         " non-empty directory"
                     )
                     match handle_error(instance):
@@ -200,22 +201,18 @@ def place_ender_chest(
 
             if match_exit not in ("break", "continue"):
                 for resource in resources:
-                    if not resource.is_file():  # also excludes broken links
-                        continue
-                    resource_path = resource.relative_to(
-                        shulker_box.root.expanduser().absolute()
-                    )
+                    resource_path = resource.relative_to(box_root)
                     try:
                         link_resource(
                             resource_path,
-                            shulker_box.root,
+                            box_root,
                             instance_root,
                         )
                     except (OSError, NotADirectoryError) as oh_no:
                         PLACE_LOGGER.error(
                             f"Error linking shulker box {shulker_box.name}"
                             f" to instance {instance.name}:"
-                            f"\n{(instance.root / resource_path)}"
+                            f"\n  {(instance.root / resource_path)}"
                             " already exists"
                         )
                         # TODO: option to record failure but keep going
