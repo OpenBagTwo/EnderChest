@@ -42,4 +42,4 @@ jobs:
         pip install .[test]
     - name: Run unit tests
       run: |
-        pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**"
+        pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**" --log-level=DEBUG

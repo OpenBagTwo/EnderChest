@@ -50,11 +50,12 @@ def run_rsync(
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
     rsync_flags : str, optional
-        By default, rsync will be run using the flags "avz" which means:
+        By default, rsync will be run using the flags "avzs" which means:
 
           - archive mode
           - verbose
           - use compression
+          - no space splitting
 
         Advanced users may choose to override these options, but **you do so
         at your own peril**.
@@ -64,7 +65,7 @@ def run_rsync(
     This method does not perform any validation or normalization of the source,
     destination, exclude-list, additional arguments or rsync options.
     """
-    rsync_flags = rsync_flags or "avz"
+    rsync_flags = rsync_flags or "avzs"
     log_level = logging.INFO if dry_run else logging.DEBUG
 
     args: list[str] = [RSYNC, f"-{rsync_flags}"]  # type: ignore[list-item]
@@ -125,11 +126,12 @@ def pull(
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     rsync_flags : str, optional
-        By default, rsync will be run using the flags "avz" which means:
+        By default, rsync will be run using the flags "avzs" which means:
 
           - archive mode
           - verbose
           - use compression
+          - no space splitting
 
         Advanced users may choose to override these options, but **you do so
         at your own peril**.
@@ -202,11 +204,12 @@ def push(
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     rsync_flags : str, optional
-        By default, rsync will be run using the flags "avz" which means:
+        By default, rsync will be run using the flags "avzs" which means:
 
           - archive mode
           - verbose
           - use compression
+          - no space splitting
 
         Advanced users may choose to override these options, but **you do so
         at your own peril**.
