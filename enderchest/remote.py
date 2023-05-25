@@ -189,8 +189,10 @@ def push_changes_upstream(minecraft_root: Path, **sync_kwargs) -> None:
                 local_chest,
                 remote_uri,
                 exclude=[
-                    fs.ENDER_CHEST_CONFIG_NAME,
-                    ".*",
+                    os.path.join(
+                        fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME
+                    ),
+                    os.path.join(fs.ENDER_CHEST_FOLDER_NAME, ".*"),
                     *sync_kwargs.pop("exclude", ()),
                 ],
                 **sync_kwargs,

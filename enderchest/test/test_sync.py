@@ -239,3 +239,7 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.push_changes_upstream(minecraft_root)
         assert not (Path(remote.path) / "EnderChest" / "optifine").exists()
+
+
+class TestRsyncSync(TestFileSync):
+    protocol = "rsync"

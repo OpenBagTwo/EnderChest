@@ -30,7 +30,8 @@ def copy(
 
     Notes
     -----
-    If the source file does not exist, it will simply be deleted
+    If the source file does not exist, the destination file will simply be deleted
+    (if it exists)
     """
     log_level = logging.INFO if dry_run else logging.DEBUG
 
@@ -179,7 +180,7 @@ def pull(
       ensure that the schema is correct or that the hostname corresponds to this
       machine. This method does not support user authentication
       (running the copy as a different user).
-    - If the destination folder does not already exist, this method wil not
+    - If the destination folder does not already exist, this method will not
       create it or its parent directories.
     """
     source_path = Path(remote_uri.path).expanduser()
@@ -222,7 +223,7 @@ def push(
       ensure that the schema is correct or that the hostname corresponds to this
       machine. This method does not support user authentication
       (running the copy as a different user).
-    - If the destination folder does not already exist, this method wil not
+    - If the destination folder does not already exist, this method will not
       create it or its parent directories.
     """
     source_path = local_path
