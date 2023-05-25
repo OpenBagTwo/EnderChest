@@ -1,13 +1,14 @@
 """Low-level functionality for synchronizing across different machines"""
 import getpass
 import importlib
+import os
 import socket
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Iterable
-from urllib.parse import ParseResult
+from urllib.parse import ParseResult, unquote
 
 from ..loggers import SYNC_LOGGER
 
@@ -137,8 +138,29 @@ def push(
         )
     except TypeError as unknown_kwarg:
         raise NotImplementedError(
-            f"Protocol {remote_uri.scheme} does not support that functionality:\n  {unknown_kwarg}"
+            f"Protocol {remote_uri.scheme} does not support that functionality:"
+            f"\n  {unknown_kwarg}"
         )
+
+
+def path_from_uri(uri: ParseResult) -> Path:
+    """Extract and unquote the path component of a URI to turn it into a pathlib.Path
+
+    Parameters
+    ----------
+    uri : ParseResult
+        The parsed URI to extract the path from
+
+    Returns
+    -------
+    Path
+        The path part of the URI as a Path
+    """
+    path_part = uri.path
+    if path_part[0] == "\\":
+        # I can think of no valid reason why this would happen
+        path_part = path_part[1:]
+    return Path(os.path.normpath(unquote(path_part)))
 
 
 __all__ = [
@@ -147,6 +169,7 @@ __all__ = [
     "DEFAULT_PROTOCOL",
     "render_remote",
     "remote_file",
+    "path_from_uri",
     "pull",
     "push",
 ]

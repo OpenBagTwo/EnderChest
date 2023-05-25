@@ -2,13 +2,13 @@
 import logging
 import os
 from pathlib import Path
-from urllib.parse import ParseResult, unquote, urlparse
+from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs
 from . import gather
 from .enderchest import EnderChest
 from .loggers import SYNC_LOGGER
-from .sync import pull, push, remote_file, render_remote
+from .sync import path_from_uri, pull, push, remote_file, render_remote
 
 
 def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
@@ -118,13 +118,16 @@ def pull_upstream_changes(minecraft_root: Path, **sync_kwargs) -> None:
         return  # kinda unnecessary
 
     for uri, alias in remotes:
-        SYNC_LOGGER.info(f"Attempting to pull changes from {render_remote(alias, uri)}")
+        SYNC_LOGGER.info(
+            "Attempting to pull changes from" f" {render_remote(alias, uri)}"
+        )
         try:
             remote_chest = uri._replace(
                 path=urlparse(
                     (
                         fs.ender_chest_folder(
-                            Path(unquote(uri.path)), check_exists=False
+                            path_from_uri(uri),
+                            check_exists=False,
                         )
                     ).as_uri()
                 ).path

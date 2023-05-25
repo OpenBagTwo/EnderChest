@@ -2,7 +2,7 @@
 import os
 import shutil
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import urlparse
 
 import pytest
 
@@ -10,9 +10,15 @@ from enderchest import craft
 from enderchest import filesystem as fs
 from enderchest import gather
 from enderchest import remote as r
-from enderchest.sync import file
+from enderchest.sync import file, path_from_uri
 
 from . import utils
+
+
+class TestPathFromURI:
+    def test_roundtrip(self, tmpdir):
+        original_path = Path(tmpdir) / "this has a space in it" / "(="
+        assert path_from_uri(urlparse(original_path.as_uri())) == original_path
 
 
 class TestFileIgnorePatternBuilder:
@@ -231,7 +237,7 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.push_changes_upstream(minecraft_root)
         assert (
-            Path(unquote(remote.path))
+            path_from_uri(remote)
             / "EnderChest"
             / "vanilla"
             / "conflict"
@@ -243,7 +249,7 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.push_changes_upstream(minecraft_root)
-        assert not (Path(unquote(remote.path)) / "EnderChest" / "optifine").exists()
+        assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
 
 
 class TestRsyncSync(TestFileSync):

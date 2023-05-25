@@ -4,9 +4,9 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import ParseResult, unquote
+from urllib.parse import ParseResult
 
-from . import SYNC_LOGGER, get_default_netloc
+from . import SYNC_LOGGER, get_default_netloc, path_from_uri
 
 RSYNC = shutil.which("rsync")
 if RSYNC is None:
@@ -156,7 +156,7 @@ def pull(
 
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = unquote(remote_uri.path)
+        remote_path: str = f"{path_from_uri(remote_uri)}"
     else:
         remote_path = remote_uri.geturl()
 
@@ -226,7 +226,7 @@ def push(
     """
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = unquote(remote_uri.path)
+        remote_path: str = f"{path_from_uri(remote_uri)}"
     else:
         remote_path = remote_uri.geturl()
 

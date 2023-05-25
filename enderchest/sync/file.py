@@ -5,9 +5,9 @@ import os
 import shutil
 from pathlib import Path
 from typing import Collection, Iterable
-from urllib.parse import ParseResult, unquote
+from urllib.parse import ParseResult
 
-from . import SYNC_LOGGER
+from . import SYNC_LOGGER, path_from_uri
 
 
 def copy(
@@ -183,7 +183,7 @@ def pull(
     - If the destination folder does not already exist, this method will not
       create it or its parent directories.
     """
-    source_path = Path(unquote(remote_uri.path)).expanduser()
+    source_path = path_from_uri(remote_uri).expanduser()
     destination_folder = local_path
 
     if not source_path.exists():
@@ -232,7 +232,7 @@ def push(
       create it or its parent directories.
     """
     source_path = local_path
-    destination_folder = Path(unquote(remote_uri.path)).expanduser()
+    destination_folder = path_from_uri(remote_uri).expanduser()
 
     if not source_path.exists():
         SYNC_LOGGER.warning(
