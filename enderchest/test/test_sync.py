@@ -252,5 +252,8 @@ class TestFileSync:
         assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
 
 
+@pytest.mark.xfail(
+    not shutil.which("rsync"), reason="rsync is not installed on this system"
+)
 class TestRsyncSync(TestFileSync):
     protocol = "rsync"
