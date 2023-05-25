@@ -1,15 +1,19 @@
 """shutil-based sync implementation"""
 import logging
+import os
 import shutil
 from pathlib import Path
+from typing import Iterable
 from urllib.parse import ParseResult
 
 from . import SYNC_LOGGER
 
 
-def copy(source_path: Path, destination_folder: Path, dry_run: bool) -> None:
+def copy(
+    source_path: Path, destination_folder: Path, exclude: Iterable[str], dry_run: bool
+) -> None:
     """Copy the specified source file or folder to the provided destination,
-    overwriting any existing files
+    overwriting any existing files and deleting any that weren't in the source
 
     Parameters
     ----------
@@ -17,13 +21,20 @@ def copy(source_path: Path, destination_folder: Path, dry_run: bool) -> None:
         The file or folder to copy
     destination_folder : Path
         The destination to put the source file(s)
+    exclude : list of str
+        Any patterns that should be excluded from the sync (and sync)
     dry_run : bool
-        If `dry_run=True` is passed in, the sync won't actually be performed,
-        and instead the operations that would have been carried out will be
-        reported at the INFO level (instead of the DEBUG level)
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them)
 
+    Notes
+    -----
+    If the source file does not exist, it will simply be deleted
     """
     log_level = logging.INFO if dry_run else logging.DEBUG
+
+    ignore = shutil.ignore_patterns(*exclude)
+    SYNC_LOGGER.debug(f"Ignoring patterns: {exclude}")
 
     destination_path = destination_folder / source_path.name
     if destination_path.exists():
@@ -31,25 +42,72 @@ def copy(source_path: Path, destination_folder: Path, dry_run: bool) -> None:
             SYNC_LOGGER.log(log_level, f"Removing symlink {destination_path}")
             if not dry_run:
                 destination_path.unlink()
-        elif destination_path.is_file():
+        elif destination_path.is_dir():
+            clean(destination_path, ignore, dry_run)
+        else:
             SYNC_LOGGER.log(log_level, f"Deleting {destination_path}")
             if not dry_run:
                 destination_path.unlink()
-        else:  # it's gotta be a dir, right?
-            SYNC_LOGGER.log(log_level, f"Deleting {destination_path} and its contents")
-            if not dry_run:
-                shutil.rmtree(destination_path)
 
     if source_path.exists():
-        SYNC_LOGGER.log(log_level, f"Copying {source_path} to {destination_folder}")
+        SYNC_LOGGER.log(log_level, f"Copying {source_path} into {destination_folder}")
         if not dry_run:
             if source_path.is_dir():
-                shutil.copytree(source_path, destination_folder, symlinks=True)
+                shutil.copytree(
+                    source_path,
+                    destination_path,
+                    symlinks=True,
+                    ignore=ignore,
+                    dirs_exist_ok=True,
+                )
             else:
-                shutil.copy(source_path, destination_folder, follow_symlinks=False)
+                shutil.copy(source_path, destination_path, follow_symlinks=False)
 
 
-def pull(remote_uri: ParseResult, local_path: Path, dry_run: bool = False) -> None:
+def clean(root: Path, ignore, dry_run: bool) -> None:
+    """Recursively remove all files and symlinks from the root path while
+    respecting the provided ignore pattern
+
+    Parameters
+    ----------
+    root : Path
+        The root directory. And this should absolutely be a directory.
+    ignore : Callable
+        The ignore pattern created by `shutil.ignore_pattern` that specifies
+        which files to ignore.
+    dry_run : bool
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them)
+    """
+    log_level = logging.INFO if dry_run else logging.DEBUG
+    contents = list(root.iterdir())
+    ignore_me = ignore(os.fspath(root), [path.name for path in contents])
+
+    for path in contents:
+        if path.name in ignore_me:
+            SYNC_LOGGER.debug(f"Skipping {path}")
+            continue
+        if path.is_symlink():
+            SYNC_LOGGER.log(log_level, f"Removing symlink {path}")
+            if not dry_run:
+                path.unlink()
+        elif path.is_dir():
+            clean(path, ignore, dry_run)
+        else:
+            SYNC_LOGGER.log(log_level, f"Deleting {path}")
+            if not dry_run:
+                path.unlink()
+
+    # check if folder is now empty
+    if not list(root.iterdir()):
+        SYNC_LOGGER.log(log_level, f"Removing empty {root}")
+        if not dry_run:
+            root.rmdir()
+
+
+def pull(
+    remote_uri: ParseResult, local_path: Path, exclude: Iterable[str], dry_run: bool
+) -> None:
     """Copy an upstream file or folder into the specified location, where the remote
     is another folder on this machine. This will overwrite any files and folders
     already at the destination.
@@ -60,15 +118,16 @@ def pull(remote_uri: ParseResult, local_path: Path, dry_run: bool = False) -> No
         The URI for the remote resource to copy from. See notes.
     local_path : Path
         The destination folder
-    dry_run : bool, optional
-         If `dry_run=True` is passed in, the sync won't actually be performed,
-         and instead the operations that would have been carried out will be
-         reported at the INFO level (instead of the DEBUG level)
+    exclude : list of str
+        Any patterns that should be excluded from the sync
+    dry_run : bool
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them)
 
     Raises
     ------
     FileNotFoundError
-        If either the source path or the destination folder do not exist
+        If the destination folder does not exist
 
     Notes
     -----
@@ -85,13 +144,13 @@ def pull(remote_uri: ParseResult, local_path: Path, dry_run: bool = False) -> No
 
     if not destination_folder.exists():
         raise FileNotFoundError(f"{local_path} does not exist")
-    if not source_path.exists():
-        raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
 
-    copy(source_path, destination_folder, dry_run)
+    copy(source_path, destination_folder, exclude, dry_run)
 
 
-def push(local_path: Path, remote_uri: ParseResult, dry_run=False) -> None:
+def push(
+    local_path: Path, remote_uri: ParseResult, exclude: Iterable[str], dry_run: bool
+) -> None:
     """Copy a local file or folder into the specified location, where the remote
     is another folder on this machine. This will overwrite any files and folders
     already at the destination.
@@ -102,15 +161,16 @@ def push(local_path: Path, remote_uri: ParseResult, dry_run=False) -> None:
         The file or folder to copy
     remote_uri : ParseResult
         The URI for the remote location to copy into. See notes.
-    dry_run : bool, optional
-         If `dry_run=True` is passed in, the sync won't actually be performed,
-         and instead the operations that would have been carried out will be
-         reported at the INFO level (instead of the DEBUG level)
+    exclude : list of str
+        Any patterns that should be excluded from the sync
+    dry_run : bool
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them)
 
      Raises
     ------
     FileNotFoundError
-        If either the source path or the destination folder do not exist
+        If the destination folder does not exist
 
     Notes
     -----
@@ -127,7 +187,5 @@ def push(local_path: Path, remote_uri: ParseResult, dry_run=False) -> None:
 
     if not destination_folder.exists():
         raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
-    if not source_path.exists():
-        raise FileNotFoundError(f"{local_path} does not exist")
 
-    copy(source_path, destination_folder, dry_run)
+    copy(source_path, destination_folder, exclude, dry_run)

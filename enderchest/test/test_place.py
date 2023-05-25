@@ -12,7 +12,7 @@ from . import utils
 
 class TestRglob:
     def test_max_depth_of_one_is_equivalent_to_a_plain_glob(self, minecraft_root):
-        glob = sorted(minecraft_root.glob("*"))
+        glob = sorted(minecraft_root.iterdir())
         assert len(glob) > 0  # meta-test
 
         assert glob == sorted(place._rglob(minecraft_root, 1))
@@ -156,11 +156,11 @@ class TestSingleShulkerPlace:
         instance_folder = utils.resolve(instance.root, minecraft_root)
         broken_link = instance_folder / "shaderpacks" / "Seuss CitH.zip.txt"
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
-        assert broken_link in broken_link.parent.glob("*")
+        assert broken_link in broken_link.parent.iterdir()
 
         place.place_ender_chest(minecraft_root)
 
-        assert broken_link not in broken_link.parent.glob("*")
+        assert broken_link not in broken_link.parent.iterdir()
 
     @utils.parametrize_over_instances("axolotl")
     def test_place_can_be_told_to_leave_broken_links_alone(
@@ -169,11 +169,11 @@ class TestSingleShulkerPlace:
         instance_folder = utils.resolve(instance.root, minecraft_root)
         broken_link = instance_folder / "shaderpacks" / "Seuss CitH.zip.txt"
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
-        assert broken_link in broken_link.parent.glob("*")
+        assert broken_link in broken_link.parent.iterdir()
 
         place.place_ender_chest(minecraft_root, cleanup=False)
 
-        assert broken_link in broken_link.parent.glob("*")
+        assert broken_link in broken_link.parent.iterdir()
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_will_not_overwrite_a_non_empty_folder(

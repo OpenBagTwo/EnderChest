@@ -35,6 +35,8 @@ def load_ender_chest(minecraft_root: Path) -> EnderChest:
     FileNotFoundError
         If no EnderChest folder exists in the given minecraft root or if no
         enderchest.cfg file exists within that EnderChest folder
+    ValueError
+        If the EnderChest configuration is invalid and could not be parsed
     """
     config_path = fs.ender_chest_config(minecraft_root)
     GATHER_LOGGER.debug(f"Loading {config_path}")

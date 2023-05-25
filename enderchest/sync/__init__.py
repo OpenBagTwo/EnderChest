@@ -6,6 +6,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Iterable
 from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER
@@ -68,21 +69,32 @@ def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
         yield Path(tmpdir) / Path(uri.path).name
 
 
-def pull(remote_uri: ParseResult, local_path: Path, **kwargs) -> None:
+def pull(
+    remote_uri: ParseResult,
+    local_path: Path,
+    exclude: Iterable[str] | None = None,
+    dry_run: bool = False,
+    **kwargs,
+) -> None:
     """Pull all upstream changes from a remote into the specified location
 
     Parameters
     ----------
     remote_uri : ParseResult
         The URI for the remote resource to pull
-    local_path
+    local_path : Path
         The local destination
+    exclude : list of str, optional
+        Any patterns that should be excluded from the sync
+    dry_run : bool, optional
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them). Default is False.
     **kwargs
         Any additional options to pass into the sync command
     """
     try:
         protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
-        protocol.pull(remote_uri, local_path, **kwargs)
+        protocol.pull(remote_uri, local_path, exclude or (), dry_run, **kwargs)
     except ModuleNotFoundError:
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"
@@ -93,7 +105,13 @@ def pull(remote_uri: ParseResult, local_path: Path, **kwargs) -> None:
         )
 
 
-def push(local_path: Path, remote_uri: ParseResult, **kwargs) -> None:
+def push(
+    local_path: Path,
+    remote_uri: ParseResult,
+    exclude: Iterable[str] | None = None,
+    dry_run: bool = False,
+    **kwargs,
+) -> None:
     """Push all local changes in the specified directory into the specified remote
 
     Parameters
@@ -102,12 +120,17 @@ def push(local_path: Path, remote_uri: ParseResult, **kwargs) -> None:
         The local path to push
     remote_uri : ParseResult
         The URI for the remote destination
+    exclude : list of str, optional
+        Any patterns that should be excluded from the sync
+    dry_run : bool, optional
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them). Default is False.
     **kwargs
         Any additional options to pass into the sync command
     """
     try:
         protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
-        protocol.push(local_path, remote_uri, **kwargs)
+        protocol.push(local_path, remote_uri, exclude or (), dry_run, **kwargs)
     except ModuleNotFoundError:
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"

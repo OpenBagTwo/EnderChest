@@ -1,13 +1,14 @@
 """Higher-level functionality around synchronizing with different EnderCherts"""
-
-
+import logging
+import os
 from pathlib import Path
 from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs
+from . import gather
 from .enderchest import EnderChest
 from .loggers import SYNC_LOGGER
-from .sync import remote_file, render_remote
+from .sync import pull, push, remote_file, render_remote
 
 
 def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
@@ -83,3 +84,59 @@ def fetch_remotes_from_a_remote_ender_chest(
             f"There are duplicates aliases in the list of remotes pulled from {uri}"
         )
     return remotes
+
+
+def pull_upstream_changes(minecraft_root: Path, **sync_kwargs) -> None:
+    """Pull in changes from a remote EnderChest
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder). This will be used to
+        construct relative paths.
+    sync_kwargs
+        Any additional arguments that should be passed into the syncing
+        operation
+    """
+    try:
+        remotes = gather.load_ender_chest_remotes(
+            minecraft_root, log_level=logging.DEBUG
+        )
+    except (FileNotFoundError, ValueError) as bad_chest:
+        SYNC_LOGGER.error(
+            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+        )
+        return
+    if not remotes:
+        SYNC_LOGGER.error("Enderchest has no remotes. Aborting")
+        return  # kinda unnecessary
+
+    for uri, alias in remotes:
+        SYNC_LOGGER.info(f"Attempting to pull changes from {render_remote(alias, uri)}")
+        try:
+            remote_chest = uri._replace(
+                path=urlparse(
+                    (fs.ender_chest_folder(Path(uri.path), check_exists=False)).as_uri()
+                ).path
+            )
+
+            pull(
+                remote_chest,
+                minecraft_root,
+                exclude=[
+                    fs.ENDER_CHEST_CONFIG_NAME,
+                    ".*",
+                    *sync_kwargs.pop("exclude", ()),
+                ],
+                **sync_kwargs,
+            )
+        except Exception as exc:
+            SYNC_LOGGER.warning(
+                f"Could not pull changes from {render_remote(alias, uri)}:" f"\n  {exc}"
+            )
+            continue
+        break
+    else:
+        SYNC_LOGGER.error("Could not sync with any remote EnderChests")
+        return

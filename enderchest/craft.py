@@ -414,7 +414,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
         The resulting ShulkerBox
     """
     shulker_root = fs.shulker_box_root(minecraft_root, name)
-    if shulker_root in shulker_root.parent.glob("*"):
+    if shulker_root in shulker_root.parent.iterdir():
         if not shulker_root.is_dir():
             raise FileExistsError(
                 f"A file named {name} already exists in your EnderChest folder."

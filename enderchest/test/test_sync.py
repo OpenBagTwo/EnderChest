@@ -33,6 +33,12 @@ class TestFileSync:
             )
 
         (minecraft_root / "safe_keeping").mkdir()
+        for folder_name, _ in utils.TESTING_SHULKER_CONFIGS[:-2]:
+            shutil.copytree(
+                minecraft_root / "EnderChest" / folder_name,
+                minecraft_root / "safe_keeping" / folder_name,
+                symlinks=True,
+            )
         for folder_name, _ in utils.TESTING_SHULKER_CONFIGS[-2:]:
             shutil.move(
                 minecraft_root / "EnderChest" / folder_name,
@@ -86,34 +92,37 @@ class TestFileSync:
         # now put everything local back the way it was supposed to be before
         # the conftest teardown freaks out
 
-        for folder_name, _ in utils.TESTING_SHULKER_CONFIGS[-2:]:
+        for folder_name, _ in utils.TESTING_SHULKER_CONFIGS:
             shutil.move(
                 minecraft_root / "safe_keeping" / folder_name,
                 minecraft_root / "EnderChest" / folder_name,
             )
 
-        chest_folder = minecraft_root / "EnderChest"
-        for path, target in {
-            (chest_folder / "global" / "crash-reports"): (
-                minecraft_root / "crash-reports"
+        # and then I apparently still need to redo some symlinks?
+        for path, target in (
+            (
+                minecraft_root / "EnderChest" / "global" / "crash-reports",
+                minecraft_root / "crash-reports",
             ),
-            (chest_folder / "global" / "resourcepacks"): (
-                minecraft_root / "resourcepacks"
+            (
+                minecraft_root / "EnderChest" / "global" / "resourcepacks",
+                minecraft_root / "resourcepacks",
             ),
-            (chest_folder / "global" / "screenshots"): (
-                home / "Pictures" / "Screenshots"
+            (
+                minecraft_root / "EnderChest" / "global" / "screenshots",
+                home / "Pictures" / "Screenshots",
             ),
-            (chest_folder / "global" / "saves" / "test"): (
-                minecraft_root / "worlds" / "testbench"
+            (
+                minecraft_root / "EnderChest" / "global" / "saves" / "test",
+                minecraft_root / "worlds" / "testbench",
             ),
-            (chest_folder / "1.19" / "saves" / "olam"): (
-                minecraft_root / "worlds" / "olam"
+            (
+                minecraft_root / "EnderChest" / "1.19" / "saves" / "olam",
+                minecraft_root / "worlds" / "olam",
             ),
-        }.items():
-            try:
-                path.symlink_to(target, target_is_directory=target.is_dir())
-            except FileExistsError:
-                pass
+        ):
+            path.unlink(missing_ok=True)
+            path.symlink_to(target, target_is_directory=target.is_dir())
 
     def test_create_from_remote_chest(self, remote, minecraft_root):
         craft.craft_ender_chest(minecraft_root, copy_from=remote, overwrite=True)
