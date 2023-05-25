@@ -156,11 +156,7 @@ def path_from_uri(uri: ParseResult) -> Path:
     Path
         The path part of the URI as a Path
     """
-    path_part = uri.path
-    if path_part[0] == "\\":
-        # I can think of no valid reason why this would happen
-        path_part = path_part[1:]
-    return Path(os.path.normpath(unquote(path_part)))
+    return Path(os.path.normpath(unquote(uri.path))).absolute()
 
 
 __all__ = [
