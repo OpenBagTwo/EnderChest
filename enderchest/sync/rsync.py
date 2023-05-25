@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import ParseResult
+from urllib.parse import ParseResult, unquote
 
 from . import SYNC_LOGGER, get_default_netloc
 
@@ -125,7 +125,7 @@ def pull(
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     rsync_flags : str, optional
-        By default, rsync will be run using the flags "-avz" which means:
+        By default, rsync will be run using the flags "avz" which means:
 
           - archive mode
           - verbose
@@ -154,7 +154,7 @@ def pull(
 
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = remote_uri.path
+        remote_path: str = unquote(remote_uri.path)
     else:
         remote_path = remote_uri.geturl()
 
@@ -202,7 +202,7 @@ def push(
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     rsync_flags : str, optional
-        By default, rsync will be run using the flags "-avz" which means:
+        By default, rsync will be run using the flags "avz" which means:
 
           - archive mode
           - verbose
@@ -223,7 +223,7 @@ def push(
     """
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = remote_uri.path
+        remote_path: str = unquote(remote_uri.path)
     else:
         remote_path = remote_uri.geturl()
 

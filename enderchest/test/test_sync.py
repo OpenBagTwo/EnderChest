@@ -2,6 +2,7 @@
 import os
 import shutil
 from pathlib import Path
+from urllib.parse import unquote
 
 import pytest
 
@@ -56,7 +57,7 @@ class TestFileSync:
 
         local = gather.load_ender_chest(minecraft_root)
 
-        another_root = tmp_path / "not-so-remote"
+        another_root = tmp_path / "not so remote"
 
         (another_root / "EnderChest").mkdir(parents=True)
 
@@ -230,7 +231,11 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.push_changes_upstream(minecraft_root)
         assert (
-            Path(remote.path) / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
+            Path(unquote(remote.path))
+            / "EnderChest"
+            / "vanilla"
+            / "conflict"
+            / "diamond.png"
         ).read_text() == "sparkle"
 
     def test_close_deletes_remote_copies_when_locals_are_deleted(
@@ -238,7 +243,7 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.push_changes_upstream(minecraft_root)
-        assert not (Path(remote.path) / "EnderChest" / "optifine").exists()
+        assert not (Path(unquote(remote.path)) / "EnderChest" / "optifine").exists()
 
 
 class TestRsyncSync(TestFileSync):

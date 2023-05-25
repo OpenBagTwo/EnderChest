@@ -5,7 +5,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import Collection, Iterable
-from urllib.parse import ParseResult
+from urllib.parse import ParseResult, unquote
 
 from . import SYNC_LOGGER
 
@@ -183,9 +183,14 @@ def pull(
     - If the destination folder does not already exist, this method will not
       create it or its parent directories.
     """
-    source_path = Path(remote_uri.path).expanduser()
+    source_path = Path(unquote(remote_uri.path)).expanduser()
     destination_folder = local_path
 
+    if not source_path.exists():
+        SYNC_LOGGER.warning(
+            f"{source_path} does not exist"
+            " this will end up just deleting the local copy."
+        )
     if not destination_folder.exists():
         raise FileNotFoundError(f"{local_path} does not exist")
 
@@ -227,8 +232,13 @@ def push(
       create it or its parent directories.
     """
     source_path = local_path
-    destination_folder = Path(remote_uri.path).expanduser()
+    destination_folder = Path(unquote(remote_uri.path)).expanduser()
 
+    if not source_path.exists():
+        SYNC_LOGGER.warning(
+            f"{source_path} does not exist:"
+            " this will end up just deleting the remote copy."
+        )
     if not destination_folder.exists():
         raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
 

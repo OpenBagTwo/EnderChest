@@ -2,7 +2,7 @@
 import logging
 import os
 from pathlib import Path
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import ParseResult, unquote, urlparse
 
 from . import filesystem as fs
 from . import gather
@@ -122,7 +122,11 @@ def pull_upstream_changes(minecraft_root: Path, **sync_kwargs) -> None:
         try:
             remote_chest = uri._replace(
                 path=urlparse(
-                    (fs.ender_chest_folder(Path(uri.path), check_exists=False)).as_uri()
+                    (
+                        fs.ender_chest_folder(
+                            Path(unquote(uri.path)), check_exists=False
+                        )
+                    ).as_uri()
                 ).path
             )
 
