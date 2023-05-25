@@ -24,7 +24,7 @@ def get_default_netloc() -> str:
     str
         The default netloc, which is {user}@{hostname}
     """
-    return f"{getpass.getuser()}@{socket.gethostname()}"
+    return f"{getpass.getuser()}@{socket.gethostname()}".lower()
 
 
 def render_remote(alias: str, uri: ParseResult) -> str:
