@@ -1,13 +1,48 @@
 """Tests around file transfer functionality."""
+import os
 import shutil
 from pathlib import Path
 
 import pytest
 
-from enderchest import craft, gather
+from enderchest import craft
+from enderchest import filesystem as fs
+from enderchest import gather
 from enderchest import remote as r
+from enderchest.sync import file
 
 from . import utils
+
+
+class TestFileIgnorePatternBuilder:
+    def test_simple_match(self):
+        assert file.ignore_patterns("hello")(
+            "greetings", ("bonjour", "hello", "hellooooo")
+        ) == {"hello"}
+
+    def test_wildcard(self):
+        assert file.ignore_patterns("hel*")(
+            "responses", ("como sa va", "hello", "hell no", "help")
+        ) == {"hello", "hell no", "help"}
+
+    def test_multi_pattern_match(self):
+        assert file.ignore_patterns("hel*", "bye")(
+            "responses", ("hello", "goodbye", "hellooo", "bye")
+        ) == {"hello", "hellooo", "bye"}
+
+    def test_full_path_check(self):
+        ignore = file.ignore_patterns(os.path.join("root", "branch"))
+        assert (
+            ignore("root", ("branch", "trunk")),
+            ignore("trunk", ("branch", "leaf")),
+        ) == ({"branch"}, set())
+
+    def test_match_is_performed_on_the_end(self):
+        ignore = file.ignore_patterns(os.path.join("root", "branch"), "leaf")
+        assert (
+            ignore(os.path.join("tree", "root"), ("branch", "trunk")),
+            ignore("wind", ("leaf", "blows")),
+        ) == ({"branch"}, {"leaf"})
 
 
 class TestFileSync:
@@ -64,6 +99,11 @@ class TestFileSync:
         (another_root / "EnderChest" / "1.19" / "saves" / "olam").unlink()
         (another_root / "EnderChest" / "1.19" / "saves" / "olam").symlink_to(
             another_root / "chest monster" / "worlds" / "olam", target_is_directory=True
+        )
+
+        (another_root / "EnderChest" / "1.19" / ".bobby").mkdir(exist_ok=True)
+        (another_root / "EnderChest" / "1.19" / ".bobby" / "chunk").write_text(
+            "chunky\n"
         )
 
         for root in (minecraft_root, another_root):
@@ -163,6 +203,28 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.pull_upstream_changes(minecraft_root)
         assert not (minecraft_root / "EnderChest" / "global").exists()
+
+    def test_open_does_not_overwrite_enderchest(self, minecraft_root, remote):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        original_config = fs.ender_chest_config(minecraft_root).read_text()
+        r.pull_upstream_changes(minecraft_root)
+        assert original_config == fs.ender_chest_config(minecraft_root).read_text()
+
+    def test_open_not_touch_top_level_dot_folders(self, minecraft_root, remote):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.pull_upstream_changes(minecraft_root)
+        assert (
+            minecraft_root / "EnderChest" / ".git" / "log"
+        ).read_text() == "i committed some stuff\n"
+
+    def test_open_will_sync_dot_folders_within_a_shulker_box(
+        self, minecraft_root, remote
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.pull_upstream_changes(minecraft_root)
+        assert (
+            minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
+        ).read_text() == "chunky\n"
 
     def test_close_overwrites_with_changes_from_local(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))

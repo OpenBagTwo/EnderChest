@@ -98,6 +98,11 @@ def pull_upstream_changes(minecraft_root: Path, **sync_kwargs) -> None:
     sync_kwargs
         Any additional arguments that should be passed into the syncing
         operation
+
+    Notes
+    -----
+    This method will try each remote in the order they are configured and stop
+    once it has successfully pulled from a remote.
     """
     try:
         remotes = gather.load_ender_chest_remotes(
@@ -125,8 +130,10 @@ def pull_upstream_changes(minecraft_root: Path, **sync_kwargs) -> None:
                 remote_chest,
                 minecraft_root,
                 exclude=[
-                    fs.ENDER_CHEST_CONFIG_NAME,
-                    ".*",
+                    os.path.join(
+                        fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME
+                    ),
+                    os.path.join(fs.ENDER_CHEST_FOLDER_NAME, ".*"),
                     *sync_kwargs.pop("exclude", ()),
                 ],
                 **sync_kwargs,
@@ -139,4 +146,60 @@ def pull_upstream_changes(minecraft_root: Path, **sync_kwargs) -> None:
         break
     else:
         SYNC_LOGGER.error("Could not sync with any remote EnderChests")
+
+
+def push_changes_upstream(minecraft_root: Path, **sync_kwargs) -> None:
+    """Push changes to all a remote EnderChests
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder). This will be used to
+        construct relative paths.
+    sync_kwargs
+        Any additional arguments that should be passed into the syncing
+        operation
+
+    Notes
+    -----
+    This method will attempt to push local changes to *every* remote
+    """
+    try:
+        remotes = gather.load_ender_chest_remotes(
+            minecraft_root, log_level=logging.DEBUG
+        )
+    except (FileNotFoundError, ValueError) as bad_chest:
+        SYNC_LOGGER.error(
+            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+        )
         return
+    if not remotes:
+        SYNC_LOGGER.error("Enderchest has no remotes. Aborting")
+        return  # kinda unnecessary
+
+    pushed_somewhere = False
+    for remote_uri, alias in remotes:
+        SYNC_LOGGER.info(
+            f"Attempting to push changes to {render_remote(alias, remote_uri)}"
+        )
+        try:
+            local_chest = fs.ender_chest_folder(minecraft_root)
+            push(
+                local_chest,
+                remote_uri,
+                exclude=[
+                    fs.ENDER_CHEST_CONFIG_NAME,
+                    ".*",
+                    *sync_kwargs.pop("exclude", ()),
+                ],
+                **sync_kwargs,
+            )
+            pushed_somewhere = True
+        except Exception as exc:
+            SYNC_LOGGER.warning(
+                f"Could not push changes to {render_remote(alias, remote_uri)}:"
+                f"\n  {exc}"
+            )
+    if not pushed_somewhere:
+        SYNC_LOGGER.error("Could not sync with any remote EnderChests")

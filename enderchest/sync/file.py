@@ -1,9 +1,10 @@
 """shutil-based sync implementation"""
+import fnmatch
 import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Iterable
+from typing import Collection, Iterable
 from urllib.parse import ParseResult
 
 from . import SYNC_LOGGER
@@ -33,7 +34,7 @@ def copy(
     """
     log_level = logging.INFO if dry_run else logging.DEBUG
 
-    ignore = shutil.ignore_patterns(*exclude)
+    ignore = ignore_patterns(*exclude)
     SYNC_LOGGER.debug(f"Ignoring patterns: {exclude}")
 
     destination_path = destination_folder / source_path.name
@@ -73,7 +74,7 @@ def clean(root: Path, ignore, dry_run: bool) -> None:
     root : Path
         The root directory. And this should absolutely be a directory.
     ignore : Callable
-        The ignore pattern created by `shutil.ignore_pattern` that specifies
+        The ignore pattern created by `ignore_pattern` that specifies
         which files to ignore.
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
@@ -81,7 +82,10 @@ def clean(root: Path, ignore, dry_run: bool) -> None:
     """
     log_level = logging.INFO if dry_run else logging.DEBUG
     contents = list(root.iterdir())
-    ignore_me = ignore(os.fspath(root), [path.name for path in contents])
+    ignore_me = ignore(
+        os.fspath(root),
+        [path.name for path in contents],
+    )
 
     for path in contents:
         if path.name in ignore_me:
@@ -103,6 +107,45 @@ def clean(root: Path, ignore, dry_run: bool) -> None:
         SYNC_LOGGER.log(log_level, f"Removing empty {root}")
         if not dry_run:
             root.rmdir()
+
+
+def ignore_patterns(*patterns: str):
+    """shutil.ignore_patterns doesn't support checking absolute paths,
+    so we gotta roll our own.
+
+    This implementation is adapted from
+    https://github.com/python/cpython/blob/3.11/Lib/shutil.py#L440-L450 and
+    https://stackoverflow.com/a/7842224
+
+    Parameters
+    ----------
+    *patterns : str
+        The patterns to match
+
+    Returns
+    -------
+    Callable
+        An "ignore" filter suitable for use in `shutil.copytree`
+    """
+
+    def _ignore_patterns(path: str, names: Collection[str]) -> set[str]:
+        ignored_names: set[str] = set()
+        for pattern in patterns:
+            path_parts: list[str] = os.path.normpath(path).split(os.sep)
+            pattern_depth = len(os.path.normpath(pattern).split(os.sep)) - 1
+            if pattern_depth == 0:
+                match_paths: Collection[str] = names
+            else:
+                match_paths = [
+                    os.path.join(*path_parts[-pattern_depth:], name) for name in names
+                ]
+            ignored_names.update(
+                os.path.split(match)[-1]
+                for match in fnmatch.filter(match_paths, pattern)
+            )
+        return ignored_names
+
+    return _ignore_patterns
 
 
 def pull(
