@@ -1,0 +1,129 @@
+"""Low-level functionality for synchronizing across different machines"""
+import getpass
+import importlib
+import socket
+from collections.abc import Generator
+from contextlib import contextmanager
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from urllib.parse import ParseResult
+
+from ..loggers import SYNC_LOGGER
+
+SUPPORTED_PROTOCOLS = ("rsync", "file")
+
+DEFAULT_PROTOCOL = SUPPORTED_PROTOCOLS[0]
+
+
+def get_default_netloc() -> str:
+    """Compile a netloc from environment variables, etc.
+
+    Returns
+    -------
+    str
+        The default netloc, which is {user}@{hostname}
+    """
+    return f"{getpass.getuser()}@{socket.gethostname()}"
+
+
+def render_remote(alias: str, uri: ParseResult) -> str:
+    """Render a remote to a descriptive string
+
+    Parameters
+    ----------
+    alias : str
+        The name of the remote
+    uri : ParseResult
+        The parsed URI for the remote
+
+    Returns
+    -------
+    str
+        {uri_string} [({alias})]}
+            (if different from the URI hostname)
+    """
+    uri_string = uri.geturl()
+
+    if uri.hostname != alias:
+        uri_string += f" ({alias})"
+    return uri_string
+
+
+@contextmanager
+def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
+    """Grab a file from a remote filesystem by its URI and read its contents
+
+    Parameters
+    ----------
+    uri : parsed URI
+        The URI of the file to read
+
+    Yields
+    ------
+    Path
+        A path to a local (temp) copy of the file
+    """
+    with TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+        pull(uri, Path(tmpdir))
+        yield Path(tmpdir) / Path(uri.path).name
+
+
+def pull(remote_uri: ParseResult, local_path: Path, **kwargs) -> None:
+    """Pull all upstream changes from a remote into the specified location
+
+    Parameters
+    ----------
+    remote_uri : ParseResult
+        The URI for the remote resource to pull
+    local_path
+        The local destination
+    **kwargs
+        Any additional options to pass into the sync command
+    """
+    try:
+        protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
+        protocol.pull(remote_uri, local_path, **kwargs)
+    except ModuleNotFoundError:
+        raise NotImplementedError(
+            f"Protocol {remote_uri.scheme} is not currently implemented"
+        )
+    except TypeError as unknown_kwarg:
+        raise NotImplementedError(
+            f"Protocol {remote_uri.scheme} does not support that functionality:\n  {unknown_kwarg}"
+        )
+
+
+def push(local_path: Path, remote_uri: ParseResult, **kwargs) -> None:
+    """Push all local changes in the specified directory into the specified remote
+
+    Parameters
+    ----------
+    local_path
+        The local path to push
+    remote_uri : ParseResult
+        The URI for the remote destination
+    **kwargs
+        Any additional options to pass into the sync command
+    """
+    try:
+        protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
+        protocol.push(local_path, remote_uri, **kwargs)
+    except ModuleNotFoundError:
+        raise NotImplementedError(
+            f"Protocol {remote_uri.scheme} is not currently implemented"
+        )
+    except TypeError as unknown_kwarg:
+        raise NotImplementedError(
+            f"Protocol {remote_uri.scheme} does not support that functionality:\n  {unknown_kwarg}"
+        )
+
+
+__all__ = [
+    "SYNC_LOGGER",
+    "SUPPORTED_PROTOCOLS",
+    "DEFAULT_PROTOCOL",
+    "render_remote",
+    "remote_file",
+    "pull",
+    "push",
+]

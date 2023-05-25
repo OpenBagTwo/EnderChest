@@ -8,7 +8,12 @@ setup(
     description="syncing and linking for all your Minecraft instances",
     author='Gili "OpenBagTwo" Barlev',
     url="https://github.com/OpenBagTwo/EnderChest",
-    packages=["enderchest", "enderchest/test"],
+    packages=[
+        "enderchest",
+        "enderchest/sync",
+        "enderchest/test",
+        "enderchest/test/testing_files",
+    ],
     entry_points={
         "console_scripts": [
             "enderchest = enderchest.cli:main",

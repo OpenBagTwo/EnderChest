@@ -1,2 +1,3 @@
-enderchest/example_configs/*.cfg
-enderchest/example_configs/*.toml
+enderchest/test/testing_files/*.cfg
+enderchest/test/testing_files/*.json
+enderchest/test/testing_files/*.txt
