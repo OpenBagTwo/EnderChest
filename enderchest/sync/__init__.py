@@ -9,6 +9,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Iterable
 from urllib.parse import ParseResult, unquote
+from urllib.request import url2pathname
 
 from ..loggers import SYNC_LOGGER
 
@@ -146,6 +147,8 @@ def push(
 def path_from_uri(uri: ParseResult) -> Path:
     """Extract and unquote the path component of a URI to turn it into a pathlib.Path
 
+    h/t https://stackoverflow.com/a/61922504
+
     Parameters
     ----------
     uri : ParseResult
@@ -156,7 +159,8 @@ def path_from_uri(uri: ParseResult) -> Path:
     Path
         The path part of the URI as a Path
     """
-    return Path(os.path.normpath(unquote(uri.path))).absolute()
+    host = "{0}{0}{mnt}{0}".format(os.path.sep, mnt=uri.netloc)
+    return Path(os.path.abspath(os.path.join(host, url2pathname(unquote(uri.path)))))
 
 
 __all__ = [
