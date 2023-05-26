@@ -11,11 +11,13 @@ dependencies:
 - black
 - isort
 - mypy
+- pylint
 - versioneer
 - pip>=22
 - pre-commit
 - pytest>=7
 - pytest-cov>=4
+- anybadge
 - mkdocs
 - mike
 - mkdocstrings
