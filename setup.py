@@ -10,17 +10,23 @@ setup(
     url="https://github.com/OpenBagTwo/EnderChest",
     packages=[
         "enderchest",
-        "enderchest/sync",
-        "enderchest/test",
-        "enderchest/test/testing_files",
+        "enderchest.sync",
+        "enderchest.test",
+        "enderchest.test.testing_files",
     ],
+    package_data={
+        "enderchest.test": [
+            "testing_files/*.cfg",
+            "testing_files/*.json",
+            "testing_files/*.txt",
+        ]
+    },
     entry_points={
         "console_scripts": [
             "enderchest = enderchest.cli:main",
         ]
     },
     license="GPL v3",
-    include_package_data=True,
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     install_requires=["semantic-version>=2.7", "pathvalidate>=2.5"],
