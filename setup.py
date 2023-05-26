@@ -1,11 +1,17 @@
+from pathlib import Path
+
 from setuptools import setup
 
 import versioneer
+
+long_description = (Path(__file__).parent / "README.md").read_text()
 
 setup(
     name="enderchest",
     python_requires=">=3.10",
     description="syncing and linking for all your Minecraft instances",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Gili "OpenBagTwo" Barlev',
     url="https://github.com/OpenBagTwo/EnderChest",
     packages=[
