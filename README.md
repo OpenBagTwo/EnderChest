@@ -97,6 +97,14 @@ To pull in any changes from other installations, run:
 $ enderchest open
 ```
 
+and then
+
+```bash
+$ enderchest place
+```
+
+to update your symlinks.
+
 More detailed usage instructions can be found on
 [GitHub Pages](https://openbagtwo.github.io/EnderChest/dev/usage).
 

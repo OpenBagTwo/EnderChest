@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 import enderchest
-from enderchest import cli, place
+from enderchest import cli, place, remote
 
 
 class TestHelp:
@@ -341,7 +341,71 @@ class TestShulkerInventory(ActionTestSuite):
 
 class TestOpen:
     action = "open"
+    op = "pull"
+
+    def test_op_is_routed_successfully(self, monkeypatch):
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs):
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(["enderchest", *self.action.split()])
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][1] == self.op
+
+    def test_dry_run_is_false_by_default(self, monkeypatch):
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs):
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(["enderchest", *self.action.split()])
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][2]["dry_run"] is False
+
+    def test_passing_a_bunch_of_args(self, monkeypatch):
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs):
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                "--root",
+                ".",
+                "--dry-run",
+                "-t",
+                "15",
+                "-w",
+                "0",
+                "-e",
+                "private",
+                "*.secret",
+            ]
+        )
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][2] == {
+            "dry_run": True,
+            "timeout": 15,
+            "sync_confirm_wait": 0,
+            "exclude": ["private", "*.secret"],
+        }
 
 
-class TestClose:
+class TestClose(TestOpen):
     action = "close"
+    op = "push"

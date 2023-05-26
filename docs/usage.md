@@ -92,7 +92,7 @@ instances you want to manage, it's time to start crafting shulker boxes.
 Running:
 
 ```bash
-enderchest craft shulker_box
+enderchest craft shulker_box <name>
 ```
 
 will take you through a guided setup that will let to control how your shulker
@@ -124,8 +124,120 @@ or updated.
 
 ## Managing Remotes
 
-_TODO_
+Once you've finished setting up an EnderChest on a given computer, the next
+thing to consider is setting it up on _another_ one. To do that, you'll need
+to set up some form of file transfer. **EnderChest's preferred transfer protocol
+is [rsync](https://www.redhat.com/sysadmin/sync-rsync)**, an extremely official
+and open source tool for performing backups and generally moving files between
+two locations. Most Linux distributions (including SteamOS) come with rsync
+preinstalled, and Mac users can install rsync easily via
+[homebrew](https://formulae.brew.sh/formula/rsync),
+[MacPorts](https://ports.macports.org/port/rsync/) or
+[conda](https://anaconda.org/conda-forge/rsync). Windows users should
+install [Cygwin](https://www.cygwin.com/install.html) and install
+[rsync](https://www.cygwin.com/packages/summary/rsync.html) through it
+(though other options like
+[WSL](https://thedatafrog.com/en/articles/backup-rsync-windows-wsl/) are available).
+
+EnderChest does support additional protocols, including those that do not
+depend on external binaries. Details on those are listed
+[here](../suggestions#other-syncing-protocols).
+
+To register a remote with your EnderChest, you just need to run the following command:
+
+```bash
+enderchest gather enderchests <remote>
+```
+
+where `<remote>` is the URI to the remote chest.
+
+### Understanding URIs
+A [Uniform Resource Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier),
+or URI, is a way of referencing files or folders--oftentimes on other computers--
+in a standard way. URLs, like you're familiar with from web browsers, are a type
+of URI. The format of a URI typically follows the following schema:
+
+```
+<protocol>://[[<username>@]<host>[:port]<path>[?<query>]
+```
+
+The important bits right now are:
+- the protocol must be one that's supported by both EnderChest and by your machine
+- the host can be the local IP of your remote machine, but most home routers support
+  connecting to machines via their hostname. This is much better for users whose
+  routers don't assign machines statis IP addresses.
+- the path must be [URL encoded](https://www.urlencoder.org/) to transform special
+  characters (especially spaces) into a single unambiguous string
+- the path must be _absolute_, (and in the URI syntax must start with a `/`),
+  starting from the computer or service's root directory (hence the `/` for
+  macOS and Linux users)
+- the path does not point to an EnderChest, but to _the folder containing the
+  EnderChest_.
+
+As an example, let's say I have an EnderChest installed on my Steam Deck
+(hostname: "steamdeck") directly inside my home directory (so `~/EnderChest`).
+If I'm setting up an EnderChest on my couch gaming laptop and want to sync
+with my Deck, the URI for it will be: `rsync://deck@steamdeck/home/deck`
+
+!!! tip
+    You can use [this website](https://www.urlencoder.org/) to encode any
+    file name or
+    [POSIX](https://www.oreilly.com/library/view/beginning-applescript/9780764574009/9780764574009_path_names_colon_traditional_mac_and_pos.html)
+    path as a URI. You can also get the URI to your current directory in Python
+    by running the following code:
+    ```python
+    >>> from pathlib import Path
+    >>> print(Path().absolute().as_uri())
+    ```
+    While that will give you the [`file://` protocol](../suggestions#file-protocol),
+    URI you can then just replace the `file://` part (make sure not to grab
+    the third slash!) and replace it with the `protocol://[user@]hostname[:port]`
+    of your choice.
 
 ## Syncing
 
-_TODO_
+Once you have some remote EnderChests set up, the way you sync with them is via
+the `close` and `open` actions:
+
+```bash
+enderchest close
+```
+
+will push your local changes to all registered remote chests
+
+```bash
+enderchest open
+```
+
+will pull changes from your other EnderChests while
+
+!!! info
+    Where you have multiple remotes specified, `enderchest open` will only
+    pull changes from one, prioritizing them in the order that they're listed,
+    and stopping once it manages to sync successfully.
+
+    In contrast, `enderchest close` will push changes _to all_ registered
+    remotes.
+
+    This is useful for when you have EnderChests running on laptops or handhelds
+    that are not always on, or not always on the same network as the other devices,
+    but it means you need to be careful that the first remote listed in your
+    config is the one most likely to be up-to-date.
+
+**Sync operations are destructive** and won't hesitate to wipe out all the files
+in an EnderChest if you have your remote mis-configured. That's why all sync
+operations support the `--dry-run` flag, which lets you preview the operations
+that will be performed before they're actually run.
+
+In fact, by default, all sync operations _will perform a dry run first_ and give
+you five seconds to review the dry run log and interrupt the sync if things
+are about to go sideways (documentation for overriding this behavior is available
+in the [CLI docs](../cli/#enderchest-open)).
+
+Finally, make sure to run:
+
+```bash
+enderchest place
+```
+
+after a successful `enderchest open` to update all of your instances' symlinks.
