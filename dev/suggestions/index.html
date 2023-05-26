@@ -306,6 +306,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#other-syncing-protocols" class="md-nav__link">
+    Other Syncing Protocols
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Syncing Protocols">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-protocol" class="md-nav__link">
+    File Protocol
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#collisions-and-conflicts" class="md-nav__link">
     Collisions and Conflicts
   </a>
@@ -479,20 +499,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/sync/" class="md-nav__link">
-        sync
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/enderchest/enderchest/" class="md-nav__link">
         enderchest
       </a>
@@ -613,6 +619,74 @@
 
             
           
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_12" >
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../reference/enderchest/sync/">sync</a>
+          
+            <label for="__nav_8_1_12">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_12_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_1_12">
+          <span class="md-nav__icon md-icon"></span>
+          sync
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/rsync/" class="md-nav__link">
+        rsync
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
+        file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -651,6 +725,26 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#other-syncing-protocols" class="md-nav__link">
+    Other Syncing Protocols
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Syncing Protocols">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-protocol" class="md-nav__link">
+    File Protocol
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#collisions-and-conflicts" class="md-nav__link">
@@ -708,11 +802,30 @@
 
 
 <h1 id="best-practices-and-suggested-workflows">Best Practices and Suggested Workflows</h1>
-<p><em>Coming Soon!</em></p>
+<h2 id="other-syncing-protocols">Other Syncing Protocols</h2>
+<p>If you can't or don't want to use rsync, EnderChest supports additional
+protocols (and has plans for more).</p>
+<h3 id="file-protocol">File Protocol</h3>
+<ul>
+<li><strong>Scheme</strong>: <code>file://</code></li>
+<li><strong>Example URI</strong>: <code>file:///C:/Users/openbagtwo/My%20Minecraft%20Stuff</code></li>
+<li><strong>Platforms</strong>: All</li>
+<li><strong><a href="https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/jj710207(v=vs.85)">Documentation</a></strong></li>
+</ul>
+<p>You can use this protocol to have EnderChest sync between two folders on the
+same machine. This can be useful if you're using a service like Dropbox or
+Google Drive that automatically backups and synchronizes files in a specific
+directory, and where using <code>enderchest open</code> to pull the files out of that
+shared drive before using them can help avoid conflicts and corruption.</p>
+<div class="admonition warning">
+<p class="admonition-title">Limitation</p>
+<p>EnderChest <strong>does not</strong> support using the file protocol to sync files between
+different computers, nor does it support authenticating as different users.</p>
+</div>
 <h2 id="collisions-and-conflicts">Collisions and Conflicts</h2>
-<p><em>TODO</em></p>
+<p>Coming soon!</p>
 <h3 id="managing-backups">Managing Backups</h3>
-<p><em>TODO</em></p>
+<p>Coming soon!</p>
 <h2 id="integration-with-auto-update-tools">Integration with Auto-Update Tools</h2>
 <h3 id="startup-and-shutdown-scripts">Startup and Shutdown Scripts</h3>
 <p>Launchers like PrismLauncher can be configured to run commands

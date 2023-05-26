@@ -541,20 +541,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/sync/" class="md-nav__link">
-        sync
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/enderchest/enderchest/" class="md-nav__link">
         enderchest
       </a>
@@ -670,6 +656,74 @@
       <a href="../reference/enderchest/craft/" class="md-nav__link">
         craft
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_12" >
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../reference/enderchest/sync/">sync</a>
+          
+            <label for="__nav_8_1_12">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_12_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_1_12">
+          <span class="md-nav__icon md-icon"></span>
+          sync
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/rsync/" class="md-nav__link">
+        rsync
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
+        file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -835,7 +889,7 @@
 <h2 id="summary">Summary</h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>usage:<span class="w"> </span>enderchest<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>-v<span class="o">]</span><span class="w"> </span>action<span class="w"> </span><span class="o">[</span>arguments<span class="w"> </span>...<span class="o">]</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>v0.0.4+81.g059b3f3
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>v0.0.4+82.g37e2cb7
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>syncing<span class="w"> </span>and<span class="w"> </span>linking<span class="w"> </span><span class="k">for</span><span class="w"> </span>all<span class="w"> </span>your<span class="w"> </span>Minecraft<span class="w"> </span>instances
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
@@ -1076,34 +1130,78 @@
 </span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="s1">  --quiet, -q       decrease the amount of information that&#39;</span>s<span class="w"> </span>printed
 </span></code></pre></div>
 <h2 id="enderchest-open"><code>enderchest open</code></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>usage:<span class="w"> </span>enderchest<span class="w"> </span>open<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>--root<span class="w"> </span>ROOT_FLAG<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verbose<span class="o">]</span><span class="w"> </span><span class="o">[</span>--quiet<span class="o">]</span><span class="w"> </span><span class="o">[</span>root<span class="o">]</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>pull<span class="w"> </span>changes<span class="w"> </span>from<span class="w"> </span>other<span class="w"> </span>EnderChests
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>positional<span class="w"> </span>arguments:
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span>root<span class="w">              </span>optionally<span class="w"> </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory.<span class="w"> </span>If<span class="w"> </span>no
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">                    </span>path<span class="w"> </span>is<span class="w"> </span>given,<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>working<span class="w"> </span>directory<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>used.
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>options:
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">        </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span>--root<span class="w"> </span>ROOT_FLAG<span class="w">  </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">  </span>--verbose,<span class="w"> </span>-v<span class="w">     </span>increase<span class="w"> </span>the<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>information<span class="w"> </span>that<span class="s1">&#39;s printed</span>
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="s1">  --quiet, -q       decrease the amount of information that&#39;</span>s<span class="w"> </span>printed
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>usage:<span class="w"> </span>enderchest<span class="w"> </span>open<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>--root<span class="w"> </span>ROOT_FLAG<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verbose<span class="o">]</span><span class="w"> </span><span class="o">[</span>--quiet<span class="o">]</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">                       </span><span class="o">[</span>--dry-run<span class="o">]</span><span class="w"> </span><span class="o">[</span>--exclude<span class="w"> </span>EXCLUDE<span class="w"> </span><span class="o">[</span>EXCLUDE<span class="w"> </span>...<span class="o">]]</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">                       </span><span class="o">[</span>--timeout<span class="w"> </span>TIMEOUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>--wait<span class="w"> </span>SYNC_CONFIRM_WAIT<span class="o">]</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">                       </span><span class="o">[</span>root<span class="o">]</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>pull<span class="w"> </span>changes<span class="w"> </span>from<span class="w"> </span>other<span class="w"> </span>EnderChests
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>positional<span class="w"> </span>arguments:
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span>root<span class="w">                  </span>optionally<span class="w"> </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory.<span class="w"> </span>If
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">                        </span>no<span class="w"> </span>path<span class="w"> </span>is<span class="w"> </span>given,<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>working<span class="w"> </span>directory<span class="w"> </span>will
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">                        </span>be<span class="w"> </span>used.
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>options:
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">            </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">  </span>--root<span class="w"> </span>ROOT_FLAG<span class="w">      </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">  </span>--verbose,<span class="w"> </span>-v<span class="w">         </span>increase<span class="w"> </span>the<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>information<span class="w"> </span>that<span class="s1">&#39;s printed</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="s1">  --quiet, -q           decrease the amount of information that&#39;</span>s<span class="w"> </span>printed
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">  </span>--dry-run<span class="w">             </span>Perform<span class="w"> </span>a<span class="w"> </span>dry<span class="w"> </span>run<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>sync<span class="w"> </span>operation,<span class="w"> </span>reporting<span class="w"> </span>the
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">                        </span>operations<span class="w"> </span>that<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>performed<span class="w"> </span>but<span class="w"> </span>not<span class="w"> </span>actually
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">                        </span>carrying<span class="w"> </span>them<span class="w"> </span>out
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">  </span>--exclude<span class="w"> </span>EXCLUDE<span class="w"> </span><span class="o">[</span>EXCLUDE<span class="w"> </span>...<span class="o">]</span>,<span class="w"> </span>-e<span class="w"> </span>EXCLUDE<span class="w"> </span><span class="o">[</span>EXCLUDE<span class="w"> </span>...<span class="o">]</span>
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">                        </span>Provide<span class="w"> </span>any<span class="w"> </span>file<span class="w"> </span>patterns<span class="w"> </span>you<span class="w"> </span>would<span class="w"> </span>like<span class="w"> </span>to<span class="w"> </span>skip
+</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">                        </span>syncing
+</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">  </span>--timeout<span class="w"> </span>TIMEOUT,<span class="w"> </span>-t<span class="w"> </span>TIMEOUT
+</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="w">                        </span>Set<span class="w"> </span>a<span class="w"> </span>maximum<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>seconds<span class="w"> </span>to<span class="w"> </span>try<span class="w"> </span>to<span class="w"> </span>sync<span class="w"> </span>to<span class="w"> </span>a
+</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">                        </span>remote<span class="w"> </span>chest<span class="w"> </span>before<span class="w"> </span>giving<span class="w"> </span>up<span class="w"> </span>and<span class="w"> </span>going<span class="w"> </span>on<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>next
+</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="w">                        </span>one
+</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="w">  </span>--wait<span class="w"> </span>SYNC_CONFIRM_WAIT,<span class="w"> </span>-w<span class="w"> </span>SYNC_CONFIRM_WAIT
+</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="w">                        </span>The<span class="w"> </span>default<span class="w"> </span>behavior<span class="w"> </span>when<span class="w"> </span>syncing<span class="w"> </span>EnderChests<span class="w"> </span>is<span class="w"> </span>to
+</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="w">                        </span>first<span class="w"> </span>perform<span class="w"> </span>a<span class="w"> </span>dry<span class="w"> </span>run<span class="w"> </span>of<span class="w"> </span>every<span class="w"> </span>sync<span class="w"> </span>operation<span class="w"> </span>and
+</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a><span class="w">                        </span><span class="k">then</span><span class="w"> </span><span class="nb">wait</span><span class="w"> </span><span class="m">5</span><span class="w"> </span>seconds<span class="w"> </span>before<span class="w"> </span>proceeding<span class="w"> </span>with<span class="w"> </span>the<span class="w"> </span>real
+</span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="w">                        </span>sync.<span class="w"> </span>The<span class="w"> </span>idea<span class="w"> </span>is<span class="w"> </span>to<span class="w"> </span>give<span class="w"> </span>you<span class="w"> </span><span class="nb">time</span><span class="w"> </span>to<span class="w"> </span>interrupt<span class="w"> </span>the
+</span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="w">                        </span>sync<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>dry<span class="w"> </span>run<span class="w"> </span>looks<span class="w"> </span>wrong.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>raise<span class="w"> </span>or
+</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a><span class="w">                        </span>lower<span class="w"> </span>that<span class="w"> </span><span class="nb">wait</span><span class="w"> </span><span class="nb">time</span><span class="w"> </span>through<span class="w"> </span>this<span class="w"> </span>flag.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>also
+</span><span id="__span-10-35"><a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a><span class="w">                        </span>modify<span class="w"> </span>it<span class="w"> </span>by<span class="w"> </span>editing<span class="w"> </span>the<span class="w"> </span>enderchest.cfg<span class="w"> </span>file.
 </span></code></pre></div>
 <h2 id="enderchest-close"><code>enderchest close</code></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>usage:<span class="w"> </span>enderchest<span class="w"> </span>close<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>--root<span class="w"> </span>ROOT_FLAG<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verbose<span class="o">]</span><span class="w"> </span><span class="o">[</span>--quiet<span class="o">]</span><span class="w"> </span><span class="o">[</span>root<span class="o">]</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>push<span class="w"> </span>changes<span class="w"> </span>to<span class="w"> </span>other<span class="w"> </span>EnderChests
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>positional<span class="w"> </span>arguments:
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span>root<span class="w">              </span>optionally<span class="w"> </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory.<span class="w"> </span>If<span class="w"> </span>no
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">                    </span>path<span class="w"> </span>is<span class="w"> </span>given,<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>working<span class="w"> </span>directory<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>used.
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>options:
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">        </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">  </span>--root<span class="w"> </span>ROOT_FLAG<span class="w">  </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span>--verbose,<span class="w"> </span>-v<span class="w">     </span>increase<span class="w"> </span>the<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>information<span class="w"> </span>that<span class="s1">&#39;s printed</span>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="s1">  --quiet, -q       decrease the amount of information that&#39;</span>s<span class="w"> </span>printed
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>usage:<span class="w"> </span>enderchest<span class="w"> </span>close<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>--root<span class="w"> </span>ROOT_FLAG<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verbose<span class="o">]</span><span class="w"> </span><span class="o">[</span>--quiet<span class="o">]</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">                        </span><span class="o">[</span>--dry-run<span class="o">]</span><span class="w"> </span><span class="o">[</span>--exclude<span class="w"> </span>EXCLUDE<span class="w"> </span><span class="o">[</span>EXCLUDE<span class="w"> </span>...<span class="o">]]</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">                        </span><span class="o">[</span>--timeout<span class="w"> </span>TIMEOUT<span class="o">]</span><span class="w"> </span><span class="o">[</span>--wait<span class="w"> </span>SYNC_CONFIRM_WAIT<span class="o">]</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">                        </span><span class="o">[</span>root<span class="o">]</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>push<span class="w"> </span>changes<span class="w"> </span>to<span class="w"> </span>other<span class="w"> </span>EnderChests
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>positional<span class="w"> </span>arguments:
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">  </span>root<span class="w">                  </span>optionally<span class="w"> </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory.<span class="w"> </span>If
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">                        </span>no<span class="w"> </span>path<span class="w"> </span>is<span class="w"> </span>given,<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>working<span class="w"> </span>directory<span class="w"> </span>will
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">                        </span>be<span class="w"> </span>used.
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>options:
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">            </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">  </span>--root<span class="w"> </span>ROOT_FLAG<span class="w">      </span>specify<span class="w"> </span>your<span class="w"> </span>root<span class="w"> </span>minecraft<span class="w"> </span>directory
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">  </span>--verbose,<span class="w"> </span>-v<span class="w">         </span>increase<span class="w"> </span>the<span class="w"> </span>amount<span class="w"> </span>of<span class="w"> </span>information<span class="w"> </span>that<span class="s1">&#39;s printed</span>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="s1">  --quiet, -q           decrease the amount of information that&#39;</span>s<span class="w"> </span>printed
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">  </span>--dry-run<span class="w">             </span>Perform<span class="w"> </span>a<span class="w"> </span>dry<span class="w"> </span>run<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>sync<span class="w"> </span>operation,<span class="w"> </span>reporting<span class="w"> </span>the
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">                        </span>operations<span class="w"> </span>that<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>performed<span class="w"> </span>but<span class="w"> </span>not<span class="w"> </span>actually
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">                        </span>carrying<span class="w"> </span>them<span class="w"> </span>out
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">  </span>--exclude<span class="w"> </span>EXCLUDE<span class="w"> </span><span class="o">[</span>EXCLUDE<span class="w"> </span>...<span class="o">]</span>,<span class="w"> </span>-e<span class="w"> </span>EXCLUDE<span class="w"> </span><span class="o">[</span>EXCLUDE<span class="w"> </span>...<span class="o">]</span>
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">                        </span>Provide<span class="w"> </span>any<span class="w"> </span>file<span class="w"> </span>patterns<span class="w"> </span>you<span class="w"> </span>would<span class="w"> </span>like<span class="w"> </span>to<span class="w"> </span>skip
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">                        </span>syncing
+</span><span id="__span-11-24"><a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="w">  </span>--timeout<span class="w"> </span>TIMEOUT,<span class="w"> </span>-t<span class="w"> </span>TIMEOUT
+</span><span id="__span-11-25"><a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="w">                        </span>Set<span class="w"> </span>a<span class="w"> </span>maximum<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>seconds<span class="w"> </span>to<span class="w"> </span>try<span class="w"> </span>to<span class="w"> </span>sync<span class="w"> </span>to<span class="w"> </span>a
+</span><span id="__span-11-26"><a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">                        </span>remote<span class="w"> </span>chest<span class="w"> </span>before<span class="w"> </span>giving<span class="w"> </span>up<span class="w"> </span>and<span class="w"> </span>going<span class="w"> </span>on<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>next
+</span><span id="__span-11-27"><a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">                        </span>one
+</span><span id="__span-11-28"><a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="w">  </span>--wait<span class="w"> </span>SYNC_CONFIRM_WAIT,<span class="w"> </span>-w<span class="w"> </span>SYNC_CONFIRM_WAIT
+</span><span id="__span-11-29"><a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a><span class="w">                        </span>The<span class="w"> </span>default<span class="w"> </span>behavior<span class="w"> </span>when<span class="w"> </span>syncing<span class="w"> </span>EnderChests<span class="w"> </span>is<span class="w"> </span>to
+</span><span id="__span-11-30"><a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="w">                        </span>first<span class="w"> </span>perform<span class="w"> </span>a<span class="w"> </span>dry<span class="w"> </span>run<span class="w"> </span>of<span class="w"> </span>every<span class="w"> </span>sync<span class="w"> </span>operation<span class="w"> </span>and
+</span><span id="__span-11-31"><a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="w">                        </span><span class="k">then</span><span class="w"> </span><span class="nb">wait</span><span class="w"> </span><span class="m">5</span><span class="w"> </span>seconds<span class="w"> </span>before<span class="w"> </span>proceeding<span class="w"> </span>with<span class="w"> </span>the<span class="w"> </span>real
+</span><span id="__span-11-32"><a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="w">                        </span>sync.<span class="w"> </span>The<span class="w"> </span>idea<span class="w"> </span>is<span class="w"> </span>to<span class="w"> </span>give<span class="w"> </span>you<span class="w"> </span><span class="nb">time</span><span class="w"> </span>to<span class="w"> </span>interrupt<span class="w"> </span>the
+</span><span id="__span-11-33"><a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a><span class="w">                        </span>sync<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>dry<span class="w"> </span>run<span class="w"> </span>looks<span class="w"> </span>wrong.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>raise<span class="w"> </span>or
+</span><span id="__span-11-34"><a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a><span class="w">                        </span>lower<span class="w"> </span>that<span class="w"> </span><span class="nb">wait</span><span class="w"> </span><span class="nb">time</span><span class="w"> </span>through<span class="w"> </span>this<span class="w"> </span>flag.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>also
+</span><span id="__span-11-35"><a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a><span class="w">                        </span>modify<span class="w"> </span>it<span class="w"> </span>by<span class="w"> </span>editing<span class="w"> </span>the<span class="w"> </span>enderchest.cfg<span class="w"> </span>file.
 </span></code></pre></div>
 
 

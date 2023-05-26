@@ -356,6 +356,19 @@
     Managing Remotes
   </a>
   
+    <nav class="md-nav" aria-label="Managing Remotes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-uris" class="md-nav__link">
+    Understanding URIs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -514,20 +527,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/sync/" class="md-nav__link">
-        sync
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/enderchest/enderchest/" class="md-nav__link">
         enderchest
       </a>
@@ -648,6 +647,74 @@
 
             
           
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_12" >
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../reference/enderchest/sync/">sync</a>
+          
+            <label for="__nav_8_1_12">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_12_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_1_12">
+          <span class="md-nav__icon md-icon"></span>
+          sync
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/rsync/" class="md-nav__link">
+        rsync
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
+        file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -753,6 +820,19 @@
     Managing Remotes
   </a>
   
+    <nav class="md-nav" aria-label="Managing Remotes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-uris" class="md-nav__link">
+    Understanding URIs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -849,7 +929,7 @@ commands by using the <code>--verbose</code> (<code>-v</code>) and <code>--quiet
 <p>Once you've populated your EnderChest configuration with all the Minecraft
 instances you want to manage, it's time to start crafting shulker boxes.</p>
 <p>Running:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>enderchest<span class="w"> </span>craft<span class="w"> </span>shulker_box
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>enderchest<span class="w"> </span>craft<span class="w"> </span>shulker_box<span class="w"> </span>&lt;name&gt;
 </span></code></pre></div>
 <p>will take you through a guided setup that will let to control how your shulker
 box will know which instances will link to it along with what other remote
@@ -875,9 +955,98 @@ symlinked in its entirety. You can change this behavior by setting the
 be considered highly experimental.</p>
 </div>
 <h2 id="managing-remotes">Managing Remotes</h2>
-<p><em>TODO</em></p>
+<p>Once you've finished setting up an EnderChest on a given computer, the next
+thing to consider is setting it up on <em>another</em> one. To do that, you'll need
+to set up some form of file transfer. <strong>EnderChest's preferred transfer protocol
+is <a href="https://www.redhat.com/sysadmin/sync-rsync">rsync</a></strong>, an extremely official
+and open source tool for performing backups and generally moving files between
+two locations. Most Linux distributions (including SteamOS) come with rsync
+preinstalled, and Mac users can install rsync easily via
+<a href="https://formulae.brew.sh/formula/rsync">homebrew</a>,
+<a href="https://ports.macports.org/port/rsync/">MacPorts</a> or
+<a href="https://anaconda.org/conda-forge/rsync">conda</a>. Windows users should
+install <a href="https://www.cygwin.com/install.html">Cygwin</a> and install
+<a href="https://www.cygwin.com/packages/summary/rsync.html">rsync</a> through it
+(though other options like
+<a href="https://thedatafrog.com/en/articles/backup-rsync-windows-wsl/">WSL</a> are available).</p>
+<p>EnderChest does support additional protocols, including those that do not
+depend on external binaries. Details on those are listed
+<a href="../suggestions#other-syncing-protocols">here</a>.</p>
+<p>To register a remote with your EnderChest, you just need to run the following command:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>enderchests<span class="w"> </span>&lt;remote&gt;
+</span></code></pre></div>
+<p>where <code>&lt;remote&gt;</code> is the URI to the remote chest.</p>
+<h3 id="understanding-uris">Understanding URIs</h3>
+<p>A <a href="https://en.wikipedia.org/wiki/Uniform_Resource_Identifier">Uniform Resource Identifier</a>,
+or URI, is a way of referencing files or folders--oftentimes on other computers--
+in a standard way. URLs, like you're familiar with from web browsers, are a type
+of URI. The format of a URI typically follows the following schema:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&lt;protocol&gt;://[[&lt;username&gt;@]&lt;host&gt;[:port]&lt;path&gt;[?&lt;query&gt;]
+</span></code></pre></div>
+<p>The important bits right now are:
+- the protocol must be one that's supported by both EnderChest and by your machine
+- the host can be the local IP of your remote machine, but most home routers support
+  connecting to machines via their hostname. This is much better for users whose
+  routers don't assign machines statis IP addresses.
+- the path must be <a href="https://www.urlencoder.org/">URL encoded</a> to transform special
+  characters (especially spaces) into a single unambiguous string
+- the path must be <em>absolute</em>, (and in the URI syntax must start with a <code>/</code>),
+  starting from the computer or service's root directory (hence the <code>/</code> for
+  macOS and Linux users)
+- the path does not point to an EnderChest, but to <em>the folder containing the
+  EnderChest</em>.</p>
+<p>As an example, let's say I have an EnderChest installed on my Steam Deck
+(hostname: "steamdeck") directly inside my home directory (so <code>~/EnderChest</code>).
+If I'm setting up an EnderChest on my couch gaming laptop and want to sync
+with my Deck, the URI for it will be: <code>rsync://deck@steamdeck/home/deck</code></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can use <a href="https://www.urlencoder.org/">this website</a> to encode any
+file name or
+<a href="https://www.oreilly.com/library/view/beginning-applescript/9780764574009/9780764574009_path_names_colon_traditional_mac_and_pos.html">POSIX</a>
+path as a URI. You can also get the URI to your current directory in Python
+by running the following code:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_uri</span><span class="p">())</span>
+</span></code></pre></div>
+While that will give you the <a href="../suggestions#file-protocol"><code>file://</code> protocol</a>,
+URI you can then just replace the <code>file://</code> part (make sure not to grab
+the third slash!) and replace it with the <code>protocol://[user@]hostname[:port]</code>
+of your choice.</p>
+</div>
 <h2 id="syncing">Syncing</h2>
-<p><em>TODO</em></p>
+<p>Once you have some remote EnderChests set up, the way you sync with them is via
+the <code>close</code> and <code>open</code> actions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>enderchest<span class="w"> </span>close
+</span></code></pre></div>
+<p>will push your local changes to all registered remote chests</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>enderchest<span class="w"> </span>open
+</span></code></pre></div>
+<p>will pull changes from your other EnderChests while</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Where you have multiple remotes specified, <code>enderchest open</code> will only
+pull changes from one, prioritizing them in the order that they're listed,
+and stopping once it manages to sync successfully.</p>
+<p>In contrast, <code>enderchest close</code> will push changes <em>to all</em> registered
+remotes.</p>
+<p>This is useful for when you have EnderChests running on laptops or handhelds
+that are not always on, or not always on the same network as the other devices,
+but it means you need to be careful that the first remote listed in your
+config is the one most likely to be up-to-date.</p>
+</div>
+<p><strong>Sync operations are destructive</strong> and won't hesitate to wipe out all the files
+in an EnderChest if you have your remote mis-configured. That's why all sync
+operations support the <code>--dry-run</code> flag, which lets you preview the operations
+that will be performed before they're actually run.</p>
+<p>In fact, by default, all sync operations <em>will perform a dry run first</em> and give
+you five seconds to review the dry run log and interrupt the sync if things
+are about to go sideways (documentation for overriding this behavior is available
+in the <a href="../cli/#enderchest-open">CLI docs</a>).</p>
+<p>Finally, make sure to run:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>enderchest<span class="w"> </span>place
+</span></code></pre></div>
+<p>after a successful <code>enderchest open</code> to update all of your instances' symlinks.</p>
 
 
 
