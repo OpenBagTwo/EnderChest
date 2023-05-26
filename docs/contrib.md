@@ -1,5 +1,8 @@
 # Contribution Guide
 
+![coverage](https://raw.githubusercontent.com/OpenBagTwo/EnderChest/gh-pages/coverage.svg)
+![lint](https://raw.githubusercontent.com/OpenBagTwo/EnderChest/gh-pages/pylint.svg)
+
 EnderChest is an open source project, and its source code is
 [publicly available on GitHub](https://github.com/OpenBagTwo/EnderChest).
 
