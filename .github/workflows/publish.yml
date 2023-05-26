@@ -1,7 +1,8 @@
 name: Publish to PyPI
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+    - dev
 jobs:
   pypi:
     runs-on: ubuntu-latest
@@ -14,4 +15,5 @@ jobs:
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        password: ${{ secrets.PYPI_TEST_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
