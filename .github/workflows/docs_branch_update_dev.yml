@@ -6,6 +6,7 @@ on:
   push:
     branches:
     - dev
+    - release
 jobs:
   docs_rebuild:
     runs-on: ubuntu-latest
@@ -15,7 +16,7 @@ jobs:
         fetch-depth: 0
     - name: set up development environment
       run: |
-        $CONDA/bin/conda env create -f environment.yml
+        $CONDA/bin/conda env create -q -f environment.yml
         pip install -e .
     - name: configure git
       run: |
@@ -24,4 +25,4 @@ jobs:
     - name: deploy current branch
       run: |
         source $CONDA/bin/activate enderchest
-        mike deploy dev --push --rebase
+        mike deploy ${{ GITHUB_REF_NAME }} --push --rebase
