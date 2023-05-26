@@ -26,7 +26,7 @@ Once you have python installed,
 
 1. Ensure that EnderChest is compatible with your system by running:
     ```bash
-    python -m pytest --pyargs enderchest
+    python -m pytest --pyargs enderchest.test
     ```
 
     If all tests pass, then you're good to go!
