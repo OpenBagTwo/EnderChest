@@ -1,6 +1,6 @@
 # Rebuild the docs on changes to dev or on a new release
 
-name: Update the dev version of the docs
+name: Docs Update
 
 on:
   push:
