@@ -125,8 +125,10 @@ def file_system(tmp_path):
 
 
 @pytest.fixture
-def minecraft_root(file_system):
-    """Direct fixture pointing to the parent of the EnderChest folder"""
+def minecraft_root(file_system, monkeypatch):
+    """Direct fixture pointing to the parent of the EnderChest folder and make
+    sure all of our tests are running out of the minecraft root"""
+    monkeypatch.chdir(file_system[1])
     yield file_system[1]
 
 
