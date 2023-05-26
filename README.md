@@ -1,5 +1,8 @@
 # EnderChest
 
+[![PyPI version](https://badge.fury.io/py/enderchest.svg)](https://badge.fury.io/py/enderchest)
+![PyPI downloads](https://img.shields.io/pypi/dm/enderchest.svg)
+
 ![Linux](https://img.shields.io/badge/GNU/Linux-000000?style=flat-square&logo=linux&logoColor=white&color=eda445)
 ![SteamOS](https://img.shields.io/badge/SteamOS-3776AB.svg?style=flat-square&logo=steamdeck&logoColor=white&color=7055c3)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows&logoColor=white)
@@ -27,10 +30,10 @@ EnderChest is a command-line utility for selectively sharing Minecraft assets
 EnderChest is written for **Python 3.11 or greater,** but should otherwise
 run on any architecture or operating system.
 
-The latest release can be installed from github via `pip`:
+The latest release can be installed from PyPI via `pip`:
 
 ```bash
-$ python -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@release
+$ python -m pip install --user enderchest
 ```
 
 Full installation instructions can be found on
