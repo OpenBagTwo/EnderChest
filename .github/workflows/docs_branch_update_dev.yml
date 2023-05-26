@@ -25,4 +25,4 @@ jobs:
     - name: deploy current branch
       run: |
         source $CONDA/bin/activate enderchest
-        mike deploy ${{ GITHUB_REF_NAME }} --push --rebase
+        mike deploy $GITHUB_REF_NAME --push --rebase
