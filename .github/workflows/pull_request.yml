@@ -45,4 +45,4 @@ jobs:
       run: |
         mkdir -p sandbox
         cd sandbox
-        python -m pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**" --log-level=DEBUG
+        python -m pytest -vv --pyargs enderchest --doctest-modules --ignore-glob="docs/**" --log-level=DEBUG
