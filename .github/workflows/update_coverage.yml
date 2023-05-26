@@ -40,7 +40,7 @@ jobs:
         mkdir stash
         mv coverage.svg stash/.
         git reset --hard HEAD
-        git checkout gh_pages
+        git checkout gh-pages
         mv stash/coverage.svg .
         git add coverage.svg
         git commit -m "Update coverage badge"
