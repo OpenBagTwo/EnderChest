@@ -192,7 +192,7 @@ class TestEnderChestCrafting:
         capsys,
         caplog,
     ):
-        script_reader = utils.scripted_prompt([""] * 8)
+        script_reader = utils.scripted_prompt([""] * 7)
         monkeypatch.setattr("builtins.input", script_reader)
 
         chest = craft.specify_ender_chest_from_prompt(minecraft_root)
