@@ -6,6 +6,12 @@ portable distributions (read: no need for admin privileges)  of which are
 available through miniconda and
 [mambaforge](https://github.com/conda-forge/miniforge#mambaforge).
 
+!!! warning
+    Because of EnderChest's
+    [heavy reliance on symlinks](../about#symlinks-to-the-rescue), Windows users
+    are required to **turn on Developer Mode**.
+    [Read more here.](https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10/)
+
 Once you have python installed,
 
 1. Open a terminal and create a new virtual environment via:
@@ -30,7 +36,6 @@ Once you have python installed,
     ```
 
     If all tests pass, then you're good to go!
-
 
 !!! tip
     If you'd like `enderchest` to be available outside of your virtual environment,
