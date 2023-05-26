@@ -17,6 +17,7 @@ jobs:
     - name: set up development environment
       run: |
         $CONDA/bin/conda env create -q -f environment.yml
+        source $CONDA/bin/activate enderchest
         pip install -e .
     - name: configure git
       run: |
