@@ -696,6 +696,8 @@
 
 
 <h1 id="installation">Installation</h1>
+<p><a href="https://badge.fury.io/py/enderchest"><img alt="PyPI version" src="https://badge.fury.io/py/enderchest.svg" /></a>
+<img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/enderchest.svg" /></p>
 <p>EnderChest has minimal package dependencies and should run on pretty much
 any computer or operating system. It does require <strong>Python 3.10 or greater,</strong>
 portable distributions (read: no need for admin privileges)  of which are
@@ -708,13 +710,14 @@ available through miniconda and
 are required to <strong>turn on Developer Mode</strong>.
 <a href="https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10/">Read more here.</a></p>
 </div>
-<p>Once you have python installed,</p>
+<p>Once you have Python installed,</p>
 <ol>
 <li>
 <p>Open a terminal and create a new virtual environment via:
    <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>enderchest<span class="w"> </span><span class="s2">&quot;python&gt;=3.10&quot;</span><span class="w"> </span><span class="s2">&quot;pip&gt;22&quot;</span>
 </span></code></pre></div>
-   (substitute <code>conda</code> for <code>mamba</code> as needed)</p>
+   (substitute <code>conda</code> for <code>mamba</code> as needed, and skip this step and the next if
+    you're using the system Python)</p>
 </li>
 <li>
 <p>Activate your new environment:
@@ -722,15 +725,15 @@ are required to <strong>turn on Developer Mode</strong>.
 </span></code></pre></div></p>
 </li>
 <li>
-<p>Install <code>enderchest</code> from GitHub using pip:
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>git+https://github.com/OpenBagTwo/EnderChest.git@release#egg<span class="o">=</span>enderchest<span class="o">[</span>test<span class="o">]</span>
+<p>Install <code>enderchest</code> from PyPI using pip:
+    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>enderchest<span class="o">[</span>test<span class="o">]</span>
 </span></code></pre></div></p>
 </li>
 <li>
 <p>Ensure that EnderChest is compatible with your system by running:
     <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>--pyargs<span class="w"> </span>enderchest.test
-</span></code></pre></div></p>
-<p>If all tests pass, then you're good to go!</p>
+</span></code></pre></div>
+    If all tests pass, then you're good to go!</p>
 </li>
 </ol>
 <div class="admonition tip">
