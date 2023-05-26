@@ -40,9 +40,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .[test]
+        python -m pip install .[test]
     - name: Run unit tests
       run: |
-        mkdir -p build
-        cd build
-        pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**" --log-level=DEBUG
+        mkdir -p sandbox
+        cd sandbox
+        python -m pytest -vv --doctest-modules --cov=enderchest --ignore-glob="docs/**" --log-level=DEBUG
