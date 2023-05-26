@@ -39,7 +39,8 @@ jobs:
         mv *.svg stash/.
         git reset --hard HEAD
         git checkout gh-pages
+        git pull
         mv stash/*.svg .
         git add *.svg
         git commit -m "Update dynamic badges"
-        git push --rebase
+        git push
