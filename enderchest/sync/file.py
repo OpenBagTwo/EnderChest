@@ -150,7 +150,11 @@ def ignore_patterns(*patterns: str):
 
 
 def pull(
-    remote_uri: ParseResult, local_path: Path, exclude: Iterable[str], dry_run: bool
+    remote_uri: ParseResult,
+    local_path: Path,
+    exclude: Iterable[str],
+    dry_run: bool,
+    **unsupported_kwargs,
 ) -> None:
     """Copy an upstream file or folder into the specified location, where the remote
     is another folder on this machine. This will overwrite any files and folders
@@ -167,6 +171,8 @@ def pull(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
+    **unsupported_kwargs
+        Any other provided options will be ignored
 
     Raises
     ------
@@ -186,19 +192,28 @@ def pull(
     source_path = path_from_uri(remote_uri).expanduser()
     destination_folder = local_path
 
+    if not destination_folder.exists():
+        raise FileNotFoundError(f"{local_path} does not exist")
     if not source_path.exists():
         SYNC_LOGGER.warning(
             f"{source_path} does not exist"
             " this will end up just deleting the local copy."
         )
-    if not destination_folder.exists():
-        raise FileNotFoundError(f"{local_path} does not exist")
+    if unsupported_kwargs:
+        SYNC_LOGGER.debug(
+            "The following command-line options are ignored for this protocol:\n"
+            + "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items())
+        )
 
     copy(source_path, destination_folder, exclude, dry_run)
 
 
 def push(
-    local_path: Path, remote_uri: ParseResult, exclude: Iterable[str], dry_run: bool
+    local_path: Path,
+    remote_uri: ParseResult,
+    exclude: Iterable[str],
+    dry_run: bool,
+    **unsupported_kwargs,
 ) -> None:
     """Copy a local file or folder into the specified location, where the remote
     is another folder on this machine. This will overwrite any files and folders
@@ -215,8 +230,10 @@ def push(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
+    **unsupported_kwargs
+        Any other provided options will be ignored
 
-     Raises
+    Raises
     ------
     FileNotFoundError
         If the destination folder does not exist
@@ -234,12 +251,17 @@ def push(
     source_path = local_path
     destination_folder = path_from_uri(remote_uri).expanduser()
 
+    if not destination_folder.exists():
+        raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
     if not source_path.exists():
         SYNC_LOGGER.warning(
             f"{source_path} does not exist:"
             " this will end up just deleting the remote copy."
         )
-    if not destination_folder.exists():
-        raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
+    if unsupported_kwargs:
+        SYNC_LOGGER.debug(
+            "The following command-line options are ignored for this protocol:\n"
+            + "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items())
+        )
 
     copy(source_path, destination_folder, exclude, dry_run)

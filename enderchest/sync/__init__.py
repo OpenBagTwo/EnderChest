@@ -137,11 +137,6 @@ def push(
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"
         )
-    except TypeError as unknown_kwarg:
-        raise NotImplementedError(
-            f"Protocol {remote_uri.scheme} does not support that functionality:"
-            f"\n  {unknown_kwarg}"
-        )
 
 
 def path_from_uri(uri: ParseResult) -> Path:

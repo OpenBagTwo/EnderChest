@@ -62,6 +62,8 @@ class TestFileSync:
         )
 
         local = gather.load_ender_chest(minecraft_root)
+        local.sync_confirm_wait = False
+        local.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
         another_root = tmp_path / "not so remote"
 
@@ -181,7 +183,7 @@ class TestFileSync:
 
     def test_open_grabs_files_from_upstream(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert (
             minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
         ).read_text() == "it's okay"
@@ -189,9 +191,16 @@ class TestFileSync:
             minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
         ).is_symlink()
 
+    def test_open_dry_run_does_nothing(self, minecraft_root, remote):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, "pull", dry_run=True)
+        assert not (
+            minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
+        ).exists()
+
     def test_open_overwrites_local_files(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert (
             minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
         ).read_text() == "lab-grown!"
@@ -201,25 +210,25 @@ class TestFileSync:
 
     def test_open_copies_over_symlinks(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert (
             minecraft_root / "EnderChest" / "1.19" / "saves" / "olam"
         ).resolve() != (minecraft_root / "worlds" / "olam")
 
     def test_open_processes_deletions_from_upstream(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert not (minecraft_root / "EnderChest" / "global").exists()
 
     def test_open_does_not_overwrite_enderchest(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         original_config = fs.ender_chest_config(minecraft_root).read_text()
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert original_config == fs.ender_chest_config(minecraft_root).read_text()
 
     def test_open_not_touch_top_level_dot_folders(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert (
             minecraft_root / "EnderChest" / ".git" / "log"
         ).read_text() == "i committed some stuff\n"
@@ -228,14 +237,14 @@ class TestFileSync:
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.pull_upstream_changes(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "pull")
         assert (
             minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
         ).read_text() == "chunky\n"
 
     def test_close_overwrites_with_changes_from_local(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.push_changes_upstream(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "push")
         assert (
             path_from_uri(remote)
             / "EnderChest"
@@ -244,11 +253,22 @@ class TestFileSync:
             / "diamond.png"
         ).read_text() == "sparkle"
 
+    def test_close_dry_run_does_nothing(self, minecraft_root, remote):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, "push", dry_run=True)
+        assert (
+            path_from_uri(remote)
+            / "EnderChest"
+            / "vanilla"
+            / "conflict"
+            / "diamond.png"
+        ).read_text() == "lab-grown!"
+
     def test_close_deletes_remote_copies_when_locals_are_deleted(
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.push_changes_upstream(minecraft_root)
+        r.sync_with_remotes(minecraft_root, "push")
         assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
 
 

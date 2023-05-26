@@ -31,11 +31,11 @@ def run_rsync(
     working_directory : Path
         The working directory to run the sync command from
     source : str
-        The source file or folder to sync, specified as either a URI string or a
-        path relative to the working directory
+        The source file or folder to sync, specified as either a URI string,
+        an ssh address or a path relative to the working directory
     destination_folder : str
         The destination folder where the file or folder should be synced to,
-        specified as either a URI string or a path relative to the working directory
+        with the same formats available as for source
     delete : bool
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source
@@ -90,9 +90,16 @@ def run_rsync(
             try:
                 proc.wait(timeout)
             except subprocess.TimeoutExpired:
-                SYNC_LOGGER.warning("Timeout reached.")
                 proc.kill()
-        SYNC_LOGGER.log(log_level, proc.stdout.read().decode("UTF-8"))  # type: ignore[union-attr]
+                SYNC_LOGGER.warning(
+                    proc.stdout.read().decode("UTF-8")  # type: ignore[union-attr]
+                )
+                raise TimeoutError("Timeout reached.")
+
+        SYNC_LOGGER.log(
+            log_level,
+            proc.stdout.read().decode("UTF-8"),  # type: ignore[union-attr]
+        )
 
 
 def pull(
@@ -100,6 +107,7 @@ def pull(
     local_path: Path,
     exclude: Iterable[str],
     dry_run: bool,
+    use_daemon: bool = False,
     timeout: int | None = None,
     delete: bool = True,
     rsync_flags: str | None = None,
@@ -119,6 +127,10 @@ def pull(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
+    use_daemon : bool, optional
+        By default, the rsync is performed over ssh. If you happen to have an
+        rsync daemon running on your system, however, you're welcome to leverage
+        it instead by passing in `use_daemon=True`
     timeout : int, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
@@ -156,9 +168,11 @@ def pull(
 
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = f"{path_from_uri(remote_uri)}"
-    else:
+        remote_path: str = path_from_uri(remote_uri).as_posix()
+    elif use_daemon:
         remote_path = remote_uri.geturl()
+    else:
+        remote_path = uri_to_ssh(remote_uri)
 
     run_rsync(
         local_path.parent,
@@ -178,6 +192,7 @@ def push(
     remote_uri: ParseResult,
     exclude: Iterable[str],
     dry_run: bool,
+    use_daemon: bool = False,
     timeout: int | None = None,
     delete: bool = True,
     rsync_flags: str | None = None,
@@ -197,6 +212,10 @@ def push(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
+    use_daemon : bool, optional
+        By default, the rsync is performed over ssh. If you happen to have an
+        rsync daemon running on your system, however, you're welcome to leverage
+        it instead by passing in `use_daemon=True`
     timeout : int, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
@@ -226,9 +245,11 @@ def push(
     """
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = f"{path_from_uri(remote_uri)}"
-    else:
+        remote_path: str = path_from_uri(remote_uri).as_posix()
+    elif use_daemon:
         remote_path = remote_uri.geturl()
+    else:
+        remote_path = uri_to_ssh(remote_uri)
 
     run_rsync(
         local_path.parent,
@@ -240,4 +261,25 @@ def push(
         *(rsync_args or ()),
         timeout=timeout,
         rsync_flags=rsync_flags,
+    )
+
+
+# TODO: this will eventually go in the SFTP module or be replaced by Paramiko
+def uri_to_ssh(uri: ParseResult) -> str:
+    """Convert a URI to an SSH address
+
+    Parameters
+    ----------
+    uri: ParseResult
+        The URI to convert
+
+    Returns
+    -------
+    str
+        The SSH-format address
+    """
+    return "{user}@{host}:{path}".format(
+        user=uri.username,
+        host=(uri.hostname or "localhost") + (f":{uri.port}" if uri.port else ""),
+        path=path_from_uri(uri).as_posix(),
     )

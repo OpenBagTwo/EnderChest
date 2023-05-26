@@ -599,7 +599,7 @@ def gather_metadata_for_mmc_instance(
     instance_cfg = minecraft_folder.parent / "instance.cfg"
 
     try:
-        parser = ConfigParser(allow_no_value=True)
+        parser = ConfigParser(allow_no_value=True, interpolation=None)
         parser.read_string("[instance]\n" + instance_cfg.read_text())
         name = parser["instance"]["name"]
     except FileNotFoundError as no_cfg:
