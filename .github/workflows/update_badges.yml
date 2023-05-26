@@ -42,5 +42,5 @@ jobs:
         git pull
         mv stash/*.svg .
         git add *.svg
-        git commit -m "Update dynamic badges"
+        git commit --allow-empty -m "Update dynamic badges"
         git push
