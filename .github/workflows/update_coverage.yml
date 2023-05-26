@@ -1,0 +1,47 @@
+# Rebuild the docs on changes to dev or on a new release
+
+name: Update coverage badge
+
+on:
+  push:
+    branches:
+    - dev
+jobs:
+  docs_rebuild:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: configure git
+      run: |
+        git config --global user.name docs-golem
+        git config --global user.email losthemobvote@openbagtwo.net
+    - name: set up development environment
+      run: |
+        $CONDA/bin/conda env create -q -f environment.yml
+        source $CONDA/bin/activate enderchest
+        pip install -e .
+    - name: run tests (to generate coverage report)
+      run: |
+        source $CONDA/bin/activate enderchest
+        pytest --cov enderchest --ignore-glob="docs/**"
+    - name: generate coverage badge
+      uses: tj-actions/coverage-badge-py@v2
+    - name: Verify Changed files
+      uses: tj-actions/verify-changed-files@v14
+      id: verify-changed-files
+      with:
+        files: coverage.svg
+    - name: deploy to gh-pages
+      if: steps.verify-changed-files.outputs.files_changed == 'true'
+      run: |
+        source $CONDA/bin/activate enderchest
+        mkdir stash
+        mv coverage.svg stash/.
+        git reset --hard HEAD
+        git checkout gh_pages
+        mv stash/coverage.svg .
+        git add coverage.svg
+        git commit -m "Update coverage badge"
+        git push --rebase
