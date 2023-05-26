@@ -55,13 +55,22 @@ class EnderChest:
     remotes : list-like of (ParseResult, str) pairs
         The other EnderChest installations this EnderChest is aware of, paired
         with their aliases
+    sync_confirm_wait: bool or int
+        The default behavior when syncing EnderChests is to first perform a dry
+        run of every sync operation and then wait 5 seconds before proceeding with the
+        real sync. The idea is to give the user time to interrupt the sync if
+        the dry run looks wrong. This can be changed by either raising or lowering
+        the value of confirm, by disabling the dry-run-first behavior entirely
+        (`confirm=False`) or by requiring that the user explicitly confirms
+        the sync (`confirm=True`). This default behavior can also be overridden
+        when actually calling the sync commands.
     """
 
     name: str
     _uri: ParseResult
     _instances: list[i.InstanceSpec]
-
     _remotes: dict[str, ParseResult]
+    sync_confirm_wait: bool | int = 5
 
     def __init__(
         self,
@@ -209,7 +218,10 @@ class EnderChest:
             If there is no config file at the specified location
         """
         parser = ConfigParser(
-            allow_no_value=True, delimiters=("=",), inline_comment_prefixes=(";",)
+            allow_no_value=True,
+            delimiters=("=",),
+            inline_comment_prefixes=(";",),
+            interpolation=None,
         )
         try:
             assert parser.read(config_file)
@@ -227,16 +239,18 @@ class EnderChest:
         scheme: str | None = None
         netloc: str | None = None
         name: str | None = None
+        sync_confirm_wait: str | None = None
 
         for section in parser.sections():
             if section == "properties":
                 scheme = parser[section].get("sync-protocol")
                 netloc = parser[section].get("address")
                 name = parser[section].get("name")
+                sync_confirm_wait = parser[section].get("sync-confirmation-time")
             elif section == "remotes":
                 for remote in parser[section].items():
                     if remote[1] is None:
-                        remotes.append(remote[0])
+                        raise ValueError("All remotes must have an alias specified")
                     else:
                         remotes.append((remote[1], remote[0]))
             else:
@@ -248,7 +262,22 @@ class EnderChest:
             scheme=scheme, netloc=netloc, path=path, params="", query="", fragment=""
         )
 
-        return EnderChest(uri, name, remotes, instances)
+        ender_chest = EnderChest(uri, name, remotes, instances)
+        if sync_confirm_wait is not None:
+            match sync_confirm_wait.lower():
+                case "true" | "prompt" | "yes":
+                    ender_chest.sync_confirm_wait = True
+                case "false" | "no" | "skip":
+                    ender_chest.sync_confirm_wait = False
+                case _:
+                    try:
+                        ender_chest.sync_confirm_wait = int(sync_confirm_wait)
+                    except ValueError:
+                        raise ValueError(
+                            "Invalid value for sync-confirmation-time:"
+                            f" {sync_confirm_wait}"
+                        )
+        return ender_chest
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
         """Write this EnderChest's configuration to INI
@@ -268,11 +297,18 @@ class EnderChest:
         -----
         The "root" attribute is ignored for this method
         """
-        config = ConfigParser(allow_no_value=True)
+        config = ConfigParser(allow_no_value=True, interpolation=None)
         config.add_section("properties")
         config.set("properties", "name", self.name)
         config.set("properties", "address", self._uri.netloc)
         config.set("properties", "sync-protocol", self._uri.scheme)
+        config.set(
+            "properties",
+            "sync-confirmation-time",
+            str(self.sync_confirm_wait)
+            if self.sync_confirm_wait is not True
+            else "prompt",
+        )
         config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
         config.set(
             "properties", "generated_by_enderchest_version", get_versions()["version"]
@@ -280,10 +316,7 @@ class EnderChest:
 
         config.add_section("remotes")
         for uri, name in self.remotes:
-            if name != uri.hostname:
-                config.set("remotes", name, uri.geturl())
-            else:
-                config.set("remotes", uri.geturl())
+            config.set("remotes", name, uri.geturl())
         for instance in self.instances:
             config.add_section(instance.name)
             config.set(instance.name, "root", str(instance.root))

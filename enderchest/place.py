@@ -318,7 +318,7 @@ def _rglob(root: Path, max_depth: int) -> Iterable[Path]:
       ***be warned*** that because this method follows symlinks, you can very
       easily find yourself in an infinite loop
     """
-    top_level = root.glob("*")
+    top_level = root.iterdir()
     if max_depth == 1:
         return top_level
     return itertools.chain(

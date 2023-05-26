@@ -6,7 +6,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from . import craft, gather, loggers, place
+from . import craft, gather, loggers, place, remote
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
@@ -19,11 +19,6 @@ _remote_aliases = tuple(
     alias + plural for alias in ("enderchest", "remote") for plural in ("s", "")
 )
 _list_aliases = ("inventory", "list")
-
-
-def _todo(minecraft_root: Path, **kwargs) -> None:
-    """Placeholder for functionality that is still, well, #TODO"""
-    raise NotImplementedError("This action is not yet implemented")
 
 
 def _place(
@@ -67,6 +62,16 @@ def _update_ender_chest(
     if mmc:
         official = False
     gather.update_ender_chest(minecraft_root, official=official, **kwargs)
+
+
+def _open(minecraft_root, **kwargs):
+    """Router for open verb"""
+    remote.sync_with_remotes(minecraft_root, "pull", **kwargs)
+
+
+def _close(minecraft_root, **kwargs):
+    """Router for close verb"""
+    remote.sync_with_remotes(minecraft_root, "push", **kwargs)
 
 
 class Action(Protocol):
@@ -140,12 +145,12 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         ("open",),
         "pull changes from other EnderChests",
-        _todo,
+        _open,
     ),
     (
         ("close",),
         "push changes to other EnderChests",
-        _todo,
+        _close,
     ),
 )
 
@@ -411,9 +416,50 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         "shulker_box_name", help="The name of the shulker box to query"
     )
 
-    # open options
+    # open / close options
+    for action in ("open", "close"):
+        sync_parser = action_parsers[action]
 
-    # close options
+        sync_parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help=(
+                "Perform a dry run of the sync operation,"
+                " reporting the operations that will be performed"
+                " but not actually carrying them out"
+            ),
+        )
+        sync_parser.add_argument(
+            "--exclude",
+            "-e",
+            nargs="+",
+            help="Provide any file patterns you would like to skip syncing",
+        )
+        sync_parser.add_argument(
+            "--timeout",
+            "-t",
+            type=int,
+            help=(
+                "Set a maximum number of seconds to try to sync to a remote chest"
+                " before giving up and going on to the next one"
+            ),
+        )
+        sync_confirm_wait = sync_parser.add_mutually_exclusive_group()
+        sync_confirm_wait.add_argument(
+            "--wait",
+            "-w",
+            dest="sync_confirm_wait",
+            type=int,
+            help=(
+                "The default behavior when syncing EnderChests is to first perform a"
+                " dry run of every sync operation and then wait 5 seconds before"
+                " proceeding with the real sync. The idea is to give you time to"
+                " interrupt the sync if the dry run looks wrong. You can raise or"
+                " lower that wait time through this flag. You can also modify it"
+                " by editing the enderchest.cfg file."
+            ),
+        )
+
     return enderchest_parser, action_parsers
 
 
