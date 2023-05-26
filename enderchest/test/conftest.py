@@ -1,4 +1,5 @@
 """Useful setup / teardown fixtures"""
+import os
 from importlib.resources import as_file
 from pathlib import Path
 
@@ -131,13 +132,16 @@ def minecraft_root(file_system):
 
 @pytest.fixture
 def home(file_system, monkeypatch):
-    """Direct fixture poinint to the user's "home" folder (with monkeypatching
-    used to make it home)
+    """Direct fixture pointing to the user's "home" folder (with monkeypatching
+    used to make the OS treat it as home)
     """
     home = file_system[0]
 
     monkeypatch.setenv("HOME", str(home))  # posix
     monkeypatch.setenv("USERPROFILE", str(home))  # windows
+
+    # check this right away so we can abort testing if it's not working
+    assert Path.home() == home
 
     yield home
 
