@@ -27,7 +27,7 @@ EnderChest is a command-line utility for selectively sharing Minecraft assets
 
 ## Installation
 
-EnderChest is written for **Python 3.11 or greater,** but should otherwise
+EnderChest is written for **Python 3.10 or greater,** but should otherwise
 run on any architecture or operating system.
 
 The latest release can be installed from PyPI via `pip`:
