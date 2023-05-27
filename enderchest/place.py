@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import Iterable
 
+from . import filesystem as fs
 from .gather import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
 from .instance import InstanceSpec
 from .loggers import PLACE_LOGGER
@@ -33,7 +34,7 @@ def place_ender_chest(
         By default, if a linking failure occurs, this method will terminate
         immediately (`error_handling=abort`). Alternatively,
           - pass in `error_handling="ignore"` to continue as if the link failure
-            hadn't occrurred
+            hadn't occurred
           - pass in `error_handling="skip"` to abort linking the current instance
             to the current shulker box but otherwise continue on
           - pass in `error_handling="skip-instance"` to abort linking the current
@@ -173,6 +174,7 @@ def place_ender_chest(
             PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
 
             resources = set(_rglob(box_root, shulker_box.max_link_depth))
+            resources.remove(fs.shulker_box_config(minecraft_root, shulker_box.name))
 
             match_exit = "pass"
             for link_folder in shulker_box.link_folders:
