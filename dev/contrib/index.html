@@ -342,6 +342,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#development-workflow" class="md-nav__link">
     Development Workflow
   </a>
@@ -730,6 +737,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#development-workflow" class="md-nav__link">
     Development Workflow
   </a>
@@ -882,6 +896,23 @@ variety of
 <a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/utils.py">testing utilities</a>
 and <a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/conftest.py">fixtures</a>
 are available for you to leverage for help mocking out file systems.</p>
+<h2 id="documentation">Documentation</h2>
+<p>In addition to internal (docstring) documentation, the EnderChest project includes
+HTML documentation hosted on GitHub Pages. This includes the static guides (that
+you are literally reading right now) as well as dynamically-generated HTML docs.</p>
+<p>The tool that performs this magic is called <a href="https://www.mkdocs.org/">MkDocs</a> and
+is included in the EnderChest development environment. One of MkDocs' killer]
+features is its ability to quickly render and serve the documentation locally.
+To do this, navigate your terminal to the repo root, activate your EnderChest
+environment and run the command:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mkdocs<span class="w"> </span>serve
+</span></code></pre></div>
+<p>and the terminal will soon contain a link (typically to http://127.0.0.1:8000/)
+where you can preview the documentation.</p>
+<p>When developing EnderChest, you should <em>both</em> check
+the <a href="http://127.0.0.1:8000/reference/enderchest/">compiled API docs based on your docstrings</a>
+(<a href="http://127.0.0.1:8000/cli/">and changes to the CLI</a>) to ensure that everything
+is rendering as it should.</p>
 <h2 id="development-workflow">Development Workflow</h2>
 <p>EnderChest development follows
 <a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Gitflow</a>,
