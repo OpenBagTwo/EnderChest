@@ -8,6 +8,7 @@ import pytest
 from enderchest import ShulkerBox
 from enderchest import filesystem as fs
 from enderchest import place
+from enderchest import shulker_box as sb
 
 from . import utils
 
@@ -254,6 +255,28 @@ class TestSingleShulkerPlace:
         assert (
             original_target.read_text() == "I will trade you these\nfor less of these\n"
         )
+
+
+class TestMatchesVersion:
+    @pytest.mark.parametrize(
+        "version", ("1.19.4", "1.20-pre6", "23w13a_or_b", "not even trying")
+    )
+    def test_simple_equality_checks(self, version):
+        assert sb._matches_version(version, version)
+
+    @pytest.mark.parametrize(
+        "version_spec",
+        ("1.19", "1.19.*", ">=1.19.0,<1.20"),
+        ids=("minor-version", "wildcard", "bounding"),
+    )
+    def test_version_bounding(self, version_spec):
+        assert sb._matches_version(version_spec, "1.19.4")
+
+    @pytest.mark.parametrize(
+        "version", ("1.19.4", "1.20-pre6", "23w13a_or_b", "not even trying")
+    )
+    def test_star_matches_anything(self, version):
+        assert sb._matches_version("*", version)
 
 
 class TestShulkerInstanceMatching:
