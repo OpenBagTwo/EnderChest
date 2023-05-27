@@ -11,7 +11,11 @@ from enderchest import EnderChest, ShulkerBox, craft
 from enderchest import filesystem as fs
 from enderchest.enderchest import create_ender_chest
 from enderchest.gather import load_ender_chest, load_shulker_boxes
-from enderchest.shulker_box import create_shulker_box
+from enderchest.shulker_box import (
+    DEFAULT_SHULKER_FOLDERS,
+    STANDARD_LINK_FOLDERS,
+    create_shulker_box,
+)
 
 from . import utils
 
@@ -228,6 +232,18 @@ class TestEnderChestCrafting:
 
 
 class TestShulkerBoxCrafting:
+    def test_default_folders_and_link_folders_do_not_overlap(self):
+        assert (
+            len(
+                [
+                    folder
+                    for folder in STANDARD_LINK_FOLDERS
+                    if folder in DEFAULT_SHULKER_FOLDERS
+                ]
+            )
+            == 0
+        )
+
     def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch):
         prompt_log: list[tuple[Path, str]] = []
 
