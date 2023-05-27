@@ -278,6 +278,12 @@ class TestMatchesVersion:
     def test_star_matches_anything(self, version):
         assert sb._matches_version("*", version)
 
+    @pytest.mark.parametrize(
+        "version", ("1.20-pre1", "1.20-rc1", "1.20.3-pre16", "1.20-forge")
+    )
+    def test_prereleases_etc_align_with_their_wildcarded_versions(self, version):
+        assert sb._matches_version("1.20*", version)
+
 
 class TestShulkerInstanceMatching:
     @staticmethod
