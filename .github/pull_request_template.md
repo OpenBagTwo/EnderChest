@@ -39,9 +39,9 @@ remove any personal information you won't want to share --->
 <!--- Check all that apply --->
 - [ ] This PR introduces a breaking change (will
   [require a bump in the minor version](https://semver.org/))
-- [ ] The changes is high urgency and necessitates a hotfix or patch release
-  (will require rebasing off of `release`)
-
+- [ ] The changes in this PR are high urgency and necessitate a hotfix or patch
+  release (will require rebasing off of `release`)
+- [ ] This is a release (staging) PR (maintainer use only)
 
 ## Checklist:
 <!--- Go over all the following points, and put an `x` in all the boxes that apply.
