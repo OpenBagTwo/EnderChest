@@ -12,7 +12,7 @@ from ._version import get_versions
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
 _create_aliases = ("craft", "create")
 _instance_aliases = tuple(
-    alias + plural for alias in ("minecraft", "instance") for plural in ("s", "")
+    alias + plural for alias in ("minecraft", "instance") for plural in ("", "s")
 )
 _shulker_aliases = ("shulker_box", "shulkerbox", "shulker")
 _remote_aliases = tuple(
@@ -99,7 +99,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
         _place,
     ),
     (
-        ("gather",) + tuple("gather " + alias for alias in _instance_aliases),
+        tuple("gather " + alias for alias in _instance_aliases),
         "register (or update the registry of) a Minecraft installation",
         _update_ender_chest,
     ),
@@ -369,7 +369,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     )
 
     # gather instance options
-    gather_instance_parser = action_parsers[f"gather"]
+    gather_instance_parser = action_parsers[f"gather {_instance_aliases[0]}"]
     gather_instance_parser.add_argument(
         "search_paths",
         nargs="+",

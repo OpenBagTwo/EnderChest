@@ -74,7 +74,7 @@ Once you have an EnderChest installed, you can register additional instances
 at any time by using the `gather` action. Running:
 
 ```bash
-enderchest gather <path>
+enderchest gather minecraft <path>
 ```
 
 will recursively search the provided directory for folders named `.minecraft`
