@@ -247,7 +247,7 @@ class TestPlace(ActionTestSuite):
 
 
 class TestGather(ActionTestSuite):
-    action = "gather"
+    action = "gather minecraft"
     required_args = ("~",)
 
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
