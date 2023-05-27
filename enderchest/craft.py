@@ -522,7 +522,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
                     "What hosts (EnderChest installations) should use this shulker box?"
                     "\nProvide a comma-separated list (wildcards are allowed)"
                     "\nand remember to include the name of this EnderChest"
-                    f'("{load_ender_chest(minecraft_root).name}")'
+                    f' ("{load_ender_chest(minecraft_root).name}")'
                 ),
                 suggestion="*",
             )
