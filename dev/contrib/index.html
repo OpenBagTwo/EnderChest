@@ -321,6 +321,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#setting-up-a-development-environment" class="md-nav__link">
+    Setting up a Development Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#style-guide" class="md-nav__link">
+    Style Guide
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unit-testing" class="md-nav__link">
+    Unit Testing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-workflow" class="md-nav__link">
+    Development Workflow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#opening-a-pr" class="md-nav__link">
     Opening a PR
   </a>
@@ -681,6 +709,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#setting-up-a-development-environment" class="md-nav__link">
+    Setting up a Development Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#style-guide" class="md-nav__link">
+    Style Guide
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unit-testing" class="md-nav__link">
+    Unit Testing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-workflow" class="md-nav__link">
+    Development Workflow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#opening-a-pr" class="md-nav__link">
     Opening a PR
   </a>
@@ -719,13 +775,17 @@ to report a bug or to propose a new feature or enhancement.</p>
 <p>If you would like to contribute your own bugfixes or code enhancements, start by
 <a href="https://github.com/OpenBagTwo/EnderChest/fork">forking this repo</a>, and cloning
 it into your local workspace.</p>
-<p>(Note that all work should be done off of the <code>dev</code> branch.)</p>
-<p>I highly recommend using a <a href="https://conda-forge.org/">conda-forge</a>-based
-Python distribution for development and virtual environment management.</p>
-<p>With your
-<a href="https://github.com/conda-forge/miniforge#mambaforge">distribution of choice</a>
-installed and configured, navigate to the root of the EnderChest project and
-then:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that all work should be done off of the <code>dev</code> branch</p>
+</div>
+<h2 id="setting-up-a-development-environment">Setting up a Development Environment</h2>
+<p>The EnderChest development environment is managed using
+<a href="https://docs.conda.io/en/latest/">conda</a>. If you don't have one already,
+I highly recommend using a <a href="https://conda-forge.org/">conda-forge</a>-based
+distribution, such as <a href="https://github.com/conda-forge/miniforge#mambaforge">mambaforge</a>.</p>
+<p>Once you have conda installed and your fork cloned to your local workspace, navigate
+to that workspace and:</p>
 <ol>
 <li>Create the development environment via
    <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mamba<span class="w"> </span>env<span class="w"> </span>create
@@ -734,18 +794,114 @@ then:</p>
 <li>Install the package in editable mode:
    <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>test<span class="o">]</span>
 </span></code></pre></div></li>
-<li>Set up pre-commit:
+<li>Set up <a href="https://pre-commit.com/">pre-commit</a>:
    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pre-commit<span class="w"> </span>install
 </span></code></pre></div></li>
 </ol>
-<p>Once that's done, start developing! Pre-commit is a fanstastic tool that will
-take care of most style-guide enforcement for you.</p>
-<p>Note that EnderChest strongly leverages type-hinting.</p>
+<div class="admonition warning">
+<p class="admonition-title">Note</p>
+<p>The <a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/environment.yml">developemnt environment</a>
+specifies <a href="https://anaconda.org/conda-forge/rsync"><code>rsync</code></a> as a dependency,
+and there is currently no build of rsync available for Windows. If you are
+developing from Windows, you will either need to do your development within
+WSL or comment out that line and install rsync yourself.</p>
+</div>
+<p>Once that's done, start developing! Pre-commit is a fantastic tool that will
+take care of most style-guide enforcement for you, but details are below.</p>
+<h2 id="style-guide">Style Guide</h2>
+<p>EnderChest follows the standard Python style guides, most notably
+<a href="https://peps.python.org/pep-0008/">PEP8</a>, targeting the Python 3.10 feature set.
+The one exception is that the line length maximum is set to 88, not 79. All
+non-trivial and "public" functions must have docstrings in
+<a href="https://numpydoc.readthedocs.io/en/latest/format.html">the NumPy style</a>.</p>
+<p>All code should be fully type-hinted, leveraging the latest changes
+<a href="https://docs.python.org/3/whatsnew/3.10.html#new-features-related-to-type-hints">introduced to the language</a>.
+Favor use of <code>| None</code> ✅ instead of <code>Optional</code> ❌ and built-in types (<code>list</code>, <code>tuple</code> ✅)
+<a href="https://docs.python.org/3/whatsnew/3.9.html#type-hinting-generics-in-standard-collections">over their capitalized types</a>
+(<code>from typing import List, Tuple</code> ❌).</p>
+<details class="example">
+<summary>Type Hinting Pro Tip</summary>
+<p>A good practice to follow when using type hints is to make your return hints
+as specific and explicit as possible while making your parameter hints
+as broad as the function will allow. For example:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">def</span> <span class="nf">stringify_dedupe_and_sort</span><span class="p">(</span><span class="n">sort_me</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a collection of stuff, turn them all into strings, remove</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="sd">    any duplicates, and then return the results sorted in alphabetical</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="sd">    (lexical?) order</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="sd">    Parameters</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="sd">    ----------</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="sd">    sort_me : list-like</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="sd">        The things you want to sort</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="sd">    Returns</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="sd">    -------</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="sd">    list of str</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="sd">        The stringified, deduped and sorted items</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="sd">    Notes</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="sd">    -----</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="sd">    @ me if you want to see this implemented via a one-line comprehension!</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    <span class="n">return_me</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sort_me</span><span class="p">:</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>        <span class="n">stringified</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">existing_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">return_me</span><span class="p">):</span>
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>            <span class="k">if</span> <span class="n">existing_value</span> <span class="o">&gt;</span> <span class="n">stringified</span><span class="p">:</span>
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>                <span class="n">return_me</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">stringified</span><span class="p">)</span>
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>                <span class="k">break</span>
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>            <span class="k">elif</span> <span class="n">existing_value</span> <span class="o">==</span> <span class="n">stringified</span><span class="p">:</span>
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>                <span class="k">break</span>
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>                <span class="k">pass</span>
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>            <span class="n">return_me</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stringified</span><span class="p">)</span>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>    <span class="k">return</span> <span class="n">return_me</span>
+</span></code></pre></div>
+In the above, <code>sort_me</code> could be a list of strings, a set of <code>Path</code>s, or
+really any group of objects that you can iteratethrough and
+that has a defined length (and even that isn't even <em>technically</em>
+a requirement). Meanwhile on the output side, you're defining right off the
+bat that <code>return_me</code> is going to be a list and then enforcing that every
+member will be a string.</p>
+</details>
+<p>There are a variety of other style conventions, especially around non-Python
+files, but they will be automatically enforced by
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/.pre-commit-config.yaml">pre-commit</a>.</p>
+<h2 id="unit-testing">Unit Testing</h2>
+<p>While unit tests are not globally required, any PR will require validation that
+the changes introduced are performing as intended (see below), and unit tests
+are a great way to provide that, especially given that EnderChest is meant to
+run across a wide variety of platforms. EnderChest uses
+<a href="https://docs.pytest.org/en/7.3.x/">py.test</a> as its test runner, and a wide
+variety of
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/utils.py">testing utilities</a>
+and <a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/conftest.py">fixtures</a>
+are available for you to leverage for help mocking out file systems.</p>
+<h2 id="development-workflow">Development Workflow</h2>
+<p>EnderChest development follows
+<a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Gitflow</a>,
+with all development done on feature-branches created off the <code>dev</code> branch. Once
+a significant number of changes have been merged into <code>dev</code>
+(usually the culmination of a
+<a href="https://github.com/OpenBagTwo/EnderChest/milestones">milestone</a>), a staging
+branch will be created off of <code>dev</code>, and a PR will be opened targeting merging
+changes from that branch into <code>release</code>. This process is typically accompanied
+by the creation of release candidate versions which are built and uploaded to PyPI
+for pre-release testing. During this phase, changes will be made directly
+to the staging branch to fix any bugs or regressions that come up during testing.
+Finally, the staging PR will be merged into <code>release</code>, an official release will
+be cut, and any changes introduced in the staging branch will be PR'd and merged
+back into <code>dev</code>.</p>
 <h2 id="opening-a-pr">Opening a PR</h2>
 <p>Once you're ready to contribute your code change back,
 <a href="https://github.com/OpenBagTwo/EnderChest/compare">open a PR</a> (remember to
-target the <code>dev</code> branch) and tag <strong><a href="https://github.com/OpenBagTwo">@OpenBagTwo</a></strong>
-for review.</p>
+target the <code>dev</code> branch unless this is a hotfix), fill out the PR template, and
+then tag <strong><a href="https://github.com/OpenBagTwo">@OpenBagTwo</a></strong> for review.</p>
 <h2 id="license">License</h2>
 <p>This project--the executable, source code and all documentation are published
 under the
