@@ -91,7 +91,7 @@ def load_ender_chest_instances(
             f" to the {minecraft_root} EnderChest:\n"
             + "\n".join(
                 [
-                    f"  {i + 1}. {_render_instance(instance)})"
+                    f"  {i + 1}. {_render_instance(instance)}"
                     for i, instance in enumerate(instances)
                 ]
             ),
