@@ -11,12 +11,14 @@ assignees: OpenBagTwo
 <!-- One sentence summary of the issue -->
 
 ## Environment and Version
-<!-- Please include operating system, python version and enderchest version (which you can obtain by running the following command from the console:
-$  enderchest --version
--->
+- EnderChest version: <!-- output of `enderchest -V` -->
+- rsync version: <!-- output of `rsync -V | head -n 1` for non-Windows folks, omit if you're not using rsync -->
+- Python version: <!-- output of `python -V` -->
+- Operating System: <!-- Windows/Mac/Linux and x86_64 vs aarch64, though feel free to throw your neofetch on if you want -->
+
 
 ## Steps to Reproduce
-<!--Describe in detail how to reproduce the issue. Include any commands you're running and any error messages or stack traces they generate. For long stack traces, please make use of the <details> tag: https://gist.github.com/ericclemmons/b146fe5da72ca1f706b2ef72a20ac39d
+<!--Describe in detail how to reproduce the issue. Include any commands you're running and any error messages or stack traces they generate. For long stack traces, please make use of the <details> tag: https://gist.github.com/ericclemmons/b146fe5da72ca1f706b2ef72a20ac39d -->
 
 ## Workaround
 <!-- Is there a workaround for the issue? If so, post it here, as it may help with implementing a bugfix -->
