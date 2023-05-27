@@ -131,6 +131,30 @@ variety of
 and [fixtures](https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/conftest.py)
 are available for you to leverage for help mocking out file systems.
 
+## Documentation
+
+In addition to internal (docstring) documentation, the EnderChest project includes
+HTML documentation hosted on GitHub Pages. This includes the static guides (that
+you are literally reading right now) as well as dynamically-generated HTML docs.
+
+The tool that performs this magic is called [MkDocs](https://www.mkdocs.org/) and
+is included in the EnderChest development environment. One of MkDocs' killer]
+features is its ability to quickly render and serve the documentation locally.
+To do this, navigate your terminal to the repo root, activate your EnderChest
+environment and run the command:
+
+```bash
+mkdocs serve
+```
+
+and the terminal will soon contain a link (typically to http://127.0.0.1:8000/)
+where you can preview the documentation.
+
+When developing EnderChest, you should _both_ check
+the [compiled API docs based on your docstrings](http://127.0.0.1:8000/reference/enderchest/)
+([and changes to the CLI](http://127.0.0.1:8000/cli/)) to ensure that everything
+is rendering as it should.
+
 ## Development Workflow
 
 EnderChest development follows
