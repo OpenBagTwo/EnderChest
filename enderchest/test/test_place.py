@@ -5,7 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from enderchest import ShulkerBox, place
+from enderchest import ShulkerBox
+from enderchest import filesystem as fs
+from enderchest import place
 
 from . import utils
 
@@ -107,6 +109,14 @@ class TestSingleShulkerPlace:
         assert (instance_folder / "usercache.json").resolve() == (
             minecraft_root / "EnderChest" / "global" / "usercache.json"
         )
+
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_does_not_place_shulker_config(self, minecraft_root, instance):
+        place.place_ender_chest(minecraft_root)
+
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+
+        assert not (instance_folder / fs.SHULKER_BOX_CONFIG_NAME).exists()
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_link_folder_can_be_a_symlink(self, minecraft_root, instance):
