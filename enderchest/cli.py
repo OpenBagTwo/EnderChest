@@ -183,6 +183,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
 
     enderchest_parser.add_argument(
         "-v",  # don't worry--this doesn't actually conflict with --verbose
+        "-V",
         "--version",
         action="version",
         version=f"%(prog)s v{get_versions()['version']}",
