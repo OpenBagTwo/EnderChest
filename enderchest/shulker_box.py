@@ -321,7 +321,7 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
         return semver.SimpleSpec(version_spec).match(semver.Version(version_string))
     except ValueError:
         # fall back to simple fnmatching
-        return fnmatch.fnmatchcase(version_spec.lower(), version_string.lower())
+        return fnmatch.fnmatchcase(version_string.lower(), version_spec.lower())
 
 
 DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
