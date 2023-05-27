@@ -534,7 +534,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
 
         # TODO: stop wastefully reloading the cfg
         host = load_ender_chest(minecraft_root).name
-        print(hosts, host)
+
         if not any(
             fnmatch.fnmatchcase(host.lower(), host_spec.lower()) for host_spec in hosts
         ):
