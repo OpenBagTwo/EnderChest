@@ -52,6 +52,8 @@ remove any personal information you won't want to share --->
 - [ ] I have run `mkdocs serve` locally and ensured that all API docs and
   changes I have made to the static pages are rendering correctly, with all links
   working
+- [ ] All tech debt concerns have been resolved, documented as issues, or otherwise
+  accepted
 - [ ] I agree to license my contribution to this project under
   [the GNU Public License v3](https://www.gnu.org/licenses/gpl-3.0.en.html)
   <!--- If you wish to use a different compatible license, please edit the above--->
