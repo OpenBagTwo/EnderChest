@@ -59,7 +59,7 @@ If you'd like to test out upcoming features or help with beta testing, you
 can install from the current development branch via:
 
 ```bash
-$ python -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@dev#egg=enderchest[test]
+python -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@dev#egg=enderchest[test]
 ```
 
 **Be warned** that any code on this branch is considered highly experimental.
