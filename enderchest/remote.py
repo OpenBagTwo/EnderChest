@@ -219,7 +219,7 @@ def sync_with_remotes(
                     f"\n  {sync_fail}"
                 )
                 break
-            if sync_confirm_wait is False or do_dry_run is False:
+            if do_dry_run == runs[-1]:
                 continue
             if sync_confirm_wait is True:
                 if not confirm(default=True):
