@@ -208,12 +208,14 @@ class TestFileSync:
             path.symlink_to(target, target_is_directory=target.is_dir())
 
     def test_create_from_remote_chest(self, remote, minecraft_root):
-        craft.craft_ender_chest(minecraft_root, copy_from=remote, overwrite=True)
+        craft.craft_ender_chest(
+            minecraft_root, copy_from=remote.geturl(), overwrite=True
+        )
 
-        assert [
-            (alias, remote.scheme)
-            for remote, alias in gather.load_ender_chest_remotes(minecraft_root)
-        ] == [("closer than you think", self.protocol), ("birdhouse", "ipoac")]
+        assert gather.load_ender_chest_remotes(minecraft_root) == [
+            (remote, "closer than you think"),
+            (urlparse("ipoac://yoursoul@birdhouse/minecraft"), "birdhouse"),
+        ]
 
     def test_open_grabs_files_from_upstream(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
