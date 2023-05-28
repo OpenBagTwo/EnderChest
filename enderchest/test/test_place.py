@@ -595,7 +595,7 @@ class TestMultiShulkerPlacing:
         ).read_text() == "autoJump:true"
         assert not (home / ".minecraft" / "data" / "achievements.txt").exists()
 
-    def test_skip_shulker(self, home, minecraft_root):
+    def test_skip_shulker_box(self, home, minecraft_root):
         place.place_ender_chest(minecraft_root, error_handling="skip-shulker")
 
         assert (
@@ -605,3 +605,22 @@ class TestMultiShulkerPlacing:
         assert not (
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
         ).exists()
+
+    def test_skip_shulker_box_that_doesnt_match_host(self, home, minecraft_root):
+        with fs.shulker_box_config(minecraft_root, "1.19").open("a") as config_file:
+            config_file.write(
+                """
+[hosts]
+not-this-chest
+"""
+            )
+
+        place.place_ender_chest(minecraft_root)
+
+        assert not (
+            minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
+        ).exists()
+
+        assert (
+            home / ".minecraft" / "data" / "achievements.txt"
+        ).read_text() == "Spelled acheivements correctly!"
