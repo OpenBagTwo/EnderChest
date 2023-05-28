@@ -133,18 +133,43 @@ class TestEnderChestCrafting:
         def mock_create(root, chest) -> None:
             create_log.append((root, chest))
 
-        def mock_gather(*args, **kwargs) -> list[Any]:
+        def mock_gather(*args, **kwargs) -> list:
             return []
+
+        def mock_fetch_remotes(*args, **kwargs) -> list:
+            raise AssertionError("I was not to be called.")
 
         monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
         monkeypatch.setattr(craft, "create_ender_chest", mock_create)
         monkeypatch.setattr(craft, "gather_minecraft_instances", mock_gather)
         monkeypatch.setattr(
-            craft, "fetch_remotes_from_a_remote_ender_chest", mock_gather
+            craft, "fetch_remotes_from_a_remote_ender_chest", mock_fetch_remotes
         )
 
         craft.craft_ender_chest(minecraft_root, **{argument: value})
         assert len(create_log) == 1
+
+    def test_failed_fetch_aborts_the_create(self, monkeypatch, minecraft_root):
+        def mock_prompt(root) -> Any:
+            raise AssertionError("I was not to be called.")
+
+        def mock_create(root, chest) -> None:
+            raise AssertionError("I was not to be called.")
+
+        def mock_gather(*args, **kwargs) -> list:
+            return []
+
+        def mock_fetch_remotes(*args, **kwargs) -> list:
+            raise RuntimeError("Don't feel like it.")
+
+        monkeypatch.setattr(craft, "specify_ender_chest_from_prompt", mock_prompt)
+        monkeypatch.setattr(craft, "create_ender_chest", mock_create)
+        monkeypatch.setattr(craft, "gather_minecraft_instances", mock_gather)
+        monkeypatch.setattr(
+            craft, "fetch_remotes_from_a_remote_ender_chest", mock_fetch_remotes
+        )
+
+        craft.craft_ender_chest(minecraft_root, copy_from="prayer://unreachable")
 
     def test_default_behavior_is_to_prevent_overwrite(self, minecraft_root, caplog):
         create_ender_chest(
