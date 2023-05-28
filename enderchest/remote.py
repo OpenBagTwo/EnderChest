@@ -73,7 +73,9 @@ def fetch_remotes_from_a_remote_ender_chest(
         If the remote list could not be pulled
     """
     remote_chest = load_remote_ender_chest(uri)
-    remotes: list[tuple[ParseResult, str]] = [(remote_chest._uri, remote_chest.name)]
+    remotes: list[tuple[ParseResult, str]] = [
+        (urlparse(uri) if isinstance(uri, str) else uri, remote_chest.name)
+    ]
 
     remotes.extend(remote_chest.remotes)
     SYNC_LOGGER.info(
