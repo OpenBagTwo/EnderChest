@@ -230,5 +230,7 @@ def sync_with_remotes(
                 sleep(sync_confirm_wait)
         else:
             synced_somewhere = True
+            if pull_or_push == "pull":
+                break
     if not synced_somewhere:
         SYNC_LOGGER.error("Could not sync with any remote EnderChests")
