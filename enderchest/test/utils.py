@@ -66,6 +66,9 @@ def create_mmc_pack_file(
     loader : str | None
         The loader (None if it's a vanilla instance)
     """
+    if minecraft_version.endswith(".0"):
+        # learned the hard way that mmc-pack files don't have use ".0"
+        minecraft_version = minecraft_version[:-2]
 
     components: list[dict[str, str]] = [
         {
