@@ -181,7 +181,7 @@ then tag **[@OpenBagTwo](https://github.com/OpenBagTwo)** for review.
 
 ## License
 
-This project--the executable, source code and all documentation are published
+This project--the executable, source code and all documentation--are published
 under the
 [GNU Public License v3](https://github.com/OpenBagTwo/EnderChest/blob/dev/LICENSE),
 and any contributions to or derivatives of this project _must_ be licensed under
