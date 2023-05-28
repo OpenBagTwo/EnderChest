@@ -21,6 +21,40 @@ class TestPathFromURI:
         assert path_from_uri(urlparse(original_path.as_uri())) == original_path
 
 
+@pytest.mark.xfail(
+    not shutil.which("rsync"), reason="rsync is not installed on this system"
+)  # TODO: remove xfail once this method has been moved to a different module
+class TestURIToSSH:
+    @pytest.fixture(scope="class")
+    def rsync_module(self):
+        from enderchest.sync import rsync
+
+        yield rsync
+
+    def test_simple_parse(self, rsync_module):
+        address = rsync_module.uri_to_ssh(
+            urlparse("rsync://openbagtwo@couchgaming:22/home/openbagtwo/minecraft")
+        )
+        assert address == "openbagtwo@couchgaming:22:/home/openbagtwo/minecraft"
+
+    def test_no_username_parse(self, rsync_module):
+        address = rsync_module.uri_to_ssh(
+            urlparse("rsync://steamdeck/home/openbagtwo/minecraft")
+        )
+        assert address == "steamdeck:/home/openbagtwo/minecraft"
+
+    def test_no_netloc_parse(self, rsync_module):
+        address = rsync_module.uri_to_ssh(
+            urlparse("rsync:///mnt/external/minecraft-bkp")
+        )
+        assert address == "localhost:/mnt/external/minecraft-bkp"
+
+    def test_no_hostname_parse(self, rsync_module):
+        """Can't believe this is a valid URI"""
+        address = rsync_module.uri_to_ssh(urlparse("rsync://nugget@/home/nugget/"))
+        assert address == "nugget@localhost:/home/nugget"
+
+
 class TestFileIgnorePatternBuilder:
     def test_simple_match(self):
         assert file.ignore_patterns("hello")(
