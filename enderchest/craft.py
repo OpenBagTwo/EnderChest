@@ -322,8 +322,9 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
             CRAFT_LOGGER.error(
                 f"Could not fetch remotes from {remote_uri}\n  {fetch_fail}"
             )
-            if confirm(default=True):
-                break
+            if not confirm(default=True):
+                continue
+        break
 
     CRAFT_LOGGER.info(
         "\nYou can always add more remotes later using"
