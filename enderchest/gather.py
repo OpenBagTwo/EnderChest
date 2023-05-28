@@ -10,7 +10,7 @@ from enderchest.sync import render_remote
 
 from . import filesystem as fs
 from .enderchest import EnderChest, create_ender_chest
-from .instance import InstanceSpec
+from .instance import InstanceSpec, _parse_version
 from .loggers import GATHER_LOGGER
 from .shulker_box import ShulkerBox
 
@@ -492,10 +492,10 @@ def gather_metadata_for_official_instance(
         if version.startswith("latest-"):
             mapped_version = version_lookup.get(version[len("latest-") :])
             if mapped_version is not None:
-                versions.append(mapped_version)
+                versions.append(_parse_version(mapped_version))
                 tags.append(version)
                 continue
-        versions.append(version)
+        versions.append(_parse_version(version))
 
     return InstanceSpec(name, minecraft_folder, tuple(versions), None, tuple(tags))
 
@@ -539,7 +539,7 @@ def gather_metadata_for_mmc_instance(
         for component in components:
             match component.get("uid"), component.get("cachedName", ""):
                 case "net.minecraft", _:
-                    version = component["version"]
+                    version = _parse_version(component["version"])
                 case "net.fabricmc.fabric-loader", _:
                     modloader = "Fabric Loader"
                 case "org.quiltmc.quilt-loader", _:
