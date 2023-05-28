@@ -307,6 +307,29 @@ class TestFileSync:
         r.sync_with_remotes(minecraft_root, "push")
         assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
 
+    def test_open_stops_at_first_successful_sync(self, minecraft_root, remote, caplog):
+        gather.update_ender_chest(
+            minecraft_root, remotes=(remote, "prayer://unreachable")
+        )
+        r.sync_with_remotes(minecraft_root, "pull")
+        warnings = [
+            record.msg for record in caplog.records if record.levelname == "WARNING"
+        ]
+
+        assert len(warnings) == 0
+
+    def test_close_will_attempt_to_push_to_all(self, minecraft_root, remote, caplog):
+        gather.update_ender_chest(
+            minecraft_root, remotes=(remote, "prayer://unreachable")
+        )
+        r.sync_with_remotes(minecraft_root, "push")
+        warnings = [
+            record.msg for record in caplog.records if record.levelname == "WARNING"
+        ]
+
+        assert len(warnings) == 1
+        assert "Could not sync changes with prayer://unreachable" in warnings[0]
+
 
 @pytest.mark.xfail(
     not shutil.which("rsync"), reason="rsync is not installed on this system"
