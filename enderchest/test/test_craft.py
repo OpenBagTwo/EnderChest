@@ -30,7 +30,7 @@ class TestConfigWriting:
                 ("minecraft", (">=1.12,<2.0",)),
                 ("modloader", ("*",)),
                 ("tags", ("aether", "optifine")),
-                ("instances", ("aether legacy", "paradise lost")),
+                ("instances", ("aether legacy", "Paradise Lost")),
             ),
             link_folders=("screenshots", "logs"),
         )
