@@ -112,23 +112,27 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
         # I freely admit this is ridiculous
         sum(
             (
-                (verb, *(f"{verb} {alias}" for alias in _instance_aliases))
+                (
+                    verb,
+                    *(
+                        f"{verb} {alias}"
+                        # pluralization is hard
+                        for alias in ("shulker_boxes", "shulkerboxes", "shulkers")
+                    ),
+                )
                 for verb in _list_aliases
             ),
             (),
         ),
-        "list the minecraft instances registered with your Enderchest",
-        gather.load_ender_chest_instances,
+        "list the shulker boxes inside your Enderchest",
+        gather.load_shulker_boxes,
     ),
     (
         tuple(
-            f"{verb} {alias}"
-            for verb in _list_aliases
-            # pluralization is hard
-            for alias in ("shulker_boxes", "shulkerboxes", "shulkers")
+            f"{verb} {alias}" for verb in _list_aliases for alias in _instance_aliases
         ),
-        "list the shulker boxes inside your Enderchest",
-        gather.load_shulker_boxes,
+        "list the minecraft instances registered with your Enderchest",
+        gather.load_ender_chest_instances,
     ),
     (
         tuple(
