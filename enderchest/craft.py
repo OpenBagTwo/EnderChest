@@ -113,9 +113,11 @@ def craft_ender_chest(
                         continue  # don't register yourself!
                     ender_chest.register_remote(remote, alias)
             except (RuntimeError, ValueError) as fetch_fail:
-                CRAFT_LOGGER.warning(
+                CRAFT_LOGGER.error(
                     f"Could not fetch remotes from {copy_from}:\n  {fetch_fail}"
                 )
+                CRAFT_LOGGER.error("Aborting.")
+                return
 
         for extra_remote in remotes or ():
             if isinstance(extra_remote, (str, ParseResult)):
