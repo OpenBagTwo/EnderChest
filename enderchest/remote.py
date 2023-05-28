@@ -158,7 +158,7 @@ def sync_with_remotes(
             runs = (False,)
         else:
             runs = (True, False)
-        for run_type in runs:
+        for do_dry_run in runs:
             try:
                 if pull_or_push == "pull":
                     SYNC_LOGGER.info(
@@ -185,7 +185,7 @@ def sync_with_remotes(
                             os.path.join(fs.ENDER_CHEST_FOLDER_NAME, ".*"),
                             *(sync_kwargs.pop("exclude", None) or ()),
                         ],
-                        dry_run=run_type,
+                        dry_run=do_dry_run,
                         **sync_kwargs,
                     )
                 else:
@@ -203,7 +203,7 @@ def sync_with_remotes(
                             os.path.join(fs.ENDER_CHEST_FOLDER_NAME, ".*"),
                             *(sync_kwargs.pop("exclude", None) or ()),
                         ],
-                        dry_run=run_type,
+                        dry_run=do_dry_run,
                         **sync_kwargs,
                     )
             except (
@@ -217,7 +217,7 @@ def sync_with_remotes(
                     f"\n  {sync_fail}"
                 )
                 break
-            if sync_confirm_wait is False:
+            if sync_confirm_wait is False or do_dry_run is False:
                 continue
             if sync_confirm_wait is True:
                 if not confirm(default=True):
