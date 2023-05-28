@@ -66,7 +66,7 @@ def place_ender_chest(
             PLACE_LOGGER.debug(
                 f"{shulker_box.name} is not intended for linking to this host ({host})"
             )
-            break
+            continue
         else:
             shulker_boxes.append(shulker_box)
 
