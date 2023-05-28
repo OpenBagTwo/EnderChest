@@ -320,18 +320,43 @@ def load_shulker_box_matches(
         )
         return ()
 
-    instances = load_ender_chest_instances(minecraft_root, log_level=logging.DEBUG)
-    if not instances:
-        return instances
+    chest = load_ender_chest(minecraft_root)
+
+    if not shulker_box.matches_host(chest.name):
+        GATHER_LOGGER.warning(
+            "This shulker box will not link to any instances on this machine"
+        )
+        return ()
+
+    if not chest.instances:
+        GATHER_LOGGER.warning(
+            "This EnderChest does not have any instances registered."
+            " To register some, run the command:"
+            "\nenderchest gather minecraft",
+        )
+        return ()
+
+    GATHER_LOGGER.debug(
+        "These are the instances that are currently registered"
+        f" to the {minecraft_root} EnderChest:\n"
+        + "\n".join(
+            [
+                f"  {i + 1}. {_render_instance(instance)}"
+                for i, instance in enumerate(chest.instances)
+            ]
+        ),
+    )
 
     if shulker_box is None:
         return ()
-    matches = [instance for instance in instances if shulker_box.matches(instance)]
+    matches = [
+        instance for instance in chest.instances if shulker_box.matches(instance)
+    ]
 
     if len(matches) == 0:
         report = "does not link to by any registered instances"
     else:
-        report = "is linked to by the following instancs:\n" + "\n".join(
+        report = "is linked to by the following instances:\n" + "\n".join(
             f"  - {_render_instance(instance)}" for instance in matches
         )
 

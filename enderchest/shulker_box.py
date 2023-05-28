@@ -260,7 +260,24 @@ class ShulkerBox(NamedTuple):
                     raise NotImplementedError(
                         f"Don't know how to apply match condition {condition}."
                     )
+        return True
 
+    def matches_host(self, hostname: str):
+        """Determine whether the shulker box should be linked to from the
+        current host machine
+
+        Returns
+        -------
+        bool
+            True if the shulker box's hosts spec matches the host, False otherwise.
+        """
+        for condition, values in self.match_criteria:
+            if condition == "hosts":
+                if not any(
+                    fnmatch.fnmatchcase(hostname.lower(), host_spec.lower())
+                    for host_spec in values
+                ):
+                    return False
         return True
 
 

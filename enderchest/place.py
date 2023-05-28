@@ -1,5 +1,4 @@
 """Symlinking functionality"""
-import fnmatch
 import itertools
 import logging
 import os
@@ -63,18 +62,11 @@ def place_ender_chest(
     shulker_boxes: list[ShulkerBox] = []
 
     for shulker_box in load_shulker_boxes(minecraft_root, log_level=logging.DEBUG):
-        for condition, values in shulker_box.match_criteria:
-            if condition == "hosts":
-                # TODO: DRY this into a dedicated function
-                if not any(
-                    fnmatch.fnmatchcase(host.lower(), host_spec.lower())
-                    for host_spec in values
-                ):
-                    PLACE_LOGGER.debug(
-                        f"{shulker_box.name} is not intended"
-                        f" for linking to this host ({host})"
-                    )
-                    break
+        if not shulker_box.matches_host(host):
+            PLACE_LOGGER.debug(
+                f"{shulker_box.name} is not intended for linking to this host ({host})"
+            )
+            break
         else:
             shulker_boxes.append(shulker_box)
 
@@ -103,7 +95,7 @@ def place_ender_chest(
                     "How would you like to proceed?"
                     "\n[Q]uit, [C]ontinue, abort linking the rest of this shulker/instance [M]atch?"
                     "\nskip the rest of this [I]nstance, skip the rest of this [S]hulker box?",
-                    suggestion="I",  # TODO: in my experience it's usally an instance issue
+                    suggestion="I",  # TODO: reevaluate default (it's 50/50 due to link folders)
                 )
                 .lower()
                 .replace(" ", "")
@@ -217,7 +209,6 @@ def place_ender_chest(
                             f"\n  {(instance.root / resource_path)}"
                             " already exists"
                         )
-                        # TODO: option to record failure but keep going
                         match handle_error(instance):
                             case "return":
                                 return

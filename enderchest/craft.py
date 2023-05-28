@@ -537,8 +537,8 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
         # TODO: stop wastefully reloading the cfg
         host = load_ender_chest(minecraft_root).name
 
-        if not any(
-            fnmatch.fnmatchcase(host.lower(), host_spec.lower()) for host_spec in hosts
+        if not shulker_box._replace(match_criteria=(("hosts", hosts),)).matches_host(
+            host
         ):
             CRAFT_LOGGER.warning(
                 "This shulker box will not link to any instances on this machine"
