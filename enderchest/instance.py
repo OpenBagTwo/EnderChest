@@ -1,4 +1,5 @@
 """Specification of a Minecraft instance"""
+import re
 from configparser import SectionProxy
 from pathlib import Path
 from typing import NamedTuple
@@ -54,7 +55,10 @@ class InstanceSpec(NamedTuple):
         return cls(
             section.name,
             Path(section["root"]),
-            tuple(section["minecraft_version"].strip().split()),
+            tuple(
+                _parse_version(version.strip())
+                for version in section["minecraft_version"].strip().split()
+            ),
             section.get("modloader", None),
             tuple(
                 tag.strip()
@@ -89,3 +93,28 @@ def equals(
     path = minecraft_root / instance.root.expanduser()
     other_path = minecraft_root / other_instance.root.expanduser()
     return path.expanduser().resolve() == other_path.expanduser().resolve()
+
+
+def _parse_version(version_string: str) -> str:
+    """The first release of each major Minecraft version doesn't follow strict
+    major.minor.patch semver. This method appends the ".0" so that our version
+    matcher doesn't mess up
+
+    Parameters
+    ----------
+    version_string : str
+        The version read in from the Minecraft instance's config
+
+    Returns
+    -------
+    str
+        Either the original version string or the original version string with
+        ".0" tacked onto the end of it
+
+    Notes
+    -----
+    Regex adapted straight from https://semver.org
+    """
+    if re.match(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)$", version_string):
+        return version_string + ".0"
+    return version_string
