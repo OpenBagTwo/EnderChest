@@ -89,6 +89,7 @@ class ShulkerBox(NamedTuple):
         parser = ConfigParser(
             allow_no_value=True, inline_comment_prefixes=(";",), interpolation=None
         )
+        parser.optionxform = str  # type: ignore
         try:
             assert parser.read(config_file)
         except ParsingError as bad_cfg:
@@ -167,6 +168,7 @@ class ShulkerBox(NamedTuple):
         The "root" attribute is ignored for this method
         """
         config = ConfigParser(allow_no_value=True, interpolation=None)
+        config.optionxform = str  # type: ignore
         config.add_section("properties")
         config.set("properties", "priority", str(self.priority))
         if self.max_link_depth != 2:
