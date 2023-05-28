@@ -278,8 +278,8 @@ def uri_to_ssh(uri: ParseResult) -> str:
     str
         The SSH-format address
     """
-    return "{user}@{host}:{path}".format(
-        user=uri.username,
+    return "{user}{host}:{path}".format(
+        user=f"{uri.username}@" if uri.username else "",
         host=(uri.hostname or "localhost") + (f":{uri.port}" if uri.port else ""),
         path=path_from_uri(uri).as_posix(),
     )
