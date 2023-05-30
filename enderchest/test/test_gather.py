@@ -1,4 +1,5 @@
 """Tests around file discovery and registration"""
+import os.path
 import re
 
 import pytest
@@ -47,6 +48,24 @@ class TestListShulkerBoxes:
 
 
 class TestGatherInstances:
+    @pytest.fixture(autouse=True)
+    def setup_teardown(self, minecraft_root, home):
+        utils.pre_populate_enderchest(
+            fs.ender_chest_folder(minecraft_root, check_exists=False)
+        )
+        with fs.ender_chest_config(minecraft_root).open("w") as ec_config:
+            ec_config.write(
+                """
+[properties]
+offer-to-update-symlink-allowlist = False
+"""
+            )
+
+        yield
+
+        # tests that with offer-to-update set to False, EnderChest doesn't go rogue
+        assert not (home / ".minecraft" / "allowed_symlinks.txt").exists()
+
     def test_official_instance_parsing(self, home):
         assert utils.normalize_instance(
             gather.gather_metadata_for_official_instance(home / ".minecraft")
@@ -153,3 +172,107 @@ class TestGatherInstances:
                 for idx in range(4)
             ]
         )
+
+
+class TestSymlinkAllowlistHandling:
+    @pytest.fixture(autouse=True)
+    def setup_teardown(self, minecraft_root):
+        utils.pre_populate_enderchest(
+            fs.ender_chest_folder(minecraft_root, check_exists=False)
+        )
+        with fs.ender_chest_config(minecraft_root).open("w") as ec_config:
+            ec_config.write(
+                """
+[properties]
+"""
+            )
+
+        utils.populate_mmc_instance_folder(
+            minecraft_root / "instances" / "talespin", "1.20", "Quilt", "talespin"
+        )
+
+        (
+            minecraft_root
+            / "instances"
+            / "talespin"
+            / ".minecraft"
+            / "allowed_symlinks.txt"
+        ).write_text(
+            "my_development_folder\n"
+        )  # read: not EnderChest
+
+        yield
+
+        assert (
+            (
+                minecraft_root
+                / "instances"
+                / "talespin"
+                / ".minecraft"
+                / "allowed_symlinks.txt"
+            )
+            .read_text()
+            .startswith("my_development_folder\n")
+        )
+
+    @pytest.mark.parametrize("instance", ("official", "talespin"))
+    def test_ender_chest_does_not_write_allowlist_without_consent(
+        self, minecraft_root, home, monkeypatch, capsys, instance
+    ):
+        if instance == "official":
+            search_path = home
+        else:
+            search_path = minecraft_root / "instances" / "talespin"
+        i_forbid_it = utils.scripted_prompt(["no"])
+        monkeypatch.setattr("builtins.input", i_forbid_it)
+
+        gather.gather_minecraft_instances(minecraft_root, search_path, None)
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        # easier to check both
+        assert not (home / ".minecraft" / "allowed_symlinks.txt").exists()
+        assert (
+            minecraft_root
+            / "instances"
+            / "talespin"
+            / ".minecraft"
+            / "allowed_symlinks.txt"
+        ).read_text() == "my_development_folder\n"
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            i_forbid_it()
+
+    def test_ender_chest_will_write_allowlists_with_consent(
+        self, minecraft_root, home, monkeypatch, capsys
+    ):
+        mkay = utils.scripted_prompt(["y"] * 2)
+        monkeypatch.setattr("builtins.input", mkay)
+
+        gather.gather_minecraft_instances(minecraft_root, home, True)
+
+        # this is also testing that you're not getting prompted
+        # for pre-1.20 instances
+        gather.gather_minecraft_instances(
+            minecraft_root, minecraft_root / "instances", False
+        )
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        ender_chest_path = os.path.abspath(fs.ender_chest_config(minecraft_root))
+
+        assert (
+            home / ".minecraft" / "allowed_symlinks.txt"
+        ).read_text() == os.path.abspath(fs.ender_chest_config(minecraft_root)) + "\n"
+        assert (
+            minecraft_root
+            / "instances"
+            / "talespin"
+            / ".minecraft"
+            / "allowed_symlinks.txt"
+        ).read_text() == f"my_development_folder\n{ender_chest_path}\n"
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            mkay()

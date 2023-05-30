@@ -55,6 +55,13 @@ class EnderChest:
     remotes : list-like of (ParseResult, str) pairs
         The other EnderChest installations this EnderChest is aware of, paired
         with their aliases
+    offer_to_update_symlink_allowlist: bool
+        By default, EnderChest will offer to create or update `allowed_symlinks.txt`
+        on any 1.20+ instances that do not already blanket allow links into
+        EnderChest. **EnderChest will never modify that or any other Minecraft
+        file without your express consent.** If you would prefer to edit these
+        files yourself (or simply not symlink your world saves), change this
+        parameter to False.
     sync_confirm_wait: bool or int
         The default behavior when syncing EnderChests is to first perform a dry
         run of every sync operation and then wait 5 seconds before proceeding with the
@@ -70,6 +77,7 @@ class EnderChest:
     _uri: ParseResult
     _instances: list[i.InstanceSpec]
     _remotes: dict[str, ParseResult]
+    offer_to_update_symlink_allowlist: bool = True
     sync_confirm_wait: bool | int = 5
 
     def __init__(
@@ -241,6 +249,7 @@ class EnderChest:
         netloc: str | None = None
         name: str | None = None
         sync_confirm_wait: str | None = None
+        offer_to_update_symlink_allowlist: bool = True
 
         for section in parser.sections():
             if section == "properties":
@@ -248,6 +257,9 @@ class EnderChest:
                 netloc = parser[section].get("address")
                 name = parser[section].get("name")
                 sync_confirm_wait = parser[section].get("sync-confirmation-time")
+                offer_to_update_symlink_allowlist = parser[section].getboolean(
+                    "offer-to-update-symlink-allowlist", True
+                )
             elif section == "remotes":
                 for remote in parser[section].items():
                     if remote[1] is None:
@@ -278,6 +290,9 @@ class EnderChest:
                             "Invalid value for sync-confirmation-time:"
                             f" {sync_confirm_wait}"
                         )
+        ender_chest.offer_to_update_symlink_allowlist = (
+            offer_to_update_symlink_allowlist
+        )
         return ender_chest
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
@@ -310,6 +325,11 @@ class EnderChest:
             str(self.sync_confirm_wait)
             if self.sync_confirm_wait is not True
             else "prompt",
+        )
+        config.set(
+            "properties",
+            "offer-to-update-symlink-allowlist",
+            str(self.offer_to_update_symlink_allowlist),
         )
         config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
         config.set(

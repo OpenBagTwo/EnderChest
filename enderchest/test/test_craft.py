@@ -56,6 +56,9 @@ class TestConfigWriting:
             instances=utils.TESTING_INSTANCES,
         )
 
+        original_ender_chest.sync_confirm_wait = 27
+        original_ender_chest.offer_to_update_symlink_allowlist = False
+
         original_ender_chest.write_to_cfg(
             Path(tmpdir) / "EnderChest" / "enderchest.cfg"
         )
