@@ -246,8 +246,8 @@ def pre_populate_enderchest(
         on the system
     """
     enderchest_folder.mkdir(parents=True, exist_ok=True)
-    with as_file(testing_files.ENDERCHEST_CONFIG) as enderchest_cfg:
-        shutil.copy(enderchest_cfg, enderchest_folder)
+    with as_file(testing_files.ENDERCHEST_CONFIG) as config_file:
+        shutil.copy(config_file, enderchest_folder)
     shulker_boxes: list[ShulkerBox] = []
     for shulker_name, shulker_config in shulkers:
         (enderchest_folder / shulker_name).mkdir(parents=True, exist_ok=True)
@@ -360,9 +360,9 @@ def _parse_match_csv() -> list[tuple[str, str, bool]]:
     shulker_boxes = [cell.strip() for cell in header.split(",")[1:]]
     for row in rows:
         cells = [cell.strip() for cell in row.split(",")]
-        instance = cells.pop(0)
+        mc = cells.pop(0)
         for i, cell in enumerate(cells):
-            matches.append((shulker_boxes[i], instance, cell == "True"))
+            matches.append((shulker_boxes[i], mc, cell == "True"))
     return matches
 
 
@@ -406,7 +406,7 @@ def parametrize_over_instances(*instance_names: str):
       - The parametrized tests will be ordered as provided
       - The name of the parametrized argument provided to the test will be "instance"
     """
-    instance_lookup = {instance.name: instance for instance in TESTING_INSTANCES}
+    instance_lookup = {mc.name: mc for mc in TESTING_INSTANCES}
     if len(instance_names) == 0:
         instance_names = tuple(instance_lookup.keys())
 
@@ -452,14 +452,12 @@ def instance(
     )
 
 
-def normalize_instance(instance: InstanceSpec) -> InstanceSpec:
+def normalize_instance(mc: InstanceSpec) -> InstanceSpec:
     """Normalize the values inside an instance tuple"""
-    return instance._replace(
+    return mc._replace(
         # this should be fully checked by instance.equals()
-        root=instance.root.expanduser().relative_to(
-            instance.root.expanduser().parent.parent
-        ),
-        modloader=_normalize_modloader(instance.modloader)[0],
-        minecraft_versions=tuple(sorted(instance.minecraft_versions)),
-        tags=tuple(sorted(tag.lower() for tag in instance.tags)),
+        root=mc.root.expanduser().relative_to(mc.root.expanduser().parent.parent),
+        modloader=_normalize_modloader(mc.modloader)[0],
+        minecraft_versions=tuple(sorted(mc.minecraft_versions)),
+        tags=tuple(sorted(tag.lower() for tag in mc.tags)),
     )

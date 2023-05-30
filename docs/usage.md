@@ -143,7 +143,7 @@ enderchest place
     blanket-allow symbolic links into your EnderChest.
 
     **If you would prefer to do this by hand or not at all**, you can edit your
-    `enderchest.cfg` and change the value for`offer-to-update-symlink-allowlist` to `False`.
+    `enderchest.cfg` and change the value for `offer-to-update-symlink-allowlist` to `False`.
     EnderChest will never create any file or symlink without your consent and will
     never place a symlink pointing directly to a place outside of your EnderChest.
 
