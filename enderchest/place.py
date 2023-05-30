@@ -17,6 +17,7 @@ def place_ender_chest(
     minecraft_root: Path,
     cleanup: bool = True,
     error_handling: str = "abort",
+    relative: bool = True,
     rollback=False,
 ) -> None:
     """Link all instance files and folders to all shulker boxes
@@ -41,6 +42,10 @@ def place_ender_chest(
           - pass in `error_handling="skip-shulker-box"` to abort linking to the current
             shulker box altogether but to otherwise continue on with other boxes
           - pass in `error_handling="prompt"` to ask what to do on each failure
+    relative : bool, optional
+        By default, links will use relative paths when possible. To use absolute
+        paths instead (see: https://bugs.mojang.com/projects/MC/issues/MC-263046),
+        pass in `relative=False`.
     rollback: bool, optional
         In the future in the event of linking errors passing in `rollback=True`
         can be used to roll back any changes that have already been applied
@@ -173,7 +178,7 @@ def place_ender_chest(
                 resources -= {box_root / link_folder}
                 resources -= set((box_root / link_folder).rglob("*"))
                 try:
-                    link_resource(link_folder, box_root, instance_root)
+                    link_resource(link_folder, box_root, instance_root, relative)
                 except (OSError, NotADirectoryError) as oh_no:
                     PLACE_LOGGER.error(
                         f"Error linking shulker box {shulker_box.name}"
@@ -201,6 +206,7 @@ def place_ender_chest(
                             resource_path,
                             box_root,
                             instance_root,
+                            relative,
                         )
                     except (OSError, NotADirectoryError) as oh_no:
                         PLACE_LOGGER.error(
@@ -233,7 +239,10 @@ def place_ender_chest(
 
 
 def link_resource(
-    resource_path: str | Path, shulker_root: Path, instance_root: Path
+    resource_path: str | Path,
+    shulker_root: Path,
+    instance_root: Path,
+    relative: bool,
 ) -> None:
     """Create a symlink for the specified resource from an instance's space
     pointing to the tagged file / folder living inside a shulker box.
@@ -246,6 +255,10 @@ def link_resource(
         The path to the shulker box
     instance_root : Path
         The path to the instance's ".minecraft" folder
+    relative : bool
+        If True, the link will be use a relative path if possible. Otherwise,
+        an absolute path will be used, regardless of whether a a relative or
+        absolute path was provided.
 
     Raises
     ------
@@ -264,9 +277,9 @@ def link_resource(
     instance_path = (instance_root / resource_path).expanduser().absolute()
     instance_path.parent.mkdir(parents=True, exist_ok=True)
 
-    relative_path = os.path.relpath(
-        (shulker_root / resource_path).expanduser().absolute(), instance_path.parent
-    )
+    target: str | Path = (shulker_root / resource_path).expanduser().absolute()
+    if relative:
+        target = os.path.relpath(target, instance_path.parent)
 
     if instance_path.is_symlink():
         # remove previous symlink in this spot
@@ -275,13 +288,13 @@ def link_resource(
     else:
         try:
             os.rmdir(instance_path)
-            PLACE_LOGGER.debug(f"Removed empty diretory at {instance_path}")
+            PLACE_LOGGER.debug(f"Removed empty directory at {instance_path}")
         except FileNotFoundError:
             pass  # A-OK
 
-    PLACE_LOGGER.debug(f"Linking {instance_path} to {relative_path}")
+    PLACE_LOGGER.debug(f"Linking {instance_path} to {target}")
     os.symlink(
-        relative_path,
+        target,
         instance_path,
         target_is_directory=(shulker_root / resource_path).is_dir(),
     )

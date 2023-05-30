@@ -245,6 +245,20 @@ class TestPlace(ActionTestSuite):
         action(Path(), **options)
         assert place_log[0][1]["error_handling"] == "ignore"
 
+    def test_absolute_path_links_is_the_default(self, place_log):
+        action, *_, options = cli.parse_args(["enderchest", "place"])
+        action(Path(), **options)
+        assert place_log[0][1]["relative"] is False
+
+    @pytest.mark.parametrize(
+        "flag, expected",
+        (("-a", False), ("--absolute", False), ("-r", True), ("--relative", True)),
+    )
+    def test_explicitly_specify_abs_or_rel(self, place_log, flag, expected):
+        action, *_, options = cli.parse_args(["enderchest", "place"])
+        action(Path(), **options)
+        assert place_log[0][1]["relative"] is False
+
 
 class TestGather(ActionTestSuite):
     action = "gather minecraft"
