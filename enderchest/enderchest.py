@@ -13,6 +13,7 @@ from . import instance as i
 from . import sync
 from ._version import get_versions
 from .loggers import CRAFT_LOGGER, GATHER_LOGGER
+from .sync import path_from_uri
 
 
 @dataclass(init=False, repr=False)
@@ -126,7 +127,7 @@ class EnderChest:
 
     @property
     def root(self) -> Path:
-        return fs.ender_chest_folder(Path(self._uri.path), check_exists=False)
+        return fs.ender_chest_folder(path_from_uri(self._uri), check_exists=False)
 
     @property
     def instances(self) -> tuple[i.InstanceSpec, ...]:
