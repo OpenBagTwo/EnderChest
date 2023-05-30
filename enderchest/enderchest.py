@@ -126,7 +126,7 @@ class EnderChest:
 
     @property
     def root(self) -> Path:
-        return fs.ender_chest_folder(Path(self._uri.path))
+        return fs.ender_chest_folder(Path(self._uri.path), check_exists=False)
 
     @property
     def instances(self) -> tuple[i.InstanceSpec, ...]:

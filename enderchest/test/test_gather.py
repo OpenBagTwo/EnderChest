@@ -174,6 +174,30 @@ offer-to-update-symlink-allowlist = False
         )
 
 
+class TestSymlinkAllowlistVersionChecker:
+    """aka check my regex"""
+
+    @pytest.mark.parametrize(
+        "version_string, expected",
+        (
+            ("1.19.4", False),
+            ("1.20", True),
+            ("1.20.1-pre1", True),
+            ("1.21-pre1", True),
+            ("1.19-rc2", False),
+            ("1.2.1", False),
+            ("22w43a", False),
+            ("23w9a", False),
+            ("23w09a", False),
+            ("23w51a", True),
+            ("24w6a", True),
+            ("24w06a", True),
+        ),
+    )
+    def test_check_if_version_needs_allow_list(self, version_string, expected):
+        assert gather._needs_symlink_allowlist(version_string) == expected
+
+
 class TestSymlinkAllowlistHandling:
     @pytest.fixture(autouse=True)
     def setup_teardown(self, minecraft_root):
@@ -228,7 +252,7 @@ class TestSymlinkAllowlistHandling:
 
         gather.gather_minecraft_instances(minecraft_root, search_path, None)
 
-        _ = capsys.readouterr()  # suppress outputs
+        # _ = capsys.readouterr()  # suppress outputs
 
         # easier to check both
         assert not (home / ".minecraft" / "allowed_symlinks.txt").exists()
@@ -260,11 +284,11 @@ class TestSymlinkAllowlistHandling:
 
         _ = capsys.readouterr()  # suppress outputs
 
-        ender_chest_path = os.path.abspath(fs.ender_chest_config(minecraft_root))
+        ender_chest_path = os.path.abspath(fs.ender_chest_folder(minecraft_root))
 
         assert (
             home / ".minecraft" / "allowed_symlinks.txt"
-        ).read_text() == os.path.abspath(fs.ender_chest_config(minecraft_root)) + "\n"
+        ).read_text() == ender_chest_path + "\n"
         assert (
             minecraft_root
             / "instances"

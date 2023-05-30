@@ -194,7 +194,7 @@ class TestEnderChestCrafting:
 
         assert fs.ender_chest_config(minecraft_root).read_text() == original_config
 
-    def test_craft_chest_from_config(self, minecraft_root, home, caplog):
+    def test_craft_chest_from_config(self, minecraft_root, home, caplog, monkeypatch):
         # we'll be testing overwriting
         create_ender_chest(
             minecraft_root,
@@ -202,6 +202,9 @@ class TestEnderChestCrafting:
                 "sftp://openbagtwo@battlestation" + minecraft_root.absolute().as_posix()
             ),
         )
+
+        never = utils.scripted_prompt(["no"])
+        monkeypatch.setattr("builtins.input", never)
 
         craft.craft_ender_chest(
             minecraft_root,
@@ -224,7 +227,7 @@ class TestEnderChestCrafting:
         capsys,
         caplog,
     ):
-        script_reader = utils.scripted_prompt([""] * 7)
+        script_reader = utils.scripted_prompt([""] * 8)
         monkeypatch.setattr("builtins.input", script_reader)
 
         chest = craft.specify_ender_chest_from_prompt(minecraft_root)

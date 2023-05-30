@@ -1,6 +1,8 @@
 """Functionality for finding, resolving and parsing local installations and instances"""
 import json
 import logging
+import os
+import re
 from configparser import ConfigParser, ParsingError
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -12,7 +14,8 @@ from . import filesystem as fs
 from .enderchest import EnderChest, create_ender_chest
 from .instance import InstanceSpec, _parse_version
 from .loggers import GATHER_LOGGER
-from .shulker_box import ShulkerBox
+from .prompt import prompt
+from .shulker_box import ShulkerBox, _matches_version
 
 
 def load_ender_chest(minecraft_root: Path) -> EnderChest:
@@ -398,6 +401,11 @@ def gather_minecraft_instances(
     - As a corollary, if _no_ valid Minecraft installations can be found, this
       method will return an empty list.
     """
+    try:
+        ender_chest = load_ender_chest(minecraft_root)
+    except FileNotFoundError:
+        # because this method can be called during crafting
+        ender_chest = EnderChest(minecraft_root)
     GATHER_LOGGER.debug(f"Searching for Minecraft folders inside {search_path}")
     instances: list[InstanceSpec] = []
     for folder in fs.minecraft_folders(search_path):
@@ -409,6 +417,7 @@ def gather_minecraft_instances(
                 GATHER_LOGGER.info(
                     f"Gathered official Minecraft installation from {folder}"
                 )
+                _check_for_allowed_symlinks(ender_chest, instances[-1])
                 continue
             except ValueError as not_official:
                 GATHER_LOGGER.log(
@@ -421,6 +430,7 @@ def gather_minecraft_instances(
                 GATHER_LOGGER.info(
                     f"Gathered MMC-like Minecraft installation from {folder}"
                 )
+                _check_for_allowed_symlinks(ender_chest, instances[-1])
                 continue
             except ValueError as not_mmc:
                 GATHER_LOGGER.log(
@@ -694,3 +704,103 @@ def update_ender_chest(
             GATHER_LOGGER.warning(bad_remote)
 
     create_ender_chest(minecraft_root, ender_chest)
+
+
+def _check_for_allowed_symlinks(
+    ender_chest: EnderChest, instance: InstanceSpec
+) -> None:
+    """Check if the instance:
+        - is 1.20+
+        - has not already blanket-allowed symlinks into the EnderChest
+
+    and if it hasn't, offer to update the allow-list now *but only if* the user
+    hasn't already told EnderChest "shut up I know what I'm doing."
+
+    Parameters
+    ----------
+    ender_chest : EnderChest
+        This EnderChest
+    instance : InstanceSpec
+        The instance spec to check
+    """
+    if ender_chest.offer_to_update_symlink_allowlist is False:
+        return
+
+    if not any(
+        _needs_symlink_allowlist(version) for version in instance.minecraft_versions
+    ):
+        return
+    ender_chest_abspath = os.path.abspath(ender_chest.root)
+
+    symlink_allowlist = instance.root / "allowed_symlinks.txt"
+
+    try:
+        already_allowed = (
+            ender_chest_abspath in symlink_allowlist.read_text().splitlines()
+        )
+    except FileNotFoundError:
+        already_allowed = False
+
+    if already_allowed:
+        return
+
+    GATHER_LOGGER.warning(
+        """
+Starting with Minecraft 1.20, Mojang by default no longer allows worlds
+to load if they are or if they contain symbolic links.
+Read more: https://help.minecraft.net/hc/en-us/articles/16165590199181"""
+    )
+
+    response = prompt(
+        f"Would you like EnderChest to add {ender_chest_abspath} to {symlink_allowlist}?",
+        "Y/n",
+    )
+
+    if response.lower() not in ("y", "yes"):
+        return
+
+    with symlink_allowlist.open("a+") as f:
+        f.seek(0)
+        existing = f.read()
+        if existing != "" and not existing.endswith("\n"):
+            f.write("\n")
+        f.write(ender_chest_abspath + "\n")
+
+    GATHER_LOGGER.info(f"{symlink_allowlist} updated.")
+
+
+def _needs_symlink_allowlist(version: str) -> bool:
+    """Determine if a version needs `allowed_symlinks.txt` in order to link
+    to EnderChest. Note that this is going a little broader than is strictly
+    necessary.
+
+    Parameters
+    ----------
+    version: str
+        The version string to check against
+
+    Returns
+    -------
+    bool
+        Returns False if the Minecraft version predates the symlink ban. Returns
+        True if it doesn't (or is marginal).
+
+    Notes
+    -----
+    Have I mentioned that parsing Minecraft version strings is a pain in the
+    toucans?
+    """
+    # first see if it follows basic semver
+    if _matches_version(">1.19", _parse_version(version.split("-")[0])):
+        return True
+    if _matches_version("1.20.0*", _parse_version(version.split("-")[0])):
+        return True
+    # is it a snapshot?
+    if match := re.match("^([1-2][0-9])w([0-9]{1,2})", version.lower()):
+        year, week = match.groups()
+        if int(year) > 23:
+            return True
+        if int(year) == 23 and int(week) > 18:
+            return True
+
+    return False
