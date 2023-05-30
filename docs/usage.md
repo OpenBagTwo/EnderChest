@@ -122,6 +122,53 @@ or updated.
     `max-link-depth` parameter in the shulker box config, but doing so should
     be considered highly experimental.
 
+## Linking Your Instances
+
+Once everything is set up, to actually link up all of your instances, you
+just need to run:
+
+```bash
+enderchest place
+```
+
+!!! danger "Important!!"
+
+    Starting with Minecraft 1.20, Mojang by default
+    [no longer allows worlds to load if they are or if they contain symbolic links](https://help.minecraft.net/hc/en-us/articles/16165590199181).
+    Obviously this will be a problem if you're using EnderChest to centralize
+    and organize your world saves.
+
+    By default, EnderChest will offer to create an `allowed_symlinks.txt` folder
+    inside any 1.20+ instance that doesn't have one already and update the file to
+    blanket-allow symbolic links into your EnderChest.
+
+    **If you would prefer to do this by hand or not at all**, you can edit your
+    `enderchest.cfg` and change the value for`offer-to-update-symlink-allowlist` to `False`.
+    EnderChest will never create any file or symlink without your consent and will
+    never place a symlink pointing directly to a place outside of your EnderChest.
+
+    If you would like to get a full report of all symlinks EnderChest places,
+    you can run:
+    ```bash
+    enderchest place --verbose
+    ```
+    to get a full audit.
+
+As EnderChest places all your links, it will stop if at any point there's already
+a file or a non-empty folder at that location. Sometimes that happens because
+you forgot to clean out an existing instance. Other times, your shulker box
+configurations might be [conflicting with each other](../suggestions#collisions-and-conflicts).
+Regardless, rather than just overwriting your data, EnderChest will ask you
+how you want to proceed. And once you've fixed the issue, you can just run
+
+```bash
+enderchest place
+```
+
+again--running `place` multiple times is completely safe (and is something you
+should do regularly! and particularly after any shulker box modification or file
+sync!).
+
 ## Managing Remotes
 
 Once you've finished setting up an EnderChest on a given computer, the next

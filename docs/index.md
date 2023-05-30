@@ -17,3 +17,22 @@ The source code for this project is
 
 If you encounter a bug or have a suggestion,
 [open an issue](https://github.com/OpenBagTwo/EnderChest/issues/new/choose)!
+
+!!! danger "Important!!"
+
+    EnderChest is based around the use of symbolic links.
+
+    Starting with Minecraft 1.20, Mojang by default
+    [no longer allows worlds to load if they are or if they contain symbolic links](https://help.minecraft.net/hc/en-us/articles/16165590199181).
+    While it is true that an improper symlink could cause Minecraft to write data
+    to a place it shouldn't, nothing in EnderChest will ever generate a symlink whose
+    target is outside of your EnderChest folder _unless you place_ a symbolic link in
+    your EnderChest pointing to somewhere else (which you may want to do so that your
+    screenshots, for example, point to your "My Pictures" folder).
+
+    If you still have concerns about symlinks or questions about how they work,
+    read through
+    [this guide](https://www.makeuseof.com/tag/what-is-a-symbolic-link-what-are-its-uses-makeuseof-explains/)
+    or [watch this explainer](https://www.youtube.com/watch?v=mA08E59-zo8), and if
+    you still have questions, feel free to
+    [open an issue](https://github.com/OpenBagTwo/EnderChest/issues/new?assignees=OpenBagTwo&labels=question&title=symlink%20question).
