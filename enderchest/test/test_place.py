@@ -72,6 +72,14 @@ class TestSingleShulkerPlace:
         for path, contents in do_not_touch.items():
             assert path.read_text() == contents
 
+    @pytest.mark.parametrize("relative", (True, False), ids=("relative", "absolute"))
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_respects_the_relative_parameter(self, minecraft_root, instance, relative):
+        place.place_ender_chest(minecraft_root, relative=relative)
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+
+        assert (instance_folder / "logs").readlink().is_absolute() is (not relative)
+
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_replaces_empty_folders(self, minecraft_root, instance):
         place.place_ender_chest(minecraft_root)

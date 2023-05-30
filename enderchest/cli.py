@@ -27,15 +27,24 @@ def _place(
     cleanup: bool = False,
     stop_at_first_failure: bool = False,
     ignore_errors: bool = False,
+    absolute: bool = False,
+    relative: bool = False,
 ) -> None:
-    """Wrapper to coalesce error-handling flags"""
+    """Wrapper to coalesce error-handling flags and also abs/rel"""
 
     if stop_at_first_failure:
         errors = "abort"
     if ignore_errors:  # elif?
         errors = "ignore"
     # else: errors = errors
-    place.place_ender_chest(minecraft_root, cleanup=cleanup, error_handling=errors)
+
+    if absolute is True:
+        # technically we get this for free already
+        relative = False
+
+    place.place_ender_chest(
+        minecraft_root, cleanup=cleanup, error_handling=errors, relative=relative
+    )
 
 
 def _craft_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
@@ -371,6 +380,19 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         ),
         default="prompt",
         help="specify how to handle linking errors (default behavior is to prompt after every error)",
+    )
+    link_type = place_parser.add_mutually_exclusive_group()
+    link_type.add_argument(
+        "--absolute",
+        "-a",
+        action="store_true",
+        help="use absolute paths for all link targets",
+    )
+    link_type.add_argument(
+        "--relative",
+        "-r",
+        action="store_true",
+        help="use relative paths for all link targets",
     )
 
     # gather instance options
