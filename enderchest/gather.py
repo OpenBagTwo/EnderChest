@@ -735,11 +735,12 @@ def _check_for_allowed_symlinks(
     symlink_allowlist = instance.root / "allowed_symlinks.txt"
 
     try:
-        already_allowed = (
-            ender_chest_abspath in symlink_allowlist.read_text().splitlines()
-        )
+        allowlist_contents = symlink_allowlist.read_text()
+        already_allowed = ender_chest_abspath in allowlist_contents.splitlines()
+        allowlist_needs_newline = not allowlist_contents.endswith("\n")
     except FileNotFoundError:
         already_allowed = False
+        allowlist_needs_newline = False
 
     if already_allowed:
         return
@@ -759,10 +760,8 @@ Read more: https://help.minecraft.net/hc/en-us/articles/16165590199181"""
     if response.lower() not in ("y", "yes"):
         return
 
-    with symlink_allowlist.open("a+") as f:
-        f.seek(0)
-        existing = f.read()
-        if existing != "" and not existing.endswith("\n"):
+    with symlink_allowlist.open("a") as f:
+        if allowlist_needs_newline:
             f.write("\n")
         f.write(ender_chest_abspath + "\n")
 

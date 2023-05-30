@@ -87,7 +87,6 @@ offer-to-update-symlink-allowlist = False
         ),
     )
     def test_mmc_instance_parsing(self, minecraft_root, instance, idx):
-        print(list((minecraft_root / "instances" / instance).rglob("*")))
         assert utils.normalize_instance(
             gather.gather_metadata_for_mmc_instance(
                 minecraft_root / "instances" / instance / ".minecraft"
@@ -252,7 +251,7 @@ class TestSymlinkAllowlistHandling:
 
         gather.gather_minecraft_instances(minecraft_root, search_path, None)
 
-        # _ = capsys.readouterr()  # suppress outputs
+        _ = capsys.readouterr()  # suppress outputs
 
         # easier to check both
         assert not (home / ".minecraft" / "allowed_symlinks.txt").exists()
