@@ -17,7 +17,7 @@
         <link rel="next" href="../suggestions/">
       
       <link rel="icon" href="../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
       
       
 
@@ -348,6 +348,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linking-your-instances" class="md-nav__link">
+    Linking Your Instances
+  </a>
   
 </li>
       
@@ -816,6 +823,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#linking-your-instances" class="md-nav__link">
+    Linking Your Instances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#managing-remotes" class="md-nav__link">
     Managing Remotes
   </a>
@@ -954,6 +968,41 @@ symlinked in its entirety. You can change this behavior by setting the
 <code>max-link-depth</code> parameter in the shulker box config, but doing so should
 be considered highly experimental.</p>
 </div>
+<h2 id="linking-your-instances">Linking Your Instances</h2>
+<p>Once everything is set up, to actually link up all of your instances, you
+just need to run:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>enderchest<span class="w"> </span>place
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Important!!</p>
+<p>Starting with Minecraft 1.20, Mojang by default
+<a href="https://help.minecraft.net/hc/en-us/articles/16165590199181">no longer allows worlds to load if they are or if they contain symbolic links</a>.
+Obviously this will be a problem if you're using EnderChest to centralize
+and organize your world saves.</p>
+<p>By default, EnderChest will offer to create an <code>allowed_symlinks.txt</code> folder
+inside any 1.20+ instance that doesn't have one already and update the file to
+blanket-allow symbolic links into your EnderChest.</p>
+<p><strong>If you would prefer to do this by hand or not at all</strong>, you can edit your
+<code>enderchest.cfg</code> and change the value for <code>offer-to-update-symlink-allowlist</code> to <code>False</code>.
+EnderChest will never create any file or symlink without your consent and will
+never place a symlink pointing directly to a place outside of your EnderChest.</p>
+<p>If you would like to get a full report of all symlinks EnderChest places,
+you can run:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>enderchest<span class="w"> </span>place<span class="w"> </span>--verbose
+</span></code></pre></div>
+to get a full audit.</p>
+</div>
+<p>As EnderChest places all your links, it will stop if at any point there's already
+a file or a non-empty folder at that location. Sometimes that happens because
+you forgot to clean out an existing instance. Other times, your shulker box
+configurations might be <a href="../suggestions#collisions-and-conflicts">conflicting with each other</a>.
+Regardless, rather than just overwriting your data, EnderChest will ask you
+how you want to proceed. And once you've fixed the issue, you can just run</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>enderchest<span class="w"> </span>place
+</span></code></pre></div>
+<p>again--running <code>place</code> multiple times is completely safe (and is something you
+should do regularly! and particularly after any shulker box modification or file
+sync!).</p>
 <h2 id="managing-remotes">Managing Remotes</h2>
 <p>Once you've finished setting up an EnderChest on a given computer, the next
 thing to consider is setting it up on <em>another</em> one. To do that, you'll need
@@ -973,7 +1022,7 @@ install <a href="https://www.cygwin.com/install.html">Cygwin</a> and install
 depend on external binaries. Details on those are listed
 <a href="../suggestions#other-syncing-protocols">here</a>.</p>
 <p>To register a remote with your EnderChest, you just need to run the following command:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>enderchests<span class="w"> </span>&lt;remote&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>enderchests<span class="w"> </span>&lt;remote&gt;
 </span></code></pre></div>
 <p>where <code>&lt;remote&gt;</code> is the URI to the remote chest.</p>
 <h3 id="understanding-uris">Understanding URIs</h3>
@@ -981,7 +1030,7 @@ depend on external binaries. Details on those are listed
 or URI, is a way of referencing files or folders--oftentimes on other computers--
 in a standard way. URLs, like you're familiar with from web browsers, are a type
 of URI. The format of a URI typically follows the following schema:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&lt;protocol&gt;://[[&lt;username&gt;@]&lt;host&gt;[:port]&lt;path&gt;[?&lt;query&gt;]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&lt;protocol&gt;://[[&lt;username&gt;@]&lt;host&gt;[:port]&lt;path&gt;[?&lt;query&gt;]
 </span></code></pre></div>
 <p>The important bits right now are:
 - the protocol must be one that's supported by both EnderChest and by your machine
@@ -1006,8 +1055,8 @@ file name or
 <a href="https://www.oreilly.com/library/view/beginning-applescript/9780764574009/9780764574009_path_names_colon_traditional_mac_and_pos.html">POSIX</a>
 path as a URI. You can also get the URI to your current directory in Python
 by running the following code:
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_uri</span><span class="p">())</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_uri</span><span class="p">())</span>
 </span></code></pre></div>
 While that will give you the <a href="../suggestions#file-protocol"><code>file://</code> protocol</a>,
 URI you can then just replace the <code>file://</code> part (make sure not to grab
@@ -1017,10 +1066,10 @@ of your choice.</p>
 <h2 id="syncing">Syncing</h2>
 <p>Once you have some remote EnderChests set up, the way you sync with them is via
 the <code>close</code> and <code>open</code> actions:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>enderchest<span class="w"> </span>close
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>enderchest<span class="w"> </span>close
 </span></code></pre></div>
 <p>will push your local changes to all registered remote chests</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>enderchest<span class="w"> </span>open
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>enderchest<span class="w"> </span>open
 </span></code></pre></div>
 <p>will pull changes from your other EnderChests while</p>
 <div class="admonition info">
@@ -1044,7 +1093,7 @@ you five seconds to review the dry run log and interrupt the sync if things
 are about to go sideways (documentation for overriding this behavior is available
 in the <a href="../cli/#enderchest-open">CLI docs</a>).</p>
 <p>Finally, make sure to run:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>enderchest<span class="w"> </span>place
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>enderchest<span class="w"> </span>place
 </span></code></pre></div>
 <p>after a successful <code>enderchest open</code> to update all of your instances' symlinks.</p>
 
