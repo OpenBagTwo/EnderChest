@@ -194,7 +194,9 @@ class TestEnderChestCrafting:
 
         assert fs.ender_chest_config(minecraft_root).read_text() == original_config
 
-    def test_craft_chest_from_config(self, minecraft_root, home, caplog, monkeypatch):
+    def test_craft_chest_from_config(
+        self, minecraft_root, home, caplog, monkeypatch, capsys
+    ):
         # we'll be testing overwriting
         create_ender_chest(
             minecraft_root,
@@ -212,6 +214,8 @@ class TestEnderChestCrafting:
             remotes=("rsync://deck@steamdeck/home/deck/minecraft",),
             overwrite=True,
         )
+
+        _ = capsys.readouterr()  # suppress outputs
 
         assert not [record for record in caplog.records if record.levelname == "ERROR"]
 

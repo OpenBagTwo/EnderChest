@@ -265,18 +265,23 @@ class TestGather(ActionTestSuite):
     required_args = ("~",)
 
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
-    def test_gather_requires_at_least_one_search_path(self, with_root):
+    def test_gather_requires_at_least_one_search_path(self, with_root, capsys):
         more_args = ("--root", "/minecraft") if with_root else ()
         with pytest.raises(SystemExit):
             cli.parse_args(["enderchest", *self.action.split(), *more_args])
 
+        _ = capsys.readouterr()  # suppress outputs
+
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
-    def test_single_arg_interpreted_as_search_path(self, with_root):
+    def test_single_arg_interpreted_as_search_path(self, with_root, capsys):
         more_args = ("--root", ".") if with_root else ()
 
         _, root, _, options = cli.parse_args(
             ["enderchest", *self.action.split(), *more_args, "~"]
         )
+
+        _ = capsys.readouterr()  # suppress outputs
+
         assert (root.resolve(), options["search_paths"]) == (
             Path(".").resolve(),
             [Path("~")],
@@ -305,10 +310,12 @@ class TestGatherRemote(ActionTestSuite):
     required_args = ("sftp://openbagtwo@steamdeck/home/deck",)
 
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
-    def test_gather_requires_at_least_one_remote(self, with_root):
+    def test_gather_requires_at_least_one_remote(self, with_root, capsys):
         more_args = ("--root", "/minecraft") if with_root else ()
         with pytest.raises(SystemExit):
             cli.parse_args(["enderchest", *self.action.split(), *more_args])
+
+        _ = capsys.readouterr()  # suppress outputs
 
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
     def test_single_arg_interpreted_as_remote(self, with_root):
