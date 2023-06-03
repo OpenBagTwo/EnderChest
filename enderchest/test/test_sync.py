@@ -207,19 +207,35 @@ class TestFileSync:
             path.unlink(missing_ok=True)
             path.symlink_to(target, target_is_directory=target.is_dir())
 
-    def test_create_from_remote_chest(self, remote, minecraft_root):
-        craft.craft_ender_chest(
-            minecraft_root, copy_from=remote.geturl(), overwrite=True
-        )
+    @pytest.mark.parametrize("root_type", ("absolute", "relative"))
+    def test_create_from_remote_chest(
+        self, remote, minecraft_root, monkeypatch, root_type
+    ):
+        if root_type == "absolute":
+            root = minecraft_root
+        else:
+            root = Path(minecraft_root.name)
+            monkeypatch.chdir(minecraft_root.parent)
+
+        craft.craft_ender_chest(root, copy_from=remote.geturl(), overwrite=True)
 
         assert gather.load_ender_chest_remotes(minecraft_root) == [
             (remote, "closer than you think"),
             (urlparse("ipoac://yoursoul@birdhouse/minecraft"), "birdhouse"),
         ]
 
-    def test_open_grabs_files_from_upstream(self, minecraft_root, remote):
-        gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull")
+    @pytest.mark.parametrize("root_type", ("absolute", "relative"))
+    def test_open_grabs_files_from_upstream(
+        self, minecraft_root, remote, monkeypatch, root_type
+    ):
+        if root_type == "absolute":
+            root = minecraft_root
+        else:
+            root = Path(minecraft_root.name)
+            monkeypatch.chdir(minecraft_root.parent)
+
+        gather.update_ender_chest(root, remotes=(remote,))
+        r.sync_with_remotes(root, "pull")
         assert (
             minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
         ).read_text() == "it's okay"
@@ -278,9 +294,18 @@ class TestFileSync:
             minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
         ).read_text() == "chunky\n"
 
-    def test_close_overwrites_with_changes_from_local(self, minecraft_root, remote):
-        gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "push")
+    @pytest.mark.parametrize("root_type", ("absolute", "relative"))
+    def test_close_overwrites_with_changes_from_local(
+        self, minecraft_root, remote, monkeypatch, root_type
+    ):
+        if root_type == "absolute":
+            root = minecraft_root
+        else:
+            root = Path(minecraft_root.name)
+            monkeypatch.chdir(minecraft_root.parent)
+
+        gather.update_ender_chest(root, remotes=(remote,))
+        r.sync_with_remotes(root, "push")
         assert (
             path_from_uri(remote)
             / "EnderChest"

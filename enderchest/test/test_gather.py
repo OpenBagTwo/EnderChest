@@ -1,6 +1,7 @@
 """Tests around file discovery and registration"""
-import os.path
+import os
 import re
+from pathlib import Path
 
 import pytest
 
@@ -26,6 +27,19 @@ class TestListShulkerBoxes:
 
     def test_list_shulker_box_reports_the_boxes_in_order(self, minecraft_root, caplog):
         _ = gather.load_shulker_boxes(minecraft_root)
+        assert (
+            """0. global
+  1. 1.19
+  2. vanilla
+  3. optifine"""
+            in caplog.records[-1].msg
+        )
+
+    def test_list_shulker_box_doesnt_choke_on_relative_root(
+        self, minecraft_root, caplog, monkeypatch
+    ):
+        monkeypatch.chdir(minecraft_root.parent)
+        _ = gather.load_shulker_boxes(Path(minecraft_root.name))
         assert (
             """0. global
   1. 1.19
@@ -100,6 +114,28 @@ offer-to-update-symlink-allowlist = False
         instances = sorted(
             gather.gather_minecraft_instances(
                 minecraft_root, minecraft_root, official=False
+            ),
+            key=lambda instance: instance.name,
+        )
+
+        assert len(instances) == 3
+
+        assert all(
+            [
+                i.equals(
+                    minecraft_root, instances[idx - 1], utils.TESTING_INSTANCES[idx]
+                )
+                for idx in range(1, 4)
+            ]
+        )
+
+    def test_instance_search_doesnt_choke_on_relative_root(
+        self, minecraft_root, monkeypatch
+    ):
+        monkeypatch.chdir(minecraft_root.parent)
+        instances = sorted(
+            gather.gather_minecraft_instances(
+                Path(minecraft_root.name), Path(minecraft_root.name), official=False
             ),
             key=lambda instance: instance.name,
         )
