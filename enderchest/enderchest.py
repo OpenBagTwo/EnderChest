@@ -157,7 +157,7 @@ class EnderChest:
         self._instances = [
             old_instance
             for old_instance in self._instances
-            if not i.equals(Path(self._uri.path), instance, old_instance)
+            if not i.equals(path_from_uri(self._uri), instance, old_instance)
         ]
         name = instance.name
         counter = 0
