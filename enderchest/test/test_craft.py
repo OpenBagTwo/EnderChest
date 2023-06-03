@@ -194,12 +194,25 @@ class TestEnderChestCrafting:
 
         assert fs.ender_chest_config(minecraft_root).read_text() == original_config
 
+    @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_craft_chest_from_config(
-        self, minecraft_root, home, caplog, monkeypatch, capsys
+        self,
+        minecraft_root,
+        home,
+        caplog,
+        monkeypatch,
+        capsys,
+        root_type,
     ):
+        if root_type == "absolute":
+            root = minecraft_root
+        else:
+            root = Path(minecraft_root.name)
+            monkeypatch.chdir(minecraft_root.parent)
+
         # we'll be testing overwriting
         create_ender_chest(
-            minecraft_root,
+            root,
             EnderChest(
                 "sftp://openbagtwo@battlestation" + minecraft_root.absolute().as_posix()
             ),
@@ -223,6 +236,7 @@ class TestEnderChestCrafting:
         assert len(chest.instances) == 4
         assert len(chest.remotes) == 1
 
+    @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_giving_default_responses_results_in_the_expected_chest(
         self,
         monkeypatch,
@@ -230,11 +244,18 @@ class TestEnderChestCrafting:
         home,
         capsys,
         caplog,
+        root_type,
     ):
+        if root_type == "absolute":
+            root = minecraft_root
+        else:
+            root = Path(minecraft_root.name)
+            monkeypatch.chdir(minecraft_root.parent)
+
         script_reader = utils.scripted_prompt([""] * 8)
         monkeypatch.setattr("builtins.input", script_reader)
 
-        chest = craft.specify_ender_chest_from_prompt(minecraft_root)
+        chest = craft.specify_ender_chest_from_prompt(root)
 
         _ = capsys.readouterr()  # suppress outputs
 
