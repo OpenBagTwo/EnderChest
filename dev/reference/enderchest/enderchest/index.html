@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../remote/">
+        <link rel="prev" href="../place/">
       
       
-        <link rel="next" href="../place/">
+        <link rel="next" href="../remote/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -381,6 +381,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../instance/" class="md-nav__link">
+        instance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -395,8 +451,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
+      <a href="../place/" class="md-nav__link">
+        place
       </a>
     </li>
   
@@ -547,78 +603,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -645,8 +631,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
       </a>
     </li>
   
@@ -1540,7 +1540,7 @@ when actually calling the sync commands.</p></td>
 </span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span> <span class="o">=</span> <span class="p">[</span>
 </span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>            <span class="n">old_instance</span>
 </span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>            <span class="k">for</span> <span class="n">old_instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span>
-</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">instance</span><span class="p">,</span> <span class="n">old_instance</span><span class="p">)</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">path_from_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">),</span> <span class="n">instance</span><span class="p">,</span> <span class="n">old_instance</span><span class="p">)</span>
 </span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="p">]</span>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>        <span class="n">name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">name</span>
 </span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2160,7 +2160,7 @@ name changed or somesuch)</p></td>
 </span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span> <span class="o">=</span> <span class="p">[</span>
 </span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>        <span class="n">old_instance</span>
 </span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="k">for</span> <span class="n">old_instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span>
-</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">instance</span><span class="p">,</span> <span class="n">old_instance</span><span class="p">)</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">path_from_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">),</span> <span class="n">instance</span><span class="p">,</span> <span class="n">old_instance</span><span class="p">)</span>
 </span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>    <span class="p">]</span>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>    <span class="n">name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">name</span>
 </span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>

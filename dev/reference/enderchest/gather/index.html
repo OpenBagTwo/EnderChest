@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../filesystem/">
+        <link rel="prev" href="../cli/">
       
       
-        <link rel="next" href="../cli/">
+        <link rel="next" href="../craft/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -381,76 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../instance/" class="md-nav__link">
         instance
       </a>
@@ -465,8 +395,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
+      <a href="../cli/" class="md-nav__link">
+        cli
       </a>
     </li>
   
@@ -671,8 +601,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -699,8 +685,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
       </a>
     </li>
   
@@ -1830,7 +1830,7 @@ construct relative paths.</p></td>
 </span><span id="__span-0-443"><a id="__codelineno-0-443" name="__codelineno-0-443"></a>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mc_instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
 </span><span id="__span-0-444"><a id="__codelineno-0-444" name="__codelineno-0-444"></a>        <span class="k">try</span><span class="p">:</span>
 </span><span id="__span-0-445"><a id="__codelineno-0-445" name="__codelineno-0-445"></a>            <span class="n">instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mc_instance</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span>
-</span><span id="__span-0-446"><a id="__codelineno-0-446" name="__codelineno-0-446"></a>                <span class="n">root</span><span class="o">=</span><span class="n">mc_instance</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">minecraft_root</span><span class="p">)</span>
+</span><span id="__span-0-446"><a id="__codelineno-0-446" name="__codelineno-0-446"></a>                <span class="n">root</span><span class="o">=</span><span class="n">mc_instance</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">minecraft_root</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
 </span><span id="__span-0-447"><a id="__codelineno-0-447" name="__codelineno-0-447"></a>            <span class="p">)</span>
 </span><span id="__span-0-448"><a id="__codelineno-0-448" name="__codelineno-0-448"></a>        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
 </span><span id="__span-0-449"><a id="__codelineno-0-449" name="__codelineno-0-449"></a>            <span class="c1"># TODO: if not Windows, try making relative to &quot;~&quot;</span>
