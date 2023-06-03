@@ -106,6 +106,21 @@ class TestSingleShulkerPlace:
         )
 
     @utils.parametrize_over_instances("official", "axolotl")
+    def test_place_doesnt_choke_on_relative_root(
+        self, minecraft_root, instance, monkeypatch
+    ):
+        monkeypatch.chdir(minecraft_root.parent)
+        place.place_ender_chest(Path(minecraft_root.name))
+
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+
+        assert not (instance_folder / "config").is_symlink()
+
+        assert (instance_folder / "config" / "iris.properties").resolve() == (
+            minecraft_root / "EnderChest" / "global" / "config" / "iris.properties"
+        )
+
+    @utils.parametrize_over_instances("official", "axolotl")
     def test_place_is_able_to_place_root_level_files(self, minecraft_root, instance):
         place.place_ender_chest(minecraft_root)
 

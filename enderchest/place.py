@@ -171,7 +171,11 @@ def place_ender_chest(
             PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
 
             resources = set(_rglob(box_root, shulker_box.max_link_depth))
-            resources.remove(fs.shulker_box_config(minecraft_root, shulker_box.name))
+            resources.remove(
+                fs.shulker_box_config(minecraft_root, shulker_box.name)
+                .expanduser()
+                .absolute()
+            )
 
             match_exit = "pass"
             for link_folder in shulker_box.link_folders:
