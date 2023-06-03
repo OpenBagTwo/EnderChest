@@ -443,7 +443,7 @@ def gather_minecraft_instances(
     for i, mc_instance in enumerate(instances):
         try:
             instances[i] = mc_instance._replace(
-                root=mc_instance.root.relative_to(minecraft_root.absolute())
+                root=mc_instance.root.relative_to(minecraft_root.resolve())
             )
         except ValueError:
             # TODO: if not Windows, try making relative to "~"
