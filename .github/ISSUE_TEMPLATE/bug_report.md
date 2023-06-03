@@ -27,7 +27,7 @@ assignees: OpenBagTwo
 <!-- How painful is this bug? Example severity levels (feel free to choose your own and be as detailed as you like)
 
 - Trivial
-- Annoyance
+- Annoying
 - Painful
 - Gamebreaking
 - World-ending (oh no!)
