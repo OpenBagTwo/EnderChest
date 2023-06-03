@@ -248,11 +248,13 @@ class TestEnderChestCrafting:
     ):
         if root_type == "absolute":
             root = minecraft_root
+            n_responses = 8
         else:
             root = Path(minecraft_root.name)
             monkeypatch.chdir(minecraft_root.parent)
+            n_responses = 9  # because now cwd != minecraft root
 
-        script_reader = utils.scripted_prompt([""] * 8)
+        script_reader = utils.scripted_prompt([""] * n_responses)
         monkeypatch.setattr("builtins.input", script_reader)
 
         chest = craft.specify_ender_chest_from_prompt(root)
