@@ -1,74 +1,17 @@
 """Low-level functionality for synchronizing across different machines"""
-import getpass
 import importlib
-import os
-import socket
-from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterable
-from urllib.parse import ParseResult, unquote
-from urllib.request import url2pathname
+from typing import Generator, Iterable
+from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER
+from .utils import get_default_netloc, path_from_uri, render_remote
 
 SUPPORTED_PROTOCOLS = ("rsync", "file")
 
 DEFAULT_PROTOCOL = SUPPORTED_PROTOCOLS[0]
-
-
-def get_default_netloc() -> str:
-    """Compile a netloc from environment variables, etc.
-
-    Returns
-    -------
-    str
-        The default netloc, which is {user}@{hostname}
-    """
-    return f"{getpass.getuser()}@{socket.gethostname()}".lower()
-
-
-def render_remote(alias: str, uri: ParseResult) -> str:
-    """Render a remote to a descriptive string
-
-    Parameters
-    ----------
-    alias : str
-        The name of the remote
-    uri : ParseResult
-        The parsed URI for the remote
-
-    Returns
-    -------
-    str
-        {uri_string} [({alias})]}
-            (if different from the URI hostname)
-    """
-    uri_string = uri.geturl()
-
-    if uri.hostname != alias:
-        uri_string += f" ({alias})"
-    return uri_string
-
-
-@contextmanager
-def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
-    """Grab a file from a remote filesystem by its URI and read its contents
-
-    Parameters
-    ----------
-    uri : parsed URI
-        The URI of the file to read
-
-    Yields
-    ------
-    Path
-        A path to a local (temp) copy of the file
-    """
-    with TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
-        pull(uri, Path(tmpdir))
-        yield Path(tmpdir) / Path(uri.path).name
 
 
 def pull(
@@ -139,29 +82,30 @@ def push(
         )
 
 
-def path_from_uri(uri: ParseResult) -> Path:
-    """Extract and unquote the path component of a URI to turn it into a pathlib.Path
-
-    h/t https://stackoverflow.com/a/61922504
+@contextmanager
+def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
+    """Grab a file from a remote filesystem by its URI and read its contents
 
     Parameters
     ----------
-    uri : ParseResult
-        The parsed URI to extract the path from
+    uri : parsed URI
+        The URI of the file to read
 
-    Returns
-    -------
+    Yields
+    ------
     Path
-        The path part of the URI as a Path
+        A path to a local (temp) copy of the file
     """
-    host = "{0}{0}{mnt}{0}".format(os.path.sep, mnt=uri.netloc)
-    return Path(os.path.abspath(os.path.join(host, url2pathname(unquote(uri.path)))))
+    with TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+        pull(uri, Path(tmpdir))
+        yield Path(tmpdir) / Path(uri.path).name
 
 
 __all__ = [
     "SYNC_LOGGER",
     "SUPPORTED_PROTOCOLS",
     "DEFAULT_PROTOCOL",
+    "get_default_netloc",
     "render_remote",
     "remote_file",
     "path_from_uri",
