@@ -1,7 +1,9 @@
 """rsync sync implementation. Relies on the user having rsync installed on their system"""
 import logging
+import os.path
 import shutil
 import subprocess
+from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import ParseResult
@@ -50,40 +52,47 @@ def run_rsync(
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
     rsync_flags : str, optional
-        By default, rsync will be run using the flags "avzs" which means:
-
-          - archive mode
-          - verbose
-          - use compression
+        By default, rsync will be run using the flags "shaz" which means:
           - no space splitting
+          - use output (file sizes, mostly) human-readable
+          - archive mode (see: https://www.baeldung.com/linux/rsync-archive-mode)
+          - compress data during transfer
 
         Advanced users may choose to override these options, but **you do so
         at your own peril**.
+
+    Raises
+    ------
+    TimeoutError
+        If the rsync operation times out before completion
+    RuntimeError
+        If the rsync operation fails for any other reason
 
     Notes
     -----
     This method does not perform any validation or normalization of the source,
     destination, exclude-list, additional arguments or rsync options.
     """
-    rsync_flags = rsync_flags or "avzs"
-    log_level = logging.INFO if dry_run else logging.DEBUG
+    rsync_flags = rsync_flags or "shaz"
 
     args: list[str] = [RSYNC, f"-{rsync_flags}"]  # type: ignore[list-item]
     if delete:
         args.append("--delete")
     if dry_run:
-        args.append("--dry-run")
+        args.extend(("--dry-run", "--stats", "--out-format=%i %n"))
+    else:
+        args.append("--info=progress2")
     for pattern in exclude:
         args.extend(("--exclude", pattern))
     args.extend(additional_args)
     args.extend((source, destination_folder))
 
-    SYNC_LOGGER.log(log_level, f"Executing the following command:\n  {' '.join(args)}")
+    SYNC_LOGGER.debug(f"Executing the following command:\n  {' '.join(args)}")
 
     with subprocess.Popen(
         args,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE if dry_run else None,
+        stderr=subprocess.PIPE,
         cwd=working_directory,
     ) as proc:
         if timeout:
@@ -91,15 +100,127 @@ def run_rsync(
                 proc.wait(timeout)
             except subprocess.TimeoutExpired:
                 proc.kill()
-                SYNC_LOGGER.warning(
-                    proc.stdout.read().decode("UTF-8")  # type: ignore[union-attr]
-                )
+                if proc.stdout is not None:
+                    if output_log := proc.stdout.read().decode("UTF-8"):
+                        SYNC_LOGGER.warning(output_log)
+                if proc.stderr is not None:
+                    if error_log := proc.stderr.read().decode("UTF-8"):
+                        SYNC_LOGGER.error(error_log)
                 raise TimeoutError("Timeout reached.")
 
-        SYNC_LOGGER.log(
-            log_level,
-            proc.stdout.read().decode("UTF-8"),  # type: ignore[union-attr]
-        )
+        if proc.stdout is not None:
+            if output_log := proc.stdout.read().decode("UTF-8"):
+                summarize_rsync_report(output_log)
+
+        if proc.stderr is not None:
+            if error_log := proc.stderr.read().decode("UTF-8"):
+                raise RuntimeError(error_log)
+
+
+def summarize_rsync_report(raw_output: str, depth: int = 2) -> None:
+    """Take the captured output from running
+    `rsync -ha --out-format="%i %n" --stats`
+    and report a high-level summary to the logging.INFO level
+
+    Parameters
+    ----------
+    raw_output : str
+        The raw output captured from running the rsync command
+    depth : int
+        How many directories to go down from the root to generate the summary.
+        Default is 2 (just report on top-level files and folders within the
+        source folder).
+
+    Notes
+    -----
+    The rsync man page (https://linux.die.net/man/1/rsync) describes the output
+    format as... "cryptic," which I find rather charitable. The relevant bits
+    are that `--out-format="%i %n"` produces:
+    - `%i` : a string of 11 characters that gives various metadata about the file
+      transfer operation (is it a file, a directory or a link? Is it being
+      sent or received? Created, updated or deleted?)
+    - `%n`: the path of the file (or whatever), unquoted, un-escaped
+    """
+    summary: dict[str, dict[str, int] | str] = defaultdict(
+        lambda: {"create": 0, "update": 0, "delete": 0}
+    )
+    stats: list[str] = []
+    for line in raw_output.splitlines():
+        if line == "":  # skip empty lines
+            continue
+
+        info = line[:11]
+        full_path = os.path.normpath(line[12:])
+        path_key = os.sep.join(full_path.split(os.sep)[:depth])
+
+        if info == "*deleting  ":
+            if full_path == path_key:
+                summary[path_key] = "delete"
+            else:
+                entry = summary[path_key]
+                if not isinstance(entry, str):
+                    entry["delete"] += 1
+                # otherwise the whole thing is being deleted
+        elif info[2:] == "+++++++++":  # this is a creation
+            if full_path == path_key:
+                summary[path_key] = "create"
+            else:
+                if info[1] != "d":  # don't count directories
+                    entry = summary[path_key]
+                    if not isinstance(entry, str):
+                        entry["create"] += 1
+                    # otherwise the whole key is being created
+        elif info[:2] in ("<f", ">f"):  # file transfer
+            # and remember that creates were caught above, so this must be an update
+            if full_path == path_key:
+                summary[path_key] = "update"
+            else:
+                entry = summary[path_key]
+                if isinstance(entry, str):
+                    # this should never happen
+                    SYNC_LOGGER.error(
+                        f"Error parsing {line}:"
+                        f" {path_key} should be getting completely"
+                        f" {entry[:-1].title()}ed"
+                    )
+                else:
+                    entry["update"] += 1
+        elif info[:2] == "cL":  # this is replacing a link, as far as I can tell
+            if full_path == path_key:
+                summary[path_key] = "update"
+            else:
+                entry = summary[path_key]
+                if isinstance(entry, str):
+                    # this should never happen
+                    SYNC_LOGGER.error(
+                        f"Error parsing {line}:"
+                        f" {path_key} should be getting completely"
+                        f" {entry[:-1].title()}ed"
+                    )
+                else:
+                    entry["update"] += 1
+        elif info[:1] == ".":
+            # this just means permissions or dates are being updated or something
+            pass
+        else:  # then hopefully this is part of the stats report
+            stats.append(line)
+            continue
+
+        SYNC_LOGGER.debug(line)
+
+    for path_key, report in sorted(summary.items()):
+        if isinstance(report, str):
+            # nice that these verbs follow the same pattern
+            SYNC_LOGGER.info(f"{report[:-1].title()}ing {path_key}")
+        else:
+            SYNC_LOGGER.info(
+                f"Within {path_key}...\n"
+                + "\n".join(
+                    f"  - {op[:-1].title()}ing {count} files"
+                    for op, count in report.items()
+                )
+            )
+    SYNC_LOGGER.info("\n" + "\n".join(stats))
 
 
 def pull(
@@ -110,7 +231,6 @@ def pull(
     use_daemon: bool = False,
     timeout: int | None = None,
     delete: bool = True,
-    rsync_flags: str | None = None,
     rsync_args: Iterable[str] | None = None,
 ) -> None:
     """Sync an upstream file or folder into the specified location using rsync.
@@ -137,18 +257,9 @@ def pull(
     delete : bool
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
-    rsync_flags : str, optional
-        By default, rsync will be run using the flags "avzs" which means:
-
-          - archive mode
-          - verbose
-          - use compression
-          - no space splitting
-
-        Advanced users may choose to override these options, but **you do so
-        at your own peril**.
     rsync_args: list of str, optional
-        Any additional arguments to pass into rsync
+        Any additional arguments to pass into rsync. Note that rsync is run by
+        default with the flags: `-shaz`
 
     Raises
     ------
@@ -183,7 +294,6 @@ def pull(
         exclude,
         *(rsync_args or ()),
         timeout=timeout,
-        rsync_flags=rsync_flags,
     )
 
 
@@ -195,7 +305,6 @@ def push(
     use_daemon: bool = False,
     timeout: int | None = None,
     delete: bool = True,
-    rsync_flags: str | None = None,
     rsync_args: Iterable[str] | None = None,
 ) -> None:
     """Sync a local file or folder into the specified location using rsync.
@@ -222,18 +331,9 @@ def push(
     delete : bool
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
-    rsync_flags : str, optional
-        By default, rsync will be run using the flags "avzs" which means:
-
-          - archive mode
-          - verbose
-          - use compression
-          - no space splitting
-
-        Advanced users may choose to override these options, but **you do so
-        at your own peril**.
     rsync_args: list of str, optional
-        Any additional arguments to pass into rsync
+        Any additional arguments to pass into rsync. Note that rsync is run by
+        default with the flags: `-shaz`
 
     Notes
     -----
@@ -260,7 +360,6 @@ def push(
         exclude,
         *(rsync_args or ()),
         timeout=timeout,
-        rsync_flags=rsync_flags,
     )
 
 
