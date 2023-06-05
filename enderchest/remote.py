@@ -213,6 +213,7 @@ def sync_with_remotes(
                 ValueError,
                 NotImplementedError,
                 TimeoutError,
+                RuntimeError,
             ) as sync_fail:
                 SYNC_LOGGER.warning(
                     f"Could not sync changes with {render_remote(alias, remote_uri)}:"
