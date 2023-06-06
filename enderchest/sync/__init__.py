@@ -97,7 +97,7 @@ def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
         A path to a local (temp) copy of the file
     """
     with TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
-        pull(uri, Path(tmpdir))
+        pull(uri, Path(tmpdir), verbosity=-1)
         yield Path(tmpdir) / Path(uri.path).name
 
 
