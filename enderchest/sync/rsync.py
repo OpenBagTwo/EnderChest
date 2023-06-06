@@ -1,5 +1,4 @@
 """rsync sync implementation. Relies on the user having rsync installed on their system"""
-import logging
 import os.path
 import shutil
 import subprocess
@@ -24,6 +23,7 @@ def run_rsync(
     exclude: Iterable[str],
     *additional_args: str,
     timeout: int | None = None,
+    verbosity: int = 0,
     rsync_flags: str | None = None,
 ) -> None:
     """Run an operation with rsync
@@ -51,8 +51,27 @@ def run_rsync(
     timeout : int, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
+    verbosity : int
+        A modifier for how much info to output either to stdout or the INFO-level
+        logs. At...
+
+          - verbosity = -2 : No information will be printed, even on dry runs
+          - verbosity = -1 : The sync itself will be silent. Dry runs will only
+                             report the sync statistics.
+          - verbosity =  0 : Actual syncs will display a progress bar. Dry run
+                             reports will summarize the changes to each shulker
+                             box in addition to reporting the sync statistics .
+          - verbosity =  1 : Actual syncs will report the progress of each file
+                             transfer. Dry runs will report on each file to
+                             be created, updated or deleted.
+          - verbosity =  2 : Dry runs and syncs will print or log the output
+                             of rsync run using the `-vv` modifier
+
+        Verbosity values outside of this range will simply be capped / floored
+        to [-2, 2].
     rsync_flags : str, optional
         By default, rsync will be run using the flags "shaz" which means:
+
           - no space splitting
           - use output (file sizes, mostly) human-readable
           - archive mode (see: https://www.baeldung.com/linux/rsync-archive-mode)
@@ -79,9 +98,20 @@ def run_rsync(
     if delete:
         args.append("--delete")
     if dry_run:
-        args.extend(("--dry-run", "--stats", "--out-format=%i %n"))
+        args.extend(("--dry-run", "--stats"))
+        if verbosity < 1:
+            # at 1+ we don't need it to be machine-parseable
+            args.append("--out-format=%i %n")
     else:
-        args.append("--info=progress2")
+        if verbosity >= 0:
+            args.append("--stats")
+        if verbosity == 0:
+            args.append("--info=progress2")
+        if verbosity >= 1:
+            args.append("--progress")
+    if verbosity > 0:
+        args.append("-" + "v" * verbosity)
+
     for pattern in exclude:
         args.extend(("--exclude", pattern))
     args.extend(additional_args)
@@ -110,16 +140,25 @@ def run_rsync(
 
         if proc.stdout is not None:
             if output_log := proc.stdout.read().decode("UTF-8"):
-                summarize_rsync_report(output_log)
+                if verbosity > 0:
+                    dry_run_output = output_log.splitlines()
+                else:
+                    dry_run_output = summarize_rsync_report(output_log)
+                    SYNC_LOGGER.info("\nSUMMARY\n-------")
+                for line in dry_run_output:
+                    if _is_important_stats_line(line):
+                        SYNC_LOGGER.log(25, line)
+                    else:
+                        SYNC_LOGGER.debug(line)
 
         if proc.stderr is not None:
             if error_log := proc.stderr.read().decode("UTF-8"):
                 raise RuntimeError(error_log)
 
 
-def summarize_rsync_report(raw_output: str, depth: int = 2) -> None:
+def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
     """Take the captured output from running
-    `rsync -ha --out-format="%i %n" --stats`
+    `rsync -ha --out-format="%i %n"`
     and report a high-level summary to the logging.INFO level
 
     Parameters
@@ -130,6 +169,12 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> None:
         How many directories to go down from the root to generate the summary.
         Default is 2 (just report on top-level files and folders within the
         source folder).
+
+    Returns
+    -------
+    list of str
+        Any lines that weren't part of the rsync report (and were probably
+        part of `--stats`?)
 
     Notes
     -----
@@ -220,7 +265,31 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> None:
                     for op, count in report.items()
                 )
             )
-    SYNC_LOGGER.info("\n" + "\n".join(stats))
+    return stats
+
+
+def _is_important_stats_line(line: str) -> bool:
+    """Determine if a stats line is worth logging at the INFO level (or whether
+    it should be relegated to the DEBUG log)
+
+    Parameters
+    ----------
+    line : str
+        The log line to evaluate
+
+    Returns
+    -------
+    bool
+        True if and only if the line is identified as important
+    """
+    return line.startswith(
+        (
+            "Number of created files:",
+            "Number of deleted files:",
+            "Number of regular files transferred:",
+            "Total transferred file size:",
+        )
+    )
 
 
 def pull(
@@ -231,6 +300,7 @@ def pull(
     use_daemon: bool = False,
     timeout: int | None = None,
     delete: bool = True,
+    verbosity: int = 0,
     rsync_args: Iterable[str] | None = None,
 ) -> None:
     """Sync an upstream file or folder into the specified location using rsync.
@@ -257,6 +327,9 @@ def pull(
     delete : bool
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
+    verbosity : int
+        A modifier for how much info to output either to stdout or the INFO-level
+        logs. Defaults to 0.
     rsync_args: list of str, optional
         Any additional arguments to pass into rsync. Note that rsync is run by
         default with the flags: `-shaz`
@@ -285,6 +358,9 @@ def pull(
     else:
         remote_path = uri_to_ssh(remote_uri)
 
+    if rsync_args:
+        raise NotImplementedError
+
     run_rsync(
         local_path.parent,
         remote_path,
@@ -294,6 +370,7 @@ def pull(
         exclude,
         *(rsync_args or ()),
         timeout=timeout,
+        verbosity=verbosity,
     )
 
 
@@ -305,6 +382,7 @@ def push(
     use_daemon: bool = False,
     timeout: int | None = None,
     delete: bool = True,
+    verbosity: int = 0,
     rsync_args: Iterable[str] | None = None,
 ) -> None:
     """Sync a local file or folder into the specified location using rsync.
@@ -331,6 +409,9 @@ def push(
     delete : bool
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
+    verbosity : int
+        A modifier for how much info to output either to stdout or the INFO-level
+        logs. Defaults to 0.
     rsync_args: list of str, optional
         Any additional arguments to pass into rsync. Note that rsync is run by
         default with the flags: `-shaz`
@@ -351,6 +432,9 @@ def push(
     else:
         remote_path = uri_to_ssh(remote_uri)
 
+    if rsync_args:
+        raise NotImplementedError
+
     run_rsync(
         local_path.parent,
         local_path.name,
@@ -360,6 +444,7 @@ def push(
         exclude,
         *(rsync_args or ()),
         timeout=timeout,
+        verbosity=verbosity,
     )
 
 
