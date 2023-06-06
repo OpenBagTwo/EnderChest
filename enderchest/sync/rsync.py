@@ -190,7 +190,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> None:
                 summary[path_key] = "update"
             else:
                 entry = summary[path_key]
-                if isinstance(entry, str):
+                if isinstance(entry, str):  # pragma: no cover
                     # this should never happen
                     SYNC_LOGGER.error(
                         f"Error parsing {line}:"
@@ -216,7 +216,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> None:
             SYNC_LOGGER.info(
                 f"Within {path_key}...\n"
                 + "\n".join(
-                    f"  - {op[:-1].title()}ing {count} files"
+                    f"  - {op[:-1].title()}ing {count} file{'' if count == 1 else 's'}"
                     for op, count in report.items()
                 )
             )
