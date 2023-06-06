@@ -543,9 +543,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
             if "verbosity" in argspec.args + argspec.kwonlyargs:
                 action_kwargs["verbosity"] = verbosity
 
-            log_level = logging.INFO - 10 * verbosity
-            if log_level == logging.NOTSET:  # that's 0, annoyingly enough
-                log_level -= 1
+            log_level = loggers.verbosity_to_log_level(verbosity)
 
             return (
                 action,

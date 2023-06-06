@@ -80,13 +80,13 @@ class ActionTestSuite:
     @pytest.mark.parametrize(
         "verbosity_flag, expected_verbosity",
         (
-            ("-v", logging.DEBUG),
-            ("-q", logging.WARNING),
-            ("--verbose", logging.DEBUG),
-            ("--quiet", logging.WARNING),
-            ("-vv", -1),
-            ("-qq", logging.ERROR),
-            ("-vvqvqqvqv", logging.DEBUG),
+            ("-v", logging.DEBUG - 9),
+            ("-q", logging.WARNING - 9),
+            ("--verbose", logging.DEBUG - 9),
+            ("--quiet", logging.WARNING - 9),
+            ("-vv", -9),
+            ("-qq", logging.ERROR - 9),
+            ("-vvqvqqvqv", logging.DEBUG - 9),
         ),
     )
     def test_altering_verbosity(self, verbosity_flag, expected_verbosity):
