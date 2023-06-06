@@ -36,6 +36,9 @@ plugins:
         options:
           docstring_style: numpy
           enable_inventory: true
+- coverage:
+    page_name: coverage
+    html_report_dir: htmlcov
 watch:
 - enderchest
 extra:
