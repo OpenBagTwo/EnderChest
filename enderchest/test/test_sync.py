@@ -1,4 +1,5 @@
 """Tests around file transfer functionality."""
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -361,3 +362,59 @@ class TestFileSync:
 )
 class TestRsyncSync(TestFileSync):
     protocol = "rsync"
+
+    def test_rsync_summary_summarizes_at_the_shulker_box_level(
+        self, minecraft_root, remote, caplog
+    ):
+        caplog.set_level(logging.DEBUG)
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, "pull", dry_run=True)
+        info_log = ""
+        debug_log = ""
+        for record in caplog.records:
+            if record.levelname == "INFO":
+                info_log += record.msg + "\n"
+            elif record.levelname == "DEBUG":
+                debug_log += record.msg + "\n"
+
+        # meta-test--make sure that the creation is actually happening
+        assert (
+            ">f+++++++++ " + os.path.sep.join(("EnderChest", "1.19", ".bobby", "chunk"))
+            in debug_log
+        )
+
+        # meta-test--make sure nothing in the report at the shulker+1 level
+        assert os.path.sep.join(("EnderChest", "1.19", ".bobby")) not in info_log
+
+        assert (
+            f"Within EnderChest{os.path.sep}1.19..."
+            "\n  - Creating 1 file"
+            "\n  - Updating 1 file"  # there's also the save symlink
+            "\n  - Deleting 0 files"
+        ) in info_log
+
+    def test_rsync_summary_doesnt_report_details_if_the_whole_shulker_is_being_created(
+        self, minecraft_root, remote, caplog
+    ):
+        caplog.set_level(logging.DEBUG)
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, "pull", dry_run=True)
+        info_log = ""
+        debug_log = ""
+        for record in caplog.records:
+            if record.levelname == "INFO":
+                info_log += record.msg + "\n"
+            elif record.levelname == "DEBUG":
+                debug_log += record.msg + "\n"
+
+        # meta-test--make sure that the creation is actually happening
+        assert (
+            ">f+++++++++ "
+            + os.path.sep.join(("EnderChest", "optifine", "mods", "optifine.jar"))
+            in debug_log
+        )
+
+        # meta-test--make sure nothing in the report at the shulker+1 level
+        assert os.path.sep.join(("EnderChest", "optifine", "mods")) not in info_log
+
+        assert f"Creating EnderChest{os.path.sep}optifine" in info_log
