@@ -90,6 +90,12 @@ class TestFileIgnorePatternBuilder:
 class TestFileSync:
     protocol = "file"
 
+    @pytest.fixture(autouse=True)
+    def check_output_suppression(self, capfd):
+        # teardown that helps me figure out where I need to add a -q flag
+        yield
+        assert capfd.readouterr().out == ""
+
     @pytest.fixture
     def remote(self, tmp_path, minecraft_root, home):
         utils.pre_populate_enderchest(
@@ -210,7 +216,7 @@ class TestFileSync:
 
     @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_create_from_remote_chest(
-        self, remote, minecraft_root, monkeypatch, root_type
+        self, remote, minecraft_root, monkeypatch, root_type, capfd
     ):
         if root_type == "absolute":
             root = minecraft_root
@@ -225,6 +231,9 @@ class TestFileSync:
             (urlparse("ipoac://yoursoul@birdhouse/minecraft"), "birdhouse"),
         ]
 
+        # test that the enderchest spec-fetch is quiet by default
+        assert capfd.readouterr().out == ""
+
     @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_open_grabs_files_from_upstream(
         self, minecraft_root, remote, monkeypatch, root_type
@@ -236,7 +245,7 @@ class TestFileSync:
             monkeypatch.chdir(minecraft_root.parent)
 
         gather.update_ender_chest(root, remotes=(remote,))
-        r.sync_with_remotes(root, "pull")
+        r.sync_with_remotes(root, "pull", verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
         ).read_text() == "it's okay"
@@ -253,7 +262,7 @@ class TestFileSync:
 
     def test_open_overwrites_local_files(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
         ).read_text() == "lab-grown!"
@@ -263,25 +272,25 @@ class TestFileSync:
 
     def test_open_copies_over_symlinks(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "1.19" / "saves" / "olam"
         ).resolve() != (minecraft_root / "worlds" / "olam")
 
     def test_open_processes_deletions_from_upstream(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert not (minecraft_root / "EnderChest" / "global").exists()
 
     def test_open_does_not_overwrite_enderchest(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         original_config = fs.ender_chest_config(minecraft_root).read_text()
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert original_config == fs.ender_chest_config(minecraft_root).read_text()
 
     def test_open_not_touch_top_level_dot_folders(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / ".git" / "log"
         ).read_text() == "i committed some stuff\n"
@@ -290,7 +299,7 @@ class TestFileSync:
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
         ).read_text() == "chunky\n"
@@ -306,7 +315,7 @@ class TestFileSync:
             monkeypatch.chdir(minecraft_root.parent)
 
         gather.update_ender_chest(root, remotes=(remote,))
-        r.sync_with_remotes(root, "push")
+        r.sync_with_remotes(root, "push", verbosity=-1)
         assert (
             path_from_uri(remote)
             / "EnderChest"
@@ -330,14 +339,14 @@ class TestFileSync:
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "push")
+        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
 
     def test_open_stops_at_first_successful_sync(self, minecraft_root, remote, caplog):
         gather.update_ender_chest(
             minecraft_root, remotes=(remote, "prayer://unreachable")
         )
-        r.sync_with_remotes(minecraft_root, "pull")
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         warnings = [
             record.msg for record in caplog.records if record.levelname == "WARNING"
         ]
@@ -348,7 +357,7 @@ class TestFileSync:
         gather.update_ender_chest(
             minecraft_root, remotes=(remote, "prayer://unreachable")
         )
-        r.sync_with_remotes(minecraft_root, "push")
+        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         warnings = [
             record.msg for record in caplog.records if record.levelname == "WARNING"
         ]
