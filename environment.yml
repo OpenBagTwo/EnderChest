@@ -27,4 +27,5 @@ dependencies:
 - mkdocs-gen-files
 - pip:
   - mkdocs-section-index
+  - mkdocs-coverage
   - semantic-version>=2.7

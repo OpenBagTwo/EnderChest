@@ -23,6 +23,19 @@ jobs:
       run: |
         git config --global user.name docs-golem
         git config --global user.email losthemobvote@openbagtwo.net
+    - name: run tests (to generate coverage report)
+      run: |
+        pytest --cov enderchest --ignore-glob="docs/**" --cov-report=html --cov-report=term
+    - name: generate coverage badge
+      uses: tj-actions/coverage-badge-py@v2
+    - name: generate lint badge
+      run: |
+        source $CONDA/bin/activate enderchest
+        pylint enderchest --output docs/lint-report.txt
+        anybadge -l pylint -v $(cat docs/lint-report.txt | sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p') -f pylint.svg 0=darkred 4=red 7=orange 9=yellow 10=green
+    - name: add badges to docs
+      run: |
+        mv *.svg docs/img/
     - name: deploy current branch
       run: |
         source $CONDA/bin/activate enderchest

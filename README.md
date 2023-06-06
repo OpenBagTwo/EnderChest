@@ -10,8 +10,8 @@
 ![RaspberryPi](https://img.shields.io/badge/Raspberry%20Pi-000000?style=flat-square&logo=raspberrypi&logoColor=white&color=c51a4a)
 
 [![python](https://img.shields.io/badge/Python-3.10,3.11-3776AB.svg?style=flat&logo=python&logoColor=white&color=ffdc53&labelColor=3d7aaa)](https://www.python.org)
-![coverage](https://raw.githubusercontent.com/OpenBagTwo/EnderChest/gh-pages/coverage.svg)
-![lint](https://raw.githubusercontent.com/OpenBagTwo/EnderChest/gh-pages/pylint.svg)
+[![coverage](https://openbagtwo.github.io/EnderChest/dev/img/coverage.svg)](https://openbagtwo.github.io/EnderChest/dev/coverage)
+[![lint](https://openbagtwo.github.io/EnderChest/dev/img/pylint.svg)](https://openbagtwo.github.io/EnderChest/dev/lint-report.txt)
 
 
 A system for managing your minecraft installations across instances and
