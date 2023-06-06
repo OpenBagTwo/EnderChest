@@ -1,4 +1,5 @@
 """Command-line interface"""
+import inspect
 import logging
 import os
 import sys
@@ -19,6 +20,11 @@ _remote_aliases = tuple(
     alias + plural for alias in ("enderchest", "remote") for plural in ("s", "")
 )
 _list_aliases = ("inventory", "list")
+
+
+class Action(Protocol):
+    def __call__(self, minecraft_root: Path, /) -> Any:
+        ...
 
 
 def _place(
@@ -73,19 +79,14 @@ def _update_ender_chest(
     gather.update_ender_chest(minecraft_root, official=official, **kwargs)
 
 
-def _open(minecraft_root, **kwargs):
+def _open(minecraft_root: Path, verbosity: int = 0, **kwargs):
     """Router for open verb"""
-    remote.sync_with_remotes(minecraft_root, "pull", **kwargs)
+    remote.sync_with_remotes(minecraft_root, "pull", verbosity=verbosity, **kwargs)
 
 
-def _close(minecraft_root, **kwargs):
+def _close(minecraft_root: Path, verbosity: int = 0, **kwargs):
     """Router for close verb"""
-    remote.sync_with_remotes(minecraft_root, "push", **kwargs)
-
-
-class Action(Protocol):
-    def __call__(self, minecraft_root: Path, /) -> Any:
-        ...
+    remote.sync_with_remotes(minecraft_root, "push", verbosity=verbosity, **kwargs)
 
 
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
@@ -530,17 +531,24 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
                     argv[1 + len(command.split()) :]
                 )
             )
+
+            action = actions[aliases[command]]
+
             root_arg = action_kwargs.pop("root")
             root_flag = action_kwargs.pop("root_flag")
 
             verbosity = action_kwargs.pop("verbose") - action_kwargs.pop("quiet")
+
+            argspec = inspect.getfullargspec(action)
+            if "verbosity" in argspec.args + argspec.kwonlyargs:
+                action_kwargs["verbosity"] = verbosity
 
             log_level = logging.INFO - 10 * verbosity
             if log_level == logging.NOTSET:  # that's 0, annoyingly enough
                 log_level -= 1
 
             return (
-                actions[aliases[command]],
+                action,
                 Path(root_arg or root_flag or os.getcwd()),
                 log_level,
                 action_kwargs,
