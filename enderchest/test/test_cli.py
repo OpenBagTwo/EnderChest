@@ -378,6 +378,36 @@ class TestOpen:
         assert len(sync_log) == 1
         assert sync_log[0][1] == self.op
 
+    @pytest.mark.parametrize(
+        "verbosity_flag, expected_verbosity",
+        (
+            ("-v", 1),
+            ("-q", -1),
+            ("--verbose", 1),
+            ("--quiet", -1),
+            ("-vv", 2),
+            ("-qq", -2),
+            ("-vvqvqqvqv", 1),
+        ),
+    )
+    def test_verbosity_modifier_is_passed_to_op(
+        self, monkeypatch, verbosity_flag, expected_verbosity
+    ):
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs):
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(
+            ["enderchest", *self.action.split(), verbosity_flag]
+        )
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][2]["verbosity"] == expected_verbosity
+
     def test_dry_run_is_false_by_default(self, monkeypatch):
         sync_log: list[tuple[str, str, dict]] = []
 
@@ -424,6 +454,7 @@ class TestOpen:
             "timeout": 15,
             "sync_confirm_wait": 0,
             "exclude": ["private", "*.secret"],
+            "verbosity": 0,
         }
 
 
