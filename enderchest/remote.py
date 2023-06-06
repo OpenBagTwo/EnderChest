@@ -8,7 +8,7 @@ from urllib.parse import ParseResult, urlparse
 from . import filesystem as fs
 from . import gather
 from .enderchest import EnderChest
-from .loggers import SYNC_LOGGER
+from .loggers import IMPORTANT, SYNC_LOGGER
 from .prompt import confirm
 from .sync import path_from_uri, pull, push, remote_file, render_remote
 
@@ -161,11 +161,16 @@ def sync_with_remotes(
         else:
             runs = (True, False)
         for do_dry_run in runs:
+            if dry_run:
+                prefix = "Simulating an attempt"
+            else:
+                prefix = "Attempting"
             try:
                 if pull_or_push == "pull":
-                    SYNC_LOGGER.info(
-                        "Attempting to pull changes from"
-                        f" {render_remote(alias, remote_uri)}"
+                    SYNC_LOGGER.log(
+                        IMPORTANT,
+                        f"{prefix} to pull changes"
+                        f" from {render_remote(alias, remote_uri)}",
                     )
                     remote_chest = remote_uri._replace(
                         path=urlparse(
@@ -191,8 +196,10 @@ def sync_with_remotes(
                         **sync_kwargs,
                     )
                 else:
-                    SYNC_LOGGER.info(
-                        f"Attempting to push changes to {render_remote(alias, remote_uri)}"
+                    SYNC_LOGGER.log(
+                        IMPORTANT,
+                        f"{prefix} to push changes"
+                        f" to {render_remote(alias, remote_uri)}",
                     )
                     local_chest = fs.ender_chest_folder(minecraft_root)
                     push(
