@@ -194,11 +194,11 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
         if line == "":  # skip empty lines
             continue
 
-        info = line[:11]
-        full_path = os.path.normpath(line[12:])
+        info = line.split()[0]
+        full_path = os.path.normpath("".join(line.split()[1:]))
         path_key = os.sep.join(full_path.split(os.sep)[:depth])
 
-        if info == "*deleting  ":
+        if info.startswith("*deleting"):
             if full_path == path_key:
                 summary[path_key] = "delete"
             else:
@@ -206,7 +206,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
                 if not isinstance(entry, str):
                     entry["delete"] += 1
                 # otherwise the whole thing is being deleted
-        elif info[2:] == "+++++++++":  # this is a creation
+        elif info[2:5] == "+++":  # this is a creation
             if full_path == path_key:
                 summary[path_key] = "create"
             else:
