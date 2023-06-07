@@ -388,7 +388,7 @@ class TestRsyncSync(TestFileSync):
 
         # meta-test--make sure that the creation is actually happening
         assert (
-            ">f+++++++++ " + os.path.sep.join(("EnderChest", "1.19", ".bobby", "chunk"))
+            "+++ " + os.path.sep.join(("EnderChest", "1.19", ".bobby", "chunk"))
             in debug_log
         )
 
@@ -418,7 +418,7 @@ class TestRsyncSync(TestFileSync):
 
         # meta-test--make sure that the creation is actually happening
         assert (
-            ">f+++++++++ "
+            "+++ "
             + os.path.sep.join(("EnderChest", "optifine", "mods", "optifine.jar"))
             in debug_log
         )
