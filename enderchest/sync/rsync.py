@@ -195,7 +195,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
             continue
 
         info = line.split()[0]
-        full_path = os.path.normpath("".join(line.split()[1:]))
+        full_path = os.path.normpath(" ".join(line.split()[1:]))
         path_key = os.sep.join(full_path.split(os.sep)[:depth])
 
         if info.startswith("*deleting"):
