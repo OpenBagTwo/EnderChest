@@ -7,6 +7,7 @@ PLACE_LOGGER = logging.getLogger("enderchest.place")
 SYNC_LOGGER = logging.getLogger("enderchest.sync")
 
 IMPORTANT = 25  # INFO logs that should still be displayed on "-q"
+logging.addLevelName(IMPORTANT, "INFO")
 
 
 class CLIFormatter(logging.Formatter):
