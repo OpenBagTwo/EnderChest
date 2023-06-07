@@ -427,3 +427,89 @@ class TestRsyncSync(TestFileSync):
         assert os.path.sep.join(("EnderChest", "optifine", "mods")) not in info_log
 
         assert f"Creating EnderChest{os.path.sep}optifine" in info_log
+
+    @pytest.mark.parametrize("verbosity", ("v", "vv", "vvv"))
+    @pytest.mark.parametrize("op", ("pull", "push"))
+    def test_verbose_dry_run_doesnt_summarize(
+        self, monkeypatch, minecraft_root, remote, caplog, op, verbosity
+    ):
+        def mock_summarize(*args, **kwargs):
+            raise AssertionError("I was not to be called")
+
+        from enderchest.sync import rsync
+
+        monkeypatch.setattr(rsync, "summarize_rsync_report", mock_summarize)
+
+        caplog.set_level(logging.DEBUG)
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, op, dry_run=True, verbosity=len(verbosity))
+
+        debug_log = "\n".join(
+            record.msg for record in caplog.records if record.levelname == "DEBUG"
+        )
+
+        # this wouldn't be in the summary
+        assert f"EnderChest{os.sep}global{os.sep}config" in debug_log
+
+    @pytest.mark.parametrize("op", ("pull", "push"))
+    def test_quiet_dry_run_still_reports_stats(
+        self, minecraft_root, remote, caplog, op
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, op, dry_run=True, verbosity=-1)
+
+        printed_log = "\n".join(
+            record.msg for record in caplog.records if record.levelno > logging.INFO
+        )
+
+        assert "Number of created files" in printed_log
+
+    @pytest.mark.parametrize("op", ("pull", "push"))
+    def test_super_quiet_dry_run_still_reports_stats(
+        self, minecraft_root, remote, caplog, op
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, op, dry_run=True, verbosity=-1)
+
+        printed_log = "\n".join(
+            record.msg for record in caplog.records if record.levelno > logging.INFO
+        )
+
+        assert "Number of created files" in printed_log
+
+    @pytest.mark.parametrize("op", ("pull", "push"))
+    def test_regular_sync_only_reports_overall_progress(
+        self, minecraft_root, remote, capfd, op
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, op)
+
+        printed_log = capfd.readouterr().out
+
+        assert f"EnderChest{os.sep}global" not in printed_log
+
+        # but, like, make sure that it prints *something*
+        assert "Number of created files" in printed_log
+
+    @pytest.mark.parametrize("verbosity", ("v", "vv", "vvv"))
+    @pytest.mark.parametrize("op", ("pull", "push"))
+    def test_verbose_sync_reports_file_level_progress(
+        self, minecraft_root, remote, capfd, op, verbosity
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, op, verbosity=len(verbosity))
+
+        printed_log = capfd.readouterr().out
+
+        assert f"EnderChest{os.sep}global" in printed_log
+        assert "xfr#2, to-chk=" in printed_log
+
+    @pytest.mark.parametrize("quietude", ("q", "qq", "qqq"))
+    @pytest.mark.parametrize("op", ("pull", "push"))
+    def test_quiet_sync_is_silent(self, minecraft_root, remote, capfd, op, quietude):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, op, verbosity=-len(quietude))
+
+        printed_log = capfd.readouterr().out
+
+        assert printed_log == ""
