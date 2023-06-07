@@ -132,5 +132,8 @@ dmypy.json
 .idea
 .vscode
 
+# MacOS gunk
+.DS_Store
+
 # test folders
 testolotl

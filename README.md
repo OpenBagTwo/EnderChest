@@ -48,6 +48,11 @@ you still have questions, feel free to
 EnderChest is written for **Python 3.10 or greater,** but should otherwise
 run on any architecture or operating system.
 
+Note that the recommended sync protocol is
+[`rsync`](https://www.digitalocean.com/community/tutorials/how-to-use-rsync-to-sync-local-and-remote-directories), and EnderChest requires
+[version 3.2 or newer](https://dev.to/al5ina5/updating-rsync-on-macos-so-you-re-not-stuck-with-14-year-old-software-1b5i).
+However, other protocols are available if a modern `rsync` is not an option for you.
+
 The latest release can be installed from PyPI via `pip`:
 
 ```bash

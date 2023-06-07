@@ -174,21 +174,21 @@ sync!).
 Once you've finished setting up an EnderChest on a given computer, the next
 thing to consider is setting it up on _another_ one. To do that, you'll need
 to set up some form of file transfer. **EnderChest's preferred transfer protocol
-is [rsync](https://www.redhat.com/sysadmin/sync-rsync)**, an extremely official
-and open source tool for performing backups and generally moving files between
-two locations. Most Linux distributions (including SteamOS) come with rsync
-preinstalled, and Mac users can install rsync easily via
+is [`rsync`](https://www.redhat.com/sysadmin/sync-rsync)**, an extremely efficient
+open source tool for performing backups and generally moving files between
+two locations. Most Linux distributions (including SteamOS) come with a
+sufficiently recent version of `rsync` preinstalled (EnderChest requires **`rsync` 3.2 or newer**),
+and Mac users can upgrade their `rsync` easily via
 [homebrew](https://formulae.brew.sh/formula/rsync),
 [MacPorts](https://ports.macports.org/port/rsync/) or
-[conda](https://anaconda.org/conda-forge/rsync). Windows users should
-install [Cygwin](https://www.cygwin.com/install.html) and install
-[rsync](https://www.cygwin.com/packages/summary/rsync.html) through it
-(though other options like
-[WSL](https://thedatafrog.com/en/articles/backup-rsync-windows-wsl/) are available).
+[conda](https://anaconda.org/conda-forge/rsync).
 
-EnderChest does support additional protocols, including those that do not
-depend on external binaries. Details on those are listed
-[here](../suggestions#other-syncing-protocols).
+Windows users may be able to get EnderChest working with `rsync`
+via [Cygwin](https://www.cygwin.com/packages/summary/rsync.html) or
+[WSL](https://thedatafrog.com/en/articles/backup-rsync-windows-wsl/), but
+[this is not currently supported](https://github.com/OpenBagTwo/EnderChest/issues/67),
+and Windows users may be better off using
+[a different protocol](../suggestions#other-syncing-protocols).
 
 To register a remote with your EnderChest, you just need to run the following command:
 
