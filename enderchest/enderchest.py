@@ -200,7 +200,7 @@ class EnderChest:
             alias = alias or remote.hostname
             if not alias:
                 raise AttributeError(f"{remote.geturl()} has no hostname")
-            GATHER_LOGGER.debug(f"Registering remote {remote.geturl()} ({alias})")
+            GATHER_LOGGER.debug("Registering remote %s (%s)", remote.geturl(), alias)
             self._remotes[alias] = remote
         except AttributeError as parse_problem:
             raise ValueError(f"{remote} is not a valid URI") from parse_problem
@@ -265,8 +265,7 @@ class EnderChest:
                 for remote in parser[section].items():
                     if remote[1] is None:
                         raise ValueError("All remotes must have an alias specified")
-                    else:
-                        remotes.append((remote[1], remote[0]))
+                    remotes.append((remote[1], remote[0]))
             else:
                 instances.append(i.InstanceSpec.from_cfg(parser[section]))
 

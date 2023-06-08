@@ -117,7 +117,10 @@ def run_rsync(
     args.extend(additional_args)
     args.extend((source, destination_folder))
 
-    SYNC_LOGGER.debug(f"Executing the following command:\n  {' '.join(args)}")
+    SYNC_LOGGER.debug(
+        "Executing the following command:\n %s",
+        " ".join(args),
+    )
 
     with subprocess.Popen(
         args,
@@ -259,11 +262,11 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
             SYNC_LOGGER.info(f"{report[:-1].title()}ing {path_key}")
         else:
             SYNC_LOGGER.info(
-                f"Within {path_key}...\n"
-                + "\n".join(
+                f"Within {path_key}...\n%s",
+                "\n".join(
                     f"  - {op[:-1].title()}ing {count} file{'' if count == 1 else 's'}"
                     for op, count in report.items()
-                )
+                ),
             )
     return stats
 

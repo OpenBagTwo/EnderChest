@@ -523,7 +523,7 @@ class TestPromptByFilter:
         )
 
         # check that it was showing the right instances right up until the end
-        assert caplog.records[-1].msg == (
+        assert caplog.records[-1].msg % caplog.records[-1].args == (
             """Filters match the instances:
   - official
   - Chest Boat"""
@@ -554,7 +554,7 @@ class TestPromptByName:
             ("instances", ("abra", "kadabra", "alakazam")),
         )
 
-        assert caplog.records[-1].msg == (
+        assert caplog.records[-1].msg % caplog.records[-1].args == (
             """You specified the following instances:
   - abra
   - kadabra
