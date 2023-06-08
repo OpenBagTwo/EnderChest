@@ -25,6 +25,7 @@ jobs:
         git config --global user.email losthemobvote@openbagtwo.net
     - name: run tests (to generate coverage report)
       run: |
+        source $CONDA/bin/activate enderchest
         pytest --cov enderchest --ignore-glob="docs/**" --cov-report=html --cov-report=term
     - name: generate coverage badge
       uses: tj-actions/coverage-badge-py@v2
