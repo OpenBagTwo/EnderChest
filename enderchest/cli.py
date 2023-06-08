@@ -30,13 +30,15 @@ class Action(Protocol):
 def _place(
     minecraft_root: Path,
     errors: str = "prompt",
-    cleanup: bool = False,
+    keep_broken_links: bool = False,
+    keep_stale_links: bool = False,
+    keep_level: int = 0,
     stop_at_first_failure: bool = False,
     ignore_errors: bool = False,
     absolute: bool = False,
     relative: bool = False,
 ) -> None:
-    """Wrapper to coalesce error-handling flags and also abs/rel"""
+    """Wrapper sort through all the various argument groups"""
 
     if stop_at_first_failure:
         errors = "abort"
@@ -48,8 +50,17 @@ def _place(
         # technically we get this for free already
         relative = False
 
+    if keep_level > 0:
+        keep_stale_links = True
+    if keep_level > 1:
+        keep_broken_links = True
+
     place.place_ender_chest(
-        minecraft_root, cleanup=cleanup, error_handling=errors, relative=relative
+        minecraft_root,
+        keep_broken_links=keep_broken_links,
+        keep_stale_links=keep_stale_links,
+        error_handling=errors,
+        relative=relative,
     )
 
 
@@ -374,12 +385,30 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
 
     # place options
     place_parser = action_parsers["place"]
-    place_parser.add_argument(
-        "-k",
+    cleanup = place_parser.add_argument_group()
+    cleanup.add_argument(
         "--keep-broken-links",
-        action="store_false",
-        dest="cleanup",
+        action="store_true",
         help="do not remove broken links from instances",
+    )
+    cleanup.add_argument(
+        "--keep-stale-links",
+        action="store_true",
+        help=(
+            "do not remove existing links into the EnderChest,"
+            " even if the shulker box or instance spec has changed"
+        ),
+    )
+    cleanup.add_argument(
+        "-k",
+        dest="keep_level",
+        action="count",
+        default=0,
+        help=(
+            "Shorthand for the above cleanup options:"
+            " -k will --keep-stale-links,"
+            " and -kk will --keep-broken-links as well"
+        ),
     )
     error_handling = place_parser.add_mutually_exclusive_group()
     error_handling.add_argument(
