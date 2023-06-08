@@ -201,8 +201,8 @@ def pull(
         )
     if unsupported_kwargs:
         SYNC_LOGGER.debug(
-            "The following command-line options are ignored for this protocol:\n"
-            + "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items())
+            "The following command-line options are ignored for this protocol:\n%s",
+            "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
 
     copy(source_path, destination_folder, exclude, dry_run)
@@ -260,8 +260,8 @@ def push(
         )
     if unsupported_kwargs:
         SYNC_LOGGER.debug(
-            "The following command-line options are ignored for this protocol:\n"
-            + "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items())
+            "The following command-line options are ignored for this protocol:\n%s",
+            "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
 
     copy(source_path, destination_folder, exclude, dry_run)

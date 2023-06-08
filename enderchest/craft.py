@@ -1,5 +1,4 @@
 """Functionality for setting up the folder structure of both chests and shulker boxes"""
-import fnmatch
 import logging
 import re
 from collections import Counter
@@ -257,7 +256,6 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     except FileNotFoundError:
         # good! Then we don't already have an EnderChest here
         CRAFT_LOGGER.debug(f"{minecraft_root} does not already contain an EnderChest")
-        pass
 
     instances: list[InstanceSpec] = []
 
@@ -389,9 +387,8 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     ender_chest = EnderChest(uri, name, remotes, instances)
 
     CRAFT_LOGGER.info(
-        "\n"
-        + ender_chest.write_to_cfg()
-        + "\nPreparing to generate an EnderChest with the above configuration."
+        "\n%s\nPreparing to generate an EnderChest with the above configuration.",
+        ender_chest.write_to_cfg(),
     )
 
     if not confirm(default=True):
@@ -555,9 +552,8 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
     )
 
     CRAFT_LOGGER.info(
-        "\n"
-        + shulker_box.write_to_cfg()
-        + "Preparing to generate a shulker box with the above configuration."
+        "\n%sPreparing to generate a shulker box with the above configuration.",
+        shulker_box.write_to_cfg(),
     )
 
     if not confirm(default=True):
@@ -637,8 +633,8 @@ def _prompt_for_filters(
             CRAFT_LOGGER.info(f"Filters match the instance: {matches[0]}")
         else:
             CRAFT_LOGGER.info(
-                "Filters match the instances:\n"
-                + "\n".join([f"  - {name}" for name in matches])
+                "Filters match the instances:\n%s",
+                "\n".join([f"  - {name}" for name in matches]),
             )
         return tester if confirm(default=default) else None, matches
 
@@ -702,8 +698,8 @@ def _prompt_for_filters(
         # TODO: should this be most common among matches?
         example_tags: list[str] = [tag for tag, _ in tag_count.most_common(5)]
         CRAFT_LOGGER.debug(
-            "Tag counts:\n"
-            + "\n".join(f"  - {tag}: {count}" for tag, count in tag_count.items())
+            "Tag counts:\n%s",
+            "\n".join(f"  - {tag}: {count}" for tag, count in tag_count.items()),
         )
 
         if len(example_tags) == 0:
@@ -775,8 +771,8 @@ def _prompt_for_instance_names(shulker_box: ShulkerBox) -> ShulkerBox:
         default = False
     else:
         CRAFT_LOGGER.info(
-            "You specified the following instances:\n"
-            + "\n".join([f"  - {name}" for name in instances])
+            "You specified the following instances:\n%s",
+            "\n".join([f"  - {name}" for name in instances]),
         )
         default = True
 
@@ -866,7 +862,8 @@ def _prompt_for_instance_numbers(
     )
 
     CRAFT_LOGGER.info(
-        "You selected the instances:\n" + "\n".join([f"  - {name}" for name in choices])
+        "You selected the instances:\n%s",
+        "\n".join([f"  - {name}" for name in choices]),
     )
     if not confirm(default=True):
         CRAFT_LOGGER.debug("Trying again to prompt for instance numbers")

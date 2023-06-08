@@ -79,8 +79,8 @@ def fetch_remotes_from_a_remote_ender_chest(
 
     remotes.extend(remote_chest.remotes)
     SYNC_LOGGER.info(
-        "Loaded the following remotes:\n"
-        + "\n".join(f"  - {render_remote(alias, uri)}" for uri, alias in remotes)
+        "Loaded the following remotes:\n %s",
+        "\n".join(f"  - {render_remote(alias, uri)}" for uri, alias in remotes),
     )
 
     if len(set(alias for _, alias in remotes)) != len(remotes):
@@ -169,8 +169,8 @@ def sync_with_remotes(
                 if pull_or_push == "pull":
                     SYNC_LOGGER.log(
                         IMPORTANT,
-                        f"{prefix} to pull changes"
-                        f" from {render_remote(alias, remote_uri)}",
+                        f"{prefix} to pull changes from %s",
+                        render_remote(alias, remote_uri),
                     )
                     remote_chest = remote_uri._replace(
                         path=urlparse(

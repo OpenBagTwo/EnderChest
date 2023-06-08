@@ -7,7 +7,6 @@ from typing import Iterable
 
 from . import filesystem as fs
 from .gather import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
-from .instance import InstanceSpec
 from .loggers import PLACE_LOGGER
 from .prompt import prompt
 from .shulker_box import ShulkerBox
@@ -79,8 +78,7 @@ def place_ender_chest(
                 f"{shulker_box.name} is not intended for linking to this host ({host})"
             )
             continue
-        else:
-            shulker_boxes.append(shulker_box)
+        shulker_boxes.append(shulker_box)
 
     skip_boxes: list[ShulkerBox] = []
 

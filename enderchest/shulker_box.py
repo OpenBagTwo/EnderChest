@@ -121,7 +121,7 @@ class ShulkerBox(NamedTuple):
                 max_link_depth = parser[section].getint("max-link-depth", 2)
                 # TODO: support specifying filters (and link-folders) in the properties section
                 continue
-            if normalized in match_criteria.keys():
+            if normalized in match_criteria:
                 raise ValueError(f"{config_file} specifies {normalized} more than once")
 
             if normalized == "minecraft":

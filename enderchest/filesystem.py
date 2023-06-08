@@ -205,7 +205,9 @@ def links_into_enderchest(
         If the link provided isn't actually a symbolic link
     """
     chest_folder = os.path.normpath(
-        ender_chest_folder(minecraft_root).expanduser().absolute()
+        ender_chest_folder(minecraft_root, check_exists=check_exists)
+        .expanduser()
+        .absolute()
     )
 
     target = os.readlink(link)
