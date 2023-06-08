@@ -64,7 +64,7 @@ def _list_instance_boxes(
 ):
     """Wrapper to handle the fact that name is a required argument"""
     assert instance_name  # it's required by the parser, so this should be fine
-    gather.load_instance_matches(minecraft_root, instance_name, **kwargs)
+    gather.get_shulker_boxes_matching_instance(minecraft_root, instance_name, **kwargs)
 
 
 def _list_shulker_box(
@@ -72,7 +72,9 @@ def _list_shulker_box(
 ):
     """Wrapper to handle the fact that name is a required argument"""
     assert shulker_box_name  # it's required by the parser, so this should be fine
-    gather.load_shulker_box_matches(minecraft_root, shulker_box_name, **kwargs)
+    gather.get_instances_matching_shulker_box(
+        minecraft_root, shulker_box_name, **kwargs
+    )
 
 
 def _update_ender_chest(
