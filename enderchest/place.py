@@ -163,7 +163,8 @@ def place_ender_chest(
         instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
         if not instance_root.exists():
             PLACE_LOGGER.error(
-                f"No minecraft instance exists at {instance_root.expanduser().absolute()}"
+                "No minecraft instance exists at"
+                f" {instance_root.expanduser().absolute()}"
             )
             match handle_error(None):
                 case "return":
@@ -180,9 +181,14 @@ def place_ender_chest(
                     target = os.readlink(file)
                     if not os.path.isabs(target):
                         target = os.path.normpath(file.parent / target)
+
                     # there's probably a better way to check if a file is
                     # inside a sub-path
-                    if os.path.commonpath([target, chest_folder]) == chest_folder:
+                    try:
+                        common_root = os.path.commonpath([target, chest_folder])
+                    except ValueError:  # if they have no common root
+                        common_root = ""
+                    if common_root == chest_folder:
                         PLACE_LOGGER.debug(f"Removing old link: {file} -> {target}")
                         file.unlink()
 
