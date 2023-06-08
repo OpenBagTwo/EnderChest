@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../enderchest/">
+        <link rel="prev" href="../craft/">
       
       
-        <link rel="next" href="../loggers/">
+        <link rel="next" href="../enderchest/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -381,62 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -465,8 +409,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
       </a>
     </li>
   
@@ -564,8 +564,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -592,8 +592,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -639,6 +639,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../sync/file/" class="md-nav__link">
+        file
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../sync/rsync/" class="md-nav__link">
         rsync
       </a>
@@ -653,8 +667,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../sync/file/" class="md-nav__link">
-        file
+      <a href="../sync/utils/" class="md-nav__link">
+        utils
       </a>
     </li>
   
@@ -813,7 +827,11 @@
           <td>
                 <code>URI</code>
           </td>
-          <td><p>The URI to the remote Minecraft root</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI to the remote Minecraft root</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -834,7 +852,11 @@
           <td>
                 <code>list of (URI, str) tuples</code>
           </td>
-          <td><p>The URIs of the remote EnderChests, paired with their aliases</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URIs of the remote EnderChests, paired with their aliases</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -852,7 +874,11 @@
           <td>
                 <code>RuntimeError</code>
           </td>
-          <td><p>If the remote list could not be pulled</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the remote list could not be pulled</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -966,7 +992,11 @@
           <td>
                 <code>URI</code>
           </td>
-          <td><p>The URI to the remote Minecraft root</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI to the remote Minecraft root</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -987,7 +1017,11 @@
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.enderchest.EnderChest" href="../enderchest/#enderchest.enderchest.EnderChest">EnderChest</a></code>
           </td>
-          <td><p>The remote EnderChest configuration</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The remote EnderChest configuration</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1005,13 +1039,21 @@
           <td>
                 <code>ValueError</code>
           </td>
-          <td><p>If the provided URI is invalid</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the provided URI is invalid</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>RuntimeError</code>
           </td>
-          <td><p>If the config from the remote EnderChest could not be parsed</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the config from the remote EnderChest could not be parsed</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1127,9 +1169,13 @@
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The root directory that your minecraft stuff (or, at least, the one
+          <td>
+            <div class="doc-md-description">
+              <p>The root directory that your minecraft stuff (or, at least, the one
 that's the parent of your EnderChest folder). This will be used to
-construct relative paths.</p></td>
+construct relative paths.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1139,7 +1185,11 @@ construct relative paths.</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>"pull" or "push"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>"pull" or "push"</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1149,7 +1199,11 @@ construct relative paths.</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Perform a dry run of the sync operation, reporting the operations         that will be performed but not actually carrying them out</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Perform a dry run of the sync operation, reporting the operations         that will be performed but not actually carrying them out</p>
+            </div>
+          </td>
           <td>
                 <code>False</code>
           </td>
@@ -1159,7 +1213,9 @@ construct relative paths.</p></td>
           <td>
                 <code>bool or int, optional</code>
           </td>
-          <td><p>The default behavior when syncing EnderChests is to first perform a dry
+          <td>
+            <div class="doc-md-description">
+              <p>The default behavior when syncing EnderChests is to first perform a dry
 run of every sync operation and then wait 5 seconds before proceeding with the
 real sync. The idea is to give the user time to interrupt the sync if
 the dry run looks wrong. This can be changed by either raising or lowering
@@ -1167,7 +1223,9 @@ the value of confirm, by disabling the dry-run-first behavior entirely
 (<code>confirm=False</code>) or by requiring that the user explicitly confirms
 the sync (<code>confirm=True</code>). This default behavior can also be modified
 in the EnderChest config. This parameter will be ignored when performing
-a dry run.</p></td>
+a dry run.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1176,8 +1234,12 @@ a dry run.</p></td>
           <td><code>sync_kwargs</code></td>
           <td>
           </td>
-          <td><p>Any additional arguments that should be passed into the syncing
-operation</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any additional arguments that should be passed into the syncing
+operation</p>
+            </div>
+          </td>
           <td>
                 <code>{}</code>
           </td>
@@ -1336,7 +1398,15 @@ operation</p></td>
 <span class="normal"><a href="#__codelineno-0-233">233</a></span>
 <span class="normal"><a href="#__codelineno-0-234">234</a></span>
 <span class="normal"><a href="#__codelineno-0-235">235</a></span>
-<span class="normal"><a href="#__codelineno-0-236">236</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a><span class="k">def</span> <span class="nf">sync_with_remotes</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-236">236</a></span>
+<span class="normal"><a href="#__codelineno-0-237">237</a></span>
+<span class="normal"><a href="#__codelineno-0-238">238</a></span>
+<span class="normal"><a href="#__codelineno-0-239">239</a></span>
+<span class="normal"><a href="#__codelineno-0-240">240</a></span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#__codelineno-0-244">244</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a><span class="k">def</span> <span class="nf">sync_with_remotes</span><span class="p">(</span>
 </span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="n">minecraft_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
 </span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>    <span class="n">pull_or_push</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 </span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>    <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1407,79 +1477,87 @@ operation</p></td>
 </span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>            <span class="n">runs</span> <span class="o">=</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 </span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>        <span class="k">for</span> <span class="n">do_dry_run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
-</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>                <span class="k">if</span> <span class="n">pull_or_push</span> <span class="o">==</span> <span class="s2">&quot;pull&quot;</span><span class="p">:</span>
-</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>                    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>                        <span class="s2">&quot;Attempting to pull changes from&quot;</span>
-</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>                        <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">remote_uri</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>                    <span class="p">)</span>
-</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>                    <span class="n">remote_chest</span> <span class="o">=</span> <span class="n">remote_uri</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span>
-</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>                        <span class="n">path</span><span class="o">=</span><span class="n">urlparse</span><span class="p">(</span>
-</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>                            <span class="p">(</span>
-</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>                                <span class="n">fs</span><span class="o">.</span><span class="n">ender_chest_folder</span><span class="p">(</span>
-</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>                                    <span class="n">path_from_uri</span><span class="p">(</span><span class="n">remote_uri</span><span class="p">),</span>
-</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>                                    <span class="n">check_exists</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a>                                <span class="p">)</span>
-</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>                            <span class="p">)</span><span class="o">.</span><span class="n">as_uri</span><span class="p">()</span>
-</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a>                        <span class="p">)</span><span class="o">.</span><span class="n">path</span>
-</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>                    <span class="p">)</span>
-</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a>                    <span class="n">pull</span><span class="p">(</span>
-</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a>                        <span class="n">remote_chest</span><span class="p">,</span>
-</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a>                        <span class="n">minecraft_root</span><span class="p">,</span>
-</span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a>                        <span class="n">exclude</span><span class="o">=</span><span class="p">[</span>
-</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-</span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a>                                <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_CONFIG_NAME</span>
-</span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a>                            <span class="p">),</span>
-</span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">),</span>
-</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a>                            <span class="o">*</span><span class="p">(</span><span class="n">sync_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exclude&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()),</span>
-</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a>                        <span class="p">],</span>
-</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a>                        <span class="n">dry_run</span><span class="o">=</span><span class="n">do_dry_run</span><span class="p">,</span>
-</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a>                        <span class="o">**</span><span class="n">sync_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a>                    <span class="p">)</span>
-</span><span id="__span-0-193"><a id="__codelineno-0-193" name="__codelineno-0-193"></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-194"><a id="__codelineno-0-194" name="__codelineno-0-194"></a>                    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span id="__span-0-195"><a id="__codelineno-0-195" name="__codelineno-0-195"></a>                        <span class="sa">f</span><span class="s2">&quot;Attempting to push changes to </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">remote_uri</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a>                    <span class="p">)</span>
-</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a>                    <span class="n">local_chest</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ender_chest_folder</span><span class="p">(</span><span class="n">minecraft_root</span><span class="p">)</span>
-</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a>                    <span class="n">push</span><span class="p">(</span>
-</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a>                        <span class="n">local_chest</span><span class="p">,</span>
-</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a>                        <span class="n">remote_uri</span><span class="p">,</span>
-</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a>                        <span class="n">exclude</span><span class="o">=</span><span class="p">[</span>
-</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a>                                <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_CONFIG_NAME</span>
-</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a>                            <span class="p">),</span>
-</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">),</span>
-</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a>                            <span class="o">*</span><span class="p">(</span><span class="n">sync_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exclude&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()),</span>
-</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a>                        <span class="p">],</span>
-</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a>                        <span class="n">dry_run</span><span class="o">=</span><span class="n">do_dry_run</span><span class="p">,</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a>                        <span class="o">**</span><span class="n">sync_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a>                    <span class="p">)</span>
-</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a>            <span class="k">except</span> <span class="p">(</span>
-</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a>                <span class="ne">FileNotFoundError</span><span class="p">,</span>
-</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a>                <span class="ne">ValueError</span><span class="p">,</span>
-</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>                <span class="ne">NotImplementedError</span><span class="p">,</span>
-</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>                <span class="ne">TimeoutError</span><span class="p">,</span>
-</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>            <span class="p">)</span> <span class="k">as</span> <span class="n">sync_fail</span><span class="p">:</span>
-</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>                <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>                    <span class="sa">f</span><span class="s2">&quot;Could not sync changes with </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">remote_uri</span><span class="p">)</span><span class="si">}</span><span class="s2">:&quot;</span>
-</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">sync_fail</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a>                <span class="p">)</span>
-</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>                <span class="k">break</span>
-</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>            <span class="k">if</span> <span class="n">do_dry_run</span> <span class="o">==</span> <span class="n">runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>                <span class="k">continue</span>
-</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>            <span class="k">if</span> <span class="n">sync_confirm_wait</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">confirm</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>                    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Aborting&quot;</span><span class="p">)</span>
-</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>                    <span class="k">return</span>
-</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>                <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">sync_confirm_wait</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a>                <span class="n">sleep</span><span class="p">(</span><span class="n">sync_confirm_wait</span><span class="p">)</span>
-</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231"></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232"></a>            <span class="n">synced_somewhere</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233"></a>            <span class="k">if</span> <span class="n">pull_or_push</span> <span class="o">==</span> <span class="s2">&quot;pull&quot;</span><span class="p">:</span>
-</span><span id="__span-0-234"><a id="__codelineno-0-234" name="__codelineno-0-234"></a>                <span class="k">break</span>
-</span><span id="__span-0-235"><a id="__codelineno-0-235" name="__codelineno-0-235"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">synced_somewhere</span><span class="p">:</span>
-</span><span id="__span-0-236"><a id="__codelineno-0-236" name="__codelineno-0-236"></a>        <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not sync with any remote EnderChests&quot;</span><span class="p">)</span>
+</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>                <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;Simulating an attempt&quot;</span>
+</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>                <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;Attempting&quot;</span>
+</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>                <span class="k">if</span> <span class="n">pull_or_push</span> <span class="o">==</span> <span class="s2">&quot;pull&quot;</span><span class="p">:</span>
+</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>                    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>                        <span class="n">IMPORTANT</span><span class="p">,</span>
+</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> to pull changes&quot;</span>
+</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>                        <span class="sa">f</span><span class="s2">&quot; from </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">remote_uri</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>                    <span class="p">)</span>
+</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>                    <span class="n">remote_chest</span> <span class="o">=</span> <span class="n">remote_uri</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span>
+</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a>                        <span class="n">path</span><span class="o">=</span><span class="n">urlparse</span><span class="p">(</span>
+</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>                            <span class="p">(</span>
+</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a>                                <span class="n">fs</span><span class="o">.</span><span class="n">ender_chest_folder</span><span class="p">(</span>
+</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>                                    <span class="n">path_from_uri</span><span class="p">(</span><span class="n">remote_uri</span><span class="p">),</span>
+</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a>                                    <span class="n">check_exists</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a>                                <span class="p">)</span>
+</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a>                            <span class="p">)</span><span class="o">.</span><span class="n">as_uri</span><span class="p">()</span>
+</span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a>                        <span class="p">)</span><span class="o">.</span><span class="n">path</span>
+</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a>                    <span class="p">)</span>
+</span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a>                    <span class="n">pull</span><span class="p">(</span>
+</span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a>                        <span class="n">remote_chest</span><span class="p">,</span>
+</span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a>                        <span class="n">minecraft_root</span><span class="p">,</span>
+</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a>                        <span class="n">exclude</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a>                                <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_CONFIG_NAME</span>
+</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a>                            <span class="p">),</span>
+</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">),</span>
+</span><span id="__span-0-193"><a id="__codelineno-0-193" name="__codelineno-0-193"></a>                            <span class="o">*</span><span class="p">(</span><span class="n">sync_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exclude&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()),</span>
+</span><span id="__span-0-194"><a id="__codelineno-0-194" name="__codelineno-0-194"></a>                        <span class="p">],</span>
+</span><span id="__span-0-195"><a id="__codelineno-0-195" name="__codelineno-0-195"></a>                        <span class="n">dry_run</span><span class="o">=</span><span class="n">do_dry_run</span><span class="p">,</span>
+</span><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a>                        <span class="o">**</span><span class="n">sync_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a>                    <span class="p">)</span>
+</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a>                    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a>                        <span class="n">IMPORTANT</span><span class="p">,</span>
+</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a>                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> to push changes&quot;</span>
+</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a>                        <span class="sa">f</span><span class="s2">&quot; to </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">remote_uri</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a>                    <span class="p">)</span>
+</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a>                    <span class="n">local_chest</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ender_chest_folder</span><span class="p">(</span><span class="n">minecraft_root</span><span class="p">)</span>
+</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a>                    <span class="n">push</span><span class="p">(</span>
+</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a>                        <span class="n">local_chest</span><span class="p">,</span>
+</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a>                        <span class="n">remote_uri</span><span class="p">,</span>
+</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a>                        <span class="n">exclude</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a>                                <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_CONFIG_NAME</span>
+</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a>                            <span class="p">),</span>
+</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a>                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ENDER_CHEST_FOLDER_NAME</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">),</span>
+</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a>                            <span class="o">*</span><span class="p">(</span><span class="n">sync_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exclude&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()),</span>
+</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>                        <span class="p">],</span>
+</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>                        <span class="n">dry_run</span><span class="o">=</span><span class="n">do_dry_run</span><span class="p">,</span>
+</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>                        <span class="o">**</span><span class="n">sync_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>                    <span class="p">)</span>
+</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>            <span class="k">except</span> <span class="p">(</span>
+</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>                <span class="ne">FileNotFoundError</span><span class="p">,</span>
+</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a>                <span class="ne">ValueError</span><span class="p">,</span>
+</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>                <span class="ne">NotImplementedError</span><span class="p">,</span>
+</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>                <span class="ne">TimeoutError</span><span class="p">,</span>
+</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>                <span class="ne">RuntimeError</span><span class="p">,</span>
+</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>            <span class="p">)</span> <span class="k">as</span> <span class="n">sync_fail</span><span class="p">:</span>
+</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>                <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>                    <span class="sa">f</span><span class="s2">&quot;Could not sync changes with </span><span class="si">{</span><span class="n">render_remote</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span><span class="w"> </span><span class="n">remote_uri</span><span class="p">)</span><span class="si">}</span><span class="s2">:&quot;</span>
+</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">sync_fail</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>                <span class="p">)</span>
+</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>                <span class="k">break</span>
+</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a>            <span class="k">if</span> <span class="n">do_dry_run</span> <span class="o">==</span> <span class="n">runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231"></a>                <span class="k">continue</span>
+</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232"></a>            <span class="k">if</span> <span class="n">sync_confirm_wait</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+</span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">confirm</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+</span><span id="__span-0-234"><a id="__codelineno-0-234" name="__codelineno-0-234"></a>                    <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Aborting&quot;</span><span class="p">)</span>
+</span><span id="__span-0-235"><a id="__codelineno-0-235" name="__codelineno-0-235"></a>                    <span class="k">return</span>
+</span><span id="__span-0-236"><a id="__codelineno-0-236" name="__codelineno-0-236"></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-237"><a id="__codelineno-0-237" name="__codelineno-0-237"></a>                <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">sync_confirm_wait</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</span><span id="__span-0-238"><a id="__codelineno-0-238" name="__codelineno-0-238"></a>                <span class="n">sleep</span><span class="p">(</span><span class="n">sync_confirm_wait</span><span class="p">)</span>
+</span><span id="__span-0-239"><a id="__codelineno-0-239" name="__codelineno-0-239"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-240"><a id="__codelineno-0-240" name="__codelineno-0-240"></a>            <span class="n">synced_somewhere</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="__span-0-241"><a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="k">if</span> <span class="n">pull_or_push</span> <span class="o">==</span> <span class="s2">&quot;pull&quot;</span><span class="p">:</span>
+</span><span id="__span-0-242"><a id="__codelineno-0-242" name="__codelineno-0-242"></a>                <span class="k">break</span>
+</span><span id="__span-0-243"><a id="__codelineno-0-243" name="__codelineno-0-243"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">synced_somewhere</span><span class="p">:</span>
+</span><span id="__span-0-244"><a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="n">SYNC_LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not sync with any remote EnderChests&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
       </details>
   </div>

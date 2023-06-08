@@ -506,62 +506,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/enderchest/craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/enderchest/prompt/" class="md-nav__link">
         prompt
       </a>
@@ -590,8 +534,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../reference/enderchest/loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/craft/" class="md-nav__link">
+        craft
       </a>
     </li>
   
@@ -618,8 +618,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/loggers/" class="md-nav__link">
-        loggers
+      <a href="../reference/enderchest/enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -646,8 +646,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/shulker_box/" class="md-nav__link">
-        shulker_box
+      <a href="../reference/enderchest/instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -693,6 +693,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
+        file
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/enderchest/sync/rsync/" class="md-nav__link">
         rsync
       </a>
@@ -707,8 +721,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
-        file
+      <a href="../reference/enderchest/sync/utils/" class="md-nav__link">
+        utils
       </a>
     </li>
   
@@ -1007,20 +1021,20 @@ sync!).</p>
 <p>Once you've finished setting up an EnderChest on a given computer, the next
 thing to consider is setting it up on <em>another</em> one. To do that, you'll need
 to set up some form of file transfer. <strong>EnderChest's preferred transfer protocol
-is <a href="https://www.redhat.com/sysadmin/sync-rsync">rsync</a></strong>, an extremely official
-and open source tool for performing backups and generally moving files between
-two locations. Most Linux distributions (including SteamOS) come with rsync
-preinstalled, and Mac users can install rsync easily via
+is <a href="https://www.redhat.com/sysadmin/sync-rsync"><code>rsync</code></a></strong>, an extremely efficient
+open source tool for performing backups and generally moving files between
+two locations. Most Linux distributions (including SteamOS) come with a
+sufficiently recent version of <code>rsync</code> preinstalled (EnderChest requires <strong><code>rsync</code> 3.2 or newer</strong>),
+and Mac users can upgrade their <code>rsync</code> easily via
 <a href="https://formulae.brew.sh/formula/rsync">homebrew</a>,
 <a href="https://ports.macports.org/port/rsync/">MacPorts</a> or
-<a href="https://anaconda.org/conda-forge/rsync">conda</a>. Windows users should
-install <a href="https://www.cygwin.com/install.html">Cygwin</a> and install
-<a href="https://www.cygwin.com/packages/summary/rsync.html">rsync</a> through it
-(though other options like
-<a href="https://thedatafrog.com/en/articles/backup-rsync-windows-wsl/">WSL</a> are available).</p>
-<p>EnderChest does support additional protocols, including those that do not
-depend on external binaries. Details on those are listed
-<a href="../suggestions#other-syncing-protocols">here</a>.</p>
+<a href="https://anaconda.org/conda-forge/rsync">conda</a>.</p>
+<p>Windows users may be able to get EnderChest working with <code>rsync</code>
+via <a href="https://www.cygwin.com/packages/summary/rsync.html">Cygwin</a> or
+<a href="https://thedatafrog.com/en/articles/backup-rsync-windows-wsl/">WSL</a>, but
+<a href="https://github.com/OpenBagTwo/EnderChest/issues/67">this is not currently supported</a>,
+and Windows users may be better off using
+<a href="../suggestions#other-syncing-protocols">a different protocol</a>.</p>
 <p>To register a remote with your EnderChest, you just need to run the following command:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>enderchests<span class="w"> </span>&lt;remote&gt;
 </span></code></pre></div>

@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../filesystem/">
+        <link rel="prev" href="../cli/">
       
       
-        <link rel="next" href="../sync/">
+        <link rel="next" href="../craft/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -381,62 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -465,34 +409,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../loggers/" class="md-nav__link">
         loggers
       </a>
@@ -507,8 +423,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
       </a>
     </li>
   
@@ -652,6 +582,76 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance/" class="md-nav__link">
+        instance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
@@ -686,6 +686,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../sync/file/" class="md-nav__link">
+        file
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../sync/rsync/" class="md-nav__link">
         rsync
       </a>
@@ -700,8 +714,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../sync/file/" class="md-nav__link">
-        file
+      <a href="../sync/utils/" class="md-nav__link">
+        utils
       </a>
     </li>
   
@@ -910,8 +924,12 @@
           <td>
                 <code>int</code>
           </td>
-          <td><p>The priority for linking assets in the shulker box (higher priority
-shulkers are linked last)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The priority for linking assets in the shulker box (higher priority
+shulkers are linked last)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -921,8 +939,12 @@ shulkers are linked last)</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The name of the shulker box (which is incidetentally used to break
-priority ties)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The name of the shulker box (which is incidetentally used to break
+priority ties)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -932,7 +954,11 @@ priority ties)</p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The path to the root of the shulker box</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the root of the shulker box</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -942,14 +968,18 @@ priority ties)</p></td>
           <td>
                 <code>list-like of tuples</code>
           </td>
-          <td><p>The parameters for matching instances to this shulker box. Each element
+          <td>
+            <div class="doc-md-description">
+              <p>The parameters for matching instances to this shulker box. Each element
 consists of:</p>
 <ul>
 <li>the name of the condition</li>
 <li>the matching values for that condition</li>
 </ul>
 <p>The logic applied is that an instance must match at least one value
-for each condition (so it's ANDing a collection of ORs)</p></td>
+for each condition (so it's ANDing a collection of ORs)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -959,7 +989,11 @@ for each condition (so it's ANDing a collection of ORs)</p></td>
           <td>
                 <code>list-like of str</code>
           </td>
-          <td><p>The folders that should be linked in their entirety</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The folders that should be linked in their entirety</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -969,12 +1003,16 @@ for each condition (so it's ANDing a collection of ORs)</p></td>
           <td>
                 <code>int, optional</code>
           </td>
-          <td><p>By default, non-root-level folders (that is, folders inside of folders)
+          <td>
+            <div class="doc-md-description">
+              <p>By default, non-root-level folders (that is, folders inside of folders)
 will be treated as files for the purpose of linking. Put another way,
 only files with a depth of 2 or less from the shulker root will be
 linked. This behavior can be overridden by explicitly setting
 the <code>max_link_depth</code> value, but <strong>this feature is highly experimental</strong>,
-so use it at your own risk.</p></td>
+so use it at your own risk.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1565,7 +1603,11 @@ updating the match critera) can only be done on copies created via the
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The path to the config file</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the config file</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1586,7 +1628,11 @@ updating the match critera) can only be done on copies created via the
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.shulker_box.ShulkerBox" href="#enderchest.shulker_box.ShulkerBox">ShulkerBox</a></code>
           </td>
-          <td><p>The resulting ShulkerBox</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The resulting ShulkerBox</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1604,13 +1650,21 @@ updating the match critera) can only be done on copies created via the
           <td>
                 <code>ValueError</code>
           </td>
-          <td><p>If the config file at that location cannot be parsed</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the config file at that location cannot be parsed</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td><p>If there is no config file at the specified location</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If there is no config file at the specified location</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1826,7 +1880,11 @@ updating the match critera) can only be done on copies created via the
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="../instance/#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td><p>The instance's specification</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The instance's specification</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1847,8 +1905,12 @@ updating the match critera) can only be done on copies created via the
           <td>
                 <code>bool</code>
           </td>
-          <td><p>True if the instance matches the shulker box's conditions, False
-otherwise.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>True if the instance matches the shulker box's conditions, False
+otherwise.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2016,7 +2078,11 @@ current host machine</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>True if the shulker box's hosts spec matches the host, False otherwise.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>True if the shulker box's hosts spec matches the host, False otherwise.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2092,8 +2158,12 @@ current host machine</p>
           <td>
                 <code><span title="pathlib.Path">Path</span>, optional</code>
           </td>
-          <td><p>The path to the config file, assuming you'd like to write the
-contents to file</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the config file, assuming you'd like to write the
+contents to file</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -2114,7 +2184,11 @@ contents to file</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>An INI-syntax rendering of this shulker box's config</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>An INI-syntax rendering of this shulker box's config</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2261,8 +2335,12 @@ contents to file</p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2272,7 +2350,11 @@ that's the parent of your EnderChest folder)</p></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.shulker_box.ShulkerBox" href="#enderchest.shulker_box.ShulkerBox">ShulkerBox</a></code>
           </td>
-          <td><p>The spec of the box to create</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The spec of the box to create</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>

@@ -11,8 +11,10 @@
       
       
       
-        <link rel="prev" href="../rsync/">
+        <link rel="prev" href="../">
       
+      
+        <link rel="next" href="../rsync/">
       
       <link rel="icon" href="../../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -379,62 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -463,8 +409,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../../enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../craft/" class="md-nav__link">
+        craft
       </a>
     </li>
   
@@ -491,8 +493,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../loggers/" class="md-nav__link">
-        loggers
+      <a href="../../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -519,8 +521,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../shulker_box/" class="md-nav__link">
-        shulker_box
+      <a href="../../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -561,20 +563,6 @@
           sync
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../rsync/" class="md-nav__link">
-        rsync
-      </a>
-    </li>
-  
-
-            
           
             
               
@@ -696,6 +684,34 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rsync/" class="md-nav__link">
+        rsync
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        utils
+      </a>
     </li>
   
 
@@ -894,7 +910,11 @@ respecting the provided ignore pattern</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The root directory. And this should absolutely be a directory.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The root directory. And this should absolutely be a directory.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -904,8 +924,12 @@ respecting the provided ignore pattern</p>
           <td>
                 <code>Callable</code>
           </td>
-          <td><p>The ignore pattern created by <code>ignore_pattern</code> that specifies
-which files to ignore.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The ignore pattern created by <code>ignore_pattern</code> that specifies
+which files to ignore.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -915,8 +939,12 @@ which files to ignore.</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1046,7 +1074,11 @@ overwriting any existing files and deleting any that weren't in the source</p>
           <td>
                 <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
           </td>
-          <td><p>The file or folder to copy</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The file or folder to copy</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1056,7 +1088,11 @@ overwriting any existing files and deleting any that weren't in the source</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The destination to put the source file(s)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The destination to put the source file(s)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1066,7 +1102,11 @@ overwriting any existing files and deleting any that weren't in the source</p>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any patterns that should be excluded from the sync (and sync)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any patterns that should be excluded from the sync (and sync)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1076,8 +1116,12 @@ overwriting any existing files and deleting any that weren't in the source</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1237,7 +1281,11 @@ https://stackoverflow.com/a/7842224</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The patterns to match</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The patterns to match</p>
+            </div>
+          </td>
           <td>
                 <code>()</code>
           </td>
@@ -1258,7 +1306,11 @@ https://stackoverflow.com/a/7842224</p>
           <td>
                 <code>Callable</code>
           </td>
-          <td><p>An "ignore" filter suitable for use in <code>shutil.copytree</code></p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>An "ignore" filter suitable for use in <code>shutil.copytree</code></p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1376,7 +1428,11 @@ already at the destination.</p>
           <td>
                 <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
           </td>
-          <td><p>The URI for the remote resource to copy from. See notes.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI for the remote resource to copy from. See notes.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1386,7 +1442,11 @@ already at the destination.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The destination folder</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The destination folder</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1396,7 +1456,11 @@ already at the destination.</p>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any patterns that should be excluded from the sync</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any patterns that should be excluded from the sync</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1406,8 +1470,12 @@ already at the destination.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1416,7 +1484,11 @@ but not actually perform them)</p></td>
           <td><code>**unsupported_kwargs</code></td>
           <td>
           </td>
-          <td><p>Any other provided options will be ignored</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any other provided options will be ignored</p>
+            </div>
+          </td>
           <td>
                 <code>{}</code>
           </td>
@@ -1437,7 +1509,11 @@ but not actually perform them)</p></td>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td><p>If the destination folder does not exist</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the destination folder does not exist</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1605,7 +1681,11 @@ already at the destination.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The file or folder to copy</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The file or folder to copy</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1615,7 +1695,11 @@ already at the destination.</p>
           <td>
                 <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
           </td>
-          <td><p>The URI for the remote location to copy into. See notes.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI for the remote location to copy into. See notes.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1625,7 +1709,11 @@ already at the destination.</p>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any patterns that should be excluded from the sync</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any patterns that should be excluded from the sync</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1635,8 +1723,12 @@ already at the destination.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1645,7 +1737,11 @@ but not actually perform them)</p></td>
           <td><code>**unsupported_kwargs</code></td>
           <td>
           </td>
-          <td><p>Any other provided options will be ignored</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any other provided options will be ignored</p>
+            </div>
+          </td>
           <td>
                 <code>{}</code>
           </td>
@@ -1666,7 +1762,11 @@ but not actually perform them)</p></td>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td><p>If the destination folder does not exist</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the destination folder does not exist</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
