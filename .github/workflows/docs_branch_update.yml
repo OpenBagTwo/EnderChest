@@ -32,7 +32,7 @@ jobs:
     - name: generate lint badge
       run: |
         source $CONDA/bin/activate enderchest
-        pylint enderchest --output docs/lint-report.txt
+        pylint enderchest --output docs/lint-report.txt --exit-zero
         anybadge -l pylint -v $(cat docs/lint-report.txt | sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p') -f pylint.svg 0=darkred 4=red 7=orange 9=yellow 10=green
     - name: add badges to docs
       run: |
