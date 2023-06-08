@@ -15,7 +15,8 @@ from .shulker_box import ShulkerBox
 
 def place_ender_chest(
     minecraft_root: Path,
-    cleanup: bool = True,
+    keep_broken_links: bool = False,
+    keep_stale_links: bool = False,
     error_handling: str = "abort",
     relative: bool = True,
     rollback=False,
@@ -27,9 +28,15 @@ def place_ender_chest(
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
-    cleanup : bool, optional
+    keep_broken_links : bool, optional
         By default, this method will remove any broken links in your instances
-        and servers folders. To disable this behavior, pass in `cleanup=False`
+        and servers folders. To disable this behavior, pass in
+        `keep_broken_links=True`.
+    keep_stale_links : bool, optional
+        By default, this method will remove any links into your EnderChest folder
+        that are no longer specified by any shulker box (such as because the
+        instance spec or shulker box configuration changed). To disable this
+        behavior, pass in `keep_stale_links=True`.
     error_handling : str, optional
         By default, if a linking failure occurs, this method will terminate
         immediately (`error_handling=abort`). Alternatively,
@@ -75,15 +82,15 @@ def place_ender_chest(
         else:
             shulker_boxes.append(shulker_box)
 
-    skip_instances: list[InstanceSpec] = []
+    skip_boxes: list[ShulkerBox] = []
 
-    def handle_error(instance: InstanceSpec) -> str:
+    def handle_error(shulker_box: ShulkerBox | None) -> str:
         """Centralized error-handling
 
         Parameters
         ----------
-        instance:
-            The current instance (in case it needs to be added to the skip list)
+        shulker_box:
+            The current shulker box (in case it needs to be added to the skip list)
 
         Returns
         -------
@@ -91,7 +98,7 @@ def place_ender_chest(
             Instructions on what to do next. Options are:
               - return
               - break
-              - coninue
+              - continue
               - pass
         """
         if error_handling == "prompt":
@@ -120,7 +127,7 @@ def place_ender_chest(
                     proceed_how = "skip-shulker"
                 case _:
                     PLACE_LOGGER.error("Invalid selection.")
-                    return handle_error(instance)
+                    return handle_error(shulker_box)
         else:
             proceed_how = error_handling
 
@@ -136,37 +143,56 @@ def place_ender_chest(
                 return "continue"
             case "skip-instance":
                 PLACE_LOGGER.warning("Skipping any more linking from this instance")
-                skip_instances.append(instance)
-                return "continue"
+
+                return "break"
             case "skip-shulker-box" | "skip-shulkerbox" | "skip-shulker":
                 PLACE_LOGGER.warning("Skipping any more linking into this shulker box")
-                return "break"
+                if shulker_box:
+                    skip_boxes.append(shulker_box)
+                return "continue"
             case _:
                 raise ValueError(
                     f"Unrecognized error-handling method: {error_handling}"
                 )
 
-    for shulker_box in shulker_boxes:
-        for instance in instances:
+    chest_folder = os.path.normpath(
+        fs.ender_chest_folder(minecraft_root).expanduser().absolute()
+    )
+
+    for instance in instances:
+        instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
+        if not instance_root.exists():
+            PLACE_LOGGER.error(
+                f"No minecraft instance exists at {instance_root.expanduser().absolute()}"
+            )
+            match handle_error(None):
+                case "return":
+                    return
+                case "break":
+                    break
+                case _:  # nothing to link, so might as well skip the rest
+                    continue
+
+        # start by removing all existing symlinks into the EnderChest
+        if not keep_stale_links:
+            for file in instance_root.rglob("*"):
+                if file.is_symlink():
+                    target = os.readlink(file)
+                    if not os.path.isabs(target):
+                        target = os.path.normpath(file.parent / target)
+                    # there's probably a better way to check if a file is
+                    # inside a sub-path
+                    if os.path.commonpath([target, chest_folder]) == chest_folder:
+                        PLACE_LOGGER.debug(f"Removing old link: {file} -> {target}")
+                        file.unlink()
+
+        for shulker_box in shulker_boxes:
             if not shulker_box.matches(instance):
                 continue
-            if instance in skip_instances:
+            if shulker_box in skip_boxes:
                 continue
 
-            instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
             box_root = shulker_box.root.expanduser().absolute()
-
-            if not instance_root.exists():
-                PLACE_LOGGER.error(
-                    f"No minecraft instance exists at {instance_root.expanduser().absolute()}"
-                )
-                match handle_error(instance):
-                    case "return":
-                        return
-                    case "break":
-                        break
-                    case _:  # nothing to link, so might as well skip the rest
-                        continue
 
             PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
 
@@ -190,7 +216,7 @@ def place_ender_chest(
                         f"\n  {(instance.root / link_folder)} is a"
                         " non-empty directory"
                     )
-                    match handle_error(instance):
+                    match handle_error(shulker_box):
                         case "return":
                             return
                         case "break":
@@ -219,7 +245,7 @@ def place_ender_chest(
                             f"\n  {(instance.root / resource_path)}"
                             " already exists"
                         )
-                        match handle_error(instance):
+                        match handle_error(shulker_box):
                             case "return":
                                 return
                             case "break":
@@ -231,7 +257,8 @@ def place_ender_chest(
                             case "pass":
                                 continue  # or pass--it's the end of the loop
 
-            if cleanup:  # consider this a "finally"
+            # consider this a "finally"
+            if not keep_broken_links:
                 # we clean up as we go, just in case of a failure
                 for file in instance_root.rglob("*"):
                     if not file.exists():
@@ -287,8 +314,8 @@ def link_resource(
 
     if instance_path.is_symlink():
         # remove previous symlink in this spot
-        PLACE_LOGGER.debug(f"Removing old link at {instance_path}")
         instance_path.unlink()
+        PLACE_LOGGER.debug(f"Removed previous link at {instance_path}")
     else:
         try:
             os.rmdir(instance_path)

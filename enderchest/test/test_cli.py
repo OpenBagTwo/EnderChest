@@ -208,14 +208,32 @@ class TestPlace(ActionTestSuite):
 
         yield place_log
 
-    def test_remove_broken_links_by_default(self):
-        *_, options = cli.parse_args(["enderchest", "place", "/home"])
-        assert options["cleanup"] is True
+    @pytest.mark.parametrize("option", ("keep_broken_links", "keep_stale_links"))
+    def test_remove_broken_links_by_default(self, option, place_log):
+        action, minecraft_root, _, options = cli.parse_args(
+            ["enderchest", "place", "/home"]
+        )
+        action(minecraft_root, **options)
+        assert len(place_log) == 1
+        assert place_log[0][1][option] is False
 
-    @pytest.mark.parametrize("flag", ("-k", "--keep-broken"))
-    def test_keep_broken_links(self, flag):
-        *_, options = cli.parse_args(["enderchest", "place", "/home", flag])
-        assert options["cleanup"] is False
+    @pytest.mark.parametrize("flag", ("-k", "--keep-stale-links"))
+    def test_keep_stale_links(self, flag, place_log):
+        action, minecraft_root, _, options = cli.parse_args(
+            ["enderchest", "place", "/home", flag]
+        )
+        action(minecraft_root, **options)
+        assert len(place_log) == 1
+        assert place_log[0][1]["keep_stale_links"] is True
+
+    @pytest.mark.parametrize("flag", ("-kk", "--keep-broken-links"))
+    def test_keep_broken_links(self, flag, place_log):
+        action, minecraft_root, _, options = cli.parse_args(
+            ["enderchest", "place", "/home", flag]
+        )
+        action(minecraft_root, **options)
+        assert len(place_log) == 1
+        assert place_log[0][1]["keep_broken_links"] is True
 
     def test_prompt_on_error_by_default(self):
         *_, options = cli.parse_args(["enderchest", "place"])

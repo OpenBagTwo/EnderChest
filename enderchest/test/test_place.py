@@ -205,9 +205,79 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.iterdir()
 
-        place.place_ender_chest(minecraft_root, cleanup=False)
+        place.place_ender_chest(minecraft_root, keep_broken_links=True)
 
         assert broken_link in broken_link.parent.iterdir()
+
+    @pytest.mark.parametrize("link_type", ("absolute", "relative"))
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_place_cleans_up_stale_symlinks_by_default(
+        self, minecraft_root, instance, link_type
+    ):
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+        old_box = fs.shulker_box_root(minecraft_root, "Old Man Shulker")
+        old_box.mkdir()
+        old_file = old_box / "i-do-exist.txt"
+        old_file.write_text("Hello there\n")
+
+        stale_link = instance_folder / "old-file.txt"
+        if link_type == "absolute":
+            stale_link.symlink_to(old_file)
+        else:
+            stale_link.symlink_to(os.path.relpath(old_file, stale_link.parent))
+
+        place.place_ender_chest(minecraft_root)
+
+        assert stale_link not in stale_link.parent.iterdir()
+
+        # but make sure the original file is okay
+        assert old_file.read_text() == "Hello there\n"
+
+    @pytest.mark.parametrize("link_type", ("absolute", "relative"))
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_place_will_not_remove_links_pointing_outside_of_enderchest(
+        self,
+        minecraft_root,
+        instance,
+        link_type,
+    ):
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+        old_file = minecraft_root / "workspace" / "i-do-exist.txt"
+        old_file.write_text("Hello there\n")
+
+        stale_link = instance_folder / "old_file.txt"
+        if link_type == "absolute":
+            stale_link.symlink_to(old_file)
+        else:
+            stale_link.symlink_to(os.path.relpath(old_file, stale_link.parent))
+
+        place.place_ender_chest(minecraft_root)
+
+        assert stale_link in stale_link.parent.iterdir()
+
+    @pytest.mark.parametrize("link_type", ("absolute", "relative"))
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_place_can_be_told_to_leave_stale_links_alone(
+        self,
+        minecraft_root,
+        instance,
+        link_type,
+    ):
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+        old_box = fs.shulker_box_root(minecraft_root, "Old Man Shulker")
+        old_box.mkdir()
+        old_file = old_box / "i-do-exist.txt"
+        old_file.write_text("Hello there")
+
+        stale_link = instance_folder / "old-file.txt"
+        if link_type == "absolute":
+            stale_link.symlink_to(old_file)
+        else:
+            stale_link.symlink_to(os.path.relpath(old_file, stale_link.parent))
+
+        place.place_ender_chest(minecraft_root, keep_stale_links=True)
+
+        assert stale_link in stale_link.parent.iterdir()
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_will_not_overwrite_a_non_empty_folder(
