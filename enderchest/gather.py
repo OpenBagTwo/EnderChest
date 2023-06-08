@@ -292,9 +292,7 @@ def load_ender_chest_remotes(
     return remote_list
 
 
-def load_instance_matches(
-    minecraft_root: Path, instance_name: str
-) -> Sequence[ShulkerBox]:
+def load_instance_matches(minecraft_root: Path, instance_name: str) -> list[ShulkerBox]:
     """Get the list of shulker boxes that the specified instance links to
 
     Parameters
@@ -310,12 +308,43 @@ def load_instance_matches(
     list of ShulkerBox
         The shulker boxes that are linked to by the specified instance
     """
-    raise NotImplementedError
+    try:
+        chest = load_ender_chest(minecraft_root)
+    except (FileNotFoundError, ValueError) as bad_chest:
+        GATHER_LOGGER.error(
+            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+        )
+        return []
+    for mc in chest.instances:
+        if mc.name == instance_name:
+            break
+    else:
+        GATHER_LOGGER.error(
+            f"No instance named {instance_name} is registered to this EnderChest"
+        )
+        return []
+
+    matches = [
+        box
+        for box in load_shulker_boxes(minecraft_root, log_level=logging.DEBUG)
+        if box.matches(mc) and box.matches_host(chest.name)
+    ]
+
+    if len(matches) == 0:
+        report = "does not link to any shulker boxes in this chest"
+    else:
+        report = "links to the following shulker boxes:\n" + "\n".join(
+            f"  - {_render_shulker_box(box)}" for box in matches
+        )
+
+    GATHER_LOGGER.info(f"The instance {_render_instance(mc)} {report}")
+
+    return matches
 
 
 def load_shulker_box_matches(
     minecraft_root: Path, shulker_box_name: str
-) -> Sequence[InstanceSpec]:
+) -> list[InstanceSpec]:
     """Get the list of registered instances that link to the specified shulker box
 
     Parameters
@@ -335,14 +364,14 @@ def load_shulker_box_matches(
         config_file = fs.shulker_box_config(minecraft_root, shulker_box_name)
     except FileNotFoundError:
         GATHER_LOGGER.error(f"No EnderChest is installed in {minecraft_root}")
-        return ()
+        return []
     try:
         shulker_box = _load_shulker_box(config_file)
     except (FileNotFoundError, ValueError) as bad_box:
         GATHER_LOGGER.error(
             f"Could not load shulker box {shulker_box_name}\n  {bad_box}"
         )
-        return ()
+        return []
 
     chest = load_ender_chest(minecraft_root)
 
@@ -350,7 +379,7 @@ def load_shulker_box_matches(
         GATHER_LOGGER.warning(
             "This shulker box will not link to any instances on this machine"
         )
-        return ()
+        return []
 
     if not chest.instances:
         GATHER_LOGGER.warning(
@@ -358,7 +387,7 @@ def load_shulker_box_matches(
             " To register some, run the command:"
             "\nenderchest gather minecraft",
         )
-        return ()
+        return []
 
     GATHER_LOGGER.debug(
         "These are the instances that are currently registered"
@@ -371,14 +400,12 @@ def load_shulker_box_matches(
         ),
     )
 
-    if shulker_box is None:
-        return ()
     matches = [
         instance for instance in chest.instances if shulker_box.matches(instance)
     ]
 
     if len(matches) == 0:
-        report = "does not link to by any registered instances"
+        report = "is not link to by any registered instances"
     else:
         report = "is linked to by the following instances:\n" + "\n".join(
             f"  - {_render_instance(instance)}" for instance in matches
