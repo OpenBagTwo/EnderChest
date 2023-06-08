@@ -14,10 +14,10 @@
         <link rel="prev" href="../prompt/">
       
       
-        <link rel="next" href="../remote/">
+        <link rel="next" href="../loggers/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
       
       
 
@@ -381,118 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -585,8 +473,120 @@
   
   
     <li class="md-nav__item">
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../remote/" class="md-nav__link">
         remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -814,7 +814,11 @@ pointing to the tagged file / folder living inside a shulker box.</p>
           <td>
                 <code>str or Path</code>
           </td>
-          <td><p>Location of the resource relative to the instance's ".minecraft" folder</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Location of the resource relative to the instance's ".minecraft" folder</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -824,7 +828,11 @@ pointing to the tagged file / folder living inside a shulker box.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The path to the shulker box</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the shulker box</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -834,7 +842,11 @@ pointing to the tagged file / folder living inside a shulker box.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The path to the instance's ".minecraft" folder</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the instance's ".minecraft" folder</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -844,9 +856,13 @@ pointing to the tagged file / folder living inside a shulker box.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>If True, the link will be use a relative path if possible. Otherwise,
+          <td>
+            <div class="doc-md-description">
+              <p>If True, the link will be use a relative path if possible. Otherwise,
 an absolute path will be used, regardless of whether a a relative or
-absolute path was provided.</p></td>
+absolute path was provided.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -867,14 +883,22 @@ absolute path was provided.</p></td>
           <td>
                 <code>NotADirectoryError</code>
           </td>
-          <td><p>If a file already exists where you're attempting to place the symlink</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If a file already exists where you're attempting to place the symlink</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>OSError</code>
           </td>
-          <td><p>If a non-empty directory already exists where you're attempting to
-place the symlink</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If a non-empty directory already exists where you're attempting to
+place the symlink</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1042,8 +1066,12 @@ place the symlink</p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1053,8 +1081,12 @@ that's the parent of your EnderChest folder)</p></td>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td><p>By default, this method will remove any broken links in your instances
-and servers folders. To disable this behavior, pass in <code>cleanup=False</code></p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>By default, this method will remove any broken links in your instances
+and servers folders. To disable this behavior, pass in <code>cleanup=False</code></p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -1064,7 +1096,9 @@ and servers folders. To disable this behavior, pass in <code>cleanup=False</code
           <td>
                 <code>str, optional</code>
           </td>
-          <td><p>By default, if a linking failure occurs, this method will terminate
+          <td>
+            <div class="doc-md-description">
+              <p>By default, if a linking failure occurs, this method will terminate
 immediately (<code>error_handling=abort</code>). Alternatively,
 - pass in <code>error_handling="ignore"</code> to continue as if the link failure
 hadn't occurred
@@ -1074,7 +1108,9 @@ to the current shulker box but otherwise continue on
 instance altogether but to otherwise continue on with other instances
 - pass in <code>error_handling="skip-shulker-box"</code> to abort linking to the current
 shulker box altogether but to otherwise continue on with other boxes
-- pass in <code>error_handling="prompt"</code> to ask what to do on each failure</p></td>
+- pass in <code>error_handling="prompt"</code> to ask what to do on each failure</p>
+            </div>
+          </td>
           <td>
                 <code>&#39;abort&#39;</code>
           </td>
@@ -1084,9 +1120,13 @@ shulker box altogether but to otherwise continue on with other boxes
           <td>
                 <code>bool, optional</code>
           </td>
-          <td><p>By default, links will use relative paths when possible. To use absolute
+          <td>
+            <div class="doc-md-description">
+              <p>By default, links will use relative paths when possible. To use absolute
 paths instead (see: https://bugs.mojang.com/projects/MC/issues/MC-263046),
-pass in <code>relative=False</code>.</p></td>
+pass in <code>relative=False</code>.</p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -1095,9 +1135,13 @@ pass in <code>relative=False</code>.</p></td>
           <td><code>rollback</code></td>
           <td>
           </td>
-          <td><p>In the future in the event of linking errors passing in <code>rollback=True</code>
+          <td>
+            <div class="doc-md-description">
+              <p>In the future in the event of linking errors passing in <code>rollback=True</code>
 can be used to roll back any changes that have already been applied
-based on the error-handling method specified.</p></td>
+based on the error-handling method specified.</p>
+            </div>
+          </td>
           <td>
                 <code>False</code>
           </td>

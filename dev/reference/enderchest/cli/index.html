@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../gather/">
       
       
-        <link rel="next" href="../enderchest/">
+        <link rel="next" href="../shulker_box/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
       
       
 
@@ -379,6 +379,62 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -446,22 +502,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
       </a>
     </li>
   
@@ -488,8 +530,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
+      <a href="../remote/" class="md-nav__link">
+        remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -516,64 +572,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -784,14 +784,22 @@
 <td><code>enderchest_parser</code></td>          <td>
                 <code><span title="argparse.ArgumentParser">ArgumentParser</span></code>
           </td>
-          <td><p>The top-level argument parser responsible for routing arguments to
-specific action parsers</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The top-level argument parser responsible for routing arguments to
+specific action parsers</p>
+            </div>
+          </td>
         </tr>
         <tr>
 <td><code>action_parsers</code></td>          <td>
                 <code>dict of str to ArgumentParser</code>
           </td>
-          <td><p>The verb-specific argument parsers</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The verb-specific argument parsers</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1474,7 +1482,11 @@ the arguments to pass to the action</p>
           <td>
                 <code>list-like of str (sys.argv)</code>
           </td>
-          <td><p>The options passed into the command line</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The options passed into the command line</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1495,26 +1507,42 @@ the arguments to pass to the action</p>
           <td>
                 <code>Callable</code>
           </td>
-          <td><p>The action method that will be called</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The action method that will be called</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The root of the minecraft folder (parent of the EnderChest)
-where the action will be performed</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The root of the minecraft folder (parent of the EnderChest)
+where the action will be performed</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>int</code>
           </td>
-          <td><p>The verbosity level of the operation (in terms of log levels)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The verbosity level of the operation (in terms of log levels)</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Any additional options that will be given to the action method</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any additional options that will be given to the action method</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>

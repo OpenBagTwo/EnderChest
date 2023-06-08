@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../cli/">
+        <link rel="prev" href="../remote/">
       
       
-        <link rel="next" href="../gather/">
+        <link rel="next" href="../filesystem/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
       
       
 
@@ -381,8 +381,106 @@
   
   
     <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -533,48 +631,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../filesystem/" class="md-nav__link">
         filesystem
       </a>
@@ -589,64 +645,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -938,13 +938,17 @@
           <td>
                 <code>URI or Path</code>
           </td>
-          <td><p>The "address" of this EnderChest, ideally as it can be accessed from other
+          <td>
+            <div class="doc-md-description">
+              <p>The "address" of this EnderChest, ideally as it can be accessed from other
 EnderChest installations, including both the path to where
 the EnderChest folder can be found (that is, the parent of the
 EnderChest folder itself, aka the "minecraft_root"), its net location
 including credentials, and the protocol that should be used to perform
 the syncing. All that being said, if just a path is provided, the
-constructor will try to figure out the rest.</p></td>
+constructor will try to figure out the rest.</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -954,8 +958,12 @@ constructor will try to figure out the rest.</p></td>
           <td>
                 <code>str, optional</code>
           </td>
-          <td><p>A unique name to give to this EnderChest installation. If None is
-provided, this will be taken from the hostname of the supplied URI.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A unique name to give to this EnderChest installation. If None is
+provided, this will be taken from the hostname of the supplied URI.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -965,7 +973,11 @@ provided, this will be taken from the hostname of the supplied URI.</p></td>
           <td>
                 <code>list-like of InstanceSpec, optional</code>
           </td>
-          <td><p>The list of instances to register with this EnderChest installation</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The list of instances to register with this EnderChest installation</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -975,9 +987,13 @@ provided, this will be taken from the hostname of the supplied URI.</p></td>
           <td>
                 <code>list-like of URI, or (URI, str) tuples</code>
           </td>
-          <td><p>A list of other installations that this EnderChest should be aware of
+          <td>
+            <div class="doc-md-description">
+              <p>A list of other installations that this EnderChest should be aware of
 (for syncing purposes). When a (URI, str) tuple is provided, the
-second value will be used as the name/alias of the remote.</p></td>
+second value will be used as the name/alias of the remote.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1000,65 +1016,93 @@ second value will be used as the name/alias of the remote.</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The unique name of this EnderChest installation. This is most commonly
+          <td>
+            <div class="doc-md-description">
+              <p>The unique name of this EnderChest installation. This is most commonly
 the computer's hostname, but one can configure multiple EnderChests
 to coexist on the same system (either for the sake of having a "cold"
-backup or for multi-user systems).</p></td>
+backup or for multi-user systems).</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>uri</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The complete URI of this instance</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The complete URI of this instance</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>root</code></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The path to this EnderChest folder</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to this EnderChest folder</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>instances</code></td>
           <td>
                 <code>list-like of InstanceSpec</code>
           </td>
-          <td><p>The instances registered with this EnderChest</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The instances registered with this EnderChest</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>remotes</code></td>
           <td>
                 <code>list-like of (ParseResult, str) pairs</code>
           </td>
-          <td><p>The other EnderChest installations this EnderChest is aware of, paired
-with their aliases</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The other EnderChest installations this EnderChest is aware of, paired
+with their aliases</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>offer_to_update_symlink_allowlist</code></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>By default, EnderChest will offer to create or update <code>allowed_symlinks.txt</code>
+          <td>
+            <div class="doc-md-description">
+              <p>By default, EnderChest will offer to create or update <code>allowed_symlinks.txt</code>
 on any 1.20+ instances that do not already blanket allow links into
 EnderChest. <strong>EnderChest will never modify that or any other Minecraft
 file without your express consent.</strong> If you would prefer to edit these
 files yourself (or simply not symlink your world saves), change this
-parameter to False.</p></td>
+parameter to False.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>sync_confirm_wait</code></td>
           <td>
                 <code>bool or int</code>
           </td>
-          <td><p>The default behavior when syncing EnderChests is to first perform a dry
+          <td>
+            <div class="doc-md-description">
+              <p>The default behavior when syncing EnderChests is to first perform a dry
 run of every sync operation and then wait 5 seconds before proceeding with the
 real sync. The idea is to give the user time to interrupt the sync if
 the dry run looks wrong. This can be changed by either raising or lowering
 the value of confirm, by disabling the dry-run-first behavior entirely
 (<code>confirm=False</code>) or by requiring that the user explicitly confirms
 the sync (<code>confirm=True</code>). This default behavior can also be overridden
-when actually calling the sync commands.</p></td>
+when actually calling the sync commands.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1810,7 +1854,11 @@ when actually calling the sync commands.</p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The path to the config file</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the config file</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1831,7 +1879,11 @@ when actually calling the sync commands.</p></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.enderchest.EnderChest" href="#enderchest.enderchest.EnderChest">EnderChest</a></code>
           </td>
-          <td><p>The resulting EnderChest</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The resulting EnderChest</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1849,13 +1901,21 @@ when actually calling the sync commands.</p></td>
           <td>
                 <code>ValueError</code>
           </td>
-          <td><p>If the config file at that location cannot be parsed</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the config file at that location cannot be parsed</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td><p>If there is no config file at the specified location</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If there is no config file at the specified location</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2077,7 +2137,11 @@ when actually calling the sync commands.</p></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="../instance/#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td><p>The instance to register</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The instance to register</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2098,8 +2162,12 @@ when actually calling the sync commands.</p></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="../instance/#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td><p>The spec of the instance as it was actually registered (in case the
-name changed or somesuch)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The spec of the instance as it was actually registered (in case the
+name changed or somesuch)</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2225,7 +2293,11 @@ registry)</p>
           <td>
                 <code>URI</code>
           </td>
-          <td><p>The URI of the remote</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI of the remote</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2235,8 +2307,12 @@ registry)</p>
           <td>
                 <code>str, optional</code>
           </td>
-          <td><p>an alias to give to this remote. If None is provided, the URI's hostname
-will be used.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>an alias to give to this remote. If None is provided, the URI's hostname
+will be used.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -2257,7 +2333,11 @@ will be used.</p></td>
           <td>
                 <code>ValueError</code>
           </td>
-          <td><p>If the provided remote is invalid</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the provided remote is invalid</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2355,8 +2435,12 @@ will be used.</p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span>, optional</code>
           </td>
-          <td><p>The path to the config file, assuming you'd like to write the
-contents to file</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The path to the config file, assuming you'd like to write the
+contents to file</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -2377,7 +2461,11 @@ contents to file</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>An INI-syntax rendering of this EnderChest's config</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>An INI-syntax rendering of this EnderChest's config</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2566,8 +2654,12 @@ contents to file</p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The root directory that your minecraft stuff is in (or, at least, the
-one inside which you want to create your EnderChest)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The root directory that your minecraft stuff is in (or, at least, the
+one inside which you want to create your EnderChest)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2577,7 +2669,11 @@ one inside which you want to create your EnderChest)</p></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.enderchest.EnderChest" href="#enderchest.enderchest.EnderChest">EnderChest</a></code>
           </td>
-          <td><p>The spec of the chest to create</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The spec of the chest to create</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>

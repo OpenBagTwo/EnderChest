@@ -17,7 +17,7 @@
         <link rel="next" href="../utils/">
       
       <link rel="icon" href="../../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.26e3688c.min.css">
       
       
 
@@ -381,118 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../filesystem/" class="md-nav__link">
-        filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -521,8 +409,120 @@
   
   
     <li class="md-nav__item">
+      <a href="../../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../remote/" class="md-nav__link">
         remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enderchest/" class="md-nav__link">
+        enderchest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -936,7 +936,11 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
           </td>
-          <td><p>The URI for the remote resource to copy from</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI for the remote resource to copy from</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -946,7 +950,11 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The destination folder</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The destination folder</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -956,7 +964,11 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any patterns that should be excluded from the sync</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any patterns that should be excluded from the sync</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -966,8 +978,12 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -977,9 +993,13 @@ but not actually perform them)</p></td>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td><p>By default, the rsync is performed over ssh. If you happen to have an
+          <td>
+            <div class="doc-md-description">
+              <p>By default, the rsync is performed over ssh. If you happen to have an
 rsync daemon running on your system, however, you're welcome to leverage
-it instead by passing in <code>use_daemon=True</code></p></td>
+it instead by passing in <code>use_daemon=True</code></p>
+            </div>
+          </td>
           <td>
                 <code>False</code>
           </td>
@@ -989,8 +1009,12 @@ it instead by passing in <code>use_daemon=True</code></p></td>
           <td>
                 <code>int, optional</code>
           </td>
-          <td><p>The number of seconds to wait before timing out the sync operation.
-If None is provided, no explicit timeout value will be set.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The number of seconds to wait before timing out the sync operation.
+If None is provided, no explicit timeout value will be set.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1000,8 +1024,12 @@ If None is provided, no explicit timeout value will be set.</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether part of the syncing should include deleting files at the destination
-that aren't at the source. Default is True.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether part of the syncing should include deleting files at the destination
+that aren't at the source. Default is True.</p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -1011,8 +1039,12 @@ that aren't at the source. Default is True.</p></td>
           <td>
                 <code>int</code>
           </td>
-          <td><p>A modifier for how much info to output either to stdout or the INFO-level
-logs. Defaults to 0.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A modifier for how much info to output either to stdout or the INFO-level
+logs. Defaults to 0.</p>
+            </div>
+          </td>
           <td>
                 <code>0</code>
           </td>
@@ -1022,8 +1054,12 @@ logs. Defaults to 0.</p></td>
           <td>
                 <code><span title="typing.Iterable">Iterable</span>[str] | None</code>
           </td>
-          <td><p>Any additional arguments to pass into rsync. Note that rsync is run by
-default with the flags: <code>-shaz</code></p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any additional arguments to pass into rsync. Note that rsync is run by
+default with the flags: <code>-shaz</code></p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1044,7 +1080,11 @@ default with the flags: <code>-shaz</code></p></td>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td><p>If the destination folder does not exist</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the destination folder does not exist</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -1255,7 +1295,11 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The file or folder to copy</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The file or folder to copy</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1265,7 +1309,11 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
           </td>
-          <td><p>The URI for the remote location to copy into</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI for the remote location to copy into</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1275,7 +1323,11 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any patterns that should be excluded from the sync</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any patterns that should be excluded from the sync</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1285,8 +1337,12 @@ This will overwrite any files and folders already at the destination.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1296,9 +1352,13 @@ but not actually perform them)</p></td>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td><p>By default, the rsync is performed over ssh. If you happen to have an
+          <td>
+            <div class="doc-md-description">
+              <p>By default, the rsync is performed over ssh. If you happen to have an
 rsync daemon running on your system, however, you're welcome to leverage
-it instead by passing in <code>use_daemon=True</code></p></td>
+it instead by passing in <code>use_daemon=True</code></p>
+            </div>
+          </td>
           <td>
                 <code>False</code>
           </td>
@@ -1308,8 +1368,12 @@ it instead by passing in <code>use_daemon=True</code></p></td>
           <td>
                 <code>int, optional</code>
           </td>
-          <td><p>The number of seconds to wait before timing out the sync operation.
-If None is provided, no explicit timeout value will be set.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The number of seconds to wait before timing out the sync operation.
+If None is provided, no explicit timeout value will be set.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1319,8 +1383,12 @@ If None is provided, no explicit timeout value will be set.</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether part of the syncing should include deleting files at the destination
-that aren't at the source. Default is True.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether part of the syncing should include deleting files at the destination
+that aren't at the source. Default is True.</p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -1330,8 +1398,12 @@ that aren't at the source. Default is True.</p></td>
           <td>
                 <code>int</code>
           </td>
-          <td><p>A modifier for how much info to output either to stdout or the INFO-level
-logs. Defaults to 0.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A modifier for how much info to output either to stdout or the INFO-level
+logs. Defaults to 0.</p>
+            </div>
+          </td>
           <td>
                 <code>0</code>
           </td>
@@ -1341,8 +1413,12 @@ logs. Defaults to 0.</p></td>
           <td>
                 <code><span title="typing.Iterable">Iterable</span>[str] | None</code>
           </td>
-          <td><p>Any additional arguments to pass into rsync. Note that rsync is run by
-default with the flags: <code>-shaz</code></p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any additional arguments to pass into rsync. Note that rsync is run by
+default with the flags: <code>-shaz</code></p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1539,7 +1615,11 @@ default with the flags: <code>-shaz</code></p></td>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td><p>The working directory to run the sync command from</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The working directory to run the sync command from</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1549,8 +1629,12 @@ default with the flags: <code>-shaz</code></p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The source file or folder to sync, specified as either a URI string,
-an ssh address or a path relative to the working directory</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The source file or folder to sync, specified as either a URI string,
+an ssh address or a path relative to the working directory</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1560,8 +1644,12 @@ an ssh address or a path relative to the working directory</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The destination folder where the file or folder should be synced to,
-with the same formats available as for source</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The destination folder where the file or folder should be synced to,
+with the same formats available as for source</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1571,8 +1659,12 @@ with the same formats available as for source</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether part of the syncing should include deleting files at the destination
-that aren't at the source</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether part of the syncing should include deleting files at the destination
+that aren't at the source</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1582,8 +1674,12 @@ that aren't at the source</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether to only simulate this sync (report the operations to be performed
-but not actually perform them)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to only simulate this sync (report the operations to be performed
+but not actually perform them)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1593,7 +1689,11 @@ but not actually perform them)</p></td>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any patterns that should be excluded from the sync (and sync)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any patterns that should be excluded from the sync (and sync)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1603,7 +1703,11 @@ but not actually perform them)</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>Any additional arguments to pass into the rsync command</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any additional arguments to pass into the rsync command</p>
+            </div>
+          </td>
           <td>
                 <code>()</code>
           </td>
@@ -1613,8 +1717,12 @@ but not actually perform them)</p></td>
           <td>
                 <code>int, optional</code>
           </td>
-          <td><p>The number of seconds to wait before timing out the sync operation.
-If None is provided, no explicit timeout value will be set.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The number of seconds to wait before timing out the sync operation.
+If None is provided, no explicit timeout value will be set.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1624,7 +1732,9 @@ If None is provided, no explicit timeout value will be set.</p></td>
           <td>
                 <code>int</code>
           </td>
-          <td><p>A modifier for how much info to output either to stdout or the INFO-level
+          <td>
+            <div class="doc-md-description">
+              <p>A modifier for how much info to output either to stdout or the INFO-level
 logs. At...</p>
 <ul>
 <li>verbosity = -2 : No information will be printed, even on dry runs</li>
@@ -1640,7 +1750,9 @@ be created, updated or deleted.</li>
 of rsync run using the <code>-vv</code> modifier</li>
 </ul>
 <p>Verbosity values outside of this range will simply be capped / floored
-to [-2, 2].</p></td>
+to [-2, 2].</p>
+            </div>
+          </td>
           <td>
                 <code>0</code>
           </td>
@@ -1650,7 +1762,9 @@ to [-2, 2].</p></td>
           <td>
                 <code>str, optional</code>
           </td>
-          <td><p>By default, rsync will be run using the flags "shaz" which means:</p>
+          <td>
+            <div class="doc-md-description">
+              <p>By default, rsync will be run using the flags "shaz" which means:</p>
 <ul>
 <li>no space splitting</li>
 <li>use output (file sizes, mostly) human-readable</li>
@@ -1658,7 +1772,9 @@ to [-2, 2].</p></td>
 <li>compress data during transfer</li>
 </ul>
 <p>Advanced users may choose to override these options, but <strong>you do so
-at your own peril</strong>.</p></td>
+at your own peril</strong>.</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -1679,13 +1795,21 @@ at your own peril</strong>.</p></td>
           <td>
                 <code>TimeoutError</code>
           </td>
-          <td><p>If the rsync operation times out before completion</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the rsync operation times out before completion</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code>RuntimeError</code>
           </td>
-          <td><p>If the rsync operation fails for any other reason</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the rsync operation fails for any other reason</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2012,7 +2136,11 @@ and report a high-level summary to the logging.INFO level</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>The raw output captured from running the rsync command</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The raw output captured from running the rsync command</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2022,9 +2150,13 @@ and report a high-level summary to the logging.INFO level</p>
           <td>
                 <code>int</code>
           </td>
-          <td><p>How many directories to go down from the root to generate the summary.
+          <td>
+            <div class="doc-md-description">
+              <p>How many directories to go down from the root to generate the summary.
 Default is 2 (just report on top-level files and folders within the
-source folder).</p></td>
+source folder).</p>
+            </div>
+          </td>
           <td>
                 <code>2</code>
           </td>
@@ -2045,8 +2177,12 @@ source folder).</p></td>
           <td>
                 <code>list of str</code>
           </td>
-          <td><p>Any lines that weren't part of the rsync report (and were probably
-part of <code>--stats</code>?)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Any lines that weren't part of the rsync report (and were probably
+part of <code>--stats</code>?)</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2316,7 +2452,11 @@ are that <code>--out-format="%i %n"</code> produces:
           <td>
                 <code><span title="urllib.parse.ParseResult">ParseResult</span></code>
           </td>
-          <td><p>The URI to convert</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The URI to convert</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2337,7 +2477,11 @@ are that <code>--out-format="%i %n"</code> produces:
           <td>
                 <code>str</code>
           </td>
-          <td><p>The SSH-format address</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The SSH-format address</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
