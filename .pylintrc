@@ -1,0 +1,9 @@
+[main]
+
+ignore-patterns=(_version.py|test_(.*).py|conftest.py)
+
+enable =
+    logging-not-lazy
+
+disable =
+    logging-fstring-interpolation

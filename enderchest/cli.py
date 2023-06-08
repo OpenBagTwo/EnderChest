@@ -23,6 +23,8 @@ _list_aliases = ("inventory", "list")
 
 
 class Action(Protocol):
+    """Common protocol for CLI actions"""
+
     def __call__(self, minecraft_root: Path, /) -> Any:
         ...
 
@@ -216,7 +218,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     """
     descriptions: dict[str, str] = {}
     root_description: str = ""
-    for commands, description, method in ACTIONS:
+    for commands, description, _ in ACTIONS:
         descriptions[commands[0]] = description
         root_description += f"\n\t{commands[0]}\n\t\tto {description}"
 
@@ -432,7 +434,10 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
             "abort",
         ),
         default="prompt",
-        help="specify how to handle linking errors (default behavior is to prompt after every error)",
+        help=(
+            "specify how to handle linking errors"
+            " (default behavior is to prompt after every error)"
+        ),
     )
     link_type = place_parser.add_mutually_exclusive_group()
     link_type.add_argument(
@@ -575,7 +580,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
     """
     actions: dict[str, Action] = {}
     aliases: dict[str, str] = {}
-    for commands, description, method in ACTIONS:
+    for commands, _, method in ACTIONS:
         for command in commands:
             aliases[command] = commands[0]
         actions[commands[0]] = method
@@ -611,12 +616,13 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
                 log_level,
                 action_kwargs,
             )
-    else:
-        enderchest_parser.print_help(sys.stderr)
-        sys.exit(1)
+
+    enderchest_parser.print_help(sys.stderr)
+    sys.exit(1)
 
 
 def main():
+    """CLI Entrypoint"""
     logger = logging.getLogger(__package__)
     cli_handler = logging.StreamHandler()
     cli_handler.setFormatter(loggers.CLIFormatter())

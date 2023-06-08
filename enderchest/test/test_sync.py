@@ -382,9 +382,9 @@ class TestRsyncSync(TestFileSync):
         debug_log = ""
         for record in caplog.records:
             if record.levelname == "INFO":
-                info_log += record.msg + "\n"
+                info_log += record.msg % record.args + "\n"
             elif record.levelname == "DEBUG":
-                debug_log += record.msg + "\n"
+                debug_log += record.msg % record.args + "\n"
 
         # meta-test--make sure that the creation is actually happening
         assert (

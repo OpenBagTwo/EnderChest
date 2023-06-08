@@ -182,8 +182,8 @@ def _report_shulker_boxes(
     GATHER_LOGGER.log(
         log_level,
         f"These are the shulker boxes within {ender_chest_name}"
-        "\nlisted in the order in which they are linked:\n"
-        + "\n".join(
+        "\nlisted in the order in which they are linked:\n%s",
+        "\n".join(
             f"  {shulker_box.priority}. {_render_shulker_box(shulker_box)}"
             for shulker_box in shulker_boxes
         ),
@@ -285,10 +285,12 @@ def load_ender_chest_remotes(
         f" to the one installed at {minecraft_root}"
     )
     remote_list: list[tuple[ParseResult, str]] = []
+    log_args: list[str] = []
     for remote, alias in remotes:
-        report += f"\n  - {render_remote(alias, remote)}"
+        report += "\n  - %s"
+        log_args.append(render_remote(alias, remote))
         remote_list.append((remote, alias))
-    GATHER_LOGGER.log(log_level, report)
+    GATHER_LOGGER.log(log_level, report, *log_args)
     return remote_list
 
 
@@ -393,8 +395,8 @@ def get_instances_matching_shulker_box(
 
     GATHER_LOGGER.debug(
         "These are the instances that are currently registered"
-        f" to the {minecraft_root} EnderChest:\n"
-        + "\n".join(
+        f" to the {minecraft_root} EnderChest:\n%s",
+        "\n".join(
             [
                 f"  {i + 1}. {_render_instance(instance)}"
                 for i, instance in enumerate(chest.instances)
@@ -565,7 +567,7 @@ def gather_metadata_for_official_instance(
             f"{version_manifest_file} is corrupt and could not be parsed"
         ) from bad_json
     except KeyError as weird_json:
-        GATHER_LOGGER.warn(
+        GATHER_LOGGER.warning(
             f"{version_manifest_file} has no latest-version lookup."
             "\nPlease check the parsed metadata to ensure that it's accurate.",
         )
@@ -653,7 +655,7 @@ def gather_metadata_for_mmc_instance(
     tags: list[str] = []
 
     if name == "":
-        GATHER_LOGGER.warn(
+        GATHER_LOGGER.warning(
             "Could not resolve the name of the parent folder"
             " and thus could not load tags."
         )
@@ -671,15 +673,15 @@ def gather_metadata_for_mmc_instance(
                     tags.append(tag)
 
         except FileNotFoundError as no_json:
-            GATHER_LOGGER.warn(
+            GATHER_LOGGER.warning(
                 f"Could not find {instgroups_file} and thus could not load tags"
             )
         except json.JSONDecodeError as bad_json:
-            GATHER_LOGGER.warn(
+            GATHER_LOGGER.warning(
                 f"{instgroups_file} is corrupt and could not be parsed for tags"
             )
         except KeyError as weird_json:
-            GATHER_LOGGER.warn(f"Could not parse tags from {instgroups_file}")
+            GATHER_LOGGER.warning(f"Could not parse tags from {instgroups_file}")
 
     instance_cfg = minecraft_folder.parent / "instance.cfg"
 
@@ -688,15 +690,15 @@ def gather_metadata_for_mmc_instance(
         parser.read_string("[instance]\n" + instance_cfg.read_text())
         name = parser["instance"]["name"]
     except FileNotFoundError as no_cfg:
-        GATHER_LOGGER.warn(
+        GATHER_LOGGER.warning(
             f"Could not find {instance_cfg} and thus could not load the instance name"
         )
     except ParsingError as no_cfg:
-        GATHER_LOGGER.warn(
+        GATHER_LOGGER.warning(
             f"{instance_cfg} is corrupt and could not be parsed the instance name"
         )
     except KeyError as weird_json:
-        GATHER_LOGGER.warn(f"Could not parse instance name from {instance_cfg}")
+        GATHER_LOGGER.warning(f"Could not parse instance name from {instance_cfg}")
 
     if name == "":
         raise ValueError("Could not determine the name of the instance.")

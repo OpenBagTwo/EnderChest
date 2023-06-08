@@ -33,7 +33,7 @@ class TestListShulkerBoxes:
   1. 1.19
   2. vanilla
   3. optifine"""
-            in caplog.records[-1].msg
+            in caplog.records[-1].msg % caplog.records[-1].args
         )
 
     def test_list_shulker_box_doesnt_choke_on_relative_root(
@@ -46,7 +46,7 @@ class TestListShulkerBoxes:
   1. 1.19
   2. vanilla
   3. optifine"""
-            in caplog.records[-1].msg
+            in caplog.records[-1].msg % caplog.records[-1].args
         )
 
     def test_list_shulker_box_warns_if_theres_a_bad_box(self, minecraft_root, caplog):
@@ -58,7 +58,7 @@ class TestListShulkerBoxes:
 
         assert re.search(
             rf"Could not parse(.*)not_ini(.*){fs.SHULKER_BOX_CONFIG_NAME}",
-            warnings[-1].msg,
+            warnings[-1].msg % warnings[-1].args,
         )
 
 

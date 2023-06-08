@@ -52,12 +52,12 @@ def confirm(default: bool) -> bool:
         Whether the user has opted to continue
     """
 
-    confirm = prompt("Do you wish to continue?", "Y/n" if default else "y/N")
+    response = prompt("Do you wish to continue?", "Y/n" if default else "y/N")
 
-    if confirm == "":
+    if response == "":
         return default
 
-    if confirm in YES:
+    if response in YES:
         return True
 
     return False
