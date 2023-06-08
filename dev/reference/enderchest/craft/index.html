@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../shulker_box/">
+        <link rel="prev" href="../gather/">
       
       
-        <link rel="next" href="../remote/">
+        <link rel="next" href="../instance/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
       
       
 
@@ -381,62 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         cli
       </a>
@@ -451,8 +395,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
       </a>
     </li>
   
@@ -570,22 +528,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -612,8 +556,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -868,12 +868,8 @@ interactively via prompts</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff is in (or, at least, the
-one inside which you want to create your EnderChest)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff is in (or, at least, the
+one inside which you want to create your EnderChest)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -883,12 +879,8 @@ one inside which you want to create your EnderChest)</p>
           <td>
                 <code>URI, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optionally bootstrap your configuration by pulling the list of remotes
-from an existing remote EnderChest</p>
-            </div>
-          </td>
+          <td><p>Optionally bootstrap your configuration by pulling the list of remotes
+from an existing remote EnderChest</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -898,11 +890,7 @@ from an existing remote EnderChest</p>
           <td>
                 <code>list of Paths, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Any paths to search for Minecraft instances</p>
-            </div>
-          </td>
+          <td><p>Any paths to search for Minecraft instances</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -912,14 +900,10 @@ from an existing remote EnderChest</p>
           <td>
                 <code>list of URIs or (URI, str) tuples, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Any remotes you wish you manually specify. If used with <code>copy_from</code>, these
+          <td><p>Any remotes you wish you manually specify. If used with <code>copy_from</code>, these
 will overwrite any remotes pulled from the remote EnderChest. When a
 (URI, str) tuple is provided, the second value will be used as the
-name/alias of the remote.</p>
-            </div>
-          </td>
+name/alias of the remote.</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -929,12 +913,8 @@ name/alias of the remote.</p>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>This method will not overwrite an EnderChest instance installed within
-the <code>minecraft_root</code> unless the user provides <code>overwrite=True</code></p>
-            </div>
-          </td>
+          <td><p>This method will not overwrite an EnderChest instance installed within
+the <code>minecraft_root</code> unless the user provides <code>overwrite=True</code></p></td>
           <td>
                 <code>False</code>
           </td>
@@ -1194,12 +1174,8 @@ interactively via prompts</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1209,11 +1185,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A name to give to this shulker box</p>
-            </div>
-          </td>
+          <td><p>A name to give to this shulker box</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1223,12 +1195,8 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>int, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The priority for linking assets in the shulker box (higher priority
-shulkers are linked last)</p>
-            </div>
-          </td>
+          <td><p>The priority for linking assets in the shulker box (higher priority
+shulkers are linked last)</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1238,11 +1206,7 @@ shulkers are linked last)</p>
           <td>
                 <code>list of str, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The folders that should be linked in their entirety</p>
-            </div>
-          </td>
+          <td><p>The folders that should be linked in their entirety</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1252,11 +1216,7 @@ shulkers are linked last)</p>
           <td>
                 <code>list of str, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The names of the instances you'd like to link to this shulker box</p>
-            </div>
-          </td>
+          <td><p>The names of the instances you'd like to link to this shulker box</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1266,12 +1226,8 @@ shulkers are linked last)</p>
           <td>
                 <code>list of str, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>You can instead (see notes) provide a list of tags where any instances
-with those tags will be linked to this shulker box</p>
-            </div>
-          </td>
+          <td><p>You can instead (see notes) provide a list of tags where any instances
+with those tags will be linked to this shulker box</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1281,11 +1237,7 @@ with those tags will be linked to this shulker box</p>
           <td>
                 <code>list of str, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The EnderChest installations that this shulker box should be applied to</p>
-            </div>
-          </td>
+          <td><p>The EnderChest installations that this shulker box should be applied to</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1295,12 +1247,8 @@ with those tags will be linked to this shulker box</p>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>This method will not overwrite an existing shulker box unless the user
-provides <code>overwrite=True</code></p>
-            </div>
-          </td>
+          <td><p>This method will not overwrite an existing shulker box unless the user
+provides <code>overwrite=True</code></p></td>
           <td>
                 <code>False</code>
           </td>
@@ -1555,12 +1503,8 @@ provides <code>overwrite=True</code></p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff is in (or, at least, the
-one inside which you want to create your EnderChest)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff is in (or, at least, the
+one inside which you want to create your EnderChest)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1581,11 +1525,7 @@ one inside which you want to create your EnderChest)</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.enderchest.EnderChest" href="../enderchest/#enderchest.enderchest.EnderChest">EnderChest</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The resulting EnderChest</p>
-            </div>
-          </td>
+          <td><p>The resulting EnderChest</p></td>
         </tr>
     </tbody>
   </table>
@@ -1959,12 +1899,8 @@ one inside which you want to create your EnderChest)</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1974,11 +1910,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The name to give to the shulker box</p>
-            </div>
-          </td>
+          <td><p>The name to give to the shulker box</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1999,11 +1931,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.shulker_box.ShulkerBox" href="../shulker_box/#enderchest.shulker_box.ShulkerBox">ShulkerBox</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The resulting ShulkerBox</p>
-            </div>
-          </td>
+          <td><p>The resulting ShulkerBox</p></td>
         </tr>
     </tbody>
   </table>

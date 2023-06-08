@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../craft/">
+        <link rel="prev" href="../place/">
       
       
-        <link rel="next" href="../enderchest/">
+        <link rel="next" href="../sync/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
       
       
 
@@ -381,8 +381,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
+      <a href="../cli/" class="md-nav__link">
+        cli
       </a>
     </li>
   
@@ -395,22 +395,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -437,8 +423,50 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance/" class="md-nav__link">
+        instance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loggers/" class="md-nav__link">
+        loggers
       </a>
     </li>
   
@@ -465,8 +493,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
       </a>
     </li>
   
@@ -553,48 +595,6 @@
   
 </nav>
       
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
     </li>
   
 
@@ -827,11 +827,7 @@
           <td>
                 <code>URI</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The URI to the remote Minecraft root</p>
-            </div>
-          </td>
+          <td><p>The URI to the remote Minecraft root</p></td>
           <td>
               <em>required</em>
           </td>
@@ -852,11 +848,7 @@
           <td>
                 <code>list of (URI, str) tuples</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The URIs of the remote EnderChests, paired with their aliases</p>
-            </div>
-          </td>
+          <td><p>The URIs of the remote EnderChests, paired with their aliases</p></td>
         </tr>
     </tbody>
   </table>
@@ -874,11 +866,7 @@
           <td>
                 <code>RuntimeError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the remote list could not be pulled</p>
-            </div>
-          </td>
+          <td><p>If the remote list could not be pulled</p></td>
         </tr>
     </tbody>
   </table>
@@ -992,11 +980,7 @@
           <td>
                 <code>URI</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The URI to the remote Minecraft root</p>
-            </div>
-          </td>
+          <td><p>The URI to the remote Minecraft root</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1017,11 +1001,7 @@
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.enderchest.EnderChest" href="../enderchest/#enderchest.enderchest.EnderChest">EnderChest</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The remote EnderChest configuration</p>
-            </div>
-          </td>
+          <td><p>The remote EnderChest configuration</p></td>
         </tr>
     </tbody>
   </table>
@@ -1039,21 +1019,13 @@
           <td>
                 <code>ValueError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the provided URI is invalid</p>
-            </div>
-          </td>
+          <td><p>If the provided URI is invalid</p></td>
         </tr>
         <tr>
           <td>
                 <code>RuntimeError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the config from the remote EnderChest could not be parsed</p>
-            </div>
-          </td>
+          <td><p>If the config from the remote EnderChest could not be parsed</p></td>
         </tr>
     </tbody>
   </table>
@@ -1169,13 +1141,9 @@
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
 that's the parent of your EnderChest folder). This will be used to
-construct relative paths.</p>
-            </div>
-          </td>
+construct relative paths.</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1185,11 +1153,7 @@ construct relative paths.</p>
           <td>
                 <code>str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>"pull" or "push"</p>
-            </div>
-          </td>
+          <td><p>"pull" or "push"</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1199,11 +1163,7 @@ construct relative paths.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Perform a dry run of the sync operation, reporting the operations         that will be performed but not actually carrying them out</p>
-            </div>
-          </td>
+          <td><p>Perform a dry run of the sync operation, reporting the operations         that will be performed but not actually carrying them out</p></td>
           <td>
                 <code>False</code>
           </td>
@@ -1213,9 +1173,7 @@ construct relative paths.</p>
           <td>
                 <code>bool or int, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The default behavior when syncing EnderChests is to first perform a dry
+          <td><p>The default behavior when syncing EnderChests is to first perform a dry
 run of every sync operation and then wait 5 seconds before proceeding with the
 real sync. The idea is to give the user time to interrupt the sync if
 the dry run looks wrong. This can be changed by either raising or lowering
@@ -1223,9 +1181,7 @@ the value of confirm, by disabling the dry-run-first behavior entirely
 (<code>confirm=False</code>) or by requiring that the user explicitly confirms
 the sync (<code>confirm=True</code>). This default behavior can also be modified
 in the EnderChest config. This parameter will be ignored when performing
-a dry run.</p>
-            </div>
-          </td>
+a dry run.</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1234,12 +1190,8 @@ a dry run.</p>
           <td><code>sync_kwargs</code></td>
           <td>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Any additional arguments that should be passed into the syncing
-operation</p>
-            </div>
-          </td>
+          <td><p>Any additional arguments that should be passed into the syncing
+operation</p></td>
           <td>
                 <code>{}</code>
           </td>

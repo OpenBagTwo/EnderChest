@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../loggers/">
+        <link rel="prev" href="../enderchest/">
       
       
-        <link rel="next" href="../cli/">
+        <link rel="next" href="../craft/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
       
       
 
@@ -381,8 +381,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
+      <a href="../cli/" class="md-nav__link">
+        cli
       </a>
     </li>
   
@@ -395,22 +395,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -615,34 +601,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../craft/" class="md-nav__link">
         craft
       </a>
@@ -657,22 +615,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -699,8 +643,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -1041,11 +1041,7 @@
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to the installation's .minecraft folder</p>
-            </div>
-          </td>
+          <td><p>The path to the installation's .minecraft folder</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1055,12 +1051,8 @@
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to instgroups.json. If None is provided, this method will
-look for it two directories up from the minecraft folder</p>
-            </div>
-          </td>
+          <td><p>The path to instgroups.json. If None is provided, this method will
+look for it two directories up from the minecraft folder</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -1081,11 +1073,7 @@ look for it two directories up from the minecraft folder</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="../instance/#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The metadata for this instance</p>
-            </div>
-          </td>
+          <td><p>The metadata for this instance</p></td>
         </tr>
     </tbody>
   </table>
@@ -1103,11 +1091,7 @@ look for it two directories up from the minecraft folder</p>
           <td>
                 <code>ValueError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If this is not a valid MMC-like Minecraft instance</p>
-            </div>
-          </td>
+          <td><p>If this is not a valid MMC-like Minecraft instance</p></td>
         </tr>
     </tbody>
   </table>
@@ -1386,11 +1370,7 @@ to try ensuring that minecraft_folder is an absolute path.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to the installation's .minecraft folder</p>
-            </div>
-          </td>
+          <td><p>The path to the installation's .minecraft folder</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1400,12 +1380,8 @@ to try ensuring that minecraft_folder is an absolute path.</p>
           <td>
                 <code>str, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A name or alias to give to the instance. If None is provided, the
-default name is "official"</p>
-            </div>
-          </td>
+          <td><p>A name or alias to give to the instance. If None is provided, the
+default name is "official"</p></td>
           <td>
                 <code>&#39;official&#39;</code>
           </td>
@@ -1426,11 +1402,7 @@ default name is "official"</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="../instance/#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The metadata for this instance</p>
-            </div>
-          </td>
+          <td><p>The metadata for this instance</p></td>
         </tr>
     </tbody>
   </table>
@@ -1448,11 +1420,7 @@ default name is "official"</p>
           <td>
                 <code>ValueError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If this is not a valid official Minecraft installation</p>
-            </div>
-          </td>
+          <td><p>If this is not a valid official Minecraft installation</p></td>
         </tr>
     </tbody>
   </table>
@@ -1656,13 +1624,9 @@ any that are can be found and parsed</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
 that's the parent of your EnderChest folder). This will be used to
-construct relative paths.</p>
-            </div>
-          </td>
+construct relative paths.</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1672,11 +1636,7 @@ construct relative paths.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to search</p>
-            </div>
-          </td>
+          <td><p>The path to search</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1686,14 +1646,10 @@ construct relative paths.</p>
           <td>
                 <code>bool or None</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether we expect that the instances found in this location will be:
+          <td><p>Whether we expect that the instances found in this location will be:
 - from the official launcher (official=True)
 - from a MultiMC-style launcher (official=False)
-- a mix / unsure (official=None)</p>
-            </div>
-          </td>
+- a mix / unsure (official=None)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1714,11 +1670,7 @@ construct relative paths.</p>
           <td>
                 <code>list of InstanceSpec</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A list of parsed instances</p>
-            </div>
-          </td>
+          <td><p>A list of parsed instances</p></td>
         </tr>
     </tbody>
   </table>
@@ -1939,12 +1891,8 @@ folder.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1965,11 +1913,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.enderchest.EnderChest" href="../enderchest/#enderchest.enderchest.EnderChest">EnderChest</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The EnderChest configuration</p>
-            </div>
-          </td>
+          <td><p>The EnderChest configuration</p></td>
         </tr>
     </tbody>
   </table>
@@ -1987,22 +1931,14 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If no EnderChest folder exists in the given minecraft root or if no
-enderchest.cfg file exists within that EnderChest folder</p>
-            </div>
-          </td>
+          <td><p>If no EnderChest folder exists in the given minecraft root or if no
+enderchest.cfg file exists within that EnderChest folder</p></td>
         </tr>
         <tr>
           <td>
                 <code>ValueError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the EnderChest configuration is invalid and could not be parsed</p>
-            </div>
-          </td>
+          <td><p>If the EnderChest configuration is invalid and could not be parsed</p></td>
         </tr>
     </tbody>
   </table>
@@ -2101,12 +2037,8 @@ minecraft root</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -2116,14 +2048,10 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>int, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>By default, this method will report out the minecraft instances it
+          <td><p>By default, this method will report out the minecraft instances it
 finds at the INFO level. You can optionally pass in a lower (or higher)
 level if this method is being called from another method where that
-information is redundant or overly verbose.</p>
-            </div>
-          </td>
+information is redundant or overly verbose.</p></td>
           <td>
                 <code>logging.INFO</code>
           </td>
@@ -2144,11 +2072,7 @@ information is redundant or overly verbose.</p>
           <td>
                 <code>list of InstanceSpec</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The instances registered with the EnderChest</p>
-            </div>
-          </td>
+          <td><p>The instances registered with the EnderChest</p></td>
         </tr>
     </tbody>
   </table>
@@ -2297,12 +2221,8 @@ an empty list rather than failing outright.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -2312,14 +2232,10 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>int, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>By default, this method will report out the minecraft instances it
+          <td><p>By default, this method will report out the minecraft instances it
 finds at the INFO level. You can optionally pass in a lower (or higher)
 level if this method is being called from another method where that
-information is redundant or overly verbose.</p>
-            </div>
-          </td>
+information is redundant or overly verbose.</p></td>
           <td>
                 <code>logging.INFO</code>
           </td>
@@ -2340,11 +2256,7 @@ information is redundant or overly verbose.</p>
           <td>
                 <code>list of (URI, str) tuples</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The URIs of the remote EnderChests, paired with their aliases</p>
-            </div>
-          </td>
+          <td><p>The URIs of the remote EnderChests, paired with their aliases</p></td>
         </tr>
     </tbody>
   </table>
@@ -2493,12 +2405,8 @@ an empty list rather than failing outright.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -2508,11 +2416,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The name of the shulker box you're asking about</p>
-            </div>
-          </td>
+          <td><p>The name of the shulker box you're asking about</p></td>
           <td>
               <em>required</em>
           </td>
@@ -2533,11 +2437,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>list of InstanceSpec</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The instances that are / should be linked to the specified shulker box</p>
-            </div>
-          </td>
+          <td><p>The instances that are / should be linked to the specified shulker box</p></td>
         </tr>
     </tbody>
   </table>
@@ -2728,12 +2628,8 @@ order in which they should be linked.</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -2743,14 +2639,10 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>int, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>By default, this method will report out the minecraft instances it
+          <td><p>By default, this method will report out the minecraft instances it
 finds at the INFO level. You can optionally pass in a lower (or higher)
 level if this method is being called from another method where that
-information is redundant or overly verbose.</p>
-            </div>
-          </td>
+information is redundant or overly verbose.</p></td>
           <td>
                 <code>logging.INFO</code>
           </td>
@@ -2771,12 +2663,8 @@ information is redundant or overly verbose.</p>
           <td>
                 <code>list of ShulkerBoxes</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The shulker boxes found in the EnderChest folder, ordered in terms of
-the sequence in which they should be linked</p>
-            </div>
-          </td>
+          <td><p>The shulker boxes found in the EnderChest folder, ordered in terms of
+the sequence in which they should be linked</p></td>
         </tr>
     </tbody>
   </table>
@@ -2932,12 +2820,8 @@ EnderChest installations</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder).</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder).</p></td>
           <td>
               <em>required</em>
           </td>
@@ -2947,12 +2831,8 @@ that's the parent of your EnderChest folder).</p>
           <td>
                 <code>list of Paths, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The local search paths to look for Minecraft installations within.
-Be warned that this search is performed recursively.</p>
-            </div>
-          </td>
+          <td><p>The local search paths to look for Minecraft installations within.
+Be warned that this search is performed recursively.</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -2962,13 +2842,9 @@ Be warned that this search is performed recursively.</p>
           <td>
                 <code>bool | None, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optionally specify whether the Minecraft instances you expect to find
+          <td><p>Optionally specify whether the Minecraft instances you expect to find
 are from the official launcher (<code>official=True</code>) or a MultiMC-derivative
-(<code>official=False</code>).</p>
-            </div>
-          </td>
+(<code>official=False</code>).</p></td>
           <td>
                 <code>None</code>
           </td>
@@ -2978,14 +2854,10 @@ are from the official launcher (<code>official=True</code>) or a MultiMC-derivat
           <td>
                 <code>list of URIs or (URI, str) tuples, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Any remotes you wish to register to this instance. When a (URI, str) tuple
+          <td><p>Any remotes you wish to register to this instance. When a (URI, str) tuple
 is provided, the second value will be used as the name/alias of the remote.
 If there is already a remote specified with the given alias, this method will
-replace it.</p>
-            </div>
-          </td>
+replace it.</p></td>
           <td>
                 <code>None</code>
           </td>

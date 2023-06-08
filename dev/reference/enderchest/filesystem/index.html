@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../enderchest/">
+        <link rel="prev" href="../instance/">
       
       
-        <link rel="next" href="../instance/">
+        <link rel="next" href="../loggers/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
       
       
 
@@ -381,8 +381,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
+      <a href="../cli/" class="md-nav__link">
+        cli
       </a>
     </li>
   
@@ -395,22 +395,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -437,34 +423,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../craft/" class="md-nav__link">
         craft
       </a>
@@ -479,22 +437,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -665,8 +609,64 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -974,12 +974,8 @@ config file</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -989,13 +985,9 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>By default, this method will raise an error if the enderchest config
+          <td><p>By default, this method will raise an error if the enderchest config
 file does not already exist. To disable that check, call this method
-with <code>check_exists=False</code></p>
-            </div>
-          </td>
+with <code>check_exists=False</code></p></td>
           <td>
                 <code>True</code>
           </td>
@@ -1016,11 +1008,7 @@ with <code>check_exists=False</code></p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to the EnderChest config file</p>
-            </div>
-          </td>
+          <td><p>The path to the EnderChest config file</p></td>
         </tr>
     </tbody>
   </table>
@@ -1038,12 +1026,8 @@ with <code>check_exists=False</code></p>
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the EnderChest config file isn't where it's supposed to be (and
-checking hasn't been disabled)</p>
-            </div>
-          </td>
+          <td><p>If the EnderChest config file isn't where it's supposed to be (and
+checking hasn't been disabled)</p></td>
         </tr>
     </tbody>
   </table>
@@ -1160,12 +1144,8 @@ folder</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1175,14 +1155,10 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>bool, optional</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>By default, this method will raise an error if no EnderChest exists
+          <td><p>By default, this method will raise an error if no EnderChest exists
 at that location (meaning no folder or no enderchest config file in
 that folder). To disable that check, call this method with
-<code>check_exists=False</code></p>
-            </div>
-          </td>
+<code>check_exists=False</code></p></td>
           <td>
                 <code>True</code>
           </td>
@@ -1203,11 +1179,7 @@ that folder). To disable that check, call this method with
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to the EnderChest folder</p>
-            </div>
-          </td>
+          <td><p>The path to the EnderChest folder</p></td>
         </tr>
     </tbody>
   </table>
@@ -1225,12 +1197,8 @@ that folder). To disable that check, call this method with
           <td>
                 <code>FileNotFoundError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If no valid EnderChest installation exists within the given
-minecraft root (and checking hasn't been disabled)</p>
-            </div>
-          </td>
+          <td><p>If no valid EnderChest installation exists within the given
+minecraft root (and checking hasn't been disabled)</p></td>
         </tr>
     </tbody>
   </table>
@@ -1326,11 +1294,7 @@ minecraft root (and checking hasn't been disabled)</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The directory to search</p>
-            </div>
-          </td>
+          <td><p>The directory to search</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1351,11 +1315,7 @@ minecraft root (and checking hasn't been disabled)</p>
           <td>
                 <code>list-like of paths</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The paths to all the .minecraft folders this method could find</p>
-            </div>
-          </td>
+          <td><p>The paths to all the .minecraft folders this method could find</p></td>
         </tr>
     </tbody>
   </table>
@@ -1439,12 +1399,8 @@ the minecraft root directory</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1465,11 +1421,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to the shulker box folder</p>
-            </div>
-          </td>
+          <td><p>The path to the shulker box folder</p></td>
         </tr>
     </tbody>
   </table>
@@ -1553,12 +1505,8 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1579,11 +1527,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code>list-like of paths</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The paths to all the shulker box configs on the system</p>
-            </div>
-          </td>
+          <td><p>The paths to all the shulker box configs on the system</p></td>
         </tr>
     </tbody>
   </table>
@@ -1671,12 +1615,8 @@ minecraft root directory</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The root directory that your minecraft stuff (or, at least, the one
-that's the parent of your EnderChest folder)</p>
-            </div>
-          </td>
+          <td><p>The root directory that your minecraft stuff (or, at least, the one
+that's the parent of your EnderChest folder)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1697,11 +1637,7 @@ that's the parent of your EnderChest folder)</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to the shulker box folder</p>
-            </div>
-          </td>
+          <td><p>The path to the shulker box folder</p></td>
         </tr>
     </tbody>
   </table>

@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../filesystem/">
+        <link rel="prev" href="../craft/">
       
       
-        <link rel="next" href="../sync/">
+        <link rel="next" href="../filesystem/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
       
       
 
@@ -381,106 +381,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
       </a>
     </li>
   
@@ -507,8 +409,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
       </a>
     </li>
   
@@ -588,6 +504,90 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
+      </a>
     </li>
   
 
@@ -816,11 +816,7 @@
           <td>
                 <code>str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The "display name" for the instance</p>
-            </div>
-          </td>
+          <td><p>The "display name" for the instance</p></td>
           <td>
               <em>required</em>
           </td>
@@ -830,11 +826,7 @@
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The path to its ".minecraft" folder</p>
-            </div>
-          </td>
+          <td><p>The path to its ".minecraft" folder</p></td>
           <td>
               <em>required</em>
           </td>
@@ -844,13 +836,9 @@
           <td>
                 <code>list-like of str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The minecraft versions of this instance. This is typically a 1-tuple,
+          <td><p>The minecraft versions of this instance. This is typically a 1-tuple,
 but some loaders (such as the official one) will just comingle all
-your assets together across all profiles</p>
-            </div>
-          </td>
+your assets together across all profiles</p></td>
           <td>
               <em>required</em>
           </td>
@@ -860,12 +848,8 @@ your assets together across all profiles</p>
           <td>
                 <code>str or None</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The (display) name of the modloader, or None if this is a vanilla
-instance</p>
-            </div>
-          </td>
+          <td><p>The (display) name of the modloader, or None if this is a vanilla
+instance</p></td>
           <td>
               <em>required</em>
           </td>
@@ -875,11 +859,7 @@ instance</p>
           <td>
                 <code>list-like of str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The tags assigned to this instance</p>
-            </div>
-          </td>
+          <td><p>The tags assigned to this instance</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1064,11 +1044,7 @@ instance</p>
           <td>
                 <code>dict-like of str to str</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The section in the enderchest config as parsed by a ConfigParser</p>
-            </div>
-          </td>
+          <td><p>The section in the enderchest config as parsed by a ConfigParser</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1089,11 +1065,7 @@ instance</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The resulting InstanceSpec</p>
-            </div>
-          </td>
+          <td><p>The resulting InstanceSpec</p></td>
         </tr>
     </tbody>
   </table>
@@ -1111,21 +1083,13 @@ instance</p>
           <td>
                 <code>KeyError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If a required key is absent</p>
-            </div>
-          </td>
+          <td><p>If a required key is absent</p></td>
         </tr>
         <tr>
           <td>
                 <code>ValueError</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If a required entry cannot be parsed</p>
-            </div>
-          </td>
+          <td><p>If a required entry cannot be parsed</p></td>
         </tr>
     </tbody>
   </table>
@@ -1250,11 +1214,7 @@ instance</p>
           <td>
                 <code><span title="pathlib.Path">Path</span></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The starting location (the parent of where your EnderChest folder lives)</p>
-            </div>
-          </td>
+          <td><p>The starting location (the parent of where your EnderChest folder lives)</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1264,11 +1224,7 @@ instance</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>the first instance</p>
-            </div>
-          </td>
+          <td><p>the first instance</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1278,11 +1234,7 @@ instance</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="enderchest.instance.InstanceSpec" href="#enderchest.instance.InstanceSpec">InstanceSpec</a></code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>the instance to compare it against</p>
-            </div>
-          </td>
+          <td><p>the instance to compare it against</p></td>
           <td>
               <em>required</em>
           </td>
@@ -1303,12 +1255,8 @@ instance</p>
           <td>
                 <code>bool</code>
           </td>
-          <td>
-            <div class="doc-md-description">
-              <p>True if and only if the two instances have the same root, with regards
-to the provided <code>minecraft_root</code></p>
-            </div>
-          </td>
+          <td><p>True if and only if the two instances have the same root, with regards
+to the provided <code>minecraft_root</code></p></td>
         </tr>
     </tbody>
   </table>
