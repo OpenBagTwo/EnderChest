@@ -92,7 +92,10 @@ class TestLoadBoxInstanceMatches:
                 if should_match:
                     expected.append(box_lookup[box_name])
 
-        assert gather.load_instance_matches(minecraft_root, instance_name) == expected
+        assert (
+            gather.get_shulker_boxes_matching_instance(minecraft_root, instance_name)
+            == expected
+        )
 
     @pytest.mark.parametrize(
         "shulker_box_name",
@@ -120,7 +123,7 @@ class TestLoadBoxInstanceMatches:
                     expected.append(instance_lookup[instance_name])
 
         assert (
-            gather.load_shulker_box_matches(minecraft_root, shulker_box_name)
+            gather.get_instances_matching_shulker_box(minecraft_root, shulker_box_name)
             == expected
         )
 

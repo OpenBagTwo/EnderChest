@@ -292,7 +292,9 @@ def load_ender_chest_remotes(
     return remote_list
 
 
-def load_instance_matches(minecraft_root: Path, instance_name: str) -> list[ShulkerBox]:
+def get_shulker_boxes_matching_instance(
+    minecraft_root: Path, instance_name: str
+) -> list[ShulkerBox]:
     """Get the list of shulker boxes that the specified instance links to
 
     Parameters
@@ -342,7 +344,7 @@ def load_instance_matches(minecraft_root: Path, instance_name: str) -> list[Shul
     return matches
 
 
-def load_shulker_box_matches(
+def get_instances_matching_shulker_box(
     minecraft_root: Path, shulker_box_name: str
 ) -> list[InstanceSpec]:
     """Get the list of registered instances that link to the specified shulker box
