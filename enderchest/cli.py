@@ -59,6 +59,14 @@ def _craft_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
     craft.craft_shulker_box(minecraft_root, name, **kwargs)
 
 
+def _list_instance_boxes(
+    minecraft_root: Path, instance_name: str | None = None, **kwargs
+):
+    """Wrapper to handle the fact that name is a required argument"""
+    assert instance_name  # it's required by the parser, so this should be fine
+    gather.load_instance_matches(minecraft_root, instance_name, **kwargs)
+
+
 def _list_shulker_box(
     minecraft_root: Path, shulker_box_name: str | None = None, **kwargs
 ):
@@ -139,16 +147,29 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     ),
     (
         tuple(
-            f"{verb} {alias}" for verb in _list_aliases for alias in _instance_aliases
+            f"{verb} {alias}"
+            for verb in _list_aliases
+            for alias in _instance_aliases
+            if alias.endswith("s")
         ),
         "list the minecraft instances registered with your Enderchest",
         gather.load_ender_chest_instances,
     ),
     (
         tuple(
+            f"{verb} {alias}"
+            for verb in _list_aliases
+            for alias in _instance_aliases
+            if not alias.endswith("s")
+        ),
+        "list the shulker boxes that the specified instance links to",
+        _list_instance_boxes,
+    ),
+    (
+        tuple(
             f"{verb} {alias}" for verb in _list_aliases for alias in _shulker_aliases
         ),
-        "list the instances that match the specified shulker box",
+        "list the minecraft instances that match the specified shulker box",
         _list_shulker_box,
     ),
     (
@@ -437,6 +458,14 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     # list instances options
 
     # list shulkers options
+
+    # list instance box options
+    list_instance_boxes_parser = action_parsers[
+        f"{_list_aliases[0]} {_instance_aliases[0]}"
+    ]
+    list_instance_boxes_parser.add_argument(
+        "instance_name", help="The name of the minecraft instance to query"
+    )
 
     # list shulker options
     list_shulker_parser = action_parsers[f"{_list_aliases[0]} {_shulker_aliases[0]}"]
