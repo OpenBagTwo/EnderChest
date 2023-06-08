@@ -1,4 +1,5 @@
 """Tests around file discovery and registration"""
+import logging
 import os
 import re
 from pathlib import Path
@@ -58,6 +59,69 @@ class TestListShulkerBoxes:
         assert re.search(
             rf"Could not parse(.*)not_ini(.*){fs.SHULKER_BOX_CONFIG_NAME}",
             warnings[-1].msg,
+        )
+
+
+class TestLoadBoxInstanceMatches:
+    @pytest.fixture(autouse=True)
+    def populate_shulker_boxes(self, minecraft_root, home):
+        utils.pre_populate_enderchest(
+            minecraft_root / "EnderChest", *utils.TESTING_SHULKER_CONFIGS
+        )
+
+    @pytest.mark.parametrize(
+        "instance_name",
+        [mc.name for mc in utils.TESTING_INSTANCES] + ["unown"],
+    )
+    def test_loading_boxes_that_match_instance(self, minecraft_root, instance_name):
+        # because TESTING_SHULKER_INSTANCE_MATCHES uses the path
+        instance_name_lookup = {
+            "official": "~",
+            "Chest Boat": "chest-boat",
+        }
+        box_lookup = {
+            box.name: box
+            for box in gather.load_shulker_boxes(
+                minecraft_root, log_level=logging.DEBUG
+            )
+        }
+
+        expected = []
+        for box_name, mc_name, should_match in utils.TESTING_SHULKER_INSTANCE_MATCHES:
+            if mc_name == instance_name_lookup.get(instance_name, instance_name):
+                if should_match:
+                    expected.append(box_lookup[box_name])
+
+        assert gather.load_instance_matches(minecraft_root, instance_name) == expected
+
+    @pytest.mark.parametrize(
+        "shulker_box_name",
+        list({box for _, box, _ in utils.TESTING_SHULKER_INSTANCE_MATCHES}) + ["unown"],
+    )
+    def test_loading_instances_that_match_boxes(self, minecraft_root, shulker_box_name):
+        instance_lookup = {
+            mc.name: mc
+            for mc in gather.load_ender_chest_instances(
+                minecraft_root, log_level=logging.DEBUG
+            )
+        }
+        # because TESTING_SHULKER_INSTANCE_MATCHES uses the path
+        instance_lookup["~"] = instance_lookup["official"]
+        instance_lookup["chest-boat"] = instance_lookup["Chest Boat"]
+
+        expected = []
+        for (
+            box_name,
+            instance_name,
+            should_match,
+        ) in utils.TESTING_SHULKER_INSTANCE_MATCHES:
+            if box_name == shulker_box_name:
+                if should_match:
+                    expected.append(instance_lookup[instance_name])
+
+        assert (
+            gather.load_shulker_box_matches(minecraft_root, shulker_box_name)
+            == expected
         )
 
 
