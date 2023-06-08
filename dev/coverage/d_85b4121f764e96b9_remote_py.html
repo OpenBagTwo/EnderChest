@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_shulker_box_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-06-08 21:44 +0000
+            created at 2023-06-08 23:13 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -161,8 +161,8 @@
     <p class="pln"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">    <span class="nam">remotes</span><span class="op">.</span><span class="nam">extend</span><span class="op">(</span><span class="nam">remote_chest</span><span class="op">.</span><span class="nam">remotes</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">    <span class="nam">SYNC_LOGGER</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="str">"Loaded the following remotes:\n"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">        <span class="op">+</span> <span class="str">"\n"</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="str">f"  - {render_remote(alias, uri)}"</span> <span class="key">for</span> <span class="nam">uri</span><span class="op">,</span> <span class="nam">alias</span> <span class="key">in</span> <span class="nam">remotes</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="str">"Loaded the following remotes:\n %s"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">        <span class="str">"\n"</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="str">f"  - {render_remote(alias, uri)}"</span> <span class="key">for</span> <span class="nam">uri</span><span class="op">,</span> <span class="nam">alias</span> <span class="key">in</span> <span class="nam">remotes</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">    <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">set</span><span class="op">(</span><span class="nam">alias</span> <span class="key">for</span> <span class="nam">_</span><span class="op">,</span> <span class="nam">alias</span> <span class="key">in</span> <span class="nam">remotes</span><span class="op">)</span><span class="op">)</span> <span class="op">!=</span> <span class="nam">len</span><span class="op">(</span><span class="nam">remotes</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -251,8 +251,8 @@
     <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t">                <span class="key">if</span> <span class="nam">pull_or_push</span> <span class="op">==</span> <span class="str">"pull"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t">                    <span class="nam">SYNC_LOGGER</span><span class="op">.</span><span class="nam">log</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t">                        <span class="nam">IMPORTANT</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t">                        <span class="str">f"{prefix} to pull changes"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t">                        <span class="str">f" from {render_remote(alias, remote_uri)}"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t">                        <span class="str">f"{prefix} to pull changes from %s"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t">                        <span class="nam">render_remote</span><span class="op">(</span><span class="nam">alias</span><span class="op">,</span> <span class="nam">remote_uri</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t">                    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t">                    <span class="nam">remote_chest</span> <span class="op">=</span> <span class="nam">remote_uri</span><span class="op">.</span><span class="nam">_replace</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t">                        <span class="nam">path</span><span class="op">=</span><span class="nam">urlparse</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -333,7 +333,7 @@
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_shulker_box_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-06-08 21:44 +0000
+            created at 2023-06-08 23:13 +0000
         </p>
     </div>
 </footer>

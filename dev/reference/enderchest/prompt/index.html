@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../craft/">
       
       
-        <link rel="next" href="../remote/">
+        <link rel="next" href="../place/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -379,6 +379,62 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../instance/" class="md-nav__link">
+        instance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -459,8 +515,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
+      <a href="../place/" class="md-nav__link">
+        place
       </a>
     </li>
   
@@ -487,78 +543,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../shulker_box/" class="md-nav__link">
-        shulker_box
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -585,8 +571,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shulker_box/" class="md-nav__link">
+        shulker_box
       </a>
     </li>
   
@@ -632,6 +632,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../sync/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../sync/rsync/" class="md-nav__link">
         rsync
       </a>
@@ -648,20 +662,6 @@
     <li class="md-nav__item">
       <a href="../sync/file/" class="md-nav__link">
         file
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sync/utils/" class="md-nav__link">
-        utils
       </a>
     </li>
   
@@ -885,12 +885,12 @@
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        Whether the user has opted to continue</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">confirm</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="s2">&quot;Do you wish to continue?&quot;</span><span class="p">,</span> <span class="s2">&quot;Y/n&quot;</span> <span class="k">if</span> <span class="n">default</span> <span class="k">else</span> <span class="s2">&quot;y/N&quot;</span><span class="p">)</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">response</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="s2">&quot;Do you wish to continue?&quot;</span><span class="p">,</span> <span class="s2">&quot;Y/n&quot;</span> <span class="k">if</span> <span class="n">default</span> <span class="k">else</span> <span class="s2">&quot;y/N&quot;</span><span class="p">)</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>    <span class="k">if</span> <span class="n">confirm</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>    <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="k">return</span> <span class="n">default</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="k">if</span> <span class="n">confirm</span> <span class="ow">in</span> <span class="n">YES</span><span class="p">:</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="k">if</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">YES</span><span class="p">:</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="k">return</span> <span class="kc">True</span>
 </span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="k">return</span> <span class="kc">False</span>

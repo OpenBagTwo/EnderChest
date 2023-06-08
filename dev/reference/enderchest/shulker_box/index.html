@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../place/">
+        <link rel="prev" href="../filesystem/">
       
       
-        <link rel="next" href="../instance/">
+        <link rel="next" href="../sync/">
       
       <link rel="icon" href="../../../img/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
@@ -381,6 +381,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../instance/" class="md-nav__link">
+        instance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gather/" class="md-nav__link">
+        gather
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        craft
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../prompt/" class="md-nav__link">
         prompt
       </a>
@@ -395,8 +451,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
+      <a href="../place/" class="md-nav__link">
+        place
       </a>
     </li>
   
@@ -423,8 +479,36 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
+      <a href="../remote/" class="md-nav__link">
+        remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
       </a>
     </li>
   
@@ -568,90 +652,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        cli
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
@@ -686,6 +686,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../sync/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../sync/rsync/" class="md-nav__link">
         rsync
       </a>
@@ -702,20 +716,6 @@
     <li class="md-nav__item">
       <a href="../sync/file/" class="md-nav__link">
         file
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sync/utils/" class="md-nav__link">
-        utils
       </a>
     </li>
   
@@ -1396,7 +1396,7 @@ updating the match critera) can only be done on copies created via the
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a>                <span class="n">max_link_depth</span> <span class="o">=</span> <span class="n">parser</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;max-link-depth&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>                <span class="c1"># TODO: support specifying filters (and link-folders) in the properties section</span>
 </span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>                <span class="k">continue</span>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>            <span class="k">if</span> <span class="n">normalized</span> <span class="ow">in</span> <span class="n">match_criteria</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>            <span class="k">if</span> <span class="n">normalized</span> <span class="ow">in</span> <span class="n">match_criteria</span><span class="p">:</span>
 </span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> specifies </span><span class="si">{</span><span class="n">normalized</span><span class="si">}</span><span class="s2"> more than once&quot;</span><span class="p">)</span>
 </span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>
 </span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>            <span class="k">if</span> <span class="n">normalized</span> <span class="o">==</span> <span class="s2">&quot;minecraft&quot;</span><span class="p">:</span>
@@ -1817,7 +1817,7 @@ updating the match critera) can only be done on copies created via the
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a>            <span class="n">max_link_depth</span> <span class="o">=</span> <span class="n">parser</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s2">&quot;max-link-depth&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>            <span class="c1"># TODO: support specifying filters (and link-folders) in the properties section</span>
 </span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>            <span class="k">continue</span>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>        <span class="k">if</span> <span class="n">normalized</span> <span class="ow">in</span> <span class="n">match_criteria</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>        <span class="k">if</span> <span class="n">normalized</span> <span class="ow">in</span> <span class="n">match_criteria</span><span class="p">:</span>
 </span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> specifies </span><span class="si">{</span><span class="n">normalized</span><span class="si">}</span><span class="s2"> more than once&quot;</span><span class="p">)</span>
 </span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>
 </span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>        <span class="k">if</span> <span class="n">normalized</span> <span class="o">==</span> <span class="s2">&quot;minecraft&quot;</span><span class="p">:</span>
