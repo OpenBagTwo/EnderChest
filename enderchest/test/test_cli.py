@@ -355,6 +355,11 @@ class TestGatherRemote(ActionTestSuite):
         )
 
 
+class TestInstanceInventory(ActionTestSuite):
+    action = "inventory minecraft"
+    required_args = ("cherry grove",)
+
+
 class TestShulkerInventory(ActionTestSuite):
     action = "inventory shulker_box"
     required_args = ("nombre",)

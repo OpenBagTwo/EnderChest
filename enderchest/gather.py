@@ -292,6 +292,27 @@ def load_ender_chest_remotes(
     return remote_list
 
 
+def load_instance_matches(
+    minecraft_root: Path, instance_name: str
+) -> Sequence[ShulkerBox]:
+    """Get the list of shulker boxes that the specified instance links to
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+    instance_name : str
+        The name of the instance you're asking about
+
+    Returns
+    -------
+    list of ShulkerBox
+        The shulker boxes that are linked to by the specified instance
+    """
+    raise NotImplementedError
+
+
 def load_shulker_box_matches(
     minecraft_root: Path, shulker_box_name: str
 ) -> Sequence[InstanceSpec]:
