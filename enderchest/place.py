@@ -155,10 +155,6 @@ def place_ender_chest(
                     f"Unrecognized error-handling method: {error_handling}"
                 )
 
-    chest_folder = os.path.normpath(
-        fs.ender_chest_folder(minecraft_root).expanduser().absolute()
-    )
-
     for instance in instances:
         instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
         if not instance_root.exists():
@@ -178,18 +174,10 @@ def place_ender_chest(
         if not keep_stale_links:
             for file in instance_root.rglob("*"):
                 if file.is_symlink():
-                    target = os.readlink(file)
-                    if not os.path.isabs(target):
-                        target = os.path.normpath(file.parent / target)
-
-                    # there's probably a better way to check if a file is
-                    # inside a sub-path
-                    try:
-                        common_root = os.path.commonpath([target, chest_folder])
-                    except ValueError:  # if they have no common root
-                        common_root = ""
-                    if common_root == chest_folder:
-                        PLACE_LOGGER.debug(f"Removing old link: {file} -> {target}")
+                    if fs.links_into_enderchest(minecraft_root, file):
+                        PLACE_LOGGER.debug(
+                            f"Removing old link: {file} -> {os.readlink(file)}"
+                        )
                         file.unlink()
 
         for shulker_box in shulker_boxes:
