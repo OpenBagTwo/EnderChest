@@ -1,4 +1,5 @@
 """Functionality for managing the EnderChest and shulker box config files and folders"""
+import os
 from pathlib import Path
 from typing import Iterable
 
@@ -24,7 +25,7 @@ def ender_chest_folder(minecraft_root: Path, check_exists: bool = True) -> Path:
         By default, this method will raise an error if no EnderChest exists
         at that location (meaning no folder or no enderchest config file in
         that folder). To disable that check, call this method with
-        `check_exists=False`
+        `check_exists=False`.
 
     Returns
     -------
@@ -52,7 +53,7 @@ def ender_chest_config(minecraft_root, check_exists: bool = True) -> Path:
     check_exists : bool, optional
         By default, this method will raise an error if the enderchest config
         file does not already exist. To disable that check, call this method
-        with `check_exists=False`
+        with `check_exists=False`.
 
     Returns
     -------
@@ -164,3 +165,65 @@ def minecraft_folders(search_path: Path) -> Iterable[Path]:
     contain valid minecraft instances, just that they exist
     """
     return search_path.rglob(".minecraft")
+
+
+def links_into_enderchest(
+    minecraft_root: Path, link: Path, check_exists: bool = True
+) -> bool:
+    """Determine whether a symlink's target is inside the EnderChest specified
+    by the Minecraft root.
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+    link : Path
+        The link to check
+    check_exists : bool, optional
+        By default, this method will raise an error if no EnderChest exists
+        at that location (meaning no folder or no enderchest config file in
+        that folder). To disable that check, call this method with
+        `check_exists=False`.
+
+    Returns
+    -------
+    bool
+        True if the path is inside of the EnderChest folder. False otherwise.
+
+    Notes
+    -----
+    This method only checks the *direct target* of the link as opposed to the
+    fully resolved path.
+
+    Raises
+    ------
+    FileNotFoundError
+        If no valid EnderChest installation exists within the given
+        minecraft root (and checking hasn't been disabled)
+    OSError
+        If the link provided isn't actually a symbolic link
+    """
+    chest_folder = os.path.normpath(
+        ender_chest_folder(minecraft_root).expanduser().absolute()
+    )
+
+    target = os.readlink(link)
+    if not os.path.isabs(target):
+        target = os.path.normpath(link.parent / target)
+
+    # Windows shenanigans: https://bugs.python.org/issue42957
+    if target.startswith(("\\\\?\\", "\\??\\")):  # pragma: no cover
+        try:
+            os.stat(target[4:])
+            target = target[4:]
+        except (OSError, FileNotFoundError):
+            # then maybe this is somehow legit
+            pass
+
+    # there's probably a better way to check if a file is inside a sub-path
+    try:
+        common_root = os.path.commonpath([target, chest_folder])
+    except ValueError:  # if they have no common root
+        common_root = ""
+    return common_root == chest_folder
