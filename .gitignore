@@ -135,5 +135,10 @@ dmypy.json
 # MacOS gunk
 .DS_Store
 
+# should only be part of the gh-pages branch
+docs/img/pylint.svg
+docs/img/coverage.svg
+docs/lint-report.txt
+
 # test folders
 testolotl
