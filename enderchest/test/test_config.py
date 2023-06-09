@@ -87,7 +87,7 @@ class TestConfigWriting:
 
         original_ender_chest.sync_confirm_wait = 27
         original_ender_chest.offer_to_update_symlink_allowlist = False
-        original_ender_chest.do_not_sync = ["Enderchest/enderchest.cfg", "*.local"]
+        original_ender_chest.do_not_sync = ["EnderChest/enderchest.cfg", "*.local"]
 
         original_ender_chest.write_to_cfg(
             Path(tmpdir) / "EnderChest" / "enderchest.cfg"
