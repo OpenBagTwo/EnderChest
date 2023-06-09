@@ -291,6 +291,17 @@ class EnderChest:
         )
         if do_not_sync is not None:
             ender_chest.do_not_sync = do_not_sync
+            chest_cfg_exclusion = "/".join(
+                (fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME)
+            )
+            if chest_cfg_exclusion not in do_not_sync:
+                GATHER_LOGGER.warning(
+                    "This EnderChest was not configured to exclude the EnderChest"
+                    " config file from sync operations."
+                    "\n That is being fixed now."
+                )
+                ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
+                ender_chest.write_to_cfg(config_file)
         return ender_chest
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
