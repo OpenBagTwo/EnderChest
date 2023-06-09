@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 import pytest
 
-from enderchest import EnderChest, ShulkerBox
+from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import config as cfg
 from enderchest.gather import load_shulker_boxes
 from enderchest.shulker_box import create_shulker_box
@@ -97,3 +97,36 @@ class TestConfigWriting:
             Path(tmpdir) / "EnderChest" / "enderchest.cfg"
         )
         assert parsed_ender_chest.__dict__ == original_ender_chest.__dict__
+
+    def test_ender_chest_self_corrects_its_config(self, tmpdir):
+        (tmpdir / "EnderChest").mkdir()
+
+        original_ender_chest = EnderChest(
+            urlparse(Path(tmpdir).absolute().as_uri()),
+            name="tester",
+            instances=(
+                InstanceSpec(
+                    "puppet",
+                    Path("..") / "instances" / "puppet" / ".minecraft",
+                    ("1.20.1-pre1",),
+                    "vanilla",
+                    ("your", "it"),
+                ),
+            ),
+        )
+        original_ender_chest.do_not_sync = ["*.local"]
+
+        original_ender_chest.write_to_cfg(
+            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
+        )
+
+        parsed_ender_chest = EnderChest.from_cfg(
+            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
+        )
+        assert {
+            "do-not-sync": parsed_ender_chest.do_not_sync,
+            "modloader": parsed_ender_chest.instances[0].modloader,
+        } == {
+            "do-not-sync": ["EnderChest/enderchest.cfg", "*.local"],
+            "modloader": "",
+        }
