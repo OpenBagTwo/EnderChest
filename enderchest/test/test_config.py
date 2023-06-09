@@ -18,6 +18,8 @@ class TestParseIniList:
             ("hello", ["hello"]),
             ('"hello"', ["hello"]),
             ("'hello'", ["hello"]),
+            ("  hello  ", ["hello"]),
+            ("\nhello\n", ["hello"]),
             ("7", ["7"]),
             ("1,2,3", ["1", "2", "3"]),
             ("1, 2, 3,    ", ["1", "2", "3"]),
@@ -30,6 +32,8 @@ class TestParseIniList:
             "single_str_uq",
             "single_str_dq",
             "single_str_sq",
+            "padded_single_str",
+            "newline_padded_single_str",
             "single_val",
             "one_line_list",
             "one_line_list_w_extras",
@@ -56,6 +60,7 @@ class TestConfigWriting:
                 ("instances", ("aether legacy", "Paradise Lost")),
             ),
             link_folders=("screenshots", "logs"),
+            do_not_link=(),  # YEAH BABY! LINK THAT shulkerbox.cfg!!
         )
 
         utils.pre_populate_enderchest(minecraft_root / "EnderChest")
@@ -65,6 +70,7 @@ class TestConfigWriting:
         parsed_boxes = load_shulker_boxes(minecraft_root)
 
         assert parsed_boxes == [original_shulker]
+        assert parsed_boxes[0].do_not_link == ()
 
     def test_ender_chest_config_roundtrip(self, tmpdir):
         (tmpdir / "EnderChest").mkdir()
@@ -81,6 +87,7 @@ class TestConfigWriting:
 
         original_ender_chest.sync_confirm_wait = 27
         original_ender_chest.offer_to_update_symlink_allowlist = False
+        original_ender_chest.do_not_sync = ["Enderchest/enderchest.cfg", "*.local"]
 
         original_ender_chest.write_to_cfg(
             Path(tmpdir) / "EnderChest" / "enderchest.cfg"
@@ -89,5 +96,4 @@ class TestConfigWriting:
         parsed_ender_chest = EnderChest.from_cfg(
             Path(tmpdir) / "EnderChest" / "enderchest.cfg"
         )
-
-        assert parsed_ender_chest == original_ender_chest
+        assert parsed_ender_chest.__dict__ == original_ender_chest.__dict__
