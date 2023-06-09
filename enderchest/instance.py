@@ -18,9 +18,8 @@ class InstanceSpec(NamedTuple):
         The minecraft versions of this instance. This is typically a 1-tuple,
         but some loaders (such as the official one) will just comingle all
         your assets together across all profiles
-    modloader : str or None
-        The (display) name of the modloader, or None if this is a vanilla
-        instance
+    modloader : str
+        The (display) name of the modloader (vanilla corresponds to "")
     tags : list-like of str
         The tags assigned to this instance
     """
@@ -28,7 +27,7 @@ class InstanceSpec(NamedTuple):
     name: str
     root: Path
     minecraft_versions: tuple[str, ...]
-    modloader: str | None
+    modloader: str
     tags: tuple[str, ...]
 
     @classmethod
@@ -56,10 +55,14 @@ class InstanceSpec(NamedTuple):
             section.name,
             Path(section["root"]),
             tuple(
-                _parse_version(version.strip())
-                for version in section["minecraft_version"].strip().split()
+                parse_version(version.strip())
+                for version in section.get(
+                    "minecraft-version", section.get("minecraft_version")
+                )
+                .strip()
+                .split()
             ),
-            section.get("modloader", None),
+            normalize_modloader(section.get("modloader", None))[0],
             tuple(
                 tag.strip()
                 for tag in section.get("tags", "")
@@ -68,6 +71,39 @@ class InstanceSpec(NamedTuple):
                 .split("\n")
             ),
         )
+
+
+def normalize_modloader(loader: str | None) -> list[str]:
+    """Implement common modloader aliases
+
+    Parameters
+    ----------
+    loader : str
+        User-provided modloader name
+
+    Returns
+    -------
+    list of str
+        The modloader values that should be checked against to match the user's
+        intent
+    """
+    if loader is None:  # this would be from the instance spec
+        return [""]
+    match loader.lower().replace(" ", "").replace("-", "").replace("_", "").replace(
+        "/", ""
+    ):
+        case "none" | "vanilla":
+            return [""]
+        case "fabric" | "fabricloader":
+            return ["Fabric Loader"]
+        case "quilt" | "quiltloader":
+            return ["Quilt Loader"]
+        case "fabricquilt" | "quiltfabric" | "fabriclike" | "fabriccompatible":
+            return ["Fabric Loader", "Quilt Loader"]
+        case "forge" | "forgeloader" | "minecraftforge":
+            return ["Forge"]
+        case _:
+            return [loader]
 
 
 def equals(
@@ -95,7 +131,7 @@ def equals(
     return path.expanduser().resolve() == other_path.expanduser().resolve()
 
 
-def _parse_version(version_string: str) -> str:
+def parse_version(version_string: str) -> str:
     """The first release of each major Minecraft version doesn't follow strict
     major.minor.patch semver. This method appends the ".0" so that our version
     matcher doesn't mess up

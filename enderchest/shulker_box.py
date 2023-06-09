@@ -1,25 +1,23 @@
 """Specification and configuration of a shulker box"""
-import datetime as dt
 import fnmatch
 import os
-from io import StringIO
 from pathlib import Path
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 import semantic_version as semver
 
 from . import config as cfg
 from . import filesystem as fs
-from ._version import get_versions
-from .instance import InstanceSpec
+from .instance import InstanceSpec, normalize_modloader
 from .loggers import CRAFT_LOGGER
 
+_DEFAULT_PRIORITY = 0
 _DEFAULT_LINK_DEPTH = 2
 _DEFAULT_DO_NOT_LINK = ("shulkerbox.cfg", ".DS_Store")
 
 
 class ShulkerBox(NamedTuple):
-    """Specification of a ShulkerBox
+    """Specification of a shulker box
 
     Parameters
     ----------
@@ -105,6 +103,8 @@ class ShulkerBox(NamedTuple):
                 normalized = normalized[:-1]  # lazy de-pluralization
             if normalized in ("linkfolder", "folder"):
                 normalized = "link-folders"
+            if normalized in ("donotlink",):
+                normalized = "do-not-link"
             if normalized in ("minecraft", "version", "minecraftversion"):
                 normalized = "minecraft"
             if normalized in ("modloader", "loader"):
@@ -115,8 +115,10 @@ class ShulkerBox(NamedTuple):
             if normalized == "propertie":  # lulz
                 # TODO check to make sure properties hasn't been read before
                 # most of this section gets ignored
-                priority = config[section].getint("priority", 0)
-                max_link_depth = config[section].getint("max-link-depth", 2)
+                priority = config[section].getint("priority", _DEFAULT_PRIORITY)
+                max_link_depth = config[section].getint(
+                    "max-link-depth", _DEFAULT_LINK_DEPTH
+                )
                 # TODO: support specifying filters (and link-folders) in the properties section
                 continue
             if normalized in match_criteria:
@@ -131,12 +133,18 @@ class ShulkerBox(NamedTuple):
                         minecraft_versions.append(value)
                     else:  # what happens if you specify ">=1.19" or "=1.12"
                         minecraft_versions.append("=".join((key, value)))
-                match_criteria["minecraft"] = tuple(minecraft_versions)
+                match_criteria[normalized] = tuple(minecraft_versions)
+            elif normalized == "modloader":
+                modloaders: set[str] = set()
+                for loader in config[section].keys():
+                    modloaders.update(normalize_modloader(loader))
+                match_criteria[normalized] = tuple(sorted(modloaders))
             else:
                 # really hoping delimiter shenanigans doesn't show up anywhere else
                 match_criteria[normalized] = tuple(config[section].keys())
 
         link_folders = match_criteria.pop("link-folders", ())
+        do_not_link = match_criteria.pop("do-not-link", _DEFAULT_DO_NOT_LINK)
 
         return cls(
             priority,
@@ -145,10 +153,11 @@ class ShulkerBox(NamedTuple):
             tuple(match_criteria.items()),
             link_folders,
             max_link_depth=max_link_depth,
+            do_not_link=do_not_link,
         )
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
-        """Write this shulker's configuration to INI
+        """Write this box's configuration to INI
 
         Parameters
         ----------
@@ -165,36 +174,22 @@ class ShulkerBox(NamedTuple):
         -----
         The "root" attribute is ignored for this method
         """
-        config = cfg.get_configurator()
-        config.add_section("properties")
-        config.set("properties", "priority", str(self.priority))
+        properties: dict[str, Any] = {"priority": self.priority}
         if self.max_link_depth != _DEFAULT_LINK_DEPTH:
-            config.set("properties", "max-link-depth", str(self.max_link_depth))
-        if self.do_not_link != _DEFAULT_DO_NOT_LINK:
-            config.set("properties", "do-not-link", cfg.list_to_ini(self.do_not_link))
-        config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
-        config.set(
-            "properties", "generated_by_enderchest_version", get_versions()["version"]
+            properties["max-link-depth"] = self.max_link_depth
+        if self.do_not_link != _DEFAULT_LINK_DEPTH:
+            properties["do-not-link"] = self.do_not_link
+
+        config = cfg.dumps(
+            os.path.join(self.name, fs.SHULKER_BOX_CONFIG_NAME),
+            properties,
+            **dict(self.match_criteria),
+            link_folders=self.link_folders,
         )
 
-        for condition, values in self.match_criteria:
-            config.add_section(condition)
-            for value in values:
-                config.set(condition, value)
-
-        config.add_section("link-folders")
-        for folder in self.link_folders:
-            config.set("link-folders", folder)
-
-        buffer = StringIO()
-        buffer.write(f"; {os.path.join(self.name, fs.SHULKER_BOX_CONFIG_NAME)}\n")
-        config.write(buffer)
-        buffer.seek(0)  # rewind
-
         if config_file:
-            config_file.write_text(buffer.read())
-            buffer.seek(0)
-        return buffer.read()
+            config_file.write_text(config)
+        return config
 
     def matches(self, instance: InstanceSpec) -> bool:
         """Determine whether the shulker box matches the given instance
@@ -227,15 +222,9 @@ class ShulkerBox(NamedTuple):
                     else:
                         return False
                 case "modloader":
-                    normalized: list[str] = sum(
-                        [_normalize_modloader(value) for value in values], []
-                    )
-                    for value in normalized:
-                        if fnmatch.filter(
-                            [
-                                loader.lower()
-                                for loader in _normalize_modloader(instance.modloader)
-                            ],
+                    for value in values:
+                        if fnmatch.fnmatchcase(
+                            instance.modloader.lower(),
                             value.lower(),
                         ):
                             break
@@ -278,39 +267,6 @@ class ShulkerBox(NamedTuple):
                 ):
                     return False
         return True
-
-
-def _normalize_modloader(loader: str | None) -> list[str]:
-    """Implement common modloader aliases
-
-    Parameters
-    ----------
-    loader : str
-        User-provided modloader name
-
-    Returns
-    -------
-    list of str
-        The modloader values that should be checked against to match the user's
-        intent
-    """
-    if loader is None:  # this would be from the instance spec
-        return [""]
-    match loader.lower().replace(" ", "").replace("-", "").replace("_", "").replace(
-        "/", ""
-    ):
-        case "none" | "vanilla":
-            return [""]
-        case "fabric" | "fabricloader":
-            return ["Fabric Loader"]
-        case "quilt" | "quiltloader":
-            return ["Quilt Loader"]
-        case "fabricquilt" | "quiltfabric" | "fabriclike" | "fabriccompatible":
-            return ["Fabric Loader", "Quilt Loader"]
-        case "forge" | "forgeloader" | "minecraftforge":
-            return ["Forge"]
-        case _:
-            return [loader]
 
 
 def _matches_version(version_spec: str, version_string: str) -> bool:

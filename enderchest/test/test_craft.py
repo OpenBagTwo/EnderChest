@@ -39,9 +39,9 @@ class TestConfigWriting:
 
         create_shulker_box(minecraft_root, original_shulker)
 
-        parsed_shulkers = load_shulker_boxes(minecraft_root)
+        parsed_boxes = load_shulker_boxes(minecraft_root)
 
-        assert parsed_shulkers == [original_shulker]
+        assert parsed_boxes == [original_shulker]
 
     def test_ender_chest_config_roundtrip(self, tmpdir):
         (tmpdir / "EnderChest").mkdir()
@@ -455,7 +455,7 @@ class TestPromptByFilter:
 
         assert shulker_box.match_criteria == (
             ("minecraft", ("22w14infinite",)),
-            ("modloader", ("None",)),
+            ("modloader", ("",)),
             ("tags", ("*",)),
         )
 
@@ -518,7 +518,7 @@ class TestPromptByFilter:
 
         assert shulker_box.match_criteria == (
             ("minecraft", ("1.19",)),
-            ("modloader", ("None", "Fabric Loader", "Quilt Loader")),
+            ("modloader", ("", "Fabric Loader", "Quilt Loader")),
             ("tags", ("vanilla*",)),
         )
 

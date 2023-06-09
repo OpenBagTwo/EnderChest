@@ -472,6 +472,7 @@ class TestShulkerInstanceMatching:
         ]
 
     def test_loader_matching_is_case_insensitive(self):
+        # though in this case the values would have been normalized
         loader_matching_shulker = ShulkerBox(
             0,
             "forge instances",
@@ -482,17 +483,55 @@ class TestShulkerInstanceMatching:
 
         assert self.matchall(loader_matching_shulker) == ["bee"]
 
-    @pytest.mark.parametrize("loader_spec", ("fabric", "quilt/fabric"))
-    def test_loader_matching_maps_common_aliases(self, loader_spec):
+    def test_loader_matching_treats_empty_string_as_vanilla(self):
         loader_matching_shulker = ShulkerBox(
             0,
-            "fabric instances",
+            "Vanilla Only",
             Path("ignoreme"),
-            (("modloader", (loader_spec,)),),
+            (("modloader", ("",)),),
             (),
         )
 
-        assert self.matchall(loader_matching_shulker) == ["Chest Boat"]
+        assert self.matchall(loader_matching_shulker) == ["official", "axolotl"]
+
+    def test_loader_matching_accepts_wildcards(self):
+        loader_matching_shulker = ShulkerBox(
+            0,
+            "Everybody",
+            Path("ignoreme"),
+            (("modloader", ("*",)),),
+            (),
+        )
+
+        assert self.matchall(loader_matching_shulker) == [
+            "official",
+            "axolotl",
+            "bee",
+            "Chest Boat",
+        ]
+
+    def test_loader_checks_multi_argument(self):
+        loader_matching_shulker = ShulkerBox(
+            0,
+            "Fabric Instances",
+            Path("ignoreme"),
+            (
+                (
+                    "modloader",
+                    (
+                        "",
+                        "*bric*",
+                    ),
+                ),
+            ),
+            (),
+        )
+
+        assert self.matchall(loader_matching_shulker) == [
+            "official",
+            "axolotl",
+            "Chest Boat",
+        ]
 
     def test_explicit_version_matching(self):
         minecraft_specific_shulker = ShulkerBox(
@@ -532,7 +571,7 @@ class TestShulkerInstanceMatching:
             "finnicky",
             Path("ignoreme"),
             (
-                ("modloader", ("forge", "fabric")),
+                ("modloader", ("Forge", "Fabric Loader")),
                 ("tags", ("vanilla*",)),
                 ("instances", ("official", "axolotl", "bee", "Chest Boat")),
             ),

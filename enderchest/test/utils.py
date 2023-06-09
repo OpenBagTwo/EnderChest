@@ -9,7 +9,7 @@ import pytest
 
 from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import filesystem as fs
-from enderchest.shulker_box import _normalize_modloader
+from enderchest.instance import normalize_modloader
 
 from . import testing_files
 
@@ -448,7 +448,7 @@ def instance(
 ) -> InstanceSpec:
     """Shortcut constructor"""
     return InstanceSpec(
-        name, root, tuple(minecraft_versions or ()), modloader, tuple(tags or ())
+        name, root, tuple(minecraft_versions or ()), modloader or "", tuple(tags or ())
     )
 
 
@@ -457,7 +457,7 @@ def normalize_instance(mc: InstanceSpec) -> InstanceSpec:
     return mc._replace(
         # this should be fully checked by instance.equals()
         root=mc.root.expanduser().relative_to(mc.root.expanduser().parent.parent),
-        modloader=_normalize_modloader(mc.modloader)[0],
+        modloader=normalize_modloader(mc.modloader)[0],
         minecraft_versions=tuple(sorted(mc.minecraft_versions)),
         tags=tuple(sorted(tag.lower() for tag in mc.tags)),
     )

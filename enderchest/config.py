@@ -1,7 +1,11 @@
 """Helpers for parsing and writing INI-format config files"""
+import datetime as dt
 from configparser import ConfigParser, ParsingError
+from io import StringIO
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Iterable, Mapping, Sequence
+
+from ._version import get_versions
 
 
 def get_configurator() -> ConfigParser:
@@ -49,6 +53,106 @@ def read_cfg(config_file: Path) -> ConfigParser:
     return configurator
 
 
+def dumps(
+    header: str | None,
+    properties: dict[str, Any],
+    **sections: Mapping[str, Any] | Sequence[str],
+) -> str:
+    """Serialize a configuration into an INI-formatted string
+
+    Parameters
+    ----------
+    header: str
+        A header to render as a comment at the top of the file
+    properties: dict
+        The "main" section contents. Note that this method will add some of its own
+    **sections : dict or list
+        Any additional sections to write. Each section may consist of a set
+        of key-value pairs or they might simply be a list of values
+
+    Returns
+    -------
+    str
+        The contents of the configuration, suitable for writing to file
+    """
+    config = get_configurator()
+
+    config.add_section("properties")
+    for key, value in properties.items():
+        config.set("properties", to_ini_key(key), to_ini_value(value))
+
+    config.set(
+        "properties",
+        "last-modified",
+        to_ini_value(dt.datetime.now()),
+    )
+    config.set(
+        "properties", "generated-by-enderchest-version", get_versions()["version"]
+    )
+
+    for section, values in sections.items():
+        section_name = to_ini_key(section)
+        config.add_section(section_name)
+        if isinstance(values, Mapping):
+            for key, value in values.items():
+                config.set(section_name, to_ini_key(key), to_ini_value(value))
+        else:
+            for value in values:
+                config.set(section_name, to_ini_value(value))
+
+    buffer = StringIO()
+    if header:
+        buffer.write(f"; {header}\n")
+    config.write(buffer)
+    buffer.seek(0)  # rewind
+    return buffer.read()
+
+
+def to_ini_key(key: str) -> str:
+    """Style guide enforcement for INI keys
+
+    Parameters
+    ----------
+    key : str
+        The entry key to normalize
+
+    Returns
+    -------
+    str
+        The normalized key
+    """
+    return key.replace("_", "-")
+
+
+def to_ini_value(value: Any) -> str:
+    """Format a value into a string suitable for use in an INI entry
+
+    Parameters
+    ----------
+    value
+        The value to format
+
+    Returns
+    -------
+    str
+        The formatted INI-appropriate value
+    """
+    if isinstance(value, str):
+        # have to put in this check since strings are iterable
+        return value
+    if value is None:
+        return ""
+    if isinstance(value, Iterable):
+        return list_to_ini(list(value))
+    if isinstance(value, dt.datetime):
+        return value.isoformat(sep=" ")
+    if isinstance(value, dt.date):
+        # note that datetimes are considered dates
+        return value.isoformat()
+
+    return str(value)
+
+
 def list_to_ini(values: Sequence) -> str:
     """Format a list of values into a string suitable for use in an INI entry
 
@@ -60,7 +164,7 @@ def list_to_ini(values: Sequence) -> str:
     Returns
     -------
     str
-        The formatted INI value
+        The formatted INI-appropriate value
     """
     if len(values) == 0:
         return ""
