@@ -1,6 +1,5 @@
 """Higher-level functionality around synchronizing with different EnderCherts"""
 import logging
-import os
 from pathlib import Path
 from time import sleep
 from urllib.parse import ParseResult, urlparse

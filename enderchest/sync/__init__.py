@@ -40,7 +40,7 @@ def pull(
     try:
         protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
         protocol.pull(remote_uri, local_path, exclude or (), dry_run, **kwargs)
-    except ModuleNotFoundError:
+    except ModuleNotFoundError:  # pragma: no cover
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"
         )
