@@ -1,4 +1,5 @@
 """Symlinking functionality"""
+import fnmatch
 import itertools
 import logging
 import os
@@ -189,11 +190,6 @@ def place_ender_chest(
             PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
 
             resources = set(_rglob(box_root, shulker_box.max_link_depth))
-            resources.remove(
-                fs.shulker_box_config(minecraft_root, shulker_box.name)
-                .expanduser()
-                .absolute()
-            )
 
             match_exit = "pass"
             for link_folder in shulker_box.link_folders:
@@ -223,31 +219,45 @@ def place_ender_chest(
             if match_exit not in ("break", "continue"):
                 for resource in resources:
                     resource_path = resource.relative_to(box_root)
-                    try:
-                        link_resource(
-                            resource_path,
-                            box_root,
-                            instance_root,
-                            relative,
-                        )
-                    except (OSError, NotADirectoryError) as oh_no:
-                        PLACE_LOGGER.error(
-                            f"Error linking shulker box {shulker_box.name}"
-                            f" to instance {instance.name}:"
-                            f"\n  {(instance.root / resource_path)}"
-                            " already exists"
-                        )
-                        match handle_error(shulker_box):
-                            case "return":
-                                return
-                            case "break":
-                                match_exit = "break"
-                                break
-                            case "continue":
-                                match_exit = "continue"  # technically does nothing
-                                break
-                            case "pass":
-                                continue  # or pass--it's the end of the loop
+                    for pattern in shulker_box.do_not_link:
+                        print(pattern)
+                        if fnmatch.fnmatchcase(
+                            str(resource_path), pattern
+                        ) or fnmatch.fnmatchcase(
+                            str(resource_path), os.path.join("*", pattern)
+                        ):
+                            PLACE_LOGGER.debug(
+                                "Skipping %s (matches pattern %s)",
+                                resource_path,
+                                pattern,
+                            )
+                            break
+                    else:
+                        try:
+                            link_resource(
+                                resource_path,
+                                box_root,
+                                instance_root,
+                                relative,
+                            )
+                        except (OSError, NotADirectoryError) as oh_no:
+                            PLACE_LOGGER.error(
+                                f"Error linking shulker box {shulker_box.name}"
+                                f" to instance {instance.name}:"
+                                f"\n  {(instance.root / resource_path)}"
+                                " already exists"
+                            )
+                            match handle_error(shulker_box):
+                                case "return":
+                                    return
+                                case "break":
+                                    match_exit = "break"
+                                    break
+                                case "continue":
+                                    match_exit = "continue"  # technically does nothing
+                                    break
+                                case "pass":
+                                    continue  # or pass--it's the end of the loop
 
             # consider this a "finally"
             if not keep_broken_links:

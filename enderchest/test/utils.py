@@ -320,6 +320,9 @@ Forge
 
 [link-folders]
 shadercache  ; not that I think this is a thing
+
+[do-not-link]
+*.local
 """,
 )
 
