@@ -1,73 +1,18 @@
-"""Tests for setting up folders and files"""
+"""Tests for setting up EnderChests and shulker boxes"""
 import logging
 import os
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 import pytest
 
 from enderchest import EnderChest, ShulkerBox, craft
 from enderchest import filesystem as fs
 from enderchest.enderchest import create_ender_chest
-from enderchest.gather import load_ender_chest, load_shulker_boxes
-from enderchest.shulker_box import (
-    DEFAULT_SHULKER_FOLDERS,
-    STANDARD_LINK_FOLDERS,
-    create_shulker_box,
-)
+from enderchest.gather import load_ender_chest
+from enderchest.shulker_box import DEFAULT_SHULKER_FOLDERS, STANDARD_LINK_FOLDERS
 
 from . import utils
-
-
-class TestConfigWriting:
-    def test_shulker_box_config_roundtrip(self, minecraft_root):
-        original_shulker = ShulkerBox(
-            3,
-            "original",
-            minecraft_root / "EnderChest" / "original",
-            match_criteria=(
-                ("minecraft", (">=1.12,<2.0",)),
-                ("modloader", ("*",)),
-                ("tags", ("aether", "optifine")),
-                ("instances", ("aether legacy", "Paradise Lost")),
-            ),
-            link_folders=("screenshots", "logs"),
-        )
-
-        utils.pre_populate_enderchest(minecraft_root / "EnderChest")
-
-        create_shulker_box(minecraft_root, original_shulker)
-
-        parsed_boxes = load_shulker_boxes(minecraft_root)
-
-        assert parsed_boxes == [original_shulker]
-
-    def test_ender_chest_config_roundtrip(self, tmpdir):
-        (tmpdir / "EnderChest").mkdir()
-
-        original_ender_chest = EnderChest(
-            urlparse(Path(tmpdir).absolute().as_uri()),
-            name="tester",
-            remotes=[
-                "irc://you@irl/home/upstairs",
-                ("file:///lockbox", "undisclosed location"),
-            ],
-            instances=utils.TESTING_INSTANCES,
-        )
-
-        original_ender_chest.sync_confirm_wait = 27
-        original_ender_chest.offer_to_update_symlink_allowlist = False
-
-        original_ender_chest.write_to_cfg(
-            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
-        )
-
-        parsed_ender_chest = EnderChest.from_cfg(
-            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
-        )
-
-        assert parsed_ender_chest == original_ender_chest
 
 
 class TestEnderChestCrafting:
