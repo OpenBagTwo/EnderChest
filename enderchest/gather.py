@@ -12,7 +12,7 @@ from enderchest.sync import render_remote
 
 from . import filesystem as fs
 from .enderchest import EnderChest, create_ender_chest
-from .instance import InstanceSpec, _parse_version
+from .instance import InstanceSpec, normalize_modloader, parse_version
 from .loggers import GATHER_LOGGER
 from .prompt import prompt
 from .shulker_box import ShulkerBox, _matches_version
@@ -579,12 +579,12 @@ def gather_metadata_for_official_instance(
         if version.startswith("latest-"):
             mapped_version = version_lookup.get(version[len("latest-") :])
             if mapped_version is not None:
-                versions.append(_parse_version(mapped_version))
+                versions.append(parse_version(mapped_version))
                 tags.append(version)
                 continue
-        versions.append(_parse_version(version))
+        versions.append(parse_version(version))
 
-    return InstanceSpec(name, minecraft_folder, tuple(versions), None, tuple(tags))
+    return InstanceSpec(name, minecraft_folder, tuple(versions), "", tuple(tags))
 
 
 def gather_metadata_for_mmc_instance(
@@ -626,7 +626,7 @@ def gather_metadata_for_mmc_instance(
         for component in components:
             match component.get("uid"), component.get("cachedName", ""):
                 case "net.minecraft", _:
-                    version = _parse_version(component["version"])
+                    version = parse_version(component["version"])
                 case "net.fabricmc.fabric-loader", _:
                     modloader = "Fabric Loader"
                 case "org.quiltmc.quilt-loader", _:
@@ -637,6 +637,7 @@ def gather_metadata_for_mmc_instance(
                     modloader = name
                 case _:
                     continue
+            modloader = normalize_modloader(modloader)[0]
         if version is None:
             raise KeyError("Could not find a net.minecraft component")
     except FileNotFoundError as no_json:
@@ -703,7 +704,13 @@ def gather_metadata_for_mmc_instance(
     if name == "":
         raise ValueError("Could not determine the name of the instance.")
 
-    return InstanceSpec(name, minecraft_folder, (version,), modloader, tuple(tags))
+    return InstanceSpec(
+        name,
+        minecraft_folder,
+        (version,),
+        modloader or "",
+        tuple(tags),
+    )
 
 
 def update_ender_chest(
@@ -842,9 +849,9 @@ def _needs_symlink_allowlist(version: str) -> bool:
     toucans?
     """
     # first see if it follows basic semver
-    if _matches_version(">1.19", _parse_version(version.split("-")[0])):
+    if _matches_version(">1.19", parse_version(version.split("-")[0])):
         return True
-    if _matches_version("1.20.0*", _parse_version(version.split("-")[0])):
+    if _matches_version("1.20.0*", parse_version(version.split("-")[0])):
         return True
     # is it a snapshot?
     if match := re.match("^([1-2][0-9])w([0-9]{1,2})", version.lower()):
