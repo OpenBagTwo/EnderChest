@@ -71,8 +71,9 @@ class EnderChest:
         when actually calling the sync commands.
     do_not_sync : list of str
         Glob patterns of files that should not be synced between EnderChest
-        installations. By default, this list comprises `EnderChest/enderchest.cfg`
-        and `.DS_Store` (for all you mac gamers).
+        installations. By default, this list comprises `EnderChest/enderchest.cfg`,
+        any top-level folders starting with a "." (like .git) and
+        `.DS_Store` (for all you mac gamers).
     """
 
     name: str
@@ -81,7 +82,7 @@ class EnderChest:
     _remotes: dict[str, ParseResult]
     offer_to_update_symlink_allowlist: bool = True
     sync_confirm_wait: bool | int = 5
-    do_not_sync = ["EnderChest/enderchest.cfg", ".DS_Store"]
+    do_not_sync = ["EnderChest/enderchest.cfg", "EnderChest/.*", ".DS_Store"]
 
     def __init__(
         self,

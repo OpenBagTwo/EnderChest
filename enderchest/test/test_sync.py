@@ -282,13 +282,17 @@ class TestFileSync:
         r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert not (minecraft_root / "EnderChest" / "global").exists()
 
-    def test_open_does_not_overwrite_enderchest(self, minecraft_root, remote):
+    def test_open_does_not_overwrite_enderchest_by_default(
+        self, minecraft_root, remote
+    ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         original_config = fs.ender_chest_config(minecraft_root).read_text()
         r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert original_config == fs.ender_chest_config(minecraft_root).read_text()
 
-    def test_open_not_touch_top_level_dot_folders(self, minecraft_root, remote):
+    def test_open_not_touch_top_level_dot_folders_by_default(
+        self, minecraft_root, remote
+    ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert (
@@ -341,6 +345,25 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
+
+    def test_close_not_touch_top_level_dot_folders_by_default(
+        self, minecraft_root, remote
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        assert not (path_from_uri(remote) / "EnderChest" / ".git").exists()
+
+    def test_chest_obeys_its_own_ignore_list(self, minecraft_root, remote):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+
+        chest = gather.load_ender_chest(minecraft_root)
+        chest.do_not_sync = ["EnderChest/enderchest.cfg"]
+        chest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        assert (
+            path_from_uri(remote) / "EnderChest" / ".git" / "log"
+        ).read_text() == "i committed some stuff\n"
 
     def test_open_stops_at_first_successful_sync(self, minecraft_root, remote, caplog):
         gather.update_ender_chest(
