@@ -530,8 +530,6 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
         )
         hosts = tuple(host.strip() for host in values.split(","))
 
-        # TODO: DRY this into a dedicated function
-
         # TODO: stop wastefully reloading the cfg
         host = load_ender_chest(minecraft_root).name
 

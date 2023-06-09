@@ -41,13 +41,13 @@ def copy(
     destination_path = destination_folder / source_path.name
     if destination_path.exists():
         if destination_path.is_symlink():
-            SYNC_LOGGER.log(log_level, f"Removing symlink {destination_path}")
+            SYNC_LOGGER.log(log_level, "Removing symlink %s", destination_path)
             if not dry_run:
                 destination_path.unlink()
         elif destination_path.is_dir():
             clean(destination_path, ignore, dry_run)
         else:
-            SYNC_LOGGER.log(log_level, f"Deleting {destination_path}")
+            SYNC_LOGGER.log(log_level, "Deleting %s", destination_path)
             if not dry_run:
                 destination_path.unlink()
 
