@@ -1,4 +1,5 @@
 """Helpers for parsing and writing INI-format config files"""
+import ast
 import datetime as dt
 from configparser import ConfigParser, ParsingError
 from io import StringIO
@@ -171,3 +172,42 @@ def list_to_ini(values: Sequence) -> str:
     if len(values) == 1:
         return values[0]
     return "\n" + "\n".join(values)
+
+
+def parse_ini_list(entry: str) -> list[str]:
+    """Parse a list from an INI config entry
+
+    Parameters
+    ----------
+    entry : str
+        The raw entry from the INI
+
+    Returns
+    -------
+    list of str
+        The parsed entries
+
+    Notes
+    -----
+    This method is *only* for parsing specific values of a key-value entry
+    *and not* for the whole "section is the key, lines are the values" thing
+    I've got going on.
+    """
+    try:
+        parsed = ast.literal_eval(entry)
+        if isinstance(parsed, str):
+            return [parsed]
+        return [str(value) for value in parsed]
+    except (TypeError, ValueError, SyntaxError):
+        # if only it were that easy...
+        pass
+
+    values: list[str] = []
+    for line in entry.splitlines():
+        try:
+            values.append(str(ast.literal_eval(line)))
+        except (TypeError, ValueError, SyntaxError):
+            values.append(line.strip())
+    return values
+
+    return [line.strip() for line in entry.splitlines()]
