@@ -220,7 +220,6 @@ def place_ender_chest(
                 for resource in resources:
                     resource_path = resource.relative_to(box_root)
                     for pattern in shulker_box.do_not_link:
-                        print(pattern)
                         if fnmatch.fnmatchcase(
                             str(resource_path), pattern
                         ) or fnmatch.fnmatchcase(
