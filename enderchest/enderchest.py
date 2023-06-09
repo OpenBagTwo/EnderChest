@@ -13,7 +13,7 @@ from .loggers import CRAFT_LOGGER, GATHER_LOGGER
 from .sync import path_from_uri
 
 
-@dataclass(init=False, repr=False)
+@dataclass(init=False, repr=False, eq=False)
 class EnderChest:
     """Configuration of an EnderChest
 
@@ -53,14 +53,14 @@ class EnderChest:
     remotes : list-like of (ParseResult, str) pairs
         The other EnderChest installations this EnderChest is aware of, paired
         with their aliases
-    offer_to_update_symlink_allowlist: bool
+    offer_to_update_symlink_allowlist : bool
         By default, EnderChest will offer to create or update `allowed_symlinks.txt`
         on any 1.20+ instances that do not already blanket allow links into
         EnderChest. **EnderChest will never modify that or any other Minecraft
         file without your express consent.** If you would prefer to edit these
         files yourself (or simply not symlink your world saves), change this
         parameter to False.
-    sync_confirm_wait: bool or int
+    sync_confirm_wait : bool or int
         The default behavior when syncing EnderChests is to first perform a dry
         run of every sync operation and then wait 5 seconds before proceeding with the
         real sync. The idea is to give the user time to interrupt the sync if
@@ -69,6 +69,10 @@ class EnderChest:
         (`confirm=False`) or by requiring that the user explicitly confirms
         the sync (`confirm=True`). This default behavior can also be overridden
         when actually calling the sync commands.
+    do_not_sync : list of str
+        Glob patterns of files that should not be synced between EnderChest
+        installations. By default, this list comprises `EnderChest/enderchest.cfg`
+        and `.DS_Store` (for all you mac gamers).
     """
 
     name: str
@@ -77,6 +81,7 @@ class EnderChest:
     _remotes: dict[str, ParseResult]
     offer_to_update_symlink_allowlist: bool = True
     sync_confirm_wait: bool | int = 5
+    do_not_sync = ["EnderChest/enderchest.cfg", ".DS_Store"]
 
     def __init__(
         self,
@@ -236,6 +241,7 @@ class EnderChest:
         name: str | None = None
         sync_confirm_wait: str | None = None
         offer_to_update_symlink_allowlist: bool = True
+        do_not_sync: list[str] | None = None
 
         for section in config.sections():
             if section == "properties":
@@ -246,6 +252,10 @@ class EnderChest:
                 offer_to_update_symlink_allowlist = config[section].getboolean(
                     "offer-to-update-symlink-allowlist", True
                 )
+                if "do-not-sync" in config[section].keys():
+                    do_not_sync = cfg.parse_ini_list(
+                        config[section]["do-not-sync"] or ""
+                    )
             elif section == "remotes":
                 for remote in config[section].items():
                     if remote[1] is None:
@@ -278,6 +288,8 @@ class EnderChest:
         ender_chest.offer_to_update_symlink_allowlist = (
             offer_to_update_symlink_allowlist
         )
+        if do_not_sync is not None:
+            ender_chest.do_not_sync = do_not_sync
         return ender_chest
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
@@ -311,6 +323,8 @@ class EnderChest:
         properties[
             "offer-to-update-symlink-allowlist"
         ] = self.offer_to_update_symlink_allowlist
+
+        properties["do-not-sync"] = self.do_not_sync
 
         remotes: dict[str, str] = {name: uri.geturl() for uri, name in self.remotes}
 
