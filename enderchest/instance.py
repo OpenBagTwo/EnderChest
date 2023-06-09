@@ -4,6 +4,8 @@ from configparser import SectionProxy
 from pathlib import Path
 from typing import NamedTuple
 
+from . import config as cfg
+
 
 class InstanceSpec(NamedTuple):
     """Specification of a Minecraft instance
@@ -56,20 +58,12 @@ class InstanceSpec(NamedTuple):
             Path(section["root"]),
             tuple(
                 parse_version(version.strip())
-                for version in section.get(
-                    "minecraft-version", section.get("minecraft_version")
+                for version in cfg.parse_ini_list(
+                    section.get("minecraft-version", section.get("minecraft_version"))
                 )
-                .strip()
-                .split()
             ),
             normalize_modloader(section.get("modloader", None))[0],
-            tuple(
-                tag.strip()
-                for tag in section.get("tags", "")
-                .replace(",", "\n")
-                .strip()
-                .split("\n")
-            ),
+            tuple(cfg.parse_ini_list(section.get("tags", ""))),
         )
 
 

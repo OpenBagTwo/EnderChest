@@ -193,6 +193,7 @@ def parse_ini_list(entry: str) -> list[str]:
     *and not* for the whole "section is the key, lines are the values" thing
     I've got going on.
     """
+    entry = entry.strip()
     try:
         parsed = ast.literal_eval(entry)
         if isinstance(parsed, str):

@@ -177,14 +177,13 @@ class ShulkerBox(NamedTuple):
         properties: dict[str, Any] = {"priority": self.priority}
         if self.max_link_depth != _DEFAULT_LINK_DEPTH:
             properties["max-link-depth"] = self.max_link_depth
-        if self.do_not_link != _DEFAULT_LINK_DEPTH:
-            properties["do-not-link"] = self.do_not_link
 
         config = cfg.dumps(
             os.path.join(self.name, fs.SHULKER_BOX_CONFIG_NAME),
             properties,
             **dict(self.match_criteria),
             link_folders=self.link_folders,
+            do_not_link=self.do_not_link,
         )
 
         if config_file:
