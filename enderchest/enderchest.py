@@ -1,13 +1,13 @@
 """Specification and configuration of an EnderChest"""
 import datetime as dt
-from configparser import ConfigParser, ParsingError
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
 from socket import gethostname
-from typing import Iterable, Sequence
+from typing import Iterable
 from urllib.parse import ParseResult, urlparse
 
+from . import config as cfg
 from . import filesystem as fs
 from . import instance as i
 from . import sync
@@ -226,19 +226,7 @@ class EnderChest:
         FileNotFoundError
             If there is no config file at the specified location
         """
-        parser = ConfigParser(
-            allow_no_value=True,
-            delimiters=("=",),
-            inline_comment_prefixes=(";",),
-            interpolation=None,
-        )
-        parser.optionxform = str  # type: ignore
-        try:
-            assert parser.read(config_file)
-        except ParsingError as bad_cfg:
-            raise ValueError(f"Could not parse {config_file}") from bad_cfg
-        except AssertionError:
-            raise FileNotFoundError(f"Could not open {config_file}")
+        config = cfg.read_cfg(config_file)
 
         # All I'm gonna say is that Windows pathing is the worst
         path = urlparse(config_file.absolute().parent.parent.as_uri()).path
@@ -252,22 +240,22 @@ class EnderChest:
         sync_confirm_wait: str | None = None
         offer_to_update_symlink_allowlist: bool = True
 
-        for section in parser.sections():
+        for section in config.sections():
             if section == "properties":
-                scheme = parser[section].get("sync-protocol")
-                netloc = parser[section].get("address")
-                name = parser[section].get("name")
-                sync_confirm_wait = parser[section].get("sync-confirmation-time")
-                offer_to_update_symlink_allowlist = parser[section].getboolean(
+                scheme = config[section].get("sync-protocol")
+                netloc = config[section].get("address")
+                name = config[section].get("name")
+                sync_confirm_wait = config[section].get("sync-confirmation-time")
+                offer_to_update_symlink_allowlist = config[section].getboolean(
                     "offer-to-update-symlink-allowlist", True
                 )
             elif section == "remotes":
-                for remote in parser[section].items():
+                for remote in config[section].items():
                     if remote[1] is None:
                         raise ValueError("All remotes must have an alias specified")
                     remotes.append((remote[1], remote[0]))
             else:
-                instances.append(i.InstanceSpec.from_cfg(parser[section]))
+                instances.append(i.InstanceSpec.from_cfg(config[section]))
 
         scheme = scheme or sync.DEFAULT_PROTOCOL
         netloc = netloc or sync.get_default_netloc()
@@ -313,8 +301,7 @@ class EnderChest:
         -----
         The "root" attribute is ignored for this method
         """
-        config = ConfigParser(allow_no_value=True, interpolation=None)
-        config.optionxform = str  # type: ignore
+        config = cfg.get_configurator()
         config.add_section("properties")
         config.set("properties", "name", self.name)
         config.set("properties", "address", self._uri.netloc)
@@ -345,13 +332,13 @@ class EnderChest:
             config.set(
                 instance.name,
                 "minecraft_version",
-                _list_to_ini(instance.minecraft_versions),
+                cfg.list_to_ini(instance.minecraft_versions),
             )
             config.set(instance.name, "modloader", instance.modloader)
             config.set(
                 instance.name,
                 "tags",
-                _list_to_ini(instance.tags),
+                cfg.list_to_ini(instance.tags),
             )
 
         buffer = StringIO()
@@ -363,26 +350,6 @@ class EnderChest:
             config_file.write_text(buffer.read())
             buffer.seek(0)
         return buffer.read()
-
-
-def _list_to_ini(values: Sequence) -> str:
-    """Format a list of values into a string suitable for use in an INI entry
-
-    Parameters
-    ----------
-    values : list-like
-        the values in the list
-
-    Returns
-    -------
-    str
-        The formatted INI value
-    """
-    if len(values) == 0:
-        return ""
-    if len(values) == 1:
-        return values[0]
-    return "\n" + "\n".join(values)
 
 
 def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:

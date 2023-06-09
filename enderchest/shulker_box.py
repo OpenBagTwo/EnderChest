@@ -2,17 +2,20 @@
 import datetime as dt
 import fnmatch
 import os
-from configparser import ConfigParser, ParsingError
 from io import StringIO
 from pathlib import Path
 from typing import NamedTuple
 
 import semantic_version as semver
 
+from . import config as cfg
 from . import filesystem as fs
 from ._version import get_versions
 from .instance import InstanceSpec
 from .loggers import CRAFT_LOGGER
+
+_DEFAULT_LINK_DEPTH = 2
+_DEFAULT_DO_NOT_LINK = ("shulkerbox.cfg", ".DS_Store")
 
 
 class ShulkerBox(NamedTuple):
@@ -22,9 +25,9 @@ class ShulkerBox(NamedTuple):
     ----------
     priority : int
         The priority for linking assets in the shulker box (higher priority
-        shulkers are linked last)
+        boxes are linked last)
     name : str
-        The name of the shulker box (which is incidetentally used to break
+        The name of the shulker box (which is incidentally used to break
         priority ties)
     root : Path
         The path to the root of the shulker box
@@ -46,11 +49,14 @@ class ShulkerBox(NamedTuple):
         linked. This behavior can be overridden by explicitly setting
         the `max_link_depth` value, but **this feature is highly experimental**,
         so use it at your own risk.
+    do_not_link : list-like of str, optional
+        Glob patterns of files that should not be linked. By default, this list
+        comprises `shulkerbox.cfg` and `.DS_Store` (for all you mac gamers).
 
     Notes
     -----
     A shulker box specification is immutable, so making changes (such as
-    updating the match critera) can only be done on copies created via the
+    updating the match criteria) can only be done on copies created via the
     `_replace` method, inherited from the NamedTuple parent class.
     """
 
@@ -59,7 +65,8 @@ class ShulkerBox(NamedTuple):
     root: Path
     match_criteria: tuple[tuple[str, tuple[str, ...]], ...]
     link_folders: tuple[str, ...]
-    max_link_depth: int = 2
+    max_link_depth: int = _DEFAULT_LINK_DEPTH
+    do_not_link: tuple[str, ...] = _DEFAULT_DO_NOT_LINK
 
     @classmethod
     def from_cfg(cls, config_file: Path) -> "ShulkerBox":
@@ -86,20 +93,11 @@ class ShulkerBox(NamedTuple):
         max_link_depth = 2
         root = config_file.parent
         name = root.name
-        parser = ConfigParser(
-            allow_no_value=True, inline_comment_prefixes=(";",), interpolation=None
-        )
-        parser.optionxform = str  # type: ignore
-        try:
-            assert parser.read(config_file)
-        except ParsingError as bad_cfg:
-            raise ValueError(f"Could not parse {config_file}") from bad_cfg
-        except AssertionError:
-            raise FileNotFoundError(f"Could not open {config_file}")
+        config = cfg.read_cfg(config_file)
 
         match_criteria: dict[str, tuple[str, ...]] = {}
 
-        for section in parser.sections():
+        for section in config.sections():
             normalized = (
                 section.lower().replace(" ", "").replace("-", "").replace("_", "")
             )
@@ -117,8 +115,8 @@ class ShulkerBox(NamedTuple):
             if normalized == "propertie":  # lulz
                 # TODO check to make sure properties hasn't been read before
                 # most of this section gets ignored
-                priority = parser[section].getint("priority", 0)
-                max_link_depth = parser[section].getint("max-link-depth", 2)
+                priority = config[section].getint("priority", 0)
+                max_link_depth = config[section].getint("max-link-depth", 2)
                 # TODO: support specifying filters (and link-folders) in the properties section
                 continue
             if normalized in match_criteria:
@@ -126,7 +124,7 @@ class ShulkerBox(NamedTuple):
 
             if normalized == "minecraft":
                 minecraft_versions = []
-                for key, value in parser[section].items():
+                for key, value in config[section].items():
                     if value is None:
                         minecraft_versions.append(key)
                     elif key.lower().strip().startswith("version"):
@@ -136,7 +134,7 @@ class ShulkerBox(NamedTuple):
                 match_criteria["minecraft"] = tuple(minecraft_versions)
             else:
                 # really hoping delimiter shenanigans doesn't show up anywhere else
-                match_criteria[normalized] = tuple(parser[section].keys())
+                match_criteria[normalized] = tuple(config[section].keys())
 
         link_folders = match_criteria.pop("link-folders", ())
 
@@ -167,12 +165,13 @@ class ShulkerBox(NamedTuple):
         -----
         The "root" attribute is ignored for this method
         """
-        config = ConfigParser(allow_no_value=True, interpolation=None)
-        config.optionxform = str  # type: ignore
+        config = cfg.get_configurator()
         config.add_section("properties")
         config.set("properties", "priority", str(self.priority))
-        if self.max_link_depth != 2:
+        if self.max_link_depth != _DEFAULT_LINK_DEPTH:
             config.set("properties", "max-link-depth", str(self.max_link_depth))
+        if self.do_not_link != _DEFAULT_DO_NOT_LINK:
+            config.set("properties", "do-not-link", cfg.list_to_ini(self.do_not_link))
         config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
         config.set(
             "properties", "generated_by_enderchest_version", get_versions()["version"]
