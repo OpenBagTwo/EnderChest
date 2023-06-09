@@ -142,6 +142,22 @@ class TestSingleShulkerPlace:
 
         assert not (instance_folder / fs.SHULKER_BOX_CONFIG_NAME).exists()
 
+    @utils.parametrize_over_instances("bee")
+    def test_shulker_configs_can_be_placed_if_you_really_want(
+        self, minecraft_root, instance
+    ):
+        # it's explicitly overridden in the forge config
+        utils.pre_populate_enderchest(
+            minecraft_root / "EnderChest", utils.OPTIFINE_SHULKER
+        )
+        place.place_ender_chest(minecraft_root)
+
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+
+        assert (
+            instance_folder / fs.SHULKER_BOX_CONFIG_NAME
+        ).resolve() == fs.shulker_box_config(minecraft_root, "optifine")
+
     @utils.parametrize_over_instances("official", "axolotl")
     def test_link_folder_can_be_a_symlink(self, minecraft_root, instance):
         place.place_ender_chest(minecraft_root)
