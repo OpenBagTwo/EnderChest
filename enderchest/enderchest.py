@@ -1,17 +1,14 @@
 """Specification and configuration of an EnderChest"""
-import datetime as dt
 from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
 from socket import gethostname
-from typing import Iterable
+from typing import Any, Iterable
 from urllib.parse import ParseResult, urlparse
 
 from . import config as cfg
 from . import filesystem as fs
 from . import instance as i
 from . import sync
-from ._version import get_versions
 from .loggers import CRAFT_LOGGER, GATHER_LOGGER
 from .sync import path_from_uri
 
@@ -301,55 +298,39 @@ class EnderChest:
         -----
         The "root" attribute is ignored for this method
         """
-        config = cfg.get_configurator()
-        config.add_section("properties")
-        config.set("properties", "name", self.name)
-        config.set("properties", "address", self._uri.netloc)
-        config.set("properties", "sync-protocol", self._uri.scheme)
-        config.set(
-            "properties",
-            "sync-confirmation-time",
-            str(self.sync_confirm_wait)
-            if self.sync_confirm_wait is not True
-            else "prompt",
-        )
-        config.set(
-            "properties",
-            "offer-to-update-symlink-allowlist",
-            str(self.offer_to_update_symlink_allowlist),
-        )
-        config.set("properties", "last_modified", dt.datetime.now().isoformat(sep=" "))
-        config.set(
-            "properties", "generated_by_enderchest_version", get_versions()["version"]
-        )
+        properties: dict[str, Any] = {
+            "name": self.name,
+            "address": self._uri.netloc,
+            "sync-protocol": self._uri.scheme,
+        }
+        if self.sync_confirm_wait is True:
+            properties["sync-confirmation-time"] = "prompt"
+        else:
+            properties["sync-confirmation-time"] = self.sync_confirm_wait
 
-        config.add_section("remotes")
-        for uri, name in self.remotes:
-            config.set("remotes", name, uri.geturl())
+        properties[
+            "offer-to-update-symlink-allowlist"
+        ] = self.offer_to_update_symlink_allowlist
+
+        remotes: dict[str, str] = {name: uri.geturl() for uri, name in self.remotes}
+
+        instances: dict[str, dict[str, Any]] = {}
+
         for instance in self.instances:
-            config.add_section(instance.name)
-            config.set(instance.name, "root", str(instance.root))
-            config.set(
-                instance.name,
-                "minecraft_version",
-                cfg.list_to_ini(instance.minecraft_versions),
-            )
-            config.set(instance.name, "modloader", instance.modloader)
-            config.set(
-                instance.name,
-                "tags",
-                cfg.list_to_ini(instance.tags),
-            )
+            instances[instance.name] = {
+                "root": instance.root,
+                "minecraft-version": instance.minecraft_versions,
+                "modloader": instance.modloader,
+                "tags": instance.tags,
+            }
 
-        buffer = StringIO()
-        buffer.write(f"; {fs.ENDER_CHEST_CONFIG_NAME}\n")
-        config.write(buffer)
-        buffer.seek(0)  # rewind
+        config = cfg.dumps(
+            fs.ENDER_CHEST_CONFIG_NAME, properties, remotes=remotes, **instances
+        )
 
         if config_file:
-            config_file.write_text(buffer.read())
-            buffer.seek(0)
-        return buffer.read()
+            config_file.write_text(config)
+        return config
 
 
 def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:

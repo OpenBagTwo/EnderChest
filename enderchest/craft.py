@@ -19,7 +19,7 @@ from .gather import (
     load_ender_chest_remotes,
     load_shulker_boxes,
 )
-from .instance import InstanceSpec
+from .instance import InstanceSpec, normalize_modloader
 from .loggers import CRAFT_LOGGER
 from .prompt import NO, YES, confirm, prompt
 from .remote import fetch_remotes_from_a_remote_ender_chest
@@ -671,23 +671,23 @@ def _prompt_for_filters(
             or "*"
         )
 
-        modloaders: list[str] = []
+        modloaders: set[str] = set()
         for entry in modloader.split(","):
             match entry.strip().lower():
                 case "" | "n" | "none" | "vanilla":
-                    modloaders.append("None")
+                    modloaders.update(normalize_modloader(None))
                 case "g" | "forge":
-                    modloaders.append("Forge")
+                    modloaders.update(normalize_modloader("Forge"))
                 case "b" | "fabric" | "fabric loader":
-                    modloaders.append("Fabric Loader")
+                    modloaders.update(normalize_modloader("Fabric Loader"))
                 case "q" | "quilt":
-                    modloaders.append("Quilt Loader")
+                    modloaders.update(normalize_modloader("Quilt Loader"))
                 case "l" | "liteloader":
-                    modloaders.append("LiteLoader")
+                    modloaders.update(normalize_modloader("LiteLoader"))
                 case _:
-                    modloaders.append(entry)
+                    modloaders.update(normalize_modloader(entry))
 
-        updated, matches = check_progress("modloader", modloaders)
+        updated, matches = check_progress("modloader", sorted(modloaders))
         if updated:
             shulker_box = updated
             instances = [instance for instance in instances if instance.name in matches]
