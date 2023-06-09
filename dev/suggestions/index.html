@@ -334,8 +334,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#keeping-local-boxes-local" class="md-nav__link">
+    Keeping Local Boxes Local
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#managing-backups" class="md-nav__link">
     Managing Backups
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing Backups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-control-with-git" class="md-nav__link">
+    Version control with git
   </a>
   
 </li>
@@ -597,6 +617,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/enderchest/config/" class="md-nav__link">
+        config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/enderchest/filesystem/" class="md-nav__link">
         filesystem
       </a>
@@ -630,7 +664,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_12" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_13" >
       
       
       
@@ -639,14 +673,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../reference/enderchest/sync/">sync</a>
           
-            <label for="__nav_8_1_12">
+            <label for="__nav_8_1_13">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_12_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_8_1_12">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_13_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8_1_13">
           <span class="md-nav__icon md-icon"></span>
           sync
         </label>
@@ -769,8 +803,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#keeping-local-boxes-local" class="md-nav__link">
+    Keeping Local Boxes Local
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#managing-backups" class="md-nav__link">
     Managing Backups
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing Backups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-control-with-git" class="md-nav__link">
+    Version control with git
   </a>
   
 </li>
@@ -837,9 +891,56 @@ shared drive before using them can help avoid conflicts and corruption.</p>
 different computers, nor does it support authenticating as different users.</p>
 </div>
 <h2 id="collisions-and-conflicts">Collisions and Conflicts</h2>
-<p>Coming soon!</p>
-<h3 id="managing-backups">Managing Backups</h3>
-<p>Coming soon!</p>
+<h3 id="keeping-local-boxes-local">Keeping Local Boxes Local</h3>
+<p>EnderChest's default behavior is to sync <em>all</em> shulker boxes across <em>all</em> installations,
+even if that shulker box won't be used on other machines. This is done so that your
+local files are backed up and available for reference wherever you're playing Minecraft.</p>
+<p>But if you have a lot of EnderChests and a lot of local-only shulker boxes, that might
+not be something that you want, at least not on every machine.</p>
+<p>To exclude a folder (or file) from sync, open your <code>enderchest.cfg</code> file (inside your
+EnderChest folder). Inside the top <code>[properties]</code> section you should see an entry named
+"do-not-sync". By default it should look like this:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="na">do-not-sync</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">        </span><span class="na">EnderChest/enderchest.cfg</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="na">EnderChest/.*</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="na">.DS_Store</span>
+</span></code></pre></div>
+<p>If there's a shulker box you want to exclude from syncing, just add it on a new line
+(prefixing it with <code>EnderChest/</code> will help ensure that you're not excluding files with
+that name in other boxes).</p>
+<div class="admonition tip">
+<p class="admonition-title">Pro Tip</p>
+<p>If you use a consistent naming convention, such as giving all of your local-only
+shulker boxes names that end in ".local", you can exclude them all at once by adding
+the line:
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">EnderChest/*.local</span>
+</span></code></pre></div></p>
+</div>
+<p>Note that this "do-not-sync" list <em>is only obeyed</em> for sync commands run from
+the lcoal machine / EnderChest--this means that while running <code>enderchest close</code>
+from one machine may exclude a shulker box from being pushed, running <code>enderchest open</code>
+from that that other machine may grab that box anyway.</p>
+<h2 id="managing-backups">Managing Backups</h2>
+<h3 id="version-control-with-git">Version control with <code>git</code></h3>
+<p>As mentioned <a href="#keeping-local-boxes-local">above</a>, if a folder in your
+EnderChest is prefixed with a "." then EnderChest by default <em>will not</em> sync
+it with other machines or place links into that folder. One reason for this
+is to make it easier to create incremental backups and put your configurations
+under full version control using something like <a href="https://git-scm.com/">git</a>.</p>
+<p>If you navigate <em>into</em> your EnderChest folder and run the command</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>init
+</span></code></pre></div>
+<p>then assuming you have <code>git</code> installed on your system, it will turn your
+entire EnderChest into a repository and store its version history in the
+hidden ".git" folder. This isn't the place for a full tutorial, but
+a handy cheat-sheet of the basic <code>git</code> commands can be found
+<a href="https://training.github.com/downloads/github-git-cheat-sheet/">here</a>.</p>
+<p>The relevant section for you is the one that reads "Make changes."
+You probably don't want to be pushing your EnderChest (which probably
+contains a large number of very large files) to GitHub, though adding
+the ability for EnderChest to sync between installations directly
+via the <code>git</code> protocol is
+<a href="https://github.com/OpenBagTwo/EnderChest/issues/30">definitely under consideration</a>.</p>
 <h2 id="integration-with-auto-update-tools">Integration with Auto-Update Tools</h2>
 <h3 id="startup-and-shutdown-scripts">Startup and Shutdown Scripts</h3>
 <p>Launchers like PrismLauncher can be configured to run commands
