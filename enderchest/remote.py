@@ -140,6 +140,9 @@ def sync_with_remotes(
             sync_confirm_wait = gather.load_ender_chest(
                 minecraft_root
             ).sync_confirm_wait
+        this_chest = gather.load_ender_chest(minecraft_root)
+
+        # I know this is redundant, but we want those logs
         remotes = gather.load_ender_chest_remotes(
             minecraft_root, log_level=logging.DEBUG
         )
@@ -186,10 +189,7 @@ def sync_with_remotes(
                         remote_chest,
                         minecraft_root,
                         exclude=[
-                            os.path.join(
-                                fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME
-                            ),
-                            os.path.join(fs.ENDER_CHEST_FOLDER_NAME, ".*"),
+                            *this_chest.do_not_sync,
                             *(sync_kwargs.pop("exclude", None) or ()),
                         ],
                         dry_run=do_dry_run,
@@ -206,10 +206,7 @@ def sync_with_remotes(
                         local_chest,
                         remote_uri,
                         exclude=[
-                            os.path.join(
-                                fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME
-                            ),
-                            os.path.join(fs.ENDER_CHEST_FOLDER_NAME, ".*"),
+                            *this_chest.do_not_sync,
                             *(sync_kwargs.pop("exclude", None) or ()),
                         ],
                         dry_run=do_dry_run,
