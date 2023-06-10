@@ -1,6 +1,6 @@
 """Utilities for helping build interactive prompts"""
 
-CURSOR = "==>"
+CURSOR = "\x1b[35;1m==>\x1b[0m"
 
 # https://stackoverflow.com/a/18472142
 YES = ("y", "yes", "t", "true", "on", "1")
@@ -32,9 +32,9 @@ def prompt(message: str, suggestion: str | None = None) -> str:
       suggestion *does not serve* as a default / fallback value.
     """
     lines = message.splitlines() + [""]
-    message = "\n".join(f"{CURSOR} {line}" for line in lines)
+    message = "\n".join(f"{CURSOR}\x1b[1m {line}\x1b[0m" for line in lines)
     if suggestion is not None:
-        message += f"[{suggestion}] "
+        message += f"\x1b[35;1m[{suggestion}]\x1b[0m "
     return input(message)
 
 
