@@ -409,7 +409,7 @@ def get_instances_matching_shulker_box(
     ]
 
     if len(matches) == 0:
-        report = "is not link to by any registered instances"
+        report = "is not linked to by any registered instances"
     else:
         report = "is linked to by the following instances:\n" + "\n".join(
             f"  - {_render_instance(instance)}" for instance in matches
