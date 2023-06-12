@@ -44,7 +44,7 @@ jobs:
         source $CONDA/bin/activate enderchest
         mike deploy ${{ github.ref_name }} --push --rebase
     - name: deploy release docs
-      if: ${{ github.event_name == 'release' }}
+      if: ${{ github.event_name == 'release' && !github.event.release.prerelease }}
       run: |
         source $CONDA/bin/activate enderchest
         mike deploy ${{ github.ref_name }} release --push --rebase -u
