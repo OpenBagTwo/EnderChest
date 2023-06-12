@@ -159,18 +159,39 @@ is rendering as it should.
 
 EnderChest development follows
 [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow),
-with all development done on feature-branches created off the `dev` branch. Once
-a significant number of changes have been merged into `dev`
-(usually the culmination of a
+with all development done on feature-branches created off the `dev` branch.
+
+Once a significant number of changes have been merged into `dev` (usually the
+culmination of a
 [milestone](https://github.com/OpenBagTwo/EnderChest/milestones)), a staging
 branch will be created off of `dev`, and a PR will be opened targeting merging
 changes from that branch into `release`. This process is typically accompanied
 by the creation of release candidate versions which are built and uploaded to PyPI
 for pre-release testing. During this phase, changes will be made directly
 to the staging branch to fix any bugs or regressions that come up during testing.
-Finally, the staging PR will be merged into `release`, an official release will
-be cut, and any changes introduced in the staging branch will be PR'd and merged
-back into `dev`.
+
+Once it's time to cut a release,
+
+1. The staging PR will be merged into `release`.
+2. A [new release](https://github.com/OpenBagTwo/EnderChest/releases/new) will
+   be created targeting the `release` branch and with a tag of the form
+   [`v0.x.y`](https://semver.org/). The release notes should highlight the
+   significant changes in the new version, and the auto-generated release notes
+   should be modified to cover the period from the last full release
+   (as opposed to just the last release candidate).
+
+    !!! tip
+        Create draft release notes when cutting the first release candidate
+        so that you can just copy them into the full release
+
+3. Cutting the new release will automatically push a new package build to
+   [pypi](https://pypi.org/project/enderchest/) and
+   [update the docs](https://openbagtwo.github.io/EnderChest/release/).
+4. Once the release is complete, the `dev` branch must be **rebased** on top of
+   `release`. This serves two goals:
+   - it applies any changes committed directly to the staging branch to `dev`
+   - it keeps the commit history linear (and makes it much easier to calculate)
+     the number of commits in `dev` since the last release.
 
 ## Opening a PR
 
