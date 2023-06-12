@@ -6,7 +6,8 @@ on:
   push:
     branches:
     - dev
-    - release
+  release:
+    types: [published]
 jobs:
   docs_rebuild:
     runs-on: ubuntu-latest
@@ -37,7 +38,13 @@ jobs:
     - name: add badges to docs
       run: |
         mv *.svg docs/img/
-    - name: deploy current branch
+    - name: deploy dev docs
+      if: ${{ github.event_name == 'push' }}
       run: |
         source $CONDA/bin/activate enderchest
-        mike deploy $GITHUB_REF_NAME --push --rebase
+        mike deploy ${{ github.ref_name }} --push --rebase
+    - name: deploy release docs
+      if: ${{ github.event_name == 'release' }}
+      run: |
+        source $CONDA/bin/activate enderchest
+        mike deploy ${{ github.ref_name }} release --push --rebase -u
