@@ -944,18 +944,42 @@ is rendering as it should.</p>
 <h2 id="development-workflow">Development Workflow</h2>
 <p>EnderChest development follows
 <a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Gitflow</a>,
-with all development done on feature-branches created off the <code>dev</code> branch. Once
-a significant number of changes have been merged into <code>dev</code>
-(usually the culmination of a
+with all development done on feature-branches created off the <code>dev</code> branch.</p>
+<p>Once a significant number of changes have been merged into <code>dev</code> (usually the
+culmination of a
 <a href="https://github.com/OpenBagTwo/EnderChest/milestones">milestone</a>), a staging
 branch will be created off of <code>dev</code>, and a PR will be opened targeting merging
 changes from that branch into <code>release</code>. This process is typically accompanied
 by the creation of release candidate versions which are built and uploaded to PyPI
 for pre-release testing. During this phase, changes will be made directly
-to the staging branch to fix any bugs or regressions that come up during testing.
-Finally, the staging PR will be merged into <code>release</code>, an official release will
-be cut, and any changes introduced in the staging branch will be PR'd and merged
-back into <code>dev</code>.</p>
+to the staging branch to fix any bugs or regressions that come up during testing.</p>
+<p>Once it's time to cut a release,</p>
+<ol>
+<li>The staging PR will be merged into <code>release</code>.</li>
+<li>
+<p>A <a href="https://github.com/OpenBagTwo/EnderChest/releases/new">new release</a> will
+   be created targeting the <code>release</code> branch and with a tag of the form
+   <a href="https://semver.org/"><code>v0.x.y</code></a>. The release notes should highlight the
+   significant changes in the new version, and the auto-generated release notes
+   should be modified to cover the period from the last full release
+   (as opposed to just the last release candidate).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Create draft release notes when cutting the first release candidate
+so that you can just copy them into the full release</p>
+</div>
+</li>
+<li>
+<p>Cutting the new release will automatically push a new package build to
+   <a href="https://pypi.org/project/enderchest/">pypi</a> and
+   <a href="https://openbagtwo.github.io/EnderChest/release/">update the docs</a>.</p>
+</li>
+<li>Once the release is complete, the <code>dev</code> branch must be <strong>rebased</strong> on top of
+   <code>release</code>. This serves two goals:
+   - it applies any changes committed directly to the staging branch to <code>dev</code>
+   - it keeps the commit history linear (and makes it much easier to calculate)
+     the number of commits in <code>dev</code> since the last release.</li>
+</ol>
 <h2 id="opening-a-pr">Opening a PR</h2>
 <p>Once you're ready to contribute your code change back,
 <a href="https://github.com/OpenBagTwo/EnderChest/compare">open a PR</a> (remember to

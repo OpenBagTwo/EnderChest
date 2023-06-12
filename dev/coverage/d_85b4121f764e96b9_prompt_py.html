@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_remote_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-06-09 22:52 +0000
+            created at 2023-06-12 18:43 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -82,7 +82,7 @@
 <main id="source">
     <p class="pln"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="str">"""Utilities for helping build interactive prompts"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="nam">CURSOR</span> <span class="op">=</span> <span class="str">"==>"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="nam">CURSOR</span> <span class="op">=</span> <span class="str">"\x1b[35;1m==>\x1b[0m"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="com"># https://stackoverflow.com/a/18472142</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="nam">YES</span> <span class="op">=</span> <span class="op">(</span><span class="str">"y"</span><span class="op">,</span> <span class="str">"yes"</span><span class="op">,</span> <span class="str">"t"</span><span class="op">,</span> <span class="str">"true"</span><span class="op">,</span> <span class="str">"on"</span><span class="op">,</span> <span class="str">"1"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -114,9 +114,9 @@
     <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="str">      suggestion *does not serve* as a default / fallback value.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="nam">lines</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">splitlines</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="op">[</span><span class="str">""</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">    <span class="nam">message</span> <span class="op">=</span> <span class="str">"\n"</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="str">f"{CURSOR} {line}"</span> <span class="key">for</span> <span class="nam">line</span> <span class="key">in</span> <span class="nam">lines</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">    <span class="nam">message</span> <span class="op">=</span> <span class="str">"\n"</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="str">f"{CURSOR}\x1b[1m {line}\x1b[0m"</span> <span class="key">for</span> <span class="nam">line</span> <span class="key">in</span> <span class="nam">lines</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">    <span class="key">if</span> <span class="nam">suggestion</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">        <span class="nam">message</span> <span class="op">+=</span> <span class="str">f"[{suggestion}] "</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">        <span class="nam">message</span> <span class="op">+=</span> <span class="str">f"\x1b[35;1m[{suggestion}]\x1b[0m "</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">    <span class="key">return</span> <span class="nam">input</span><span class="op">(</span><span class="nam">message</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -152,7 +152,7 @@
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_remote_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-06-09 22:52 +0000
+            created at 2023-06-12 18:43 +0000
         </p>
     </div>
 </footer>
