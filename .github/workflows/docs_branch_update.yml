@@ -2,6 +2,8 @@
 
 name: Docs Update
 
+concurrency: gh-pages
+
 on:
   push:
     branches:
