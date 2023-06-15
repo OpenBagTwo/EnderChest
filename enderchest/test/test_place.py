@@ -209,9 +209,13 @@ class TestSingleShulkerPlace:
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
-        assert os.path.abspath(os.readlink(instance_folder / "saves" / "test")) == str(
-            minecraft_root / "worlds" / "testbench"
-        )
+        link_target = os.path.abspath(os.readlink(instance_folder / "saves" / "test"))
+
+        # Windows shenanigans: https://bugs.python.org/issue42957
+        if link_target.startswith(("\\\\?\\", "\\??\\")):  # pragma: no cover
+            link_target = link_target[4:]
+
+        assert link_target == str(minecraft_root / "worlds" / "testbench")
 
     @utils.parametrize_over_instances("axolotl", "bee")
     def test_place_cleans_up_broken_symlinks_by_default(self, minecraft_root, instance):
