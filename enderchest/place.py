@@ -310,10 +310,10 @@ def link_resource(
     instance_path.parent.mkdir(parents=True, exist_ok=True)
 
     target: str | Path = (shulker_root / resource_path).expanduser().absolute()
-    if not relative:
-        target = target.resolve()  # type: ignore
     if relative:
         target = os.path.relpath(target, instance_path.parent)
+    else:
+        target = target.resolve()  # type: ignore
 
     if instance_path.is_symlink():
         # remove previous symlink in this spot
