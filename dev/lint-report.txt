@@ -34,13 +34,12 @@ enderchest/craft.py:400:0: R0914: Too many local variables (16/15) (too-many-loc
 enderchest/craft.py:400:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/craft.py:400:0: R0915: Too many statements (56/50) (too-many-statements)
 ************* Module enderchest.place
-enderchest/place.py:109:38: W0511: TODO: reevaluate default (it's 50/50 due to link folders) (fixme)
+enderchest/place.py:119:38: W0511: TODO: reevaluate default (it's 50/50 due to link folders) (fixme)
 enderchest/place.py:16:0: R0913: Too many arguments (6/5) (too-many-arguments)
-enderchest/place.py:16:0: R0914: Too many local variables (24/15) (too-many-locals)
-enderchest/place.py:157:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+enderchest/place.py:16:0: R0914: Too many local variables (23/15) (too-many-locals)
+enderchest/place.py:167:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
 enderchest/place.py:16:0: R0912: Too many branches (25/12) (too-many-branches)
 enderchest/place.py:16:0: R0915: Too many statements (86/50) (too-many-statements)
-enderchest/place.py:200:16: W0612: Unused variable 'oh_no' (unused-variable)
 ************* Module enderchest.enderchest
 enderchest/enderchest.py:125:4: C0116: Missing function or method docstring (missing-function-docstring)
 enderchest/enderchest.py:132:4: C0116: Missing function or method docstring (missing-function-docstring)
@@ -86,5 +85,5 @@ enderchest/test/utils.py:366:8: C0103: Variable name "mc" doesn't conform to sna
 enderchest/test/utils.py:458:23: C0103: Argument name "mc" doesn't conform to snake_case naming style (invalid-name)
 
 -----------------------------------
-Your code has been rated at 9.60/10
+Your code has been rated at 9.61/10
 
