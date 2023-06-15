@@ -52,11 +52,21 @@ def place_ender_chest(
     relative : bool, optional
         By default, links will use relative paths when possible. To use absolute
         paths instead (see: https://bugs.mojang.com/projects/MC/issues/MC-263046),
-        pass in `relative=False`.
+        pass in `relative=False`. See note below.
     rollback: bool, optional
         In the future in the event of linking errors passing in `rollback=True`
         can be used to roll back any changes that have already been applied
         based on the error-handling method specified.
+
+    Notes
+    -----
+    - If one of the files or folders being placed is itself a symlink, relative
+      links will be created as *nested* links (a link pointing to the link),
+      whereas in "absolute" mode (`relative=False`), the link that will be
+      placed will point **directly** to the final target.
+    - This can lead to the stale-link cleanup behavior not correctly removing
+      an outdated symlink if the fully resolved target of a link falls outside
+      the EnderChest folder.
     """
     if rollback is not False:
         raise NotImplementedError("Rollbacks are not currently supported")
@@ -197,7 +207,7 @@ def place_ender_chest(
                 resources -= set((box_root / link_folder).rglob("*"))
                 try:
                     link_resource(link_folder, box_root, instance_root, relative)
-                except (OSError, NotADirectoryError) as oh_no:
+                except OSError:
                     PLACE_LOGGER.error(
                         f"Error linking shulker box {shulker_box.name}"
                         f" to instance {instance.name}:"
@@ -239,7 +249,7 @@ def place_ender_chest(
                                 instance_root,
                                 relative,
                             )
-                        except (OSError, NotADirectoryError) as oh_no:
+                        except OSError:
                             PLACE_LOGGER.error(
                                 f"Error linking shulker box {shulker_box.name}"
                                 f" to instance {instance.name}:"
@@ -294,11 +304,9 @@ def link_resource(
 
     Raises
     ------
-    NotADirectoryError
-        If a file already exists where you're attempting to place the symlink
     OSError
-        If a non-empty directory already exists where you're attempting to
-        place the symlink
+        If a file or non-empty directory already exists where you're attempting
+        to place the symlink
 
     Notes
     -----
