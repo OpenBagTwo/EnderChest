@@ -179,9 +179,10 @@ class TestSingleShulkerPlace:
             minecraft_root / "crash-reports" / "20230524.log"
         )
 
+    @pytest.mark.parametrize("link_type", ("absolute", "relative"))
     @utils.parametrize_over_instances("official", "axolotl")
-    def test_place_places_symlinks(self, minecraft_root, instance):
-        place.place_ender_chest(minecraft_root)
+    def test_place_places_symlinks(self, minecraft_root, instance, link_type):
+        place.place_ender_chest(minecraft_root, relative=link_type == "relative")
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
@@ -195,10 +196,21 @@ class TestSingleShulkerPlace:
             instance_folder / "saves" / "test" / "level.dat"
         ).read_text() == "hello world\n"
 
+        assert (instance_folder / "saves" / "test").is_symlink()
         assert not (instance_folder / "saves" / "test" / "level.dat").is_symlink()
 
         assert (instance_folder / "saves" / "test" / "level.dat").resolve() == (
             minecraft_root / "worlds" / "testbench" / "level.dat"
+        )
+
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_absolute_symlinks_fully_resolve_target(self, minecraft_root, instance):
+        place.place_ender_chest(minecraft_root, relative=False)
+
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+
+        assert os.path.abspath(os.readlink(instance_folder / "saves" / "test")) == str(
+            minecraft_root / "worlds" / "testbench"
         )
 
     @utils.parametrize_over_instances("axolotl", "bee")
@@ -270,6 +282,36 @@ class TestSingleShulkerPlace:
         place.place_ender_chest(minecraft_root)
 
         assert stale_link in stale_link.parent.iterdir()
+
+    @pytest.mark.parametrize("link_type", ("absolute", "relative"))
+    @utils.parametrize_over_instances("official", "axolotl")
+    def test_stale_link_cleaning_is_based_on_direct_target(
+        self,
+        minecraft_root,
+        instance,
+        link_type,
+    ):
+        instance_folder = utils.resolve(instance.root, minecraft_root)
+        working_file = minecraft_root / "workspace" / "i-do-exist.txt"
+        working_file.write_text("Hello there\n")
+
+        box_link = fs.shulker_box_root(minecraft_root, "some_box") / "valid.txt"
+        box_link.parent.mkdir()
+        box_link.symlink_to(working_file)
+
+        link_link = instance_folder / "valid.txt"
+        if link_type == "absolute":
+            link_link.symlink_to(box_link)
+        else:
+            link_link.symlink_to(os.path.relpath(box_link, link_link.parent))
+
+        place.place_ender_chest(minecraft_root)
+
+        assert link_link not in link_link.parent.iterdir()
+
+        # and then just make sure that the originals are okay
+        assert working_file.read_text() == "Hello there\n"
+        assert box_link.resolve() == working_file
 
     @pytest.mark.parametrize("link_type", ("absolute", "relative"))
     @utils.parametrize_over_instances("official", "axolotl")
