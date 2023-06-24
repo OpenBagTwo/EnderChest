@@ -1,5 +1,3 @@
-************* Module enderchest.instance
-enderchest/instance.py:70:0: R0911: Too many return statements (7/6) (too-many-return-statements)
 ************* Module enderchest.cli
 enderchest/cli.py:633:5: W0511: TODO: set log levels per logger based on the command (fixme)
 enderchest/cli.py:636:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
@@ -7,19 +5,23 @@ enderchest/cli.py:25:0: R0903: Too few public methods (1/2) (too-few-public-meth
 enderchest/cli.py:32:0: R0913: Too many arguments (9/5) (too-many-arguments)
 enderchest/cli.py:208:0: R0914: Too many local variables (23/15) (too-many-locals)
 enderchest/cli.py:208:0: R0915: Too many statements (59/50) (too-many-statements)
-************* Module enderchest.gather
-enderchest/gather.py:501:13: W0511: TODO: if not Windows, try making relative to "~" (fixme)
-enderchest/gather.py:322:8: C0103: Variable name "mc" doesn't conform to snake_case naming style (invalid-name)
-enderchest/gather.py:510:0: R0914: Too many local variables (16/15) (too-many-locals)
-enderchest/gather.py:569:4: W0612: Unused variable 'weird_json' (unused-variable)
-enderchest/gather.py:590:0: R0914: Too many local variables (20/15) (too-many-locals)
-enderchest/gather.py:590:0: R0912: Too many branches (16/12) (too-many-branches)
-enderchest/gather.py:590:0: R0915: Too many statements (59/50) (too-many-statements)
-enderchest/gather.py:676:8: W0612: Unused variable 'no_json' (unused-variable)
-enderchest/gather.py:680:8: W0612: Unused variable 'bad_json' (unused-variable)
-enderchest/gather.py:684:8: W0612: Unused variable 'weird_json' (unused-variable)
-enderchest/gather.py:693:4: W0612: Unused variable 'no_cfg' (unused-variable)
-enderchest/gather.py:822:40: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+************* Module enderchest.enderchest
+enderchest/enderchest.py:125:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:132:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:136:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:179:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:212:4: R0914: Too many local variables (17/15) (too-many-locals)
+enderchest/enderchest.py:285:24: W0707: Consider explicitly re-raising using 'except ValueError as exc' and 'raise ValueError(f'Invalid value for sync-confirmation-time: {sync_confirm_wait}') from exc' (raise-missing-from)
+************* Module enderchest.remote
+enderchest/remote.py:92:0: R0914: Too many local variables (17/15) (too-many-locals)
+enderchest/remote.py:92:0: R0912: Too many branches (21/12) (too-many-branches)
+************* Module enderchest.place
+enderchest/place.py:119:38: W0511: TODO: reevaluate default (it's 50/50 due to link folders) (fixme)
+enderchest/place.py:16:0: R0913: Too many arguments (6/5) (too-many-arguments)
+enderchest/place.py:16:0: R0914: Too many local variables (23/15) (too-many-locals)
+enderchest/place.py:167:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+enderchest/place.py:16:0: R0912: Too many branches (25/12) (too-many-branches)
+enderchest/place.py:16:0: R0915: Too many statements (86/50) (too-many-statements)
 ************* Module enderchest.craft
 enderchest/craft.py:533:9: W0511: TODO: stop wastefully reloading the cfg (fixme)
 enderchest/craft.py:696:9: W0511: TODO: should this be most common among matches? (fixme)
@@ -33,23 +35,21 @@ enderchest/craft.py:234:0: R0915: Too many statements (63/50) (too-many-statemen
 enderchest/craft.py:400:0: R0914: Too many local variables (16/15) (too-many-locals)
 enderchest/craft.py:400:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/craft.py:400:0: R0915: Too many statements (56/50) (too-many-statements)
-************* Module enderchest.place
-enderchest/place.py:119:38: W0511: TODO: reevaluate default (it's 50/50 due to link folders) (fixme)
-enderchest/place.py:16:0: R0913: Too many arguments (6/5) (too-many-arguments)
-enderchest/place.py:16:0: R0914: Too many local variables (23/15) (too-many-locals)
-enderchest/place.py:167:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
-enderchest/place.py:16:0: R0912: Too many branches (25/12) (too-many-branches)
-enderchest/place.py:16:0: R0915: Too many statements (86/50) (too-many-statements)
-************* Module enderchest.enderchest
-enderchest/enderchest.py:125:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:132:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:136:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:179:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:212:4: R0914: Too many local variables (17/15) (too-many-locals)
-enderchest/enderchest.py:285:24: W0707: Consider explicitly re-raising using 'except ValueError as exc' and 'raise ValueError(f'Invalid value for sync-confirmation-time: {sync_confirm_wait}') from exc' (raise-missing-from)
-************* Module enderchest.remote
-enderchest/remote.py:92:0: R0914: Too many local variables (17/15) (too-many-locals)
-enderchest/remote.py:92:0: R0912: Too many branches (21/12) (too-many-branches)
+************* Module enderchest.gather
+enderchest/gather.py:501:13: W0511: TODO: if not Windows, try making relative to "~" (fixme)
+enderchest/gather.py:322:8: C0103: Variable name "mc" doesn't conform to snake_case naming style (invalid-name)
+enderchest/gather.py:510:0: R0914: Too many local variables (16/15) (too-many-locals)
+enderchest/gather.py:569:4: W0612: Unused variable 'weird_json' (unused-variable)
+enderchest/gather.py:590:0: R0914: Too many local variables (20/15) (too-many-locals)
+enderchest/gather.py:590:0: R0912: Too many branches (16/12) (too-many-branches)
+enderchest/gather.py:590:0: R0915: Too many statements (59/50) (too-many-statements)
+enderchest/gather.py:676:8: W0612: Unused variable 'no_json' (unused-variable)
+enderchest/gather.py:680:8: W0612: Unused variable 'bad_json' (unused-variable)
+enderchest/gather.py:684:8: W0612: Unused variable 'weird_json' (unused-variable)
+enderchest/gather.py:693:4: W0612: Unused variable 'no_cfg' (unused-variable)
+enderchest/gather.py:822:40: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+************* Module enderchest.instance
+enderchest/instance.py:70:0: R0911: Too many return statements (7/6) (too-many-return-statements)
 ************* Module enderchest.config
 enderchest/config.py:53:8: W0707: Consider explicitly re-raising using 'except AssertionError as exc' and 'raise FileNotFoundError(f'Could not open {config_file}') from exc' (raise-missing-from)
 enderchest/config.py:214:4: W0101: Unreachable code (unreachable)
@@ -65,8 +65,9 @@ enderchest/shulker_box.py:193:4: R0912: Too many branches (13/12) (too-many-bran
 enderchest/sync/__init__.py:44:8: W0707: Consider explicitly re-raising using 'except ModuleNotFoundError as exc' and 'raise NotImplementedError(f'Protocol {remote_uri.scheme} is not currently implemented') from exc' (raise-missing-from)
 enderchest/sync/__init__.py:48:8: W0707: Consider explicitly re-raising using 'raise NotImplementedError(f'Protocol {remote_uri.scheme} does not support that functionality:\n  {unknown_kwarg}') from unknown_kwarg' (raise-missing-from)
 enderchest/sync/__init__.py:80:8: W0707: Consider explicitly re-raising using 'except ModuleNotFoundError as exc' and 'raise NotImplementedError(f'Protocol {remote_uri.scheme} is not currently implemented') from exc' (raise-missing-from)
-************* Module enderchest.sync.utils
-enderchest/sync/utils.py:36:11: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+************* Module enderchest.sync.file
+enderchest/sync/file.py:205:22: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+enderchest/sync/file.py:264:22: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
 ************* Module enderchest.sync.rsync
 enderchest/sync/rsync.py:454:1: W0511: TODO: this will eventually go in the SFTP module or be replaced by Paramiko (fixme)
 enderchest/sync/rsync.py:17:0: R0913: Too many arguments (6/5) (too-many-arguments)
@@ -77,9 +78,8 @@ enderchest/sync/rsync.py:162:0: R0912: Too many branches (25/12) (too-many-branc
 enderchest/sync/rsync.py:298:0: R0913: Too many arguments (9/5) (too-many-arguments)
 enderchest/sync/rsync.py:380:0: R0913: Too many arguments (9/5) (too-many-arguments)
 enderchest/sync/rsync.py:468:11: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-************* Module enderchest.sync.file
-enderchest/sync/file.py:205:22: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-enderchest/sync/file.py:264:22: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+************* Module enderchest.sync.utils
+enderchest/sync/utils.py:36:11: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
 ************* Module enderchest.test.utils
 enderchest/test/utils.py:366:8: C0103: Variable name "mc" doesn't conform to snake_case naming style (invalid-name)
 enderchest/test/utils.py:458:23: C0103: Argument name "mc" doesn't conform to snake_case naming style (invalid-name)

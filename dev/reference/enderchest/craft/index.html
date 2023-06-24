@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../gather/">
+        <link rel="prev" href="../place/">
       
       
-        <link rel="next" href="../prompt/">
+        <link rel="next" href="../gather/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -26,6 +26,9 @@
     
     
       <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -53,11 +56,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="purple" data-md-color-accent="indigo">
   
     
-    
-      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -109,6 +115,8 @@
         </div>
       </div>
     </div>
+    
+      
     
     
     
@@ -381,20 +389,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         cli
       </a>
@@ -409,8 +403,50 @@
   
   
     <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote/" class="md-nav__link">
+        remote
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../place/" class="md-nav__link">
+        place
       </a>
     </li>
   
@@ -528,8 +564,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
+      <a href="../gather/" class="md-nav__link">
+        gather
       </a>
     </li>
   
@@ -542,50 +578,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../place/" class="md-nav__link">
-        place
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -612,8 +606,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
       </a>
     </li>
   
@@ -673,8 +681,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../sync/utils/" class="md-nav__link">
-        utils
+      <a href="../sync/file/" class="md-nav__link">
+        file
       </a>
     </li>
   
@@ -701,8 +709,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../sync/file/" class="md-nav__link">
-        file
+      <a href="../sync/utils/" class="md-nav__link">
+        utils
       </a>
     </li>
   
@@ -895,7 +903,7 @@ one inside which you want to create your EnderChest)</p>
         <tr>
           <td><code>copy_from</code></td>
           <td>
-                <code>URI, optional</code>
+                <code>URI</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -910,7 +918,7 @@ from an existing remote EnderChest</p>
         <tr>
           <td><code>instance_search_paths</code></td>
           <td>
-                <code>list of Paths, optional</code>
+                <code>list of Paths</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -924,7 +932,7 @@ from an existing remote EnderChest</p>
         <tr>
           <td><code>remotes</code></td>
           <td>
-                <code>list of URIs or (URI, str) tuples, optional</code>
+                <code>list of URIs or (URI, str) tuples</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -941,7 +949,7 @@ name/alias of the remote.</p>
         <tr>
           <td><code>overwrite</code></td>
           <td>
-                <code>bool, optional</code>
+                <code>bool</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1235,7 +1243,7 @@ that's the parent of your EnderChest folder)</p>
         <tr>
           <td><code>priority</code></td>
           <td>
-                <code>int, optional</code>
+                <code>int</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1250,7 +1258,7 @@ shulkers are linked last)</p>
         <tr>
           <td><code>link_folders</code></td>
           <td>
-                <code>list of str, optional</code>
+                <code>list of str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1264,7 +1272,7 @@ shulkers are linked last)</p>
         <tr>
           <td><code>instances</code></td>
           <td>
-                <code>list of str, optional</code>
+                <code>list of str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1278,7 +1286,7 @@ shulkers are linked last)</p>
         <tr>
           <td><code>tags</code></td>
           <td>
-                <code>list of str, optional</code>
+                <code>list of str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1293,7 +1301,7 @@ with those tags will be linked to this shulker box</p>
         <tr>
           <td><code>hosts</code></td>
           <td>
-                <code>list of str, optional</code>
+                <code>list of str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1307,7 +1315,7 @@ with those tags will be linked to this shulker box</p>
         <tr>
           <td><code>overwrite</code></td>
           <td>
-                <code>bool, optional</code>
+                <code>bool</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2394,7 +2402,7 @@ that's the parent of your EnderChest folder)</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a51614de.min.js"></script>
       
     
   </body>

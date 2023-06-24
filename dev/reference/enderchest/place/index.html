@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../prompt/">
+        <link rel="prev" href="../remote/">
       
       
-        <link rel="next" href="../enderchest/">
+        <link rel="next" href="../craft/">
       
       <link rel="icon" href="../../../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -26,6 +26,9 @@
     
     
       <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -53,11 +56,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="purple" data-md-color-accent="indigo">
   
     
-    
-      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -109,6 +115,8 @@
         </div>
       </div>
     </div>
+    
+      
     
     
     
@@ -381,20 +389,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../instance/" class="md-nav__link">
-        instance
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         cli
       </a>
@@ -409,8 +403,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../gather/" class="md-nav__link">
-        gather
+      <a href="../enderchest/" class="md-nav__link">
+        enderchest
       </a>
     </li>
   
@@ -423,8 +417,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../craft/" class="md-nav__link">
-        craft
+      <a href="../filesystem/" class="md-nav__link">
+        filesystem
       </a>
     </li>
   
@@ -437,8 +431,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../prompt/" class="md-nav__link">
-        prompt
+      <a href="../remote/" class="md-nav__link">
+        remote
       </a>
     </li>
   
@@ -542,8 +536,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../enderchest/" class="md-nav__link">
-        enderchest
+      <a href="../craft/" class="md-nav__link">
+        craft
       </a>
     </li>
   
@@ -556,8 +550,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../remote/" class="md-nav__link">
-        remote
+      <a href="../gather/" class="md-nav__link">
+        gather
       </a>
     </li>
   
@@ -570,8 +564,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../loggers/" class="md-nav__link">
-        loggers
+      <a href="../instance/" class="md-nav__link">
+        instance
       </a>
     </li>
   
@@ -598,8 +592,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../filesystem/" class="md-nav__link">
-        filesystem
+      <a href="../loggers/" class="md-nav__link">
+        loggers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prompt/" class="md-nav__link">
+        prompt
       </a>
     </li>
   
@@ -659,8 +667,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../sync/utils/" class="md-nav__link">
-        utils
+      <a href="../sync/file/" class="md-nav__link">
+        file
       </a>
     </li>
   
@@ -687,8 +695,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../sync/file/" class="md-nav__link">
-        file
+      <a href="../sync/utils/" class="md-nav__link">
+        utils
       </a>
     </li>
   
@@ -1109,7 +1117,7 @@ that's the parent of your EnderChest folder)</p>
         <tr>
           <td><code>keep_broken_links</code></td>
           <td>
-                <code>bool, optional</code>
+                <code>bool</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1125,7 +1133,7 @@ and servers folders. To disable this behavior, pass in
         <tr>
           <td><code>keep_stale_links</code></td>
           <td>
-                <code>bool, optional</code>
+                <code>bool</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1142,7 +1150,7 @@ behavior, pass in <code>keep_stale_links=True</code>.</p>
         <tr>
           <td><code>error_handling</code></td>
           <td>
-                <code>str, optional</code>
+                <code>str</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1166,7 +1174,7 @@ shulker box altogether but to otherwise continue on with other boxes
         <tr>
           <td><code>relative</code></td>
           <td>
-                <code>bool, optional</code>
+                <code>bool</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1791,7 +1799,7 @@ based on the error-handling method specified.</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a51614de.min.js"></script>
       
     
   </body>
