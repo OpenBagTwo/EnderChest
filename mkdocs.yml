@@ -10,6 +10,8 @@ theme:
   logo: img/enderchest.png
   features:
   - content.code.copy
+  palette:
+    primary: purple
 nav:
 - Home: index.md
 - About: about.md
