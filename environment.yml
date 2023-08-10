@@ -5,6 +5,7 @@ channels:
 dependencies:
 - python=3.10
 - pathvalidate>=2.5
+- paramiko>=3.3
 - ipython>=8
 - jupyterlab>=3
 - rsync
