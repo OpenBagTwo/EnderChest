@@ -51,6 +51,15 @@ Then continue onto the next section.
     python3 -m pip install --user enderchest[test]
     ```
 
+    !!! info "Optional"
+        If you plan on connecting to any remote servers via
+        [SFTP](../suggestions#sftp-protocol) instead of `rsync`, include the
+        `sftp` extras:
+         ```bash
+         python3 -m pip install --user enderchest[sftp,test]
+         ```
+
+
 4. Ensure that EnderChest is compatible with your system by running:
     ```bash
     python3 -m pytest --pyargs enderchest.test
