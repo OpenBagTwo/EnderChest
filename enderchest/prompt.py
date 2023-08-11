@@ -1,4 +1,5 @@
 """Utilities for helping build interactive prompts"""
+import getpass
 
 CURSOR = "\x1b[35;1m==>\x1b[0m"
 
@@ -8,7 +9,9 @@ YES = ("y", "yes", "t", "true", "on", "1")
 NO = ("n", "no", "f", "false", "off", "0")
 
 
-def prompt(message: str, suggestion: str | None = None) -> str:
+def prompt(
+    message: str, suggestion: str | None = None, is_password: bool = False
+) -> str:
     """Prompt the user and return the response
 
     Parameters
@@ -17,6 +20,9 @@ def prompt(message: str, suggestion: str | None = None) -> str:
         The prompt message
     suggestion : str, optional
         A suggested input. If None is provided, no suggestion will be shown.
+    is_password : bool, optional
+        If this is a prompt for a password, pass in `is_password = True` to
+        hide the user's input
 
     Returns
     -------
@@ -35,6 +41,8 @@ def prompt(message: str, suggestion: str | None = None) -> str:
     message = "\n".join(f"{CURSOR}\x1b[1m {line}\x1b[0m" for line in lines)
     if suggestion is not None:
         message += f"\x1b[35;1m[{suggestion}]\x1b[0m "
+    if is_password:
+        return getpass.getpass(prompt=message)
     return input(message)
 
 

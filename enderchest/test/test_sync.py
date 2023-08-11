@@ -536,3 +536,22 @@ class TestRsyncSync(TestFileSync):
         printed_log = capfd.readouterr().out
 
         assert printed_log == ""
+
+
+def _is_paramiko_installed() -> bool:
+    try:
+        import paramiko
+
+        return True
+    except ImportError:
+        return False
+
+
+PARAMIKO_INSTALLED = _is_paramiko_installed()
+
+
+@pytest.mark.xfail(
+    not PARAMIKO_INSTALLED, reason="EnderChest was not installed with SFTP support"
+)
+class TestSFTPSync(TestFileSync):
+    protocol = "sftp"
