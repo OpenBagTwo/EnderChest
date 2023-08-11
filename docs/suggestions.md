@@ -5,6 +5,25 @@
 If you can't or don't want to use rsync, EnderChest supports additional
 protocols (and has plans for more).
 
+### SFTP Protocol
+* **Scheme**: `sftp://`
+* **Example URI**: `sftp://deck@steam-deck/home/deck/minecraft`
+* **Platforms**: All (see note)
+* **[Documentation](https://www.ssh.com/academy/ssh/sftp-ssh-file-transfer-protocol)**
+
+Installing EnderChest
+[with sftp support](../installation#installation-via-pip) uses
+[Paramiko](https://www.paramiko.org/), a pure-Python SSH implementation, to
+allow you to connect to remote EnderChests over SSH from machines where rsync
+(or even SSH) isn't available.
+
+!!! note "SSH on Windows"
+    While Paramiko can provide a _client_ for initiating file syncs with remote
+    EnderChests over SFTP, in order to use a Windows machine **as a remote**
+    for connecting _from_ other EnderChests, you will need to install and
+    configure [OpenSSH for Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)
+    or a similar solution.
+
 ### File Protocol
 
 * **Scheme**: `file://`
@@ -21,6 +40,14 @@ shared drive before using them can help avoid conflicts and corruption.
 !!! warning "Limitation"
     EnderChest **does not** support using the file protocol to sync files between
     different computers, nor does it support authenticating as different users.
+
+## Passwordless SSH Authentication
+When connecting to an SSH server (rsync / sftp), it is both more secure and
+more convenient to use **public key authentication** instead of a password.
+Instructions for setting up pubkey authentication can be found
+[here for Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement)
+and
+[here for macOS and Linux](https://www.redhat.com/sysadmin/key-based-authentication-ssh)
 
 
 ## Collisions and Conflicts

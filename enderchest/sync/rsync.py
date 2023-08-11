@@ -451,7 +451,6 @@ def push(
     )
 
 
-# TODO: this will eventually go in the SFTP module or be replaced by Paramiko
 def uri_to_ssh(uri: ParseResult) -> str:
     """Convert a URI to an SSH address
 
