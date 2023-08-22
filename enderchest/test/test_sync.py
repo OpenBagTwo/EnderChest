@@ -1,4 +1,4 @@
-"""Tests around file transfer functionality."""
+"""Tests around file transfer functionality"""
 import logging
 import os
 import shutil
@@ -11,80 +11,9 @@ from enderchest import craft
 from enderchest import filesystem as fs
 from enderchest import gather
 from enderchest import remote as r
-from enderchest.sync import file, path_from_uri
+from enderchest.sync import path_from_uri
 
 from . import utils
-
-
-class TestPathFromURI:
-    def test_roundtrip(self, tmpdir):
-        original_path = Path(tmpdir) / "this has a space in it" / "(="
-        assert path_from_uri(urlparse(original_path.as_uri())) == original_path
-
-
-@pytest.mark.xfail(
-    not shutil.which("rsync"), reason="rsync is not installed on this system"
-)  # TODO: remove xfail once this method has been moved to a different module
-class TestURIToSSH:
-    @pytest.fixture(scope="class")
-    def rsync_module(self):
-        from enderchest.sync import rsync
-
-        yield rsync
-
-    def test_simple_parse(self, rsync_module):
-        address = rsync_module.uri_to_ssh(
-            urlparse("rsync://openbagtwo@couchgaming:22/home/openbagtwo/minecraft")
-        )
-        assert address == "openbagtwo@couchgaming:22:/home/openbagtwo/minecraft"
-
-    def test_no_username_parse(self, rsync_module):
-        address = rsync_module.uri_to_ssh(
-            urlparse("rsync://steamdeck/home/openbagtwo/minecraft")
-        )
-        assert address == "steamdeck:/home/openbagtwo/minecraft"
-
-    def test_no_netloc_parse(self, rsync_module):
-        address = rsync_module.uri_to_ssh(
-            urlparse("rsync:///mnt/external/minecraft-bkp")
-        )
-        assert address == "localhost:/mnt/external/minecraft-bkp"
-
-    def test_no_hostname_parse(self, rsync_module):
-        """Can't believe this is a valid URI"""
-        address = rsync_module.uri_to_ssh(urlparse("rsync://nugget@/home/nugget/"))
-        assert address == "nugget@localhost:/home/nugget"
-
-
-class TestFileIgnorePatternBuilder:
-    def test_simple_match(self):
-        assert file.ignore_patterns("hello")(
-            "greetings", ("bonjour", "hello", "hellooooo")
-        ) == {"hello"}
-
-    def test_wildcard(self):
-        assert file.ignore_patterns("hel*")(
-            "responses", ("como sa va", "hello", "hell no", "help")
-        ) == {"hello", "hell no", "help"}
-
-    def test_multi_pattern_match(self):
-        assert file.ignore_patterns("hel*", "bye")(
-            "responses", ("hello", "goodbye", "hellooo", "bye")
-        ) == {"hello", "hellooo", "bye"}
-
-    def test_full_path_check(self):
-        ignore = file.ignore_patterns(os.path.join("root", "branch"))
-        assert (
-            ignore("root", ("branch", "trunk")),
-            ignore("trunk", ("branch", "leaf")),
-        ) == ({"branch"}, set())
-
-    def test_match_is_performed_on_the_end(self):
-        ignore = file.ignore_patterns(os.path.join("root", "branch"), "leaf")
-        assert (
-            ignore(os.path.join("tree", "root"), ("branch", "trunk")),
-            ignore("wind", ("leaf", "blows")),
-        ) == ({"branch"}, {"leaf"})
 
 
 class TestFileSync:

@@ -7,9 +7,9 @@ from typing import Generator, Iterable
 from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER
-from .utils import get_default_netloc, path_from_uri, render_remote
+from .utils import get_default_netloc, path_from_uri, render_remote, uri_to_ssh
 
-SUPPORTED_PROTOCOLS = ("rsync", "file")
+SUPPORTED_PROTOCOLS = ("rsync", "sftp", "file")
 
 DEFAULT_PROTOCOL = SUPPORTED_PROTOCOLS[0]
 
@@ -111,4 +111,5 @@ __all__ = [
     "path_from_uri",
     "pull",
     "push",
+    "uri_to_ssh",
 ]
