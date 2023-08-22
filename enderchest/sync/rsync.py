@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Iterable
 from urllib.parse import ParseResult
 
-from . import SYNC_LOGGER, get_default_netloc, path_from_uri
+from . import SYNC_LOGGER, get_default_netloc, path_from_uri, uri_to_ssh
 
 RSYNC = shutil.which("rsync")
 if RSYNC is None:
@@ -448,24 +448,4 @@ def push(
         *(rsync_args or ()),
         timeout=timeout,
         verbosity=verbosity,
-    )
-
-
-def uri_to_ssh(uri: ParseResult) -> str:
-    """Convert a URI to an SSH address
-
-    Parameters
-    ----------
-    uri: ParseResult
-        The URI to convert
-
-    Returns
-    -------
-    str
-        The SSH-format address
-    """
-    return "{user}{host}:{path}".format(
-        user=f"{uri.username}@" if uri.username else "",
-        host=(uri.hostname or "localhost") + (f":{uri.port}" if uri.port else ""),
-        path=path_from_uri(uri).as_posix(),
     )

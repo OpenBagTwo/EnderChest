@@ -1,8 +1,8 @@
 """paramiko-based sftp sync implementation"""
-import os
 import stat
 from contextlib import contextmanager
-from typing import Generator, TypeAlias
+from pathlib import Path
+from typing import Generator, Iterable
 from urllib.parse import ParseResult
 
 import paramiko
@@ -106,36 +106,88 @@ def get_contents(
     return contents
 
 
-# TODO: if this moves into sync.file, replace with a Protocol
-StatLike: TypeAlias = os.stat_result | paramiko.sftp_attr.SFTPAttributes
-
-
-def is_identical(object_one: StatLike, object_two: StatLike) -> bool:
-    """Determine if two objects are identical (meaning: skip when syncing)
+def pull(
+    remote_uri: ParseResult,
+    local_path: Path,
+    exclude: Iterable[str],
+    dry_run: bool,
+    timeout: int | None = None,
+    delete: bool = True,
+    verbosity: int = 0,
+) -> None:
+    """Sync an upstream file or folder into the specified location SFTP.
+    This will overwrite any files and folders already at the destination.
 
     Parameters
     ----------
-    object_one : os.stat_result or similar
-        The first object to compare
-    object_two : os.stat_result or similar
-        The second object to compare
+    remote_uri : ParseResult
+        The URI for the remote resource to copy from
+    local_path : Path
+        The destination folder
+    exclude : list of str
+        Any patterns that should be excluded from the sync
+    dry_run : bool
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them)
+    timeout : int, optional
+        The number of seconds to wait before timing out the sync operation.
+        If None is provided, no explicit timeout value will be set.
+    delete : bool
+        Whether part of the syncing should include deleting files at the destination
+        that aren't at the source. Default is True.
+    verbosity : int
+        A modifier for how much info to output either to stdout or the INFO-level
+        logs. Defaults to 0.
 
-    Returns
-    -------
-    bool
-        False if the objects are conclusively different, True otherwise.
+    Raises
+    ------
+    FileNotFoundError
+        If the destination folder does not exist
 
     Notes
     -----
-    As most implementations of the SFTP protocol do not include the check-file
-    extension, this method is limited in what it can compare. Use with caution.
+    - If the destination folder does not already exist, this method will not
+      create it or its parent directories.
     """
-    if stat.S_ISDIR(object_one.st_mode or 0) != stat.S_ISDIR(object_two.st_mode or 0):
-        return False
-    if stat.S_ISLNK(object_one.st_mode or 0) != stat.S_ISLNK(object_two.st_mode or 0):
-        return False
-    if object_one.st_size != object_two.st_size:
-        return False
-    if object_one.st_mtime != object_two.st_mtime:
-        return False
-    return True
+    raise NotImplementedError
+
+
+def push(
+    local_path: Path,
+    remote_uri: ParseResult,
+    exclude: Iterable[str],
+    dry_run: bool,
+    timeout: int | None = None,
+    delete: bool = True,
+    verbosity: int = 0,
+) -> None:
+    """Sync a local file or folder into the specified location using SFTP.
+    This will overwrite any files and folders already at the destination.
+
+    Parameters
+    ----------
+    local_path : Path
+        The file or folder to copy
+    remote_uri : ParseResult
+        The URI for the remote location to copy into
+    exclude : list of str
+        Any patterns that should be excluded from the sync
+    dry_run : bool
+        Whether to only simulate this sync (report the operations to be performed
+        but not actually perform them)
+    timeout : int, optional
+        The number of seconds to wait before timing out the sync operation.
+        If None is provided, no explicit timeout value will be set.
+    delete : bool
+        Whether part of the syncing should include deleting files at the destination
+        that aren't at the source. Default is True.
+    verbosity : int
+        A modifier for how much info to output either to stdout or the INFO-level
+        logs. Defaults to 0.
+
+    Notes
+    -----
+    - If the destination folder does not already exist, this method will very
+      likely fail.
+    """
+    raise NotImplementedError
