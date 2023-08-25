@@ -134,17 +134,17 @@ class TestDiff:
         assert [Path("branch") / "leaf"] == [f for f, op in diff if op == Op.REPLACE]
 
     def test_diff_captures_creation_of_files_and_folders(self, diff):
-        assert {
-            Path("branch2") / "acorn",
+        assert [
             Path("branch2"),
-        } == {f for f, op in diff if op == Op.CREATE}
+            Path("branch2") / "acorn",
+        ] == [f for f, op in diff if op == Op.CREATE]
 
     def test_diff_captures_deletion_of_files_and_folders(self, diff):
-        assert {
+        assert [
+            Path("root") / "cicada",
             Path("beehive"),
             Path("root"),
-            Path("root") / "cicada",
-        } == {f for f, op in diff if op == Op.DELETE}
+        ] == [f for f, op in diff if op == Op.DELETE]
 
 
 class TestFileIgnorePatternBuilder:
