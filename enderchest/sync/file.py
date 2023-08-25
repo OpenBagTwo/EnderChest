@@ -23,9 +23,17 @@ def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
     list of filenames and attributes
         The attributes of all files, folders and symlinks found under the
         specified path
+
+    Notes
+    -----
+    This list will be sorted from shortest path to longest (so that parent
+    directories come before their children)
     """
     SYNC_LOGGER.debug(f"Getting contents of {path}")
-    return [(p.relative_to(path), p.stat()) for p in path.rglob("**/*")]
+    return sorted(
+        ((p.relative_to(path), p.stat()) for p in path.rglob("**/*")),
+        key=lambda x: len(str(x[0])),
+    )
 
 
 def copy(

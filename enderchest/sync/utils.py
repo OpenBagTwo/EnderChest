@@ -145,6 +145,13 @@ def diff(
     -------
     Generator of (Path, Operation) elements
         The files and the operations that should be performed on each file
+
+    Notes
+    -----
+    The order of paths returned will match the order provided by the `source_files`
+    except for the deletions, which will all come at the end and will be sorted
+    from longest to shortest path (so that individual files are marked for deletion
+    before their parent folders).
     """
     destination_lookup: dict[Path, StatLike] = dict(destination_files)
     for file, source_stat in source_files:
@@ -156,7 +163,7 @@ def diff(
                 yield file, Operation.REPLACE
             # else: continue
 
-    for file in destination_lookup.keys():
+    for file in sorted(destination_lookup.keys(), key=lambda path: -len(str(path))):
         yield file, Operation.DELETE
 
 
