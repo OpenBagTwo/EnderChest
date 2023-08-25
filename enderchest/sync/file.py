@@ -10,7 +10,7 @@ from urllib.parse import ParseResult
 from . import SYNC_LOGGER, path_from_uri
 
 
-def get_contents(path: Path) -> list[Path]:
+def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
     """Recursively list the contents of a local directory
 
     Parameters
@@ -25,9 +25,7 @@ def get_contents(path: Path) -> list[Path]:
         specified path
     """
     SYNC_LOGGER.debug(f"Getting contents of {path}")
-    contents = list(path.rglob("**/*"))
-
-    return contents
+    return [(p.relative_to(path), p.stat()) for p in path.rglob("**/*")]
 
 
 def copy(

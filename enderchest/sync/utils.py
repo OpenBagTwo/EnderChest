@@ -3,8 +3,9 @@ import getpass
 import os
 import socket
 import stat
+from enum import Enum, auto
 from pathlib import Path
-from typing import Iterable, NamedTuple, Protocol
+from typing import Generator, Iterable, NamedTuple, Protocol
 from urllib.parse import ParseResult, unquote
 from urllib.request import url2pathname
 
@@ -117,6 +118,46 @@ def is_identical(object_one: StatLike, object_two: StatLike) -> bool:
     if object_one.st_mtime != object_two.st_mtime:
         return False
     return True
+
+
+class Operation(Enum):
+    CREATE = auto()
+    REPLACE = auto()
+    DELETE = auto()
+
+
+def diff(
+    source_files: Iterable[tuple[Path, StatLike]],
+    destination_files: Iterable[tuple[Path, StatLike]],
+) -> Generator[tuple[Path, Operation], None, None]:
+    """Compute the "diff" between the source and destination, enumerating
+    all the operations that should be performed so that the destination
+    matches the source
+
+    Parameters
+    ----------
+    source_files : list of (Path, os.stat_result) tuples
+        The files and file attributes at the source
+    destination_files : list of (Path, os.stat_result) tuples
+        The files and file attributes at the destination
+
+    Returns
+    -------
+    Generator of (Path, Operation) elements
+        The files and the operations that should be performed on each file
+    """
+    destination_lookup: dict[Path, StatLike] = dict(destination_files)
+    for file, source_stat in source_files:
+        if file not in destination_lookup:
+            yield file, Operation.CREATE
+        else:
+            destination_stat = destination_lookup.pop(file)
+            if not is_identical(source_stat, destination_stat):
+                yield file, Operation.REPLACE
+            # else: continue
+
+    for file in destination_lookup.keys():
+        yield file, Operation.DELETE
 
 
 class ContentSummary(NamedTuple):

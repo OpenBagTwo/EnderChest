@@ -9,6 +9,7 @@ import pytest
 
 from enderchest.sync import file
 from enderchest.sync import utils as sync_utils
+from enderchest.sync.utils import Operation as Op
 
 
 class TestPathFromURI:
@@ -91,6 +92,59 @@ class TestIsIdentical:
         two.write_text("I'm the octagonl")
 
         assert not sync_utils.is_identical(one.stat(), two.stat())
+
+
+class TestDiff:
+    @pytest.fixture
+    def file_system(self, tmp_path):
+        source_tree = tmp_path / "oak"
+        (source_tree / "branch").mkdir(parents=True)
+        (source_tree / "branch" / "twig").mkdir()
+        (source_tree / "branch" / "leaf").write_text("green")
+        (source_tree / "branch" / "acorn").touch()
+        (source_tree / "branch2").mkdir()
+        (source_tree / "branch2" / "acorn").touch()
+
+        dst_tree = tmp_path / "birch"
+        (dst_tree / "branch").mkdir(parents=True)
+        (dst_tree / "branch" / "twig").mkdir()
+        (dst_tree / "branch" / "leaf").write_text("yellow")
+        (dst_tree / "branch" / "acorn").touch()
+        (dst_tree / "beehive").touch()
+        (dst_tree / "root").mkdir()
+        (dst_tree / "root" / "cicada").touch()
+
+        yield tmp_path
+
+    @pytest.fixture
+    def diff(self, file_system):
+        yield sync_utils.diff(
+            file.get_contents(file_system / "oak"),
+            file.get_contents(file_system / "birch"),
+        )
+
+    def test_diff_omits_identical_contents(self, diff):
+        assert {
+            Path("branch") / "acorn",
+            Path("branch") / "twig",
+            Path("branch"),
+        }.intersection((f for f, _ in diff)) == set()
+
+    def test_diff_captures_updates(self, diff):
+        assert [Path("branch") / "leaf"] == [f for f, op in diff if op == Op.REPLACE]
+
+    def test_diff_captures_creation_of_files_and_folders(self, diff):
+        assert {
+            Path("branch2") / "acorn",
+            Path("branch2"),
+        } == {f for f, op in diff if op == Op.CREATE}
+
+    def test_diff_captures_deletion_of_files_and_folders(self, diff):
+        assert {
+            Path("beehive"),
+            Path("root"),
+            Path("root") / "cicada",
+        } == {f for f, op in diff if op == Op.DELETE}
 
 
 class TestFileIgnorePatternBuilder:
