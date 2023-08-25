@@ -168,7 +168,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
     ----------
     raw_output : str
         The raw output captured from running the rsync command
-    depth : int
+    depth : int, optional
         How many directories to go down from the root to generate the summary.
         Default is 2 (just report on top-level files and folders within the
         source folder).
@@ -215,7 +215,10 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
             else:
                 if info[1] != "d":  # don't count directories
                     entry = summary[path_key]
-                    if not isinstance(entry, str):
+                    if isinstance(entry, str):
+                        # then this is described by the top-level op
+                        pass
+                    else:
                         entry["create"] += 1
                     # otherwise the whole key is being created
         elif info[:2] in ("<f", ">f"):  # file transfer
@@ -225,12 +228,8 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
             else:
                 entry = summary[path_key]
                 if isinstance(entry, str):
-                    # this should never happen
-                    SYNC_LOGGER.error(
-                        f"Error parsing {line}:"
-                        f" {path_key} should be getting completely"
-                        f" {entry[:-1].title()}ed"
-                    )
+                    # this should never happen, but still
+                    pass
                 else:
                     entry["update"] += 1
         elif info[:2] == "cL":  # this is replacing a link, as far as I can tell
@@ -239,12 +238,8 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
             else:
                 entry = summary[path_key]
                 if isinstance(entry, str):  # pragma: no cover
-                    # this should never happen
-                    SYNC_LOGGER.error(
-                        f"Error parsing {line}:"
-                        f" {path_key} should be getting completely"
-                        f" {entry[:-1].title()}ed"
-                    )
+                    # this should never happen, but still
+                    pass
                 else:
                     entry["update"] += 1
         elif info[:1] == ".":
