@@ -7,7 +7,16 @@ from typing import Generator, Iterable
 from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER
-from .utils import get_default_netloc, path_from_uri, render_remote, uri_to_ssh
+from .utils import Operation as Op
+from .utils import (
+    diff,
+    generate_sync_report,
+    get_default_netloc,
+    is_identical,
+    path_from_uri,
+    render_remote,
+    uri_to_ssh,
+)
 
 SUPPORTED_PROTOCOLS = ("rsync", "sftp", "file")
 
