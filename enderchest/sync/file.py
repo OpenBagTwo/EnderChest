@@ -5,10 +5,18 @@ import os
 import shutil
 import stat
 from pathlib import Path
-from typing import Callable, Collection, Iterable
+from typing import Callable, Collection
 from urllib.parse import ParseResult
 
-from . import SYNC_LOGGER, Op, diff, generate_sync_report, is_identical, path_from_uri
+from . import (
+    SYNC_LOGGER,
+    Op,
+    diff,
+    filter_contents,
+    generate_sync_report,
+    is_identical,
+    path_from_uri,
+)
 
 
 def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
@@ -38,7 +46,10 @@ def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
 
 
 def copy(
-    source_path: Path, destination_folder: Path, exclude: Iterable[str], dry_run: bool
+    source_path: Path,
+    destination_folder: Path,
+    exclude: Collection[str],
+    dry_run: bool,
 ) -> None:
     """Copy the specified source file or folder to the provided destination,
     overwriting any existing files and deleting any that weren't in the source
@@ -98,32 +109,12 @@ def copy(
             shutil.copy2(source_path, destination_path, follow_symlinks=False)
         return
 
-    source_contents = [
-        (path, attrs)
-        for path, attrs in get_contents(source_path)
-        if not any(
-            (
-                fnmatch.fnmatchcase(
-                    os.path.normpath(source_path / path), os.path.join("*", pattern)
-                )
-                for pattern in exclude
-            )
-        )
-    ]
-
-    destination_contents = [
-        (path, attrs)
-        for path, attrs in get_contents(destination_path)
-        if not any(
-            (
-                fnmatch.fnmatchcase(
-                    os.path.normpath(destination_path / path),
-                    os.path.join("*", pattern),
-                )
-                for pattern in exclude
-            )
-        )
-    ]
+    source_contents = filter_contents(
+        get_contents(source_path), exclude, prefix=source_path
+    )
+    destination_contents = filter_contents(
+        get_contents(destination_path), exclude, prefix=destination_path
+    )
 
     sync_diff = diff(source_contents, destination_contents)
 
@@ -271,7 +262,7 @@ def ignore_patterns(*patterns: str) -> Callable[[str, Collection[str]], set[str]
 def pull(
     remote_uri: ParseResult,
     local_path: Path,
-    exclude: Iterable[str],
+    exclude: Collection[str],
     dry_run: bool,
     **unsupported_kwargs,
 ) -> None:
@@ -330,7 +321,7 @@ def pull(
 def push(
     local_path: Path,
     remote_uri: ParseResult,
-    exclude: Iterable[str],
+    exclude: Collection[str],
     dry_run: bool,
     **unsupported_kwargs,
 ) -> None:

@@ -3,13 +3,14 @@ import importlib
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator, Iterable
+from typing import Collection, Generator
 from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER
 from .utils import Operation as Op
 from .utils import (
     diff,
+    filter_contents,
     generate_sync_report,
     get_default_netloc,
     is_identical,
@@ -26,7 +27,7 @@ DEFAULT_PROTOCOL = SUPPORTED_PROTOCOLS[0]
 def pull(
     remote_uri: ParseResult,
     local_path: Path,
-    exclude: Iterable[str] | None = None,
+    exclude: Collection[str] | None = None,
     dry_run: bool = False,
     **kwargs,
 ) -> None:
@@ -62,7 +63,7 @@ def pull(
 def push(
     local_path: Path,
     remote_uri: ParseResult,
-    exclude: Iterable[str] | None = None,
+    exclude: Collection[str] | None = None,
     dry_run: bool = False,
     **kwargs,
 ) -> None:

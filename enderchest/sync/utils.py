@@ -1,4 +1,5 @@
 """Non-implementation-specific syncing utilities"""
+import fnmatch
 import getpass
 import os
 import socket
@@ -6,7 +7,7 @@ import stat
 from collections import defaultdict
 from enum import Enum, auto
 from pathlib import Path
-from typing import Generator, Iterable, Protocol
+from typing import Any, Collection, Generator, Iterable, Protocol, TypeVar
 from urllib.parse import ParseResult, unquote
 from urllib.request import url2pathname
 
@@ -143,6 +144,49 @@ class Operation(Enum):
     CREATE = auto()
     REPLACE = auto()
     DELETE = auto()
+
+
+PathInfo = TypeVar(
+    "PathInfo",
+    tuple[Path, Any],
+    tuple[str, Any],
+    # TODO: the proper type hint is tuple[Path, *tuple[Any, ...]]
+    #       but that's not supported until Python 3.11
+)
+
+
+def filter_contents(
+    contents: Iterable[PathInfo], exclude: Collection[str], prefix: Path | str
+) -> Generator[PathInfo, None, None]:
+    """Apply an exclusion filter to a list of files
+
+    Parameters
+    ----------
+    contents : list of (Path, ...) tuples
+        The contents to filter
+    exclude : list of str
+        The patterns to exclude
+    prefix : Path, optional
+        If the contents are iterating over a subdirectory, providing the directory
+        as the `prefix` will allow filtering to be performed on the full path.
+
+    Yields
+    ------
+    (Path, ...) tuples
+        The elements of the provided list, omitting the ones
+        to be excluded
+    """
+    for path_info in contents:
+        if not any(
+            (
+                fnmatch.fnmatchcase(
+                    os.path.normpath(os.path.join(prefix or "", path_info[0])),
+                    os.path.join("*", pattern),
+                )
+                for pattern in exclude
+            )
+        ):
+            yield path_info
 
 
 def diff(
