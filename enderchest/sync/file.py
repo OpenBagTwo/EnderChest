@@ -3,11 +3,12 @@ import fnmatch
 import logging
 import os
 import shutil
+import stat
 from pathlib import Path
-from typing import Collection, Iterable
+from typing import Callable, Collection, Iterable
 from urllib.parse import ParseResult
 
-from . import SYNC_LOGGER, path_from_uri
+from . import SYNC_LOGGER, Op, diff, generate_sync_report, is_identical, path_from_uri
 
 
 def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
@@ -31,7 +32,7 @@ def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
     """
     SYNC_LOGGER.debug(f"Getting contents of {path}")
     return sorted(
-        ((p.relative_to(path), p.stat()) for p in path.rglob("**/*")),
+        ((p.relative_to(path), p.lstat()) for p in path.rglob("**/*")),
         key=lambda x: len(str(x[0])),
     )
 
@@ -59,7 +60,6 @@ def copy(
     If the source file does not exist, the destination file will simply be deleted
     (if it exists)
     """
-    log_level = logging.INFO if dry_run else logging.DEBUG
 
     ignore = ignore_patterns(*exclude)
     SYNC_LOGGER.debug(f"Ignoring patterns: {exclude}")
@@ -67,32 +67,125 @@ def copy(
     destination_path = destination_folder / source_path.name
     if destination_path.exists():
         if destination_path.is_symlink():
-            SYNC_LOGGER.log(log_level, "Removing symlink %s", destination_path)
+            SYNC_LOGGER.warning("Removing symlink %s", destination_path)
             if not dry_run:
                 destination_path.unlink()
-        elif destination_path.is_dir():
-            clean(destination_path, ignore, dry_run)
-        else:
-            SYNC_LOGGER.log(log_level, "Deleting %s", destination_path)
+        elif not destination_path.is_dir():
+            SYNC_LOGGER.warning("Deleting file %s", destination_path)
             if not dry_run:
                 destination_path.unlink()
+    else:
+        destination_folder.mkdir(parents=True, exist_ok=True)
 
-    if source_path.exists():
-        SYNC_LOGGER.log(log_level, f"Copying {source_path} into {destination_folder}")
+    SYNC_LOGGER.debug(f"Copying {source_path} into {destination_folder}")
+
+    if source_path.exists() and not source_path.is_dir():
+        if destination_path.exists() and is_identical(
+            source_path.stat(), destination_path.stat()
+        ):
+            SYNC_LOGGER.warning(
+                "%s and %s are identical. No copy needed.",
+                source_path,
+                destination_path,
+            )
+            return
+        SYNC_LOGGER.debug(
+            "Copying file %s to %s",
+            source_path,
+            destination_path,
+        )
         if not dry_run:
-            if source_path.is_dir():
+            shutil.copy2(source_path, destination_path, follow_symlinks=False)
+        return
+
+    source_contents = [
+        (path, attrs)
+        for path, attrs in get_contents(source_path)
+        if not any(
+            (
+                fnmatch.fnmatchcase(
+                    os.path.normpath(source_path / path), os.path.join("*", pattern)
+                )
+                for pattern in exclude
+            )
+        )
+    ]
+
+    destination_contents = [
+        (path, attrs)
+        for path, attrs in get_contents(destination_path)
+        if not any(
+            (
+                fnmatch.fnmatchcase(
+                    os.path.normpath(destination_path / path),
+                    os.path.join("*", pattern),
+                )
+                for pattern in exclude
+            )
+        )
+    ]
+
+    sync_diff = diff(source_contents, destination_contents)
+
+    if dry_run:
+        generate_sync_report(sync_diff)
+        return
+
+    for path, path_stat, operation in sync_diff:
+        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+            case (Op.CREATE, True):
+                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                (destination_path / path).mkdir(parents=True, exist_ok=True)
+            case (Op.CREATE, False) | (Op.REPLACE, False):
+                SYNC_LOGGER.debug(
+                    "Copying file %s to %s",
+                    source_path / path,
+                    destination_path / path,
+                )
+                (destination_path / path).unlink(missing_ok=True)
+                if (source_path / path).is_symlink():
+                    (destination_path / path).symlink_to(
+                        (source_path / path).readlink()
+                    )
+                else:
+                    shutil.copy2(
+                        source_path / path,
+                        destination_path / path,
+                        follow_symlinks=False,
+                    )
+            case (Op.REPLACE, True):
+                # this would be replacing a file with a directory
+                SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
+                (destination_path / path).unlink()
+                SYNC_LOGGER.debug(
+                    "Copying directory %s to %s",
+                    source_path / path,
+                    destination_path / path,
+                )
                 shutil.copytree(
-                    source_path,
-                    destination_path,
+                    source_path / path,
+                    destination_path / path,
                     symlinks=True,
                     ignore=ignore,
                     dirs_exist_ok=True,
                 )
-            else:
-                shutil.copy(source_path, destination_path, follow_symlinks=False)
+            case (Op.DELETE, True):
+                # recall that for deletions, it's the *destination's* stats
+                clean(destination_path / path, ignore, dry_run)
+            case (Op.DELETE, False):
+                SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
+                (destination_path / path).unlink()
+            case op, is_dir:
+                raise NotImplementedError(
+                    f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
+                )
 
 
-def clean(root: Path, ignore, dry_run: bool) -> None:
+def clean(
+    root: Path,
+    ignore: Callable[[str, Collection[str]], set[str]],
+    dry_run: bool,
+) -> None:
     """Recursively remove all files and symlinks from the root path while
     respecting the provided ignore pattern
 
@@ -136,7 +229,7 @@ def clean(root: Path, ignore, dry_run: bool) -> None:
             root.rmdir()
 
 
-def ignore_patterns(*patterns: str):
+def ignore_patterns(*patterns: str) -> Callable[[str, Collection[str]], set[str]]:
     """shutil.ignore_patterns doesn't support checking absolute paths,
     so we gotta roll our own.
 

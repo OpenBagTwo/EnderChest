@@ -87,9 +87,17 @@ def render_remote(alias: str, uri: ParseResult) -> str:
 
 
 class StatLike(Protocol):
-    st_mode: int | None
-    st_size: int | None
-    st_mtime: int | None
+    @property
+    def st_mode(self) -> int | None:
+        ...
+
+    @property
+    def st_size(self) -> float | None:
+        ...
+
+    @property
+    def st_mtime(self) -> float | None:
+        ...
 
 
 def is_identical(object_one: StatLike, object_two: StatLike) -> bool:
@@ -116,10 +124,18 @@ def is_identical(object_one: StatLike, object_two: StatLike) -> bool:
         return False
     if stat.S_ISLNK(object_one.st_mode or 0) != stat.S_ISLNK(object_two.st_mode or 0):
         return False
-    if object_one.st_size != object_two.st_size:
+
+    if stat.S_ISLNK(object_one.st_mode or 0):
+        # there's no way from the stat to tell if two links have the same target
+        # so err on the side of "nope"
         return False
-    if object_one.st_mtime != object_two.st_mtime:
-        return False
+
+    if stat.S_ISREG(object_one.st_mode or 0):
+        # these comparisons should only be run on files
+        if object_one.st_size != object_two.st_size:
+            return False
+        if object_one.st_mtime != object_two.st_mtime:
+            return False
     return True
 
 
