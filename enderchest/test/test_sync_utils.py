@@ -60,14 +60,14 @@ class TestIsIdentical:
         one = tmp_path / "one"
         one.write_text("I'm the original\n")
         two = tmp_path / "two"
-        shutil.copy(one, two)
+        shutil.copy2(one, two)
         assert sync_utils.is_identical(one.stat(), two.stat())
 
     def test_modified_files_are_not_identical(self, tmp_path):
         one = tmp_path / "one"
         one.write_text("I'm the original")
         two = tmp_path / "two"
-        shutil.copy(one, two)
+        shutil.copy2(one, two)
         with two.open("a") as f:
             f.write("\n")
         assert not sync_utils.is_identical(one.stat(), two.stat())
@@ -84,6 +84,14 @@ class TestIsIdentical:
         assert one.read_bytes() == two.read_bytes()
 
         assert not sync_utils.is_identical(one.stat(), two.stat())
+
+    def test_does_not_check_modified_time_of_directories(self, tmp_path):
+        one = tmp_path / "one"
+        one.mkdir(parents=True)
+        two = tmp_path / "two"
+        time.sleep(0.01)
+        two.mkdir()
+        assert sync_utils.is_identical(one.stat(), two.stat())
 
     @pytest.mark.xfail(reason="Method does not compute hashes")
     def test_two_files_of_the_same_size_are_not_identical(self, tmp_path):
