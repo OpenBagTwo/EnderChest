@@ -2,13 +2,22 @@
 import stat
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator, Iterable
+from typing import Collection, Generator
 from urllib.parse import ParseResult
 
 import paramiko
 
 from ..prompt import prompt
-from . import SYNC_LOGGER
+from . import (
+    SYNC_LOGGER,
+    Op,
+    diff,
+    file,
+    filter_contents,
+    generate_sync_report,
+    is_identical,
+    path_from_uri,
+)
 
 
 @contextmanager
@@ -39,7 +48,7 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
         ssh_client.connect(
             uri.hostname or "localhost",
             port=uri.port or 22,
-            username=uri.username or None,
+            username=uri.username,
             # note: passing in password is explicitly unsupported
         )
     except paramiko.AuthenticationException:
@@ -60,7 +69,7 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
             ssh_client.connect(
                 uri.hostname or "localhost",
                 port=uri.port or 22,
-                username=uri.username or None,
+                username=uri.username,
                 password=password,
             )
         except paramiko.AuthenticationException:
@@ -77,9 +86,43 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
         ssh_client.close()
 
 
+def rglob(
+    client: paramiko.sftp_client.SFTPClient, path: str
+) -> list[tuple[Path, paramiko.sftp_attr.SFTPAttributes]]:
+    """Recursively enumerate the contents of a remote directory
+
+    Parameters
+    ----------
+    client : Paramiko SFTP client
+        An authenticated client connected to the remote server
+    path : str
+        The absolute path to scan
+
+    Returns
+    -------
+    list of (Path, SFTPAttributes) tuples
+        The attributes of all files, folders and symlinks found under the
+        specified path
+
+    Notes
+    -----
+    - The paths returned are *absolute*
+    - The search is performed depth-first
+    """
+    SYNC_LOGGER.debug(f"ls {path}")
+    top_level = client.listdir_attr(path)
+    contents: list[tuple[Path, paramiko.sftp_attr.SFTPAttributes]] = []
+    for remote_object in top_level:
+        remote_object.filename = "/".join((path, remote_object.filename))
+        contents.append((Path(remote_object.filename), remote_object))
+        if stat.S_ISDIR(remote_object.st_mode or 0):
+            contents.extend(rglob(client, remote_object.filename))
+    return contents
+
+
 def get_contents(
     client: paramiko.sftp_client.SFTPClient, path: str
-) -> list[paramiko.sftp_attr.SFTPAttributes]:
+) -> list[tuple[Path, paramiko.sftp_attr.SFTPAttributes]]:
     """Recursively fetch the contents of a remote directory
 
     Parameters
@@ -87,33 +130,32 @@ def get_contents(
     client : Paramiko SFTP client
         An authenticated client connected to the remote server
     path : str
-        The path to scan
+        The absolute path to scan
 
     Returns
     -------
-    list of SFTPAttributes
+    list of (Path, SFTPAttributes) tuples
         The attributes of all files, folders and symlinks found under the
         specified path
+
+    Notes
+    -----
+    - This list is generated via a depth-first search so that all parent
+      directories appear before their children
+    - The paths returned are relative to the provided path
     """
-    SYNC_LOGGER.debug(f"ls {path}")
-    top_level = client.listdir_attr(path)
-    contents: list[paramiko.sftp_attr.SFTPAttributes] = []
-    for remote_object in top_level:
-        remote_object.filename = "/".join((path, remote_object.filename))
-        contents.append(remote_object)
-        if stat.S_ISDIR(remote_object.st_mode or 0):
-            contents.extend(get_contents(client, remote_object.filename))
-    return contents
+    return [(p.relative_to(path), path_stat) for p, path_stat in rglob(client, path)]
 
 
 def pull(
     remote_uri: ParseResult,
     local_path: Path,
-    exclude: Iterable[str],
+    exclude: Collection[str],
     dry_run: bool,
     timeout: int | None = None,
     delete: bool = True,
     verbosity: int = 0,
+    **unsupported_kwargs,
 ) -> None:
     """Sync an upstream file or folder into the specified location SFTP.
     This will overwrite any files and folders already at the destination.
@@ -138,28 +180,116 @@ def pull(
     verbosity : int
         A modifier for how much info to output either to stdout or the INFO-level
         logs. Defaults to 0.
+    **unsupported_kwargs
+        Any other provided options will be ignored
 
     Raises
     ------
     FileNotFoundError
-        If the destination folder does not exist
+        If the destination folder does not exist, or if the remote path
+        does not exist
+    OSError
+        If the remote path cannot be accessed for any other reason (permissions,
+        most likely)
 
     Notes
     -----
     - If the destination folder does not already exist, this method will not
       create it or its parent directories.
+    - Unlike `sync.file.copy`, this method will fail if the remote path does
+      not exist
     """
-    raise NotImplementedError
+    if not local_path.exists():
+        raise FileNotFoundError(f"{local_path} does not exist")
+    if unsupported_kwargs:
+        SYNC_LOGGER.debug(
+            "The following command-line options are ignored for this protocol:\n%s",
+            "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
+        )
+
+    remote_path = path_from_uri(remote_uri)
+    destination_path = local_path / remote_path.name
+
+    with connect(uri=remote_uri) as remote:
+        try:
+            source_target = remote.lstat(remote_path.as_posix())
+        except OSError as bad_target:
+            raise type(bad_target)(
+                f"Could not access {remote_path} on remote: {bad_target}"
+            )
+        if not stat.S_ISDIR(source_target.st_mode or 0):
+            if destination_path.exists() and is_identical(
+                source_target, destination_path.stat()
+            ):
+                SYNC_LOGGER.warning(
+                    "Remote file matches %s. No copy needed.",
+                    destination_path,
+                )
+                return
+            SYNC_LOGGER.debug(
+                "Downloading file %s from remote",
+                destination_path,
+            )
+            if not dry_run:
+                remote.get(remote_path.as_posix(), destination_path)
+            return
+
+        source_contents = filter_contents(
+            get_contents(remote, remote_path.as_posix()),
+            exclude,
+            prefix=remote_path.as_posix(),
+        )
+        destination_contents = filter_contents(
+            file.get_contents(destination_path), exclude, prefix=remote_path.as_posix()
+        )
+
+        sync_diff = diff(source_contents, destination_contents)
+
+        if dry_run:
+            generate_sync_report(sync_diff)
+            return
+
+        ignore = file.ignore_patterns(*exclude)
+        for path, path_stat, operation in sync_diff:
+            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+                case (Op.CREATE, True):
+                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                    (destination_path / path).mkdir(parents=True, exist_ok=True)
+                case (Op.CREATE, False) | (Op.REPLACE, False):
+                    SYNC_LOGGER.debug(
+                        "Downloading file %s from remote",
+                        destination_path / path,
+                    )
+                    (destination_path / path).unlink(missing_ok=True)
+                    if stat.S_ISLNK(path_stat.st_mode or 0):
+                        (destination_path / path).symlink_to(
+                            Path(remote.readlink((remote_path / path).as_posix()) or "")
+                        )
+                    else:
+                        remote.get(
+                            (remote_path / path).as_posix(), destination_path / path
+                        )
+                case (Op.DELETE, True):
+                    # recall that for deletions, it's the *destination's* stats
+                    file.clean(destination_path / path, ignore, dry_run)
+                case (Op.DELETE, False):
+                    SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
+                    (destination_path / path).unlink()
+                case op, is_dir:
+                    raise NotImplementedError(
+                        f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
+                    )
 
 
 def push(
     local_path: Path,
     remote_uri: ParseResult,
-    exclude: Iterable[str],
+    exclude: Collection[str],
     dry_run: bool,
     timeout: int | None = None,
     delete: bool = True,
     verbosity: int = 0,
+    **unsupported_kwargs,
 ) -> None:
     """Sync a local file or folder into the specified location using SFTP.
     This will overwrite any files and folders already at the destination.
@@ -184,10 +314,21 @@ def push(
     verbosity : int
         A modifier for how much info to output either to stdout or the INFO-level
         logs. Defaults to 0.
+    **unsupported_kwargs
+        Any other provided options will be ignored
 
     Notes
     -----
     - If the destination folder does not already exist, this method will very
       likely fail.
     """
-    raise NotImplementedError
+    if not local_path.exists():
+        SYNC_LOGGER.warning(
+            f"{local_path} does not exist:"
+            " this will end up just deleting the remote copy."
+        )
+    if unsupported_kwargs:
+        SYNC_LOGGER.debug(
+            "The following command-line options are ignored for this protocol:\n%s",
+            "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
+        )
