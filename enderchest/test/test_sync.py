@@ -206,10 +206,16 @@ class TestFileSync:
             minecraft_root / "EnderChest" / "1.19" / "saves" / "olam"
         ).resolve() != (minecraft_root / "worlds" / "olam")
 
-    def test_open_processes_deletions_from_upstream(self, minecraft_root, remote):
+    @pytest.mark.parametrize("delete", (True, False), ids=("default", "do-not-delete"))
+    def test_open_respects_delete_kwarg_when_processing_deletions_from_upstream(
+        self, minecraft_root, remote, delete
+    ):
+        sync_kwargs = {"verbosity": -1}
+        if not delete:
+            sync_kwargs["delete"] = False
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
-        assert not (minecraft_root / "EnderChest" / "global").exists()
+        r.sync_with_remotes(minecraft_root, "pull", **sync_kwargs)
+        assert not (minecraft_root / "EnderChest" / "global").exists() == delete
 
     def test_open_does_not_overwrite_enderchest_by_default(
         self, minecraft_root, remote
@@ -268,12 +274,21 @@ class TestFileSync:
             / "diamond.png"
         ).read_text() == "lab-grown!"
 
-    def test_close_deletes_remote_copies_when_locals_are_deleted(
-        self, minecraft_root, remote
+    @pytest.mark.parametrize("delete", (True, False), ids=("default", "do-not-delete"))
+    def test_close_respects_delete_kwarg_remote_copies_when_locals_are_deleted(
+        self,
+        minecraft_root,
+        remote,
+        delete,
     ):
+        sync_kwargs = {"verbosity": -1}
+        if not delete:
+            sync_kwargs["delete"] = False
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
-        assert not (path_from_uri(remote) / "EnderChest" / "optifine").exists()
+        r.sync_with_remotes(minecraft_root, "push", **sync_kwargs)
+        assert (
+            not (path_from_uri(remote) / "EnderChest" / "optifine").exists() == delete
+        )
 
     def test_close_not_touch_top_level_dot_folders_by_default(
         self, minecraft_root, remote

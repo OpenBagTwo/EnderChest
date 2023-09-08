@@ -50,6 +50,7 @@ def copy(
     source_path: Path,
     destination_folder: Path,
     exclude: Collection[str],
+    delete: bool,
     dry_run: bool,
 ) -> None:
     """Copy the specified source file or folder to the provided destination,
@@ -63,6 +64,9 @@ def copy(
         The destination to put the source file(s)
     exclude : list of str
         Any patterns that should be excluded from the sync (and sync)
+    delete : bool
+        Whether part of the syncing should include deleting files at the destination
+        that aren't at the source.
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
@@ -163,10 +167,12 @@ def copy(
                 )
             case (Op.DELETE, True):
                 # recall that for deletions, it's the *destination's* stats
-                clean(destination_path / path, ignore, dry_run)
+                if delete:
+                    clean(destination_path / path, ignore, dry_run)
             case (Op.DELETE, False):
-                SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
-                (destination_path / path).unlink()
+                if delete:
+                    SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
+                    (destination_path / path).unlink()
             case op, is_dir:
                 raise NotImplementedError(
                     f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
@@ -265,6 +271,7 @@ def pull(
     local_path: Path,
     exclude: Collection[str],
     dry_run: bool,
+    delete: bool = True,
     **unsupported_kwargs,
 ) -> None:
     """Copy an upstream file or folder into the specified location, where the remote
@@ -282,6 +289,9 @@ def pull(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
+    delete : bool, optional
+        Whether part of the syncing should include deleting files at the destination
+        that aren't at the source. Default is True.
     **unsupported_kwargs
         Any other provided options will be ignored
 
@@ -316,7 +326,7 @@ def pull(
             "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
 
-    copy(source_path, destination_folder, exclude, dry_run)
+    copy(source_path, destination_folder, exclude, delete=delete, dry_run=dry_run)
 
 
 def push(
@@ -324,6 +334,7 @@ def push(
     remote_uri: ParseResult,
     exclude: Collection[str],
     dry_run: bool,
+    delete: bool = True,
     **unsupported_kwargs,
 ) -> None:
     """Copy a local file or folder into the specified location, where the remote
@@ -341,6 +352,9 @@ def push(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
+    delete : bool, optional
+        Whether part of the syncing should include deleting files at the destination
+        that aren't at the source. Default is True.
     **unsupported_kwargs
         Any other provided options will be ignored
 
@@ -375,4 +389,4 @@ def push(
             "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
 
-    copy(source_path, destination_folder, exclude, dry_run)
+    copy(source_path, destination_folder, exclude, delete=delete, dry_run=dry_run)
