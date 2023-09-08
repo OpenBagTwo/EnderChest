@@ -322,7 +322,7 @@ def pull(
     timeout : int, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
-    delete : bool
+    delete : bool, optional
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     verbosity : int
@@ -404,7 +404,7 @@ def push(
     timeout : int, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
-    delete : bool
+    delete : bool, optional
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     verbosity : int
