@@ -337,10 +337,12 @@ def pull(
                     )
                 case (Op.DELETE, True):
                     # recall that for deletions, it's the *destination's* stats
-                    file.clean(destination_path / path, ignore, dry_run)
+                    if delete:
+                        file.clean(destination_path / path, ignore, dry_run)
                 case (Op.DELETE, False):
                     SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
-                    (destination_path / path).unlink()
+                    if delete:
+                        (destination_path / path).unlink()
                 case op, is_dir:
                     raise NotImplementedError(
                         f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
@@ -374,7 +376,7 @@ def push(
     timeout : int, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
-    delete : bool
+    delete : bool, optional
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
     verbosity : int
@@ -465,10 +467,12 @@ def push(
                     )
                 case (Op.DELETE, True):
                     # recall that for deletions, it's the *destination's* stats
-                    remote.rmdir((remote_path / path).as_posix())
+                    if delete:
+                        remote.rmdir((remote_path / path).as_posix())
                 case (Op.DELETE, False):
-                    SYNC_LOGGER.debug("Deleting remote file %s", remote_path / path)
-                    remote.remove((remote_path / path).as_posix())
+                    if delete:
+                        SYNC_LOGGER.debug("Deleting remote file %s", remote_path / path)
+                        remote.remove((remote_path / path).as_posix())
                 case op, is_dir:
                     raise NotImplementedError(
                         f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
