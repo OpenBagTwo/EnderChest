@@ -35,8 +35,9 @@ def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
 
     Notes
     -----
-    This list will be sorted from shortest path to longest (so that parent
-    directories come before their children)
+    - This list will be sorted from shortest path to longest (so that parent
+      directories come before their children)
+    - The paths returned are all relative to the provided path
     """
     SYNC_LOGGER.debug(f"Getting contents of {path}")
     return sorted(
