@@ -87,7 +87,7 @@ def render_remote(alias: str, uri: ParseResult) -> str:
     return uri_string
 
 
-class StatLike(Protocol):
+class StatLike(Protocol):  # pragma: no cover
     @property
     def st_mode(self) -> int | None:
         ...

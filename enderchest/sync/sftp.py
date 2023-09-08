@@ -72,11 +72,11 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
                 username=uri.username,
                 password=password,
             )
-        except paramiko.AuthenticationException:
+        except paramiko.AuthenticationException as bad_login:
             raise ValueError(
                 "Authentication failed."
                 " Did you supply the correct username and password?"
-            )
+            ) from bad_login
 
     try:
         sftp_client = ssh_client.open_sftp()
