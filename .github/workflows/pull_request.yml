@@ -34,6 +34,16 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.py }}
+    - name: Configure SSH
+      run: |
+        ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
+        cat > ~/.ssh/config <<EOF
+          Host *
+           IdentityFile ~/.ssh/id_ed25519
+        EOF
+        cat ~/.ssh/id_ed25519.pub > ~/.ssh/authorized_keys
+        chmod -R 700 ~/.ssh
+        ssh -o 'StrictHostKeyChecking no' $USER@$HOSTNAME "echo It works"
     - name: Install Rsync
       if: matrix.os == 'macos-latest'
       run: brew install rsync

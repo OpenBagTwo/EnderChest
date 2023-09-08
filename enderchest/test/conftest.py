@@ -139,6 +139,9 @@ def home(file_system, monkeypatch):
     """
     home = file_system[0]
 
+    # make sure SSH keys are still accessible post-fixting
+    (home / ".ssh").symlink_to(Path.home() / ".ssh", target_is_directory=True)
+
     monkeypatch.setenv("HOME", str(home))  # posix
     monkeypatch.setenv("USERPROFILE", str(home))  # windows
 
