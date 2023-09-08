@@ -86,6 +86,67 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
         ssh_client.close()
 
 
+def download_file(
+    client: paramiko.sftp_client.SFTPClient,
+    remote_path: Path,
+    local_path: Path,
+    is_symlink: bool,
+) -> None:
+    """Download a file from a remote SFTP server and save it at the specified
+    location.
+
+    Parameters
+    ----------
+    client : Paramiko SFTP client
+        An authenticated client connected to the remote server
+    remote_path : Path
+        The path of the file to download
+    local_path : Path
+        The path to locally save the file
+    is_symlink : bool
+        Whether the file is a symbolic link (which should have been determined
+        earlier)
+
+    Notes
+    -----
+    This is just a wrapper around `client.get()` that can handle symlinks and
+    the `remote_path` being a Path. It does not check if either path is valid,
+    points to a file, lives in an existing folder, etc.
+    """
+    if is_symlink:
+        local_path.symlink_to(Path((client.readlink(remote_path.as_posix()) or "")))
+    else:
+        client.get(remote_path.as_posix(), local_path)
+
+
+def upload_file(
+    client: paramiko.sftp_client.SFTPClient,
+    local_path: Path,
+    remote_path: Path,
+) -> None:
+    """Upload a local file to a remote SFTP server
+
+    Parameters
+    ----------
+    client : Paramiko SFTP client
+        An authenticated client connected to the remote server
+    local_path : Path
+        The path of the file to upload
+    remote_path : Path
+        The remote path to save the file
+
+    Notes
+    -----
+    This is just a wrapper around `client.put()` that can handle symlinks and
+    the `remote_path` being a Path. It does not check if either path is valid,
+    points to a file, lives in an existing folder, etc.
+    """
+    if local_path.is_symlink():
+        client.symlink(local_path.readlink().as_posix(), remote_path.as_posix())
+    else:
+        client.put(local_path, remote_path.as_posix())
+
+
 def rglob(
     client: paramiko.sftp_client.SFTPClient, path: str
 ) -> list[tuple[Path, paramiko.sftp_attr.SFTPAttributes]]:
@@ -222,7 +283,7 @@ def pull(
                 source_target, destination_path.stat()
             ):
                 SYNC_LOGGER.warning(
-                    "Remote file matches %s. No copy needed.",
+                    "Remote file matches %s. No transfer needed.",
                     destination_path,
                 )
                 return
@@ -231,16 +292,23 @@ def pull(
                 destination_path,
             )
             if not dry_run:
-                remote.get(remote_path.as_posix(), destination_path)
+                download_file(
+                    remote,
+                    remote_path,
+                    destination_path,
+                    is_symlink=stat.S_ISLNK(source_target.st_mode or 0),
+                )
             return
 
         source_contents = filter_contents(
             get_contents(remote, remote_path.as_posix()),
             exclude,
-            prefix=remote_path.as_posix(),
+            prefix=remote_path,
         )
         destination_contents = filter_contents(
-            file.get_contents(destination_path), exclude, prefix=remote_path.as_posix()
+            file.get_contents(destination_path),
+            exclude,
+            prefix=destination_path,
         )
 
         sync_diff = diff(source_contents, destination_contents)
@@ -261,14 +329,12 @@ def pull(
                         destination_path / path,
                     )
                     (destination_path / path).unlink(missing_ok=True)
-                    if stat.S_ISLNK(path_stat.st_mode or 0):
-                        (destination_path / path).symlink_to(
-                            Path(remote.readlink((remote_path / path).as_posix()) or "")
-                        )
-                    else:
-                        remote.get(
-                            (remote_path / path).as_posix(), destination_path / path
-                        )
+                    download_file(
+                        remote,
+                        remote_path / path,
+                        destination_path / path,
+                        stat.S_ISLNK(path_stat.st_mode or 0),
+                    )
                 case (Op.DELETE, True):
                     # recall that for deletions, it's the *destination's* stats
                     file.clean(destination_path / path, ignore, dry_run)
@@ -319,16 +385,91 @@ def push(
 
     Notes
     -----
-    - If the destination folder does not already exist, this method will very
-      likely fail.
+    - If the destination folder does not already exist, this method will not
+      create it or its parent directories.
+    - Unlike `sync.file.copy`, this method will fail if the local path does
+      not exist
     """
     if not local_path.exists():
-        SYNC_LOGGER.warning(
-            f"{local_path} does not exist:"
-            " this will end up just deleting the remote copy."
-        )
+        raise FileNotFoundError(f"{local_path} does not exist.")
     if unsupported_kwargs:
         SYNC_LOGGER.debug(
             "The following command-line options are ignored for this protocol:\n%s",
             "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
+
+    remote_folder = path_from_uri(remote_uri)
+
+    with connect(uri=remote_uri) as remote:
+        try:
+            remote_folder_stat = remote.lstat(remote_folder.as_posix())
+        except OSError as bad_target:
+            raise type(bad_target)(
+                f"Could not access {remote_folder} on remote: {bad_target}"
+            )
+        if not stat.S_ISDIR(remote_folder_stat.st_mode or 0):
+            raise NotADirectoryError(f"{remote_folder} on remote is not a directory.")
+
+        remote_path = remote_folder / local_path.name
+        if not stat.S_ISDIR(local_path.stat().st_mode or 0):
+            try:
+                target_stat = remote.lstat(remote_path.as_posix())
+                if is_identical(local_path.stat(), target_stat):
+                    SYNC_LOGGER.warning("Remote file matches %s", local_path)
+                    return
+            except FileNotFoundError:
+                pass
+            SYNC_LOGGER.debug(
+                "Uploading file %s to remote",
+                local_path,
+            )
+            if not dry_run:
+                upload_file(remote, local_path, remote_path)
+            return
+
+        source_contents = filter_contents(
+            file.get_contents(local_path), exclude, prefix=local_path
+        )
+        destination_contents = filter_contents(
+            get_contents(remote, remote_path.as_posix()),
+            exclude,
+            prefix=remote_path,
+        )
+
+        sync_diff = diff(source_contents, destination_contents)
+
+        if dry_run:
+            generate_sync_report(sync_diff)
+            return
+
+        for path, path_stat, operation in sync_diff:
+            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+                case (Op.CREATE, True):
+                    SYNC_LOGGER.debug(
+                        "Creating remote directory %s", remote_path / path
+                    )
+                    remote.mkdir((remote_path / path).as_posix())
+                case (Op.CREATE, False) | (Op.REPLACE, False):
+                    SYNC_LOGGER.debug(
+                        "Uploading file %s to remote",
+                        local_path / path,
+                    )
+                    try:
+                        remote.remove((remote_path / path).as_posix())
+                    except FileNotFoundError:
+                        pass
+                    upload_file(
+                        remote,
+                        local_path / path,
+                        remote_path / path,
+                    )
+                case (Op.DELETE, True):
+                    # recall that for deletions, it's the *destination's* stats
+                    remote.rmdir((remote_path / path).as_posix())
+                case (Op.DELETE, False):
+                    SYNC_LOGGER.debug("Deleting remote file %s", remote_path / path)
+                    remote.remove((remote_path / path).as_posix())
+                case op, is_dir:
+                    raise NotImplementedError(
+                        f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
+                    )

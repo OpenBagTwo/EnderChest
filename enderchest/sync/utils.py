@@ -156,7 +156,9 @@ PathInfo = TypeVar(
 
 
 def filter_contents(
-    contents: Iterable[PathInfo], exclude: Collection[str], prefix: Path | str
+    contents: Iterable[PathInfo],
+    exclude: Collection[str],
+    prefix: Path | str | None = None,
 ) -> Generator[PathInfo, None, None]:
     """Apply an exclusion filter to a list of files
 
