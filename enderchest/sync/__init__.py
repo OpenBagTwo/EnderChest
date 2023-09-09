@@ -50,14 +50,14 @@ def pull(
     try:
         protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
         protocol.pull(remote_uri, local_path, exclude or (), dry_run, **kwargs)
-    except ModuleNotFoundError:  # pragma: no cover
+    except ModuleNotFoundError as not_installed:  # pragma: no cover
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"
-        )
+        ) from not_installed
     except TypeError as unknown_kwarg:
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} does not support that functionality:\n  {unknown_kwarg}"
-        )
+        ) from unknown_kwarg
 
 
 def push(
@@ -86,10 +86,10 @@ def push(
     try:
         protocol = importlib.import_module(f"{__package__}.{remote_uri.scheme.lower()}")
         protocol.push(local_path, remote_uri, exclude or (), dry_run, **kwargs)
-    except ModuleNotFoundError:
+    except ModuleNotFoundError as not_installed:
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"
-        )
+        ) from not_installed
 
 
 @contextmanager
