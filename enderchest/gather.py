@@ -819,10 +819,10 @@ Read more: https://help.minecraft.net/hc/en-us/articles/16165590199181"""
     if response.lower() not in ("y", "yes"):
         return
 
-    with symlink_allowlist.open("a") as f:
+    with symlink_allowlist.open("a") as allow_file:
         if allowlist_needs_newline:
-            f.write("\n")
-        f.write(ender_chest_abspath + "\n")
+            allow_file.write("\n")
+        allow_file.write(ender_chest_abspath + "\n")
 
     GATHER_LOGGER.info(f"{symlink_allowlist} updated.")
 
