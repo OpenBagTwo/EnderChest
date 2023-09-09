@@ -2,7 +2,7 @@
 import stat
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Collection, Generator
+from typing import Any, Collection, Generator
 from urllib.parse import ParseResult
 
 import paramiko
@@ -21,13 +21,18 @@ from . import (
 
 
 @contextmanager
-def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None, None]:
+def connect(
+    uri: ParseResult, timeout: float | None = None
+) -> Generator[paramiko.sftp_client.SFTPClient, None, None]:
     """Yield an SFTPClient connected to the server specified by the given URI
 
     Parameters
     ----------
     uri : ParseResult
         The URI of the EnderChest to connect to
+    timeout : float, optional
+        The number of seconds to wait before timing out the sync operation.
+        If None is provided, no explicit timeout value will be set.
 
     Yields
     ------
@@ -44,12 +49,17 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
     ssh_client = paramiko.client.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+    extra_kwargs: dict[str, Any] = {}
+    if timeout is not None:
+        extra_kwargs["timeout"] = timeout
+
     try:
         ssh_client.connect(
             uri.hostname or "localhost",
             port=uri.port or 22,
             username=uri.username,
             # note: passing in password is explicitly unsupported
+            **extra_kwargs,
         )
     except paramiko.AuthenticationException:
         target = ((uri.username + "@") if uri.username else "") + (
@@ -71,6 +81,7 @@ def connect(uri: ParseResult) -> Generator[paramiko.sftp_client.SFTPClient, None
                 port=uri.port or 22,
                 username=uri.username,
                 password=password,
+                **extra_kwargs,
             )
         except paramiko.AuthenticationException as bad_login:
             raise ValueError(
@@ -213,9 +224,8 @@ def pull(
     local_path: Path,
     exclude: Collection[str],
     dry_run: bool,
-    timeout: int | None = None,
+    timeout: float | None = None,
     delete: bool = True,
-    verbosity: int = 0,
     **unsupported_kwargs,
 ) -> None:
     """Sync an upstream file or folder into the specified location SFTP.
@@ -232,15 +242,12 @@ def pull(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
-    timeout : int, optional
+    timeout : float, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
     delete : bool
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
-    verbosity : int
-        A modifier for how much info to output either to stdout or the INFO-level
-        logs. Defaults to 0.
     **unsupported_kwargs
         Any other provided options will be ignored
 
@@ -271,7 +278,7 @@ def pull(
     remote_path = path_from_uri(remote_uri)
     destination_path = local_path / remote_path.name
 
-    with connect(uri=remote_uri) as remote:
+    with connect(uri=remote_uri, timeout=timeout) as remote:
         try:
             source_target = remote.lstat(remote_path.as_posix())
         except OSError as bad_target:
@@ -354,9 +361,8 @@ def push(
     remote_uri: ParseResult,
     exclude: Collection[str],
     dry_run: bool,
-    timeout: int | None = None,
+    timeout: float | None = None,
     delete: bool = True,
-    verbosity: int = 0,
     **unsupported_kwargs,
 ) -> None:
     """Sync a local file or folder into the specified location using SFTP.
@@ -373,15 +379,12 @@ def push(
     dry_run : bool
         Whether to only simulate this sync (report the operations to be performed
         but not actually perform them)
-    timeout : int, optional
+    timeout : float, optional
         The number of seconds to wait before timing out the sync operation.
         If None is provided, no explicit timeout value will be set.
     delete : bool, optional
         Whether part of the syncing should include deleting files at the destination
         that aren't at the source. Default is True.
-    verbosity : int
-        A modifier for how much info to output either to stdout or the INFO-level
-        logs. Defaults to 0.
     **unsupported_kwargs
         Any other provided options will be ignored
 
@@ -402,7 +405,7 @@ def push(
 
     remote_folder = path_from_uri(remote_uri)
 
-    with connect(uri=remote_uri) as remote:
+    with connect(uri=remote_uri, timeout=timeout) as remote:
         try:
             remote_folder_stat = remote.lstat(remote_folder.as_posix())
         except OSError as bad_target:
