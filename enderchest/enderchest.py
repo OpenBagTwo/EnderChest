@@ -281,11 +281,11 @@ class EnderChest:
                 case _:
                     try:
                         ender_chest.sync_confirm_wait = int(sync_confirm_wait)
-                    except ValueError:
+                    except ValueError as bad_input:
                         raise ValueError(
                             "Invalid value for sync-confirmation-time:"
                             f" {sync_confirm_wait}"
-                        )
+                        ) from bad_input
         ender_chest.offer_to_update_symlink_allowlist = (
             offer_to_update_symlink_allowlist
         )

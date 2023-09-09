@@ -49,8 +49,8 @@ def read_cfg(config_file: Path) -> ConfigParser:
         assert configurator.read(config_file)
     except ParsingError as bad_cfg:
         raise ValueError(f"Could not parse {config_file}") from bad_cfg
-    except AssertionError:
-        raise FileNotFoundError(f"Could not open {config_file}")
+    except AssertionError as not_read:
+        raise FileNotFoundError(f"Could not open {config_file}") from not_read
     return configurator
 
 
@@ -210,5 +210,3 @@ def parse_ini_list(entry: str) -> list[str]:
         except (TypeError, ValueError, SyntaxError):
             values.append(line.strip())
     return values
-
-    return [line.strip() for line in entry.splitlines()]

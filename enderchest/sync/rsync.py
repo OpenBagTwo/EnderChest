@@ -131,7 +131,7 @@ def run_rsync(
         if timeout:
             try:
                 proc.wait(timeout)
-            except subprocess.TimeoutExpired:
+            except subprocess.TimeoutExpired as times_up:
                 proc.kill()
                 if proc.stdout is not None:
                     if output_log := proc.stdout.read().decode("UTF-8"):
@@ -139,7 +139,7 @@ def run_rsync(
                 if proc.stderr is not None:
                     if error_log := proc.stderr.read().decode("UTF-8"):
                         SYNC_LOGGER.error(error_log)
-                raise TimeoutError("Timeout reached.")
+                raise TimeoutError("Timeout reached.") from times_up
 
         if proc.stdout is not None:
             if output_log := proc.stdout.read().decode("UTF-8"):

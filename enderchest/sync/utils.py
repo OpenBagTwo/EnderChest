@@ -87,7 +87,7 @@ def render_remote(alias: str, uri: ParseResult) -> str:
     return uri_string
 
 
-class StatLike(Protocol):  # pragma: no cover
+class _StatLike(Protocol):  # pragma: no cover
     @property
     def st_mode(self) -> int | None:
         ...
@@ -101,7 +101,7 @@ class StatLike(Protocol):  # pragma: no cover
         ...
 
 
-def is_identical(object_one: StatLike, object_two: StatLike) -> bool:
+def is_identical(object_one: _StatLike, object_two: _StatLike) -> bool:
     """Determine if two objects are identical (meaning: skip when syncing)
 
     Parameters
@@ -141,6 +141,14 @@ def is_identical(object_one: StatLike, object_two: StatLike) -> bool:
 
 
 class Operation(Enum):
+    """The recognized sync operations
+
+    Notes
+    -----
+    There's no `UPDATE` operation because so far this class isn't used by
+    anything that _can_ perform a delta update on a file
+    """
+
     CREATE = auto()
     REPLACE = auto()
     DELETE = auto()
@@ -192,9 +200,9 @@ def filter_contents(
 
 
 def diff(
-    source_files: Iterable[tuple[Path, StatLike]],
-    destination_files: Iterable[tuple[Path, StatLike]],
-) -> Generator[tuple[Path, StatLike, Operation], None, None]:
+    source_files: Iterable[tuple[Path, _StatLike]],
+    destination_files: Iterable[tuple[Path, _StatLike]],
+) -> Generator[tuple[Path, _StatLike, Operation], None, None]:
     """Compute the "diff" between the source and destination, enumerating
     all the operations that should be performed so that the destination
     matches the source
@@ -220,7 +228,7 @@ def diff(
     - The attributes of each path will correspond to the *source* attributes for
       creations and replacements and to the *destination* attributes for the deletions
     """
-    destination_lookup: dict[Path, StatLike] = dict(destination_files)
+    destination_lookup: dict[Path, _StatLike] = dict(destination_files)
     for file, source_stat in source_files:
         if file not in destination_lookup:
             yield file, source_stat, Operation.CREATE
@@ -237,7 +245,7 @@ def diff(
 
 
 def generate_sync_report(
-    content_diff: Iterable[tuple[Path, StatLike, Operation]], depth: int = 2
+    content_diff: Iterable[tuple[Path, _StatLike, Operation]], depth: int = 2
 ) -> None:
     """Compile a high-level summary of the outcome of the `diff` method
     and report it to the logging.INFO level
