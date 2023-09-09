@@ -117,7 +117,7 @@ def file_system(tmp_path):
     (dst_tree / "branch").mkdir(parents=True)
     (dst_tree / "branch" / "twig").mkdir()
     (dst_tree / "branch" / "leaf").write_text("yellow")
-    (dst_tree / "branch" / "acorn").touch()
+    shutil.copy2((source_tree / "branch" / "acorn"), (dst_tree / "branch" / "acorn"))
     (dst_tree / "beehive").touch()
     (dst_tree / "root").mkdir()
     (dst_tree / "root" / "cicada").touch()
