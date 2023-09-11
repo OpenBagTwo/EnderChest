@@ -52,6 +52,7 @@ jobs:
         ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\id_ed25519 -N '""'
         $authorizedKey = Get-Content -Path $env:USERPROFILE\.ssh\id_ed25519.pub
         Add-Content -Force -Path $env:USERPROFILE\.ssh\authorized_keys -Value $authorizedKey
+        Start-Service ssh-agent
         ssh -o 'StrictHostKeyChecking no' $env:USERNAME@$env:COMPUTERNAME "powershell echo 'It works'"
     - name: Install Rsync
       if: matrix.os == 'macos-latest'
