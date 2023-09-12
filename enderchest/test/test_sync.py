@@ -504,15 +504,16 @@ class TestSFTPSync(TestFileSync):
     protocol = "sftp"
 
     @pytest.fixture(autouse=True)
-    def patch_paramiko(self, remote, monkeypatch):
-        from enderchest.sync import sftp
+    def patch_paramiko(self, remote, monkeypatch, use_local_ssh):
+        if use_local_ssh:
+            from enderchest.sync import sftp
 
-        mock_sftp = mock_paramiko.MockSFTP(path_from_uri(remote) / "EnderChest")
+            mock_sftp = mock_paramiko.MockSFTP(path_from_uri(remote) / "EnderChest")
 
-        monkeypatch.setattr(
-            sftp, "connect", mock_paramiko.generate_mock_connect(mock_sftp)
-        )
-        monkeypatch.setattr(sftp, "rglob", mock_paramiko.mock_rglob)
+            monkeypatch.setattr(
+                sftp, "connect", mock_paramiko.generate_mock_connect(mock_sftp)
+            )
+            monkeypatch.setattr(sftp, "rglob", mock_paramiko.mock_rglob)
 
     @pytest.fixture(autouse=False)
     def generate_lstat_cache(self, remote):
