@@ -173,7 +173,7 @@ def copy(
                 if delete:
                     SYNC_LOGGER.debug("Deleting file %s", destination_path / path)
                     (destination_path / path).unlink()
-            case op, is_dir:
+            case op, is_dir:  # pragma: no cover
                 raise NotImplementedError(
                     f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
                 )
