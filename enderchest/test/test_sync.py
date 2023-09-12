@@ -1,7 +1,9 @@
 """Tests around file transfer functionality"""
+import json
 import logging
 import os
 import shutil
+from importlib.resources import as_file
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -13,7 +15,8 @@ from enderchest import gather
 from enderchest import remote as r
 from enderchest.sync import path_from_uri
 
-from . import utils
+from . import mock_paramiko, utils
+from .testing_files import LSTAT_CACHE
 
 
 class TestFileSync:
@@ -290,7 +293,7 @@ class TestFileSync:
             not (path_from_uri(remote) / "EnderChest" / "optifine").exists() == delete
         )
 
-    def test_close_not_touch_top_level_dot_folders_by_default(
+    def test_close_does_not_touch_top_level_dot_folders_by_default(
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
@@ -499,3 +502,44 @@ PARAMIKO_INSTALLED = _is_paramiko_installed()
 )
 class TestSFTPSync(TestFileSync):
     protocol = "sftp"
+
+    @pytest.fixture(autouse=True)
+    def patch_paramiko(self, remote, monkeypatch):
+        from enderchest.sync import sftp
+
+        mock_sftp = mock_paramiko.MockSFTP(path_from_uri(remote) / "EnderChest")
+
+        monkeypatch.setattr(
+            sftp, "connect", mock_paramiko.generate_mock_connect(mock_sftp)
+        )
+        monkeypatch.setattr(sftp, "rglob", mock_paramiko.mock_rglob)
+
+    @pytest.fixture(autouse=False)
+    def generate_lstat_cache(self, remote):
+        from enderchest.sync import sftp
+
+        with sftp.connect(remote) as sftp_client:
+            stats = sftp.get_contents(
+                sftp_client, (path_from_uri(remote) / "EnderChest").as_posix()
+            )
+
+        for path, sftp_attr in stats:
+            sftp_attr.filename = path.as_posix()
+        with as_file(LSTAT_CACHE) as cache_file:
+            cache_file.write_text(
+                json.dumps(
+                    [
+                        {
+                            field: getattr(sftp_attr, field)
+                            for field in mock_paramiko.CachedStat._fields
+                        }
+                        for path, sftp_attr in stats
+                    ],
+                    indent=4,
+                )
+            )
+
+    # @pytest.mark.usefixtures("generate_lstat_cache")
+    # def test_generate_lstat_cache(self):
+    #     """Force cache gen, but just do it once"""
+    #     pass
