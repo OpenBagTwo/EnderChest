@@ -1,5 +1,4 @@
 """Useful setup / teardown fixtures"""
-import os
 from importlib.resources import as_file
 from pathlib import Path
 
