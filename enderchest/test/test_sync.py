@@ -336,7 +336,7 @@ class TestFileSync:
         assert "Could not sync changes with prayer://unreachable" in warnings[0]
 
 
-@pytest.mark.xfail(
+@pytest.mark.skipif(
     not shutil.which("rsync"), reason="rsync is not installed on this system"
 )
 class TestRsyncSync(TestFileSync):
@@ -497,7 +497,7 @@ def _is_paramiko_installed() -> bool:
 PARAMIKO_INSTALLED = _is_paramiko_installed()
 
 
-@pytest.mark.xfail(
+@pytest.mark.skipif(
     not PARAMIKO_INSTALLED, reason="EnderChest was not installed with SFTP support"
 )
 class TestSFTPSync(TestFileSync):
