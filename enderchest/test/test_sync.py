@@ -505,7 +505,7 @@ class TestSFTPSync(TestFileSync):
 
     @pytest.fixture(autouse=True)
     def patch_paramiko(self, remote, monkeypatch, use_local_ssh):
-        if use_local_ssh:
+        if not use_local_ssh:
             from enderchest.sync import sftp
 
             mock_sftp = mock_paramiko.MockSFTP(path_from_uri(remote) / "EnderChest")
