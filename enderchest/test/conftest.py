@@ -25,7 +25,9 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def use_local_ssh(request):
-    """h/t https://stackoverflow.com/a/55003726"""
+    """h/t https://stackoverflow.com/a/55003726
+    (though it's also in the pytest docs lol)
+    """
     return request.config.getoption("--use-local-ssh")
 
 
