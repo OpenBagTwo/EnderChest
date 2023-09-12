@@ -189,7 +189,7 @@ def filter_contents(
     for path_info in contents:
         if not any(
             (
-                fnmatch.fnmatchcase(
+                fnmatch.fnmatch(
                     os.path.normpath(os.path.join(prefix or "", path_info[0])),
                     os.path.join("*", pattern),
                 )
