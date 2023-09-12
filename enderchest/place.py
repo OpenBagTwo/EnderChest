@@ -68,7 +68,7 @@ def place_ender_chest(
       an outdated symlink if the fully resolved target of a link falls outside
       the EnderChest folder.
     """
-    if rollback is not False:
+    if rollback is not False:  # pragma: no-cover
         raise NotImplementedError("Rollbacks are not currently supported")
 
     try:

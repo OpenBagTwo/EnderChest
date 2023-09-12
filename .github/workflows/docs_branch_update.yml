@@ -26,10 +26,23 @@ jobs:
       run: |
         git config --global user.name docs-golem
         git config --global user.email losthemobvote@openbagtwo.net
-    - name: run tests (to generate coverage report)
+    - name: Configure SSH
+      if: matrix.os != 'windows-latest'
+      run: |
+        ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
+        cat > ~/.ssh/config <<EOF
+          Host *
+           IdentityFile ~/.ssh/id_ed25519
+        EOF
+        cat ~/.ssh/id_ed25519.pub > ~/.ssh/authorized_keys
+        chmod -R 700 ~/.ssh
+        ssh -o 'StrictHostKeyChecking no' $USER@$HOSTNAME "echo It works"
+    - name: generate coverage report (by running unit tests)
       run: |
         source $CONDA/bin/activate enderchest
-        pytest --cov enderchest --ignore-glob="docs/**" --cov-report=html --cov-report=term
+        coverage run --source enderchest -m pytest --use-local-ssh
+        coverage html
+        coverage report -m
     - name: generate coverage badge
       uses: tj-actions/coverage-badge-py@v2
     - name: generate lint badge

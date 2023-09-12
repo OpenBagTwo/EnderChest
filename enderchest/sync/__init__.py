@@ -54,10 +54,6 @@ def pull(
         raise NotImplementedError(
             f"Protocol {remote_uri.scheme} is not currently implemented"
         ) from not_installed
-    except TypeError as unknown_kwarg:
-        raise NotImplementedError(
-            f"Protocol {remote_uri.scheme} does not support that functionality:\n  {unknown_kwarg}"
-        ) from unknown_kwarg
 
 
 def push(
