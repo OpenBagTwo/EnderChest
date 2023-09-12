@@ -17,7 +17,7 @@ dependencies:
 - pip>=22
 - pre-commit
 - pytest>=7
-- pytest-cov>=4
+- coverage>=7
 - anybadge
 - mkdocs
 - mike

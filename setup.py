@@ -37,7 +37,7 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     install_requires=["semantic-version>=2.7", "pathvalidate>=2.5"],
     extras_require={
-        "test": ["pytest>=7", "pytest-cov>=4"],
+        "test": ["pytest>=7", "coverage>=7"],
         "sftp": ["paramiko>=3.3"],
     },
 )

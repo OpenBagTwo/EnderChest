@@ -179,7 +179,7 @@ def craft_shulker_box(
       to ensure that they are valid or actively in use
     """
     if not is_valid_filename(name):
-        CRAFT_LOGGER.error(f"{name} is not a valid name: must be useable as a filename")
+        CRAFT_LOGGER.error(f"{name} is not a valid name: must be usable as a filename")
         return
 
     try:

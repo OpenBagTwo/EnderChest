@@ -10,7 +10,7 @@ from urllib.parse import ParseResult
 from . import SYNC_LOGGER, get_default_netloc, path_from_uri, uri_to_ssh
 
 RSYNC = shutil.which("rsync")
-if RSYNC is None:
+if RSYNC is None:  # pragma: no cover
     raise RuntimeError("No rsync executable found on your system. Cannot sync using.")
 
 
@@ -242,7 +242,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
                     pass
                 else:
                     entry["update"] += 1
-        elif info[:1] == ".":
+        elif info[:1] == ".":  # pragma: no cover
             # this just means permissions or dates are being updated or something
             pass
         else:  # then hopefully this is part of the stats report
@@ -356,7 +356,7 @@ def pull(
     else:
         remote_path = uri_to_ssh(remote_uri)
 
-    if rsync_args:
+    if rsync_args:  # pragma: no cover
         raise NotImplementedError
 
     run_rsync(
@@ -430,7 +430,7 @@ def push(
     else:
         remote_path = uri_to_ssh(remote_uri)
 
-    if rsync_args:
+    if rsync_args:  # pragma: no cover
         raise NotImplementedError
 
     run_rsync(
