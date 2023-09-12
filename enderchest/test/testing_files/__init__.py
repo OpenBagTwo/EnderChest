@@ -4,6 +4,7 @@ from importlib.resources import files
 __all__ = [
     "CLIENT_OPTIONS",
     "ENDERCHEST_CONFIG",
+    "LSTAT_CACHE",
     "INSTGROUPS",
     "LAUNCHER_PROFILES",
     "VERSION_MANIFEST",
@@ -14,6 +15,8 @@ _here = files(__package__)
 CLIENT_OPTIONS = _here / "options.txt"
 
 ENDERCHEST_CONFIG = _here / "enderchest.cfg"
+
+LSTAT_CACHE = _here / "lstat_cache.json"
 
 INSTGROUPS = _here / "instgroups.json"
 
