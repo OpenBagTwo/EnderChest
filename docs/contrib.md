@@ -131,6 +131,38 @@ variety of
 and [fixtures](https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/conftest.py)
 are available for you to leverage for help mocking out file systems.
 
+### Tests Requiring SSH
+
+SFTP syncing was originally tested against an SSH server running locally that
+could be authenticated against passwordlessly. To remove the requirement that
+developers have their systems set up similarly, these tests now default to
+[mocking the calls to paramiko](https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/mock_paramiko.py)
+using
+[cached SFTP attributes](https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/testing_files/lstat_cache.json).
+
+If you make any changes or additions to the "remote" file system used by these
+tests, this cache will need to be regenerated, and for that you will need to
+set up SSH for local passwordless authentication.
+
+!!! tip
+    A good example for configuring key-based passwordless SSH on a POSIX
+    system can be found in
+    [our GitHub Actions](https://github.com/OpenBagTwo/EnderChest/blob/paramiko/.github/workflows/pull_request.yml#L40-L47).
+
+The current procedure to regenerate that cache is:
+
+1. Un-comment [this unit test](https://github.com/OpenBagTwo/EnderChest/blob/853bdbac76124fb9e6d4a754f4dd73c48e66d829/enderchest/test/test_sync.py#L542-L545)
+1. Run
+   ```bash
+   pytest enderchest/tests/test_sync.py::TestSFTPSync::test_generate_lstat_cache --use-local-ssh
+   ```
+1. Re-comment-out that test, then make sure the cache is working by running
+   ```bash
+   pytest -vvx enderchest/tests/test_sync.py::TestSFTPSync
+   ```
+1. If all tests pass when using the cache, then make sure to `git add` the
+   regenerated testing file and include it in your next commit
+
 ## Documentation
 
 In addition to internal (docstring) documentation, the EnderChest project includes
