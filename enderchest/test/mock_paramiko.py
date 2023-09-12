@@ -11,6 +11,8 @@ from .testing_files import LSTAT_CACHE
 
 
 class CachedStat(NamedTuple):
+    """Stat-like loaded from a file cache"""
+
     filename: str
     st_mode: int
     st_size: float
@@ -29,7 +31,7 @@ class MockSFTP:
 
     def __init__(self, root: Path):
         with as_file(LSTAT_CACHE) as lstat_cache_file:
-            cached_lstats: list[dict] = json.loads(lstat_cache_file.read_text())
+            cached_lstats: list[dict] = json.loads(lstat_cache_file.read_text("UTF-8"))
 
         self.lstat_cache: dict[Path, CachedStat] = {
             root / stat["filename"]: CachedStat(**stat) for stat in cached_lstats
@@ -40,9 +42,9 @@ class MockSFTP:
         try:
             return self.lstat_cache[Path(path)]
         except KeyError:
-            """In a few places we get an lstat on a directory (that's not included
-            in the rglob). Rather than including them in the cache, we're just
-            going to mock out that they're directories."""
+            # In a few places we get an lstat on a directory (that's not included
+            # in the rglob). Rather than including them in the cache, we're just
+            # going to mock out that they're directories.
             return CachedStat(filename="", st_mode=16877, st_size=-1, st_mtime=-1)
 
     def mkdir(self, path: str) -> None:
