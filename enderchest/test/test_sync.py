@@ -336,7 +336,10 @@ class TestFileSync:
         assert len(warnings) == 1
         assert "Could not sync changes with prayer://unreachable" in warnings[0]
 
-    # low-level tests
+    ############################################################################
+    # low-level tests                                                          #
+    ############################################################################
+
     def test_reading_the_target_of_a_remote_symlink(self, remote):
         address = remote._replace(
             path=urlparse(
@@ -352,7 +355,7 @@ class TestFileSync:
         with sync.remote_file(address) as remote_link:
             assert remote_link.readlink().name == "BME_1.19.2_nightly.jar"
 
-    @pytest.mark.parametrize("target_type", ("file", "symlink"))
+    @pytest.mark.parametrize("target_type", ("file", "symlink", "nothing"))
     def test_pull_replaces_existing_(self, target_type, remote, tmp_path):
         remote_chest = remote._replace(
             path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
@@ -361,7 +364,7 @@ class TestFileSync:
         local_path.parent.mkdir(parents=True)
         if target_type == "file":
             local_path.write_text("Leave me alone!\n")
-        else:
+        elif target_type == "symlink":
             # shouldn't need to exist
             local_path.symlink_to(tmp_path / "aether", target_is_directory=False)
 
@@ -369,12 +372,35 @@ class TestFileSync:
         assert (local_path / "enderchest.cfg").exists()
 
     @pytest.mark.parametrize("target_type", ("file", "symlink"))
+    def test_pull_dry_run_does_not_replace_existing_(
+        self, target_type, remote, tmp_path
+    ):
+        remote_chest = remote._replace(
+            path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
+        )
+        local_path = tmp_path / "somewhere_else" / "EnderChest"
+        local_path.parent.mkdir(parents=True)
+        if target_type == "file":
+            local_path.write_text("Leave me alone!\n")
+        elif target_type == "symlink":
+            # shouldn't need to exist
+            local_path.symlink_to(tmp_path / "aether", target_is_directory=False)
+
+        sync.pull(remote_chest, local_path.parent, verbosity=-1, dry_run=True)
+        if target_type == "file":
+            assert local_path.read_text("UTF-8") == "Leave me alone!\n"
+        elif target_type == "symlink":
+            assert local_path.readlink() == tmp_path / "aether"
+        else:
+            assert not local_path.exists()
+
+    @pytest.mark.parametrize("target_type", ("file", "symlink", "nothing"))
     def test_push_replaces_existing_(self, target_type, minecraft_root, tmp_path):
         remote_path = tmp_path / "somewhere_else" / "EnderChest"
         remote_path.parent.mkdir(parents=True)
         if target_type == "file":
             remote_path.write_text("Leave me alone!\n")
-        else:
+        elif target_type == "symlink":
             # shouldn't need to exist
             remote_path.symlink_to(tmp_path / "aether", target_is_directory=False)
 
@@ -383,6 +409,29 @@ class TestFileSync:
         sync.push(minecraft_root / "EnderChest", remote, verbosity=-1)
 
         assert (remote_path / "global" / "usercache.json").exists()
+
+    @pytest.mark.parametrize("target_type", ("file", "symlink", "nothing"))
+    def test_push_dry_run_does_not_replace_existing_(
+        self, target_type, minecraft_root, tmp_path
+    ):
+        remote_path = tmp_path / "somewhere_else" / "EnderChest"
+        remote_path.parent.mkdir(parents=True)
+        if target_type == "file":
+            remote_path.write_text("Leave me alone!\n")
+        elif target_type == "symlink":
+            # shouldn't need to exist
+            remote_path.symlink_to(tmp_path / "aether", target_is_directory=False)
+
+        remote = urlparse(remote_path.parent.as_uri())._replace(scheme=self.protocol)
+
+        sync.push(minecraft_root / "EnderChest", remote, verbosity=-1, dry_run=True)
+
+        if target_type == "file":
+            assert remote_path.read_text("utf-8") == "Leave me alone!\n"
+        elif target_type == "symlink":
+            assert remote_path.readlink() == tmp_path / "aether"
+        else:
+            assert not remote_path.exists()
 
 
 @pytest.mark.skipif(

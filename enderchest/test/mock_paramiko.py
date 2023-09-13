@@ -21,6 +21,7 @@ class CachedStat(NamedTuple):
 
 A_DIRECTORY = CachedStat(filename="", st_mode=16877, st_size=-1, st_mtime=-1)
 A_FILE = CachedStat(filename="", st_mode=33188, st_size=-1, st_mtime=-1)
+A_SYMLINK = CachedStat(filename="", st_mode=41471, st_size=-1, st_mtime=-1)
 
 
 class MockSFTP:
@@ -43,21 +44,19 @@ class MockSFTP:
 
     def lstat(self, path: str) -> CachedStat:
         """Return the cached file attributes for the specified path"""
-        if Path(path).name == "somewhere_else":
-            return A_DIRECTORY
-        if "somewhere_else" in Path(path).parts:
-            # Note: technically this should be a symlink when mocking
-            #       test_push_replaces_existing_[symlink], but since the behavior
-            #       is no different (still ends up calling remove()), it's not
-            #       worth further complicating the mock.
-            return A_FILE
         try:
             return self.lstat_cache[Path(path)]
-        except KeyError:
-            # In a few places we get an lstat on a directory (that's not included
-            # in the rglob). Rather than including them in the cache, we're just
-            # going to mock out that they're directories.
-            return A_DIRECTORY
+        except KeyError as not_in_cache:
+            # In a few places we get an lstat on stuff that's outside of the
+            # cache. In those scenarios, we want to return CacheStats matching
+            # the type of the file
+            if Path(path).is_symlink():
+                return A_SYMLINK
+            if Path(path).is_dir():
+                return A_DIRECTORY
+            if Path(path).exists():
+                return A_FILE
+            raise FileNotFoundError from not_in_cache
 
     def mkdir(self, path: str) -> None:
         """Make a directory on the "remote" file system"""

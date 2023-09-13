@@ -86,14 +86,14 @@ def copy(
         if not dry_run:
             destination_path.unlink()
         else:
-            SYNC_LOGGER.debug("And replacing it entirely with", source_path)
+            SYNC_LOGGER.debug("And replacing it entirely with %s", source_path)
             return
     elif destination_path.exists() and not destination_path.is_dir():
         SYNC_LOGGER.warning("Deleting file %s", destination_path)
         if not dry_run:
             destination_path.unlink()
         else:
-            SYNC_LOGGER.debug("And replacing it entirely with", source_path)
+            SYNC_LOGGER.debug("And replacing it entirely with %s", source_path)
             return
     else:
         if not dry_run:
