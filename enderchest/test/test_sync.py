@@ -13,7 +13,7 @@ from enderchest import craft
 from enderchest import filesystem as fs
 from enderchest import gather
 from enderchest import remote as r
-from enderchest.sync import path_from_uri
+from enderchest import sync
 
 from . import mock_paramiko, utils
 from .testing_files import LSTAT_CACHE
@@ -259,7 +259,7 @@ class TestFileSync:
         gather.update_ender_chest(root, remotes=(remote,))
         r.sync_with_remotes(root, "push", verbosity=-1)
         assert (
-            path_from_uri(remote)
+            sync.path_from_uri(remote)
             / "EnderChest"
             / "vanilla"
             / "conflict"
@@ -270,7 +270,7 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", dry_run=True)
         assert (
-            path_from_uri(remote)
+            sync.path_from_uri(remote)
             / "EnderChest"
             / "vanilla"
             / "conflict"
@@ -290,7 +290,8 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", **sync_kwargs)
         assert (
-            not (path_from_uri(remote) / "EnderChest" / "optifine").exists() == delete
+            not (sync.path_from_uri(remote) / "EnderChest" / "optifine").exists()
+            == delete
         )
 
     def test_close_does_not_touch_top_level_dot_folders_by_default(
@@ -298,7 +299,7 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
-        assert not (path_from_uri(remote) / "EnderChest" / ".git").exists()
+        assert not (sync.path_from_uri(remote) / "EnderChest" / ".git").exists()
 
     def test_chest_obeys_its_own_ignore_list(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
@@ -309,7 +310,7 @@ class TestFileSync:
 
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         assert (
-            path_from_uri(remote) / "EnderChest" / ".git" / "log"
+            sync.path_from_uri(remote) / "EnderChest" / ".git" / "log"
         ).read_text() == "i committed some stuff\n"
 
     def test_open_stops_at_first_successful_sync(self, minecraft_root, remote, caplog):
@@ -334,6 +335,54 @@ class TestFileSync:
 
         assert len(warnings) == 1
         assert "Could not sync changes with prayer://unreachable" in warnings[0]
+
+    # low-level tests
+    def test_reading_the_target_of_a_remote_symlink(self, remote):
+        address = remote._replace(
+            path=urlparse(
+                (
+                    sync.path_from_uri(remote)
+                    / "EnderChest"
+                    / "optifine"
+                    / "mods"
+                    / "BME.jar"
+                ).as_uri()
+            ).path,
+        )
+        with sync.remote_file(address) as remote_link:
+            assert remote_link.readlink().name == "BME_1.19.2_nightly.jar"
+
+    @pytest.mark.parametrize("target_type", ("file", "symlink"))
+    def test_pull_replaces_existing_(self, target_type, remote, tmp_path):
+        remote_chest = remote._replace(
+            path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
+        )
+        local_path = tmp_path / "somewhere_else" / "EnderChest"
+        local_path.parent.mkdir(parents=True)
+        if target_type == "file":
+            local_path.write_text("Leave me alone!\n")
+        else:
+            # shouldn't need to exist
+            local_path.symlink_to(tmp_path / "aether", target_is_directory=False)
+
+        sync.pull(remote_chest, local_path.parent, verbosity=-1)
+        assert (local_path / "enderchest.cfg").exists()
+
+    @pytest.mark.parametrize("target_type", ("file", "symlink"))
+    def test_push_replaces_existing_(self, target_type, minecraft_root, tmp_path):
+        remote_path = tmp_path / "somewhere_else" / "EnderChest"
+        remote_path.parent.mkdir(parents=True)
+        if target_type == "file":
+            remote_path.write_text("Leave me alone!\n")
+        else:
+            # shouldn't need to exist
+            remote_path.symlink_to(tmp_path / "aether", target_is_directory=False)
+
+        remote = urlparse(remote_path.parent.as_uri())._replace(scheme=self.protocol)
+
+        sync.push(minecraft_root / "EnderChest", remote, verbosity=-1)
+
+        assert (remote_path / "global" / "usercache.json").exists()
 
 
 @pytest.mark.skipif(
@@ -508,7 +557,9 @@ class TestSFTPSync(TestFileSync):
         if not use_local_ssh:
             from enderchest.sync import sftp
 
-            mock_sftp = mock_paramiko.MockSFTP(path_from_uri(remote) / "EnderChest")
+            mock_sftp = mock_paramiko.MockSFTP(
+                sync.path_from_uri(remote) / "EnderChest"
+            )
 
             monkeypatch.setattr(
                 sftp, "connect", mock_paramiko.generate_mock_connect(mock_sftp)
@@ -521,7 +572,7 @@ class TestSFTPSync(TestFileSync):
 
         with sftp.connect(remote) as sftp_client:
             stats = sftp.get_contents(
-                sftp_client, (path_from_uri(remote) / "EnderChest").as_posix()
+                sftp_client, (sync.path_from_uri(remote) / "EnderChest").as_posix()
             )
 
         for path, sftp_attr in stats:

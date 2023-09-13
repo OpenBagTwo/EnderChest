@@ -109,6 +109,9 @@ def file_system(tmp_path):
         (chest_folder / "1.19" / "saves" / "olam"): (
             minecraft_root / "worlds" / "olam"
         ),
+        (chest_folder / "optifine" / "mods" / "BME.jar"): (
+            mod_builds_folder / "BME_1.19.2_nightly.jar"
+        ),
     }
 
     for path, contents in do_not_touch.items():
