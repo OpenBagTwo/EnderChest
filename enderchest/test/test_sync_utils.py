@@ -72,6 +72,19 @@ class TestIsIdentical:
             f.write("\n")
         assert not sync_utils.is_identical(one.stat(), two.stat())
 
+    @pytest.mark.parametrize("target_type", ("file", "folder"))
+    def test_symlink_is_not_identical_to_its_target(self, tmp_path, target_type):
+        target = tmp_path / "bulleye"
+        if target_type == "file":
+            target.touch()
+        else:
+            target.mkdir()
+
+        linky = tmp_path / "linky"
+        linky.symlink_to(target, target_is_directory=target_type == "folder")
+
+        assert not sync_utils.is_identical(target.lstat(), linky.lstat())
+
     def test_checks_modified_time(self, tmp_path):
         one = tmp_path / "one"
         one.write_text("I'm the original")

@@ -278,6 +278,24 @@ def pull(
     remote_path = path_from_uri(remote_uri)
     destination_path = local_path / remote_path.name
 
+    if destination_path.is_symlink() and not destination_path.is_dir():
+        SYNC_LOGGER.warning("Removing symlink %s", destination_path)
+        if not dry_run:
+            destination_path.unlink()
+        else:
+            SYNC_LOGGER.debug("And replacing it entirely with", remote_path)
+            return
+    elif destination_path.exists() and not destination_path.is_dir():
+        SYNC_LOGGER.warning("Deleting file %s", destination_path)
+        if not dry_run:
+            destination_path.unlink()
+        else:
+            SYNC_LOGGER.debug("And replacing it entirely with", remote_path)
+            return
+    else:
+        if not dry_run:
+            local_path.mkdir(parents=True, exist_ok=True)
+
     with connect(uri=remote_uri, timeout=timeout) as remote:
         try:
             source_target = remote.lstat(remote_path.as_posix())
@@ -306,6 +324,7 @@ def pull(
                     is_symlink=stat.S_ISLNK(source_target.st_mode or 0),
                 )
             return
+        destination_path.mkdir(exist_ok=True)
 
         source_contents = filter_contents(
             get_contents(remote, remote_path.as_posix()),
@@ -416,14 +435,15 @@ def push(
             raise NotADirectoryError(f"{remote_folder} on remote is not a directory.")
 
         remote_path = remote_folder / local_path.name
+        try:
+            target_stat = remote.lstat(remote_path.as_posix())
+        except FileNotFoundError:
+            target_stat = None
         if not stat.S_ISDIR(local_path.stat().st_mode or 0):
-            try:
-                target_stat = remote.lstat(remote_path.as_posix())
-                if is_identical(local_path.stat(), target_stat):
-                    SYNC_LOGGER.warning("Remote file matches %s", local_path)
-                    return
-            except FileNotFoundError:
-                pass
+            if target_stat and is_identical(local_path.stat(), target_stat):
+                SYNC_LOGGER.warning("Remote file matches %s", local_path)
+                return
+
             SYNC_LOGGER.debug(
                 "Uploading file %s to remote",
                 local_path,
@@ -431,6 +451,17 @@ def push(
             if not dry_run:
                 upload_file(remote, local_path, remote_path)
             return
+        if not target_stat:
+            if not dry_run:
+                remote.mkdir(remote_path.as_posix())
+        elif not stat.S_ISDIR(target_stat.st_mode or 0):
+            SYNC_LOGGER.warning(
+                "Deleting remote file or symlink %s",
+                remote_path,
+            )
+            if not dry_run:
+                remote.remove(remote_path.as_posix())
+                remote.mkdir(remote_path.as_posix())
 
         source_contents = filter_contents(
             file.get_contents(local_path), exclude, prefix=local_path
