@@ -394,6 +394,15 @@ class TestFileSync:
         else:
             assert not local_path.exists()
 
+    def test_pull_fails_if_local_parent_folder_does_not_exist(self, remote):
+        remote_chest = remote._replace(
+            path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
+        )
+        local_path = Path("i do not exist")
+
+        with pytest.raises(FileNotFoundError):
+            sync.pull(remote_chest, local_path)
+
     @pytest.mark.parametrize("target_type", ("file", "symlink", "nothing"))
     def test_push_replaces_existing_(self, target_type, minecraft_root, tmp_path):
         remote_path = tmp_path / "somewhere_else" / "EnderChest"
@@ -432,6 +441,15 @@ class TestFileSync:
             assert remote_path.readlink() == tmp_path / "aether"
         else:
             assert not remote_path.exists()
+
+
+class TestFileSyncOnly:
+    def test_push_fails_if_remote_parent_folder_does_not_exist(self, minecraft_root):
+        remote_path = Path("i do not exist").absolute()
+        remote = urlparse(remote_path.as_uri())
+
+        with pytest.raises(FileNotFoundError):
+            sync.push(minecraft_root / "EnderChest", remote)
 
 
 @pytest.mark.skipif(
@@ -644,3 +662,10 @@ class TestSFTPSync(TestFileSync):
     # def test_generate_lstat_cache(self):
     #     """Force cache gen, but just do it once"""
     #     pass
+
+    def test_push_fails_if_remote_parent_folder_does_not_exist(self, minecraft_root):
+        remote_path = Path("i do not exist").absolute()
+        remote = urlparse(remote_path.as_uri())._replace(scheme=self.protocol)
+
+        with pytest.raises(FileNotFoundError):
+            sync.push(minecraft_root / "EnderChest", remote)
