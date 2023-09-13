@@ -5,7 +5,7 @@ import os
 import shutil
 from importlib.resources import as_file
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import ParseResult, urlparse
 
 import pytest
 
@@ -413,7 +413,14 @@ class TestFileSync:
             # shouldn't need to exist
             remote_path.symlink_to(tmp_path / "aether", target_is_directory=False)
 
-        remote = urlparse(remote_path.parent.as_uri())._replace(scheme=self.protocol)
+        remote = ParseResult(
+            scheme=self.protocol,
+            netloc=sync.get_default_netloc(),
+            path=urlparse(remote_path.absolute().parent.as_uri()).path,
+            params="",
+            query="",
+            fragment="",
+        )
 
         sync.push(minecraft_root / "EnderChest", remote, verbosity=-1)
 
@@ -431,7 +438,14 @@ class TestFileSync:
             # shouldn't need to exist
             remote_path.symlink_to(tmp_path / "aether", target_is_directory=False)
 
-        remote = urlparse(remote_path.parent.as_uri())._replace(scheme=self.protocol)
+        remote = ParseResult(
+            scheme=self.protocol,
+            netloc=sync.get_default_netloc(),
+            path=urlparse(remote_path.absolute().parent.as_uri()).path,
+            params="",
+            query="",
+            fragment="",
+        )
 
         sync.push(minecraft_root / "EnderChest", remote, verbosity=-1, dry_run=True)
 
@@ -665,7 +679,13 @@ class TestSFTPSync(TestFileSync):
 
     def test_push_fails_if_remote_parent_folder_does_not_exist(self, minecraft_root):
         remote_path = Path("i do not exist").absolute()
-        remote = urlparse(remote_path.as_uri())._replace(scheme=self.protocol)
-
+        remote = ParseResult(
+            scheme=self.protocol,
+            netloc=sync.get_default_netloc(),
+            path=urlparse(remote_path.absolute().as_uri()).path,
+            params="",
+            query="",
+            fragment="",
+        )
         with pytest.raises(FileNotFoundError):
             sync.push(minecraft_root / "EnderChest", remote)
