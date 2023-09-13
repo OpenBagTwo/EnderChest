@@ -19,6 +19,10 @@ class CachedStat(NamedTuple):
     st_mtime: float
 
 
+A_DIRECTORY = CachedStat(filename="", st_mode=16877, st_size=-1, st_mtime=-1)
+A_FILE = CachedStat(filename="", st_mode=33188, st_size=-1, st_mtime=-1)
+
+
 class MockSFTP:
     """Create a mock SFTP client suitable for testing
 
@@ -39,13 +43,21 @@ class MockSFTP:
 
     def lstat(self, path: str) -> CachedStat:
         """Return the cached file attributes for the specified path"""
+        if Path(path).name == "somewhere_else":
+            return A_DIRECTORY
+        if "somewhere_else" in Path(path).parts:
+            # Note: technically this should be a symlink when mocking
+            #       test_push_replaces_existing_[symlink], but since the behavior
+            #       is no different (still ends up calling remove()), it's not
+            #       worth further complicating the mock.
+            return A_FILE
         try:
             return self.lstat_cache[Path(path)]
         except KeyError:
             # In a few places we get an lstat on a directory (that's not included
             # in the rglob). Rather than including them in the cache, we're just
             # going to mock out that they're directories.
-            return CachedStat(filename="", st_mode=16877, st_size=-1, st_mtime=-1)
+            return A_DIRECTORY
 
     def mkdir(self, path: str) -> None:
         """Make a directory on the "remote" file system"""
@@ -118,11 +130,13 @@ def mock_rglob(client: MockSFTP, path: str) -> list[tuple[Path, CachedStat]]:
     client : MockSFTP
         The mock SFTP client
     path : str
-        This parameter is ignored
+        This parameter is just used to determine which test is being run
 
     Returns
     -------
     list of (Path, SFTPAttributes-like) tuples
         The cached file attributes
     """
+    if "somewhere_else" in Path(path).parts:
+        return []
     return list(client.lstat_cache.items())

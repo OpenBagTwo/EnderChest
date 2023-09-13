@@ -81,17 +81,23 @@ def copy(
     SYNC_LOGGER.debug(f"Ignoring patterns: {exclude}")
 
     destination_path = destination_folder / source_path.name
-    if destination_path.exists():
-        if destination_path.is_symlink():
-            SYNC_LOGGER.warning("Removing symlink %s", destination_path)
-            if not dry_run:
-                destination_path.unlink()
-        elif not destination_path.is_dir():
-            SYNC_LOGGER.warning("Deleting file %s", destination_path)
-            if not dry_run:
-                destination_path.unlink()
+    if destination_path.is_symlink() and not destination_path.is_dir():
+        SYNC_LOGGER.warning("Removing symlink %s", destination_path)
+        if not dry_run:
+            destination_path.unlink()
+        else:
+            SYNC_LOGGER.debug("And replacing it entirely with", source_path)
+            return
+    elif destination_path.exists() and not destination_path.is_dir():
+        SYNC_LOGGER.warning("Deleting file %s", destination_path)
+        if not dry_run:
+            destination_path.unlink()
+        else:
+            SYNC_LOGGER.debug("And replacing it entirely with", source_path)
+            return
     else:
-        destination_folder.mkdir(parents=True, exist_ok=True)
+        if not dry_run:
+            destination_folder.mkdir(parents=True, exist_ok=True)
 
     SYNC_LOGGER.debug(f"Copying {source_path} into {destination_folder}")
 
