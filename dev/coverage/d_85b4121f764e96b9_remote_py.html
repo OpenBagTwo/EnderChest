@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="covindex.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_shulker_box_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-06-24 18:50 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
+            created at 2023-09-14 20:03 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -91,7 +91,7 @@
     <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">enderchest</span> <span class="key">import</span> <span class="nam">EnderChest</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">loggers</span> <span class="key">import</span> <span class="nam">IMPORTANT</span><span class="op">,</span> <span class="nam">SYNC_LOGGER</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">prompt</span> <span class="key">import</span> <span class="nam">confirm</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">sync</span> <span class="key">import</span> <span class="nam">path_from_uri</span><span class="op">,</span> <span class="nam">pull</span><span class="op">,</span> <span class="nam">push</span><span class="op">,</span> <span class="nam">remote_file</span><span class="op">,</span> <span class="nam">render_remote</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">sync</span> <span class="key">import</span> <span class="nam">abspath_from_uri</span><span class="op">,</span> <span class="nam">pull</span><span class="op">,</span> <span class="nam">push</span><span class="op">,</span> <span class="nam">remote_file</span><span class="op">,</span> <span class="nam">render_remote</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="key">def</span> <span class="nam">load_remote_ender_chest</span><span class="op">(</span><span class="nam">uri</span><span class="op">:</span> <span class="nam">str</span> <span class="op">|</span> <span class="nam">ParseResult</span><span class="op">)</span> <span class="op">-></span> <span class="nam">EnderChest</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -260,7 +260,7 @@
     <p class="pln"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t">                        <span class="nam">path</span><span class="op">=</span><span class="nam">urlparse</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t">                            <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t">                                <span class="nam">fs</span><span class="op">.</span><span class="nam">ender_chest_folder</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t">                                    <span class="nam">path_from_uri</span><span class="op">(</span><span class="nam">remote_uri</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t">                                    <span class="nam">abspath_from_uri</span><span class="op">(</span><span class="nam">remote_uri</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t182" href="#t182">182</a></span><span class="t">                                    <span class="nam">check_exists</span><span class="op">=</span><span class="key">False</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t183" href="#t183">183</a></span><span class="t">                                <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t184" href="#t184">184</a></span><span class="t">                            <span class="op">)</span><span class="op">.</span><span class="nam">as_uri</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -328,8 +328,8 @@
             <a id="indexLink" class="nav" href="covindex.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_shulker_box_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-06-24 18:50 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
+            created at 2023-09-14 20:03 +0000
         </p>
     </div>
 </footer>
