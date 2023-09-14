@@ -25,8 +25,9 @@ def get_default_netloc() -> str:
     return f"{getpass.getuser()}@{socket.gethostname()}".lower()
 
 
-def path_from_uri(uri: ParseResult) -> Path:
-    """Extract and unquote the path component of a URI to turn it into a `pathlib.Path`
+def abspath_from_uri(uri: ParseResult) -> Path:
+    """Extract and unquote the path component of a URI to turn it into an
+    unambiguous absolute `pathlib.Path`
 
     h/t https://stackoverflow.com/a/61922504
 

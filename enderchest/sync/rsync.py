@@ -5,9 +5,9 @@ import subprocess
 from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import ParseResult
+from urllib.parse import ParseResult, unquote
 
-from . import SYNC_LOGGER, get_default_netloc, path_from_uri, uri_to_ssh
+from . import SYNC_LOGGER, get_default_netloc, uri_to_ssh
 
 RSYNC = shutil.which("rsync")
 if RSYNC is None:  # pragma: no cover
@@ -352,7 +352,7 @@ def pull(
 
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = path_from_uri(remote_uri).as_posix()
+        remote_path: str = unquote(remote_uri.path)
     elif use_daemon:
         remote_path = remote_uri.geturl()
     else:
@@ -426,7 +426,7 @@ def push(
     """
     if remote_uri.netloc == get_default_netloc():
         SYNC_LOGGER.debug("Performing sync as a local transfer")
-        remote_path: str = path_from_uri(remote_uri).as_posix()
+        remote_path: str = unquote(remote_uri.path)
     elif use_daemon:
         remote_path = remote_uri.geturl()
     else:
