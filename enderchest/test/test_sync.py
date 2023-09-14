@@ -390,7 +390,7 @@ class TestFileSync:
         if target_type == "file":
             assert local_path.read_text("UTF-8") == "Leave me alone!\n"
         elif target_type == "symlink":
-            assert local_path.readlink() == tmp_path / "aether"
+            assert local_path.readlink().name == "aether"
         else:
             assert not local_path.exists()
 
@@ -402,6 +402,25 @@ class TestFileSync:
 
         with pytest.raises(FileNotFoundError):
             sync.pull(remote_chest, local_path)
+
+    def test_pull_fails_if_remote_does_not_exist(self, tmp_path):
+        local_path = tmp_path / "i do not exist" / "wait yes i do"
+        local_path.parent.mkdir(parents=True)
+        local_path.touch()
+
+        remote_path = Path("i do not exist")
+        remote = ParseResult(
+            scheme=self.protocol,
+            netloc=sync.get_default_netloc(),
+            path=urlparse(remote_path.absolute().as_uri()).path,
+            params="",
+            query="",
+            fragment="",
+        )
+        with pytest.raises(FileNotFoundError):
+            sync.pull(remote, local_path.parent.parent, verbosity=-1)
+
+        assert local_path.exists()
 
     @pytest.mark.parametrize("target_type", ("file", "symlink", "nothing"))
     def test_push_replaces_existing_(self, target_type, minecraft_root, tmp_path):
@@ -452,9 +471,28 @@ class TestFileSync:
         if target_type == "file":
             assert remote_path.read_text("utf-8") == "Leave me alone!\n"
         elif target_type == "symlink":
-            assert remote_path.readlink() == tmp_path / "aether"
+            assert remote_path.readlink().name == "aether"
         else:
             assert not remote_path.exists()
+
+    def test_push_fails_if_local_does_not_exist(self, tmp_path):
+        remote_path = tmp_path / "i do not exist" / "wait yes i do"
+        remote_path.parent.mkdir(parents=True)
+        remote_path.touch()
+
+        local_path = Path("i do not exist")
+        remote = ParseResult(
+            scheme=self.protocol,
+            netloc=sync.get_default_netloc(),
+            path=urlparse(remote_path.absolute().parent.parent.as_uri()).path,
+            params="",
+            query="",
+            fragment="",
+        )
+        with pytest.raises(FileNotFoundError):
+            sync.push(local_path, remote, verbosity=-1)
+
+        assert remote_path.exists()
 
 
 class TestFileSyncOnly:

@@ -264,8 +264,6 @@ def pull(
     -----
     - If the destination folder does not already exist, this method will not
       create it or its parent directories.
-    - Unlike `sync.file.copy`, this method will fail if the remote path does
-      not exist
     """
     if not local_path.exists():
         raise FileNotFoundError(f"{local_path} does not exist")
@@ -419,8 +417,6 @@ def push(
     -----
     - If the destination folder does not already exist, this method will not
       create it or its parent directories.
-    - Unlike `sync.file.copy`, this method will fail if the local path does
-      not exist
     """
     if not local_path.exists():
         raise FileNotFoundError(f"{local_path} does not exist.")
