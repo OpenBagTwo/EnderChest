@@ -266,7 +266,7 @@ class TestFileSync:
         gather.update_ender_chest(root, remotes=(remote,))
         r.sync_with_remotes(root, "push", verbosity=-1)
         assert (
-            sync.path_from_uri(remote)
+            sync.abspath_from_uri(remote)
             / "EnderChest"
             / "vanilla"
             / "conflict"
@@ -277,7 +277,7 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", dry_run=True)
         assert (
-            sync.path_from_uri(remote)
+            sync.abspath_from_uri(remote)
             / "EnderChest"
             / "vanilla"
             / "conflict"
@@ -297,7 +297,7 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", **sync_kwargs)
         assert (
-            not (sync.path_from_uri(remote) / "EnderChest" / "optifine").exists()
+            not (sync.abspath_from_uri(remote) / "EnderChest" / "optifine").exists()
             == delete
         )
 
@@ -306,7 +306,7 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
-        assert not (sync.path_from_uri(remote) / "EnderChest" / ".git").exists()
+        assert not (sync.abspath_from_uri(remote) / "EnderChest" / ".git").exists()
 
     def test_chest_obeys_its_own_ignore_list(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
@@ -317,7 +317,7 @@ class TestFileSync:
 
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         assert (
-            sync.path_from_uri(remote) / "EnderChest" / ".git" / "log"
+            sync.abspath_from_uri(remote) / "EnderChest" / ".git" / "log"
         ).read_text() == "i committed some stuff\n"
 
     def test_open_stops_at_first_successful_sync(self, minecraft_root, remote, caplog):
@@ -351,7 +351,7 @@ class TestFileSync:
         address = remote._replace(
             path=urlparse(
                 (
-                    sync.path_from_uri(remote)
+                    sync.abspath_from_uri(remote)
                     / "EnderChest"
                     / "optifine"
                     / "mods"
@@ -365,7 +365,7 @@ class TestFileSync:
     @pytest.mark.parametrize("target_type", ("file", "symlink", "nothing"))
     def test_pull_replaces_existing_(self, target_type, remote, tmp_path):
         remote_chest = remote._replace(
-            path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
+            path=urlparse((sync.abspath_from_uri(remote) / "EnderChest").as_uri()).path,
         )
         local_path = tmp_path / "somewhere_else" / "EnderChest"
         local_path.parent.mkdir(parents=True)
@@ -383,7 +383,7 @@ class TestFileSync:
         self, target_type, remote, tmp_path
     ):
         remote_chest = remote._replace(
-            path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
+            path=urlparse((sync.abspath_from_uri(remote) / "EnderChest").as_uri()).path,
         )
         local_path = tmp_path / "somewhere_else" / "EnderChest"
         local_path.parent.mkdir(parents=True)
@@ -403,7 +403,7 @@ class TestFileSync:
 
     def test_pull_fails_if_local_parent_folder_does_not_exist(self, remote):
         remote_chest = remote._replace(
-            path=urlparse((sync.path_from_uri(remote) / "EnderChest").as_uri()).path,
+            path=urlparse((sync.abspath_from_uri(remote) / "EnderChest").as_uri()).path,
         )
         local_path = Path("i do not exist")
 
@@ -684,7 +684,7 @@ class TestSFTPSync(TestFileSync):
             from enderchest.sync import sftp
 
             mock_sftp = mock_paramiko.MockSFTP(
-                sync.path_from_uri(remote) / "EnderChest"
+                sync.abspath_from_uri(remote) / "EnderChest"
             )
 
             monkeypatch.setattr(
@@ -698,7 +698,7 @@ class TestSFTPSync(TestFileSync):
 
         with sftp.connect(remote) as sftp_client:
             stats = sftp.get_contents(
-                sftp_client, (sync.path_from_uri(remote) / "EnderChest").as_posix()
+                sftp_client, (sync.abspath_from_uri(remote) / "EnderChest").as_posix()
             )
 
         for path, sftp_attr in stats:

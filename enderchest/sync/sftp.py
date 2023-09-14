@@ -1,9 +1,10 @@
 """paramiko-based sftp sync implementation"""
+import posixpath
 import stat
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Collection, Generator
-from urllib.parse import ParseResult
+from urllib.parse import ParseResult, unquote
 
 import paramiko
 
@@ -16,7 +17,6 @@ from . import (
     filter_contents,
     generate_sync_report,
     is_identical,
-    path_from_uri,
 )
 
 
@@ -99,7 +99,7 @@ def connect(
 
 def download_file(
     client: paramiko.sftp_client.SFTPClient,
-    remote_path: Path,
+    remote_loc: str,
     local_path: Path,
     is_symlink: bool,
 ) -> None:
@@ -110,8 +110,8 @@ def download_file(
     ----------
     client : Paramiko SFTP client
         An authenticated client connected to the remote server
-    remote_path : Path
-        The path of the file to download
+    remote_loc : str
+        The POSIX path of the file to download
     local_path : Path
         The path to locally save the file
     is_symlink : bool
@@ -120,20 +120,20 @@ def download_file(
 
     Notes
     -----
-    This is just a wrapper around `client.get()` that can handle symlinks and
-    the `remote_path` being a Path. It does not check if either path is valid,
-    points to a file, lives in an existing folder, etc.
+    This is just a wrapper around `client.get()` that can handle symlinks.
+    It does not check if either path is valid, points to a file, lives in an
+    existing folder, etc.
     """
     if is_symlink:
-        local_path.symlink_to(Path((client.readlink(remote_path.as_posix()) or "")))
+        local_path.symlink_to(Path((client.readlink(remote_loc) or "")))
     else:
-        client.get(remote_path.as_posix(), local_path)
+        client.get(remote_loc, local_path)
 
 
 def upload_file(
     client: paramiko.sftp_client.SFTPClient,
     local_path: Path,
-    remote_path: Path,
+    remote_loc: str,
 ) -> None:
     """Upload a local file to a remote SFTP server
 
@@ -143,19 +143,19 @@ def upload_file(
         An authenticated client connected to the remote server
     local_path : Path
         The path of the file to upload
-    remote_path : Path
-        The remote path to save the file
+    remote_loc : str
+        The POSIX path for the remote location to save the file
 
     Notes
     -----
-    This is just a wrapper around `client.put()` that can handle symlinks and
-    the `remote_path` being a Path. It does not check if either path is valid,
-    points to a file, lives in an existing folder, etc.
+    This is just a wrapper around `client.put()` that can handle symlinks.
+    It does not check if either path is valid, points to a file, lives in an
+    existing folder, etc.
     """
     if local_path.is_symlink():
-        client.symlink(local_path.readlink().as_posix(), remote_path.as_posix())
+        client.symlink(local_path.readlink().as_posix(), remote_loc)
     else:
-        client.put(local_path, remote_path.as_posix())
+        client.put(local_path, remote_loc)
 
 
 def rglob(
@@ -273,8 +273,8 @@ def pull(
             "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
 
-    remote_path = path_from_uri(remote_uri)
-    destination_path = local_path / remote_path.name
+    remote_loc = posixpath.normpath(unquote(remote_uri.path))
+    destination_path = local_path / posixpath.basename(remote_loc)
 
     if destination_path.is_symlink() and not destination_path.is_dir():
         SYNC_LOGGER.warning("Removing symlink %s", destination_path)
@@ -282,7 +282,7 @@ def pull(
             destination_path.unlink()
         else:
             SYNC_LOGGER.debug(
-                "And replacing it entirely with the remote's %s", remote_path
+                "And replacing it entirely with the remote's %s", remote_loc
             )
             return
     elif destination_path.exists() and not destination_path.is_dir():
@@ -291,16 +291,16 @@ def pull(
             destination_path.unlink()
         else:
             SYNC_LOGGER.debug(
-                "And replacing it entirely with the remote's %s", remote_path
+                "And replacing it entirely with the remote's %s", remote_loc
             )
             return
 
     with connect(uri=remote_uri, timeout=timeout) as remote:
         try:
-            source_target = remote.lstat(remote_path.as_posix())
+            source_target = remote.lstat(remote_loc)
         except OSError as bad_target:
             raise type(bad_target)(
-                f"Could not access {remote_path} on remote: {bad_target}"
+                f"Could not access {remote_loc} on remote: {bad_target}"
             )
         if not stat.S_ISDIR(source_target.st_mode or 0):
             if destination_path.exists() and is_identical(
@@ -318,7 +318,7 @@ def pull(
             if not dry_run:
                 download_file(
                     remote,
-                    remote_path,
+                    remote_loc,
                     destination_path,
                     is_symlink=stat.S_ISLNK(source_target.st_mode or 0),
                 )
@@ -326,16 +326,16 @@ def pull(
 
         if not destination_path.exists():
             SYNC_LOGGER.debug(
-                "Downloading the entire contents of the remote's %s", remote_path
+                "Downloading the entire contents of the remote's %s", remote_loc
             )
             if dry_run:
                 return
             destination_path.mkdir()
 
         source_contents = filter_contents(
-            get_contents(remote, remote_path.as_posix()),
+            get_contents(remote, remote_loc),
             exclude,
-            prefix=remote_path,
+            prefix=remote_loc,
         )
         destination_contents = filter_contents(
             file.get_contents(destination_path),
@@ -363,7 +363,7 @@ def pull(
                     (destination_path / path).unlink(missing_ok=True)
                     download_file(
                         remote,
-                        remote_path / path,
+                        posixpath.join(remote_loc, path.as_posix()),
                         destination_path / path,
                         stat.S_ISLNK(path_stat.st_mode or 0),
                     )
@@ -426,21 +426,21 @@ def push(
             "\n".join("  {}: {}".format(*item) for item in unsupported_kwargs.items()),
         )
 
-    remote_folder = path_from_uri(remote_uri)
+    remote_parent = posixpath.normpath(unquote(remote_uri.path))
 
     with connect(uri=remote_uri, timeout=timeout) as remote:
         try:
-            remote_folder_stat = remote.lstat(remote_folder.as_posix())
+            remote_folder_stat = remote.lstat(remote_parent)
         except OSError as bad_target:
             raise type(bad_target)(
-                f"Could not access {remote_folder} on remote: {bad_target}"
+                f"Could not access {remote_parent} on remote: {bad_target}"
             )
         if not stat.S_ISDIR(remote_folder_stat.st_mode or 0):
-            raise NotADirectoryError(f"{remote_folder} on remote is not a directory.")
+            raise NotADirectoryError(f"{remote_parent} on remote is not a directory.")
 
-        remote_path = remote_folder / local_path.name
+        remote_loc = posixpath.join(remote_parent, local_path.name)
         try:
-            target_stat = remote.lstat(remote_path.as_posix())
+            target_stat = remote.lstat(remote_loc)
         except FileNotFoundError:
             target_stat = None
         if not stat.S_ISDIR(local_path.stat().st_mode or 0):
@@ -453,31 +453,31 @@ def push(
                 local_path,
             )
             if not dry_run:
-                upload_file(remote, local_path, remote_path)
+                upload_file(remote, local_path, remote_loc)
             return
         if not target_stat:
             SYNC_LOGGER.debug("Uploading the entire contents %s", local_path)
             if dry_run:
                 return
-            remote.mkdir(remote_path.as_posix())
+            remote.mkdir(remote_loc)
         elif not stat.S_ISDIR(target_stat.st_mode or 0):
             SYNC_LOGGER.warning(
                 "Deleting remote file or symlink %s",
-                remote_path,
+                remote_loc,
             )
             if dry_run:
                 SYNC_LOGGER.debug("And replacing it entirely with %s", local_path)
                 return
-            remote.remove(remote_path.as_posix())
-            remote.mkdir(remote_path.as_posix())
+            remote.remove(remote_loc)
+            remote.mkdir(remote_loc)
 
         source_contents = filter_contents(
             file.get_contents(local_path), exclude, prefix=local_path
         )
         destination_contents = filter_contents(
-            get_contents(remote, remote_path.as_posix()),
+            get_contents(remote, remote_loc),
             exclude,
-            prefix=remote_path,
+            prefix=remote_loc,
         )
 
         sync_diff = diff(source_contents, destination_contents)
@@ -487,34 +487,33 @@ def push(
             return
 
         for path, path_stat, operation in sync_diff:
+            posix_path = posixpath.join(remote_loc, path.as_posix())
             match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
                 case (Op.CREATE, True):
-                    SYNC_LOGGER.debug(
-                        "Creating remote directory %s", remote_path / path
-                    )
-                    remote.mkdir((remote_path / path).as_posix())
+                    SYNC_LOGGER.debug("Creating remote directory %s", posix_path)
+                    remote.mkdir(posix_path)
                 case (Op.CREATE, False) | (Op.REPLACE, False):
                     SYNC_LOGGER.debug(
                         "Uploading file %s to remote",
                         local_path / path,
                     )
                     try:
-                        remote.remove((remote_path / path).as_posix())
+                        remote.remove(posix_path)
                     except FileNotFoundError:
                         pass
                     upload_file(
                         remote,
                         local_path / path,
-                        remote_path / path,
+                        posix_path,
                     )
                 case (Op.DELETE, True):
                     # recall that for deletions, it's the *destination's* stats
                     if delete:
-                        remote.rmdir((remote_path / path).as_posix())
+                        remote.rmdir(posix_path)
                 case (Op.DELETE, False):
                     if delete:
-                        SYNC_LOGGER.debug("Deleting remote file %s", remote_path / path)
-                        remote.remove((remote_path / path).as_posix())
+                        SYNC_LOGGER.debug("Deleting remote file %s", posix_path)
+                        remote.remove(posix_path)
                 case op, is_dir:  # pragma: no cover
                     raise NotImplementedError(
                         f"Don't know how to handle {op} of {'directory' if is_dir else 'file'}"
