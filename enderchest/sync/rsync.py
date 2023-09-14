@@ -158,7 +158,7 @@ def run_rsync(
             if error_log := proc.stderr.read().decode("UTF-8"):
                 if "No such file or directory" in error_log:
                     raise FileNotFoundError(error_log)
-                raise RuntimeError(error_log)
+                raise RuntimeError(error_log)  # pragma: no cover
 
 
 def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
@@ -229,7 +229,7 @@ def summarize_rsync_report(raw_output: str, depth: int = 2) -> list[str]:
                 summary[path_key] = "update"
             else:
                 entry = summary[path_key]
-                if isinstance(entry, str):
+                if isinstance(entry, str):  # pragma: no cover
                     # this should never happen, but still
                     pass
                 else:
