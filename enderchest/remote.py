@@ -9,7 +9,7 @@ from . import gather
 from .enderchest import EnderChest
 from .loggers import IMPORTANT, SYNC_LOGGER
 from .prompt import confirm
-from .sync import path_from_uri, pull, push, remote_file, render_remote
+from .sync import abspath_from_uri, pull, push, remote_file, render_remote
 
 
 def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
@@ -178,7 +178,7 @@ def sync_with_remotes(
                         path=urlparse(
                             (
                                 fs.ender_chest_folder(
-                                    path_from_uri(remote_uri),
+                                    abspath_from_uri(remote_uri),
                                     check_exists=False,
                                 )
                             ).as_uri()

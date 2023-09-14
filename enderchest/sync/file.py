@@ -11,11 +11,11 @@ from urllib.parse import ParseResult
 from . import (
     SYNC_LOGGER,
     Op,
+    abspath_from_uri,
     diff,
     filter_contents,
     generate_sync_report,
     is_identical,
-    path_from_uri,
 )
 
 
@@ -316,7 +316,7 @@ def pull(
     - If the destination folder does not already exist, this method will not
       create it or its parent directories.
     """
-    source_path = path_from_uri(remote_uri).expanduser()
+    source_path = abspath_from_uri(remote_uri).expanduser()
     destination_folder = local_path
 
     if not destination_folder.exists():
@@ -377,7 +377,7 @@ def push(
       create it or its parent directories.
     """
     source_path = local_path
-    destination_folder = path_from_uri(remote_uri).expanduser()
+    destination_folder = abspath_from_uri(remote_uri).expanduser()
 
     if not destination_folder.exists():
         raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")

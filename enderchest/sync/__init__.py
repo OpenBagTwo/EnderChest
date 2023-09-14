@@ -9,12 +9,12 @@ from urllib.parse import ParseResult
 from ..loggers import SYNC_LOGGER
 from .utils import Operation as Op
 from .utils import (
+    abspath_from_uri,
     diff,
     filter_contents,
     generate_sync_report,
     get_default_netloc,
     is_identical,
-    path_from_uri,
     render_remote,
     uri_to_ssh,
 )
@@ -114,7 +114,7 @@ __all__ = [
     "get_default_netloc",
     "render_remote",
     "remote_file",
-    "path_from_uri",
+    "abspath_from_uri",
     "pull",
     "push",
     "uri_to_ssh",

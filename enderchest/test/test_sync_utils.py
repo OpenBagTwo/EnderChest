@@ -17,7 +17,8 @@ class TestPathFromURI:
     def test_roundtrip(self, tmpdir):
         original_path = Path(tmpdir) / "this has a space in it" / "(="
         assert (
-            sync_utils.path_from_uri(urlparse(original_path.as_uri())) == original_path
+            sync_utils.abspath_from_uri(urlparse(original_path.as_uri()))
+            == original_path
         )
 
 

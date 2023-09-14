@@ -10,7 +10,7 @@ from . import filesystem as fs
 from . import instance as i
 from . import sync
 from .loggers import CRAFT_LOGGER, GATHER_LOGGER
-from .sync import path_from_uri
+from .sync import abspath_from_uri
 
 
 @dataclass(init=False, repr=False, eq=False)
@@ -130,7 +130,7 @@ class EnderChest:
 
     @property
     def root(self) -> Path:
-        return fs.ender_chest_folder(path_from_uri(self._uri), check_exists=False)
+        return fs.ender_chest_folder(abspath_from_uri(self._uri), check_exists=False)
 
     @property
     def instances(self) -> tuple[i.InstanceSpec, ...]:
@@ -160,7 +160,7 @@ class EnderChest:
         self._instances = [
             old_instance
             for old_instance in self._instances
-            if not i.equals(path_from_uri(self._uri), instance, old_instance)
+            if not i.equals(abspath_from_uri(self._uri), instance, old_instance)
         ]
         name = instance.name
         counter = 0
