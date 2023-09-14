@@ -40,7 +40,8 @@ def path_from_uri(uri: ParseResult) -> Path:
     Path
         The path part of the URI as a Path
     """
-    return Path(url2pathname(unquote(uri.path)))
+    host = "{0}{0}{mnt}{0}".format(os.path.sep, mnt=uri.netloc)
+    return Path(os.path.abspath(os.path.join(host, url2pathname(unquote(uri.path)))))
 
 
 def uri_to_ssh(uri: ParseResult) -> str:
@@ -59,7 +60,7 @@ def uri_to_ssh(uri: ParseResult) -> str:
     return "{user}{host}:{path}".format(
         user=f"{uri.username}@" if uri.username else "",
         host=(uri.hostname or "localhost") + (f":{uri.port}" if uri.port else ""),
-        path=path_from_uri(uri).as_posix(),
+        path=uri.path,
     )
 
 

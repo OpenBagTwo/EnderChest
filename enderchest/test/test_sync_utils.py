@@ -41,7 +41,7 @@ class TestURIToSSH:
     def test_no_hostname_parse(self):
         """Can't believe this is a valid URI"""
         address = sync_utils.uri_to_ssh(urlparse("rsync://nugget@/home/nugget/"))
-        assert address == "nugget@localhost:/home/nugget"
+        assert address == "nugget@localhost:/home/nugget/"
 
 
 class TestRenderRemote:
