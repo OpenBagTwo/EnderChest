@@ -246,6 +246,13 @@ class TestFileSync:
             minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
         ).read_text() == "chunky\n"
 
+    @pytest.mark.parametrize("operation", ("pull", "push"))
+    def test_timeout_argument_doesnt_obviously_break_(
+        self, minecraft_root, remote, operation
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, operation, verbosity=-1, timeout=15)
+
     @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_close_overwrites_with_changes_from_local(
         self, minecraft_root, remote, monkeypatch, root_type
