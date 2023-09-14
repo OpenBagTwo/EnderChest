@@ -223,3 +223,28 @@ class TestFileIgnorePatternBuilder:
             ignore(os.path.join("tree", "root"), ("branch", "trunk")),
             ignore("wind", ("leaf", "blows")),
         ) == ({"branch"}, {"leaf"})
+
+
+class TestFileClean:
+    def test_clean_cleans_recursively_while_respecting_ignore(self, tmp_path):
+        root = tmp_path / "root"
+
+        (root / "empty dir").mkdir(parents=True)
+        (root / "will be empty").mkdir()
+        (root / "will be empty" / "filey").touch()
+        (root / "will not be empty").mkdir()
+        (root / "will not be empty" / "file-o bread").touch()
+        (root / "will not be empty" / "important.txt").write_text("leave me be\n")
+        (root / "dont go inside").mkdir()
+        (root / "dont go inside" / "keep me safe").touch()
+        (root / "tricky linky").symlink_to(root / "will not be empty")
+        (root / "trickier linkier").symlink_to(root / "dont go inside")
+
+        file.clean(root, ignore=file.ignore_patterns("*.txt", "dont*"), dry_run=False)
+
+        assert set(root.rglob("**/*")) == {
+            root / "will not be empty",
+            root / "will not be empty" / "important.txt",
+            root / "dont go inside",
+            root / "dont go inside" / "keep me safe",
+        }
