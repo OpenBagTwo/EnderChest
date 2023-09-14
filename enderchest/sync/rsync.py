@@ -156,6 +156,8 @@ def run_rsync(
 
         if proc.stderr is not None:
             if error_log := proc.stderr.read().decode("UTF-8"):
+                if "No such file or directory" in error_log:
+                    raise FileNotFoundError(error_log)
                 raise RuntimeError(error_log)
 
 

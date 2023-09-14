@@ -322,10 +322,7 @@ def pull(
     if not destination_folder.exists():
         raise FileNotFoundError(f"{local_path} does not exist")
     if not source_path.exists():
-        SYNC_LOGGER.warning(
-            f"{source_path} does not exist"
-            " this will end up just deleting the local copy."
-        )
+        raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
     if unsupported_kwargs:
         SYNC_LOGGER.debug(
             "The following command-line options are ignored for this protocol:\n%s",
@@ -385,10 +382,7 @@ def push(
     if not destination_folder.exists():
         raise FileNotFoundError(f"{remote_uri.geturl()} does not exist")
     if not source_path.exists():
-        SYNC_LOGGER.warning(
-            f"{source_path} does not exist:"
-            " this will end up just deleting the remote copy."
-        )
+        raise FileNotFoundError(f"{source_path} does not exist")
     if unsupported_kwargs:
         SYNC_LOGGER.debug(
             "The following command-line options are ignored for this protocol:\n%s",
