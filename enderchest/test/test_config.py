@@ -110,6 +110,7 @@ class TestConfigWriting:
                     Path("..") / "instances" / "puppet" / ".minecraft",
                     ("1.20.1-pre1",),
                     "vanilla",
+                    (),
                     ("your", "it"),
                 ),
             ),

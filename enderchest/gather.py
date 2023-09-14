@@ -574,17 +574,17 @@ def gather_metadata_for_official_instance(
         version_lookup = {}
 
     versions: list[str] = []
-    tags: list[str] = ["vanilla"]
+    groups: list[str] = ["vanilla"]
     for version in raw_versions:
         if version.startswith("latest-"):
             mapped_version = version_lookup.get(version[len("latest-") :])
             if mapped_version is not None:
                 versions.append(parse_version(mapped_version))
-                tags.append(version)
+                groups.append(version)
                 continue
         versions.append(parse_version(version))
 
-    return InstanceSpec(name, minecraft_folder, tuple(versions), "", tuple(tags))
+    return InstanceSpec(name, minecraft_folder, tuple(versions), "", tuple(groups), ())
 
 
 def gather_metadata_for_mmc_instance(
@@ -653,7 +653,7 @@ def gather_metadata_for_mmc_instance(
 
     name = minecraft_folder.parent.name
 
-    tags: list[str] = []
+    instance_groups: list[str] = []
 
     if name == "":
         GATHER_LOGGER.warning(
@@ -668,10 +668,10 @@ def gather_metadata_for_mmc_instance(
         try:
             with instgroups_file.open() as groups_json:
                 groups: dict[str, dict] = json.load(groups_json)["groups"]
-            for tag, metadata in groups.items():
+            for group, metadata in groups.items():
                 # interestingly this comes from the folder name, not the actual name
                 if name in metadata.get("instances", ()):
-                    tags.append(tag)
+                    instance_groups.append(group)
 
         except FileNotFoundError as no_json:
             GATHER_LOGGER.warning(
@@ -709,7 +709,8 @@ def gather_metadata_for_mmc_instance(
         minecraft_folder,
         (version,),
         modloader or "",
-        tuple(tags),
+        tuple(instance_groups),
+        (),
     )
 
 
