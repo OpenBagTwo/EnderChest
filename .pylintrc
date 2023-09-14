@@ -1,6 +1,6 @@
 [main]
 
-ignore-patterns=(_version.py|test_(.*).py|conftest.py)
+ignore-patterns=(_version.py|test_(.*).py|conftest.py|plugin.py)
 
 enable =
     logging-not-lazy

@@ -26,7 +26,7 @@ def get_default_netloc() -> str:
 
 
 def path_from_uri(uri: ParseResult) -> Path:
-    """Extract and unquote the path component of a URI to turn it into a pathlib.Path
+    """Extract and unquote the path component of a URI to turn it into a `pathlib.Path`
 
     h/t https://stackoverflow.com/a/61922504
 
@@ -76,8 +76,8 @@ def render_remote(alias: str, uri: ParseResult) -> str:
     Returns
     -------
     str
-        {uri_string} [({alias})]}
-            (if different from the URI hostname)
+        `{uri_string} [({alias})]}`
+            (alias is omitted if it's the same as the URI's hostname)
     """
     uri_string = uri.geturl()
 
