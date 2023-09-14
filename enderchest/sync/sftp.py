@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Collection, Generator
 from urllib.parse import ParseResult, unquote
+from urllib.request import url2pathname
 
 import paramiko
 
@@ -185,8 +186,8 @@ def rglob(
     top_level = client.listdir_attr(path)
     contents: list[tuple[Path, paramiko.sftp_attr.SFTPAttributes]] = []
     for remote_object in top_level:
-        remote_object.filename = "/".join((path, remote_object.filename))
-        contents.append((Path(remote_object.filename), remote_object))
+        remote_object.filename = posixpath.join(path, remote_object.filename)
+        contents.append((Path(url2pathname(remote_object.filename)), remote_object))
         if stat.S_ISDIR(remote_object.st_mode or 0):
             contents.extend(rglob(client, remote_object.filename))
     return contents
@@ -216,7 +217,10 @@ def get_contents(
       directories appear before their children
     - The paths returned are relative to the provided path
     """
-    return [(p.relative_to(path), path_stat) for p, path_stat in rglob(client, path)]
+    return [
+        (p.relative_to(url2pathname(path)), path_stat)
+        for p, path_stat in rglob(client, path)
+    ]
 
 
 def pull(
