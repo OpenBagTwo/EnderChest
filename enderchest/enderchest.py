@@ -347,7 +347,8 @@ class EnderChest:
                 "root": instance.root,
                 "minecraft-version": instance.minecraft_versions,
                 "modloader": instance.modloader,
-                "tags": instance.tags,
+                "groups": instance.groups_,
+                "tags": instance.tags_,
             }
 
         config = cfg.dumps(

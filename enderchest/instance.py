@@ -23,14 +23,16 @@ class InstanceSpec(NamedTuple):
     modloader : str
         The (display) name of the modloader (vanilla corresponds to "")
     tags : list-like of str
-        The tags assigned to this instance
+        The tags assigned to this instance, including both the ones assigned
+        in the launcher (groups) and the ones assigned by hand.
     """
 
     name: str
     root: Path
     minecraft_versions: tuple[str, ...]
     modloader: str
-    tags: tuple[str, ...]
+    groups_: tuple[str, ...]
+    tags_: tuple[str, ...]
 
     @classmethod
     def from_cfg(cls, section: SectionProxy) -> "InstanceSpec":
@@ -63,8 +65,13 @@ class InstanceSpec(NamedTuple):
                 )
             ),
             normalize_modloader(section.get("modloader", None))[0],
+            tuple(cfg.parse_ini_list(section.get("groups", ""))),
             tuple(cfg.parse_ini_list(section.get("tags", ""))),
         )
+
+    @property
+    def tags(self):
+        return tuple(sorted({*self.groups_, *self.tags_}))
 
 
 def normalize_modloader(loader: str | None) -> list[str]:
