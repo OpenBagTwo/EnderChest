@@ -447,11 +447,17 @@ def instance(
     root: Path,
     minecraft_versions: Iterable[str] | None = None,
     modloader: str | None = None,
+    groups: Iterable[str] | None = None,
     tags: Iterable[str] | None = None,
 ) -> InstanceSpec:
     """Shortcut constructor"""
     return InstanceSpec(
-        name, root, tuple(minecraft_versions or ()), modloader or "", tuple(tags or ())
+        name,
+        root,
+        tuple(minecraft_versions or ()),
+        modloader or "",
+        tuple(groups or ()),
+        tuple(tags or ()),
     )
 
 
@@ -462,5 +468,6 @@ def normalize_instance(mc: InstanceSpec) -> InstanceSpec:
         root=mc.root.expanduser().relative_to(mc.root.expanduser().parent.parent),
         modloader=normalize_modloader(mc.modloader)[0],
         minecraft_versions=tuple(sorted(mc.minecraft_versions)),
-        tags=tuple(sorted(tag.lower() for tag in mc.tags)),
+        groups_=tuple(sorted(group.lower() for group in mc.groups_)),
+        tags_=tuple(sorted(tag.lower() for tag in mc.tags_)),
     )
