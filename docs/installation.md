@@ -82,7 +82,8 @@ Then continue onto the next section.
 ## Installing `rsync`
 
 EnderChest's preferred syncing protocol is
-[`rsync`](https://www.digitalocean.com/community/tutorials/how-to-use-rsync-to-sync-local-and-remote-directories), and EnderChest requires **version 3.2 or newer**.
+[`rsync`](https://www.digitalocean.com/community/tutorials/how-to-use-rsync-to-sync-local-and-remote-directories),
+and to use EnderChest with `rsync` you'll need **version 3.2 or newer**.
 
 You can check if a sufficiently recent version of `rsync` is installed
 on your system by running the command:
@@ -92,14 +93,8 @@ rsync -V
 ```
 
 If you get a message back stating: `rsync: -V: unknown option`, then your `rsync`
-is too old (you can confirm this by running `rsync --version`).
-
-### Windows
-Use of `rsync` on Windows [is not currently supported](https://github.com/OpenBagTwo/EnderChest/issues/67),
-though it may be possible using [Cygwin](https://github.com/cygwin/cygwin-install-action)
-or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
-
-Luckily, [other protocols are available](../suggestions#other-syncing-protocols).
+is too old (you can confirm this by running `rsync --version`), and you'll need
+to follow the instructions below to get a more modern version installed:
 
 ### Conda (macOS and Linux)
 
@@ -121,13 +116,25 @@ system's rsync installation via
 [homebrew](https://formulae.brew.sh/formula/rsync) or
 [MacPorts](https://ports.macports.org/port/rsync/)
 
+### Windows
+Use of `rsync` on Windows [is not currently supported](https://github.com/OpenBagTwo/EnderChest/issues/67),
+though it may be possible using [Cygwin](https://github.com/cygwin/cygwin-install-action)
+or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+
+Luckily, [other protocols are available](../suggestions#other-syncing-protocols),
+though they may require re-installing EnderChest with additional extras, _i.e._
+
+```bash
+python3 -m pip install --user enderchest[sftp,test]
+```
+
 ## Bleeding Edge
 
 If you'd like to test out upcoming features or help with beta testing, you
 can install from the current development branch via:
 
 ```bash
-python -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@dev#egg=enderchest[test]
+python3 -m pip install --user git+https://github.com/OpenBagTwo/EnderChest.git@dev#egg=enderchest[test,sftp]
 ```
 
 **Be warned** that any code on this branch is considered highly experimental.
