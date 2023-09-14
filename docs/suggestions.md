@@ -24,6 +24,12 @@ allow you to connect to remote EnderChests over SSH from machines where rsync
     configure [OpenSSH for Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)
     or a similar solution.
 
+For example, say you have an ROG Ally running Windows and a Steam Deck running
+SteamOS. With EnderChest installed on both machines, you can get away with not
+running an SSH server on Windows by running all of your `open` and `close`
+operations from the Ally (just remember to run `place` on the Steam Deck
+afterwards to refresh any linking changes).
+
 ### File Protocol
 
 * **Scheme**: `file://`
