@@ -6,6 +6,7 @@ from importlib.resources import as_file
 from pathlib import Path
 from typing import Callable, Generator, NamedTuple
 from urllib.parse import ParseResult
+from urllib.request import url2pathname
 
 from .testing_files import LSTAT_CACHE
 
@@ -45,35 +46,35 @@ class MockSFTP:
     def lstat(self, path: str) -> CachedStat:
         """Return the cached file attributes for the specified path"""
         try:
-            return self.lstat_cache[Path(path)]
+            return self.lstat_cache[Path(url2pathname(path))]
         except KeyError as not_in_cache:
             # In a few places we get an lstat on stuff that's outside of the
             # cache. In those scenarios, we want to return CacheStats matching
             # the type of the file
-            if Path(path).is_symlink():
+            if Path(url2pathname(path)).is_symlink():
                 return A_SYMLINK
-            if Path(path).is_dir():
+            if Path(url2pathname(path)).is_dir():
                 return A_DIRECTORY
-            if Path(path).exists():
+            if Path(url2pathname(path)).exists():
                 return A_FILE
             raise FileNotFoundError from not_in_cache
 
     def mkdir(self, path: str) -> None:
         """Make a directory on the "remote" file system"""
-        Path(path).mkdir()
+        Path(url2pathname(path)).mkdir()
 
     def symlink(self, target: str, path: str) -> None:
         """Create a symlink at the path pointing to the target"""
-        Path(path).symlink_to(Path(target))
+        Path(url2pathname(path)).symlink_to(Path(target))
 
     def readlink(self, path: str) -> str:
         """Get the target of the "remote" symlink"""
-        return Path(path).readlink().as_posix()
+        return Path(url2pathname(path)).readlink().as_posix()
 
     def get(self, path: str, destination: Path) -> None:
         """ "Download" the "remote" file to the specified destination"""
         shutil.copy2(
-            Path(path),
+            Path(url2pathname(path)),
             destination,
             follow_symlinks=False,
         )
@@ -82,17 +83,17 @@ class MockSFTP:
         """ "Upload" the "remote" file to the specified destination"""
         shutil.copy2(
             source,
-            Path(path),
+            Path(url2pathname(path)),
             follow_symlinks=False,
         )
 
     def remove(self, path: str) -> None:
         """Delete a file on the "remote" file system"""
-        Path(path).unlink()
+        Path(url2pathname(path)).unlink()
 
     def rmdir(self, path: str) -> None:
         """Delete an empty folder on the "remote" file system"""
-        Path(path).rmdir()
+        Path(url2pathname(path)).rmdir()
 
 
 def generate_mock_connect(mock_sftp: MockSFTP) -> Callable:
@@ -136,6 +137,6 @@ def mock_rglob(client: MockSFTP, path: str) -> list[tuple[Path, CachedStat]]:
     list of (Path, SFTPAttributes-like) tuples
         The cached file attributes
     """
-    if "somewhere_else" in Path(path).parts:
+    if "somewhere_else" in Path(url2pathname(path)).parts:
         return []
     return list(client.lstat_cache.items())
