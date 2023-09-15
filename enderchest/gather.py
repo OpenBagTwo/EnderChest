@@ -91,7 +91,7 @@ def load_ender_chest_instances(
         GATHER_LOGGER.log(
             log_level,
             "These are the instances that are currently registered"
-            f" to the {minecraft_root} EnderChest:\n %s",
+            f" to the {minecraft_root} EnderChest:\n%s",
             "\n".join(
                 [
                     f"  {i + 1}. {_render_instance(instance)}"

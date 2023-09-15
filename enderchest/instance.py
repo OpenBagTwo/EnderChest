@@ -170,6 +170,13 @@ def merge(*instances: InstanceSpec) -> InstanceSpec:
     -------
     InstanceSpec
         The merged instance
+
+    Notes
+    -----
+    The resulting merged instance will use:
+      - the first instance's name
+      - the union of all non-group tags
+      - all other data from the last instance
     """
     try:
         combined_instance = instances[-1]
@@ -178,4 +185,4 @@ def merge(*instances: InstanceSpec) -> InstanceSpec:
             "Must provide at least one instance to merge"
         ) from nothing_to_merge
     tags = tuple(sorted(set(sum((instance.tags_ for instance in instances), ()))))
-    return combined_instance._replace(tags_=tags)
+    return combined_instance._replace(name=instances[0].name, tags_=tags)

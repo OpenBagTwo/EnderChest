@@ -62,7 +62,8 @@ class TestInstanceMerging:
         assert original == merged
 
     @pytest.mark.parametrize(
-        "field", (field for field in i.InstanceSpec._fields if field != "tags_")
+        "field",
+        (field for field in i.InstanceSpec._fields if field not in ("name", "tags_")),
     )
     def test_merged_fields_mostly_match_the_last_instance(self, field):
         instances = [
@@ -84,7 +85,20 @@ class TestInstanceMerging:
 
         assert getattr(merged, field) == getattr(instances[-1], field)
 
-    def test_merged_fields_are_the_union_of_all_instance_tags(self):
+    def test_merged_name_matches_the_first_instance(self):
+        instances = [
+            instance("one", Path("path"), tags=("you're it",)),
+            instance("two", Path("path"), tags=("hello", "friend")),
+            instance("three", Path("path"), tags=("hello", "world")),
+            instance("four", Path("path"), tags=("best", "friend")),
+            instance("five", Path("path")),
+        ]
+
+        merged = i.merge(*instances)
+
+        assert merged.name == "one"
+
+    def test_merged_tags_are_the_union_of_all_instance_tags(self):
         instances = [
             instance("one", Path("path"), tags=("you're it",)),
             instance("two", Path("path"), tags=("hello", "friend")),
