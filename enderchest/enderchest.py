@@ -163,6 +163,8 @@ class EnderChest:
                 matching_instances.append(old_instance)
                 self._instances.remove(old_instance)
 
+        instance = i.merge(*matching_instances, instance)
+
         name = instance.name
         counter = 0
         taken_names = {old_instance.name for old_instance in self._instances}
@@ -172,10 +174,8 @@ class EnderChest:
             counter += 1
             name = f"{instance.name}.{counter}"
 
-        instance = i.merge(*matching_instances, instance)
-
         GATHER_LOGGER.debug(f"Registering instance {instance.name} at {instance.root}")
-        self._instances.append(instance._replace(name=name))
+        self._instances.append(instance)
         return self._instances[-1]
 
     @property
