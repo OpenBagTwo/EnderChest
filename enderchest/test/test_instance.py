@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Iterable
+
+import pytest
 
 from enderchest import instance as i
 
@@ -42,3 +43,56 @@ class TestInstanceEquality:
             instance("foo", Path("official_launcher") / ".minecraft"),
             instance("fufu", Path("~/.minecraft")),
         )
+
+
+class TestInstanceMerging:
+    def test_merging_a_single_instance_results_in_a_copy(self):
+        original = instance(
+            name="an instance",
+            root=Path("."),
+            minecraft_versions=("1.21.0",),
+            modloader="linen",
+            groups=("experimental",),
+            tags=("a", "b"),
+        )
+
+        merged = i.merge(original)
+
+        assert original is not merged
+        assert original == merged
+
+    @pytest.mark.parametrize(
+        "field", (field for field in i.InstanceSpec._fields if field != "tags_")
+    )
+    def test_merged_fields_mostly_match_the_last_instance(self, field):
+        instances = [
+            instance("one", Path("path"), minecraft_versions=("1.20.2",)),
+            instance(
+                "two",
+                Path("path", modloader="blacksmith", groups=("forgery",)),
+                tags=("you're it",),
+            ),
+            instance(
+                "three",
+                Path("path"),
+                minecraft_versions=("1.21-pre1",),
+                groups=("next_gen",),
+            ),
+        ]
+
+        merged = i.merge(*instances)
+
+        assert getattr(merged, field) == getattr(instances[-1], field)
+
+    def test_merged_fields_are_the_union_of_all_instance_tags(self):
+        instances = [
+            instance("one", Path("path"), tags=("you're it",)),
+            instance("two", Path("path"), tags=("hello", "friend")),
+            instance("three", Path("path"), tags=("hello", "world")),
+            instance("four", Path("path"), tags=("best", "friend")),
+            instance("five", Path("path")),
+        ]
+
+        merged = i.merge(*instances)
+
+        assert merged.tags_ == ("best", "friend", "hello", "world", "you're it")
