@@ -232,7 +232,7 @@ def _render_shulker_box(shulker_box: ShulkerBox) -> str:
             (if different from folder name)
     """
     stringified = f"{shulker_box.root.name}"
-    if shulker_box.root.name != shulker_box.name:
+    if shulker_box.root.name != shulker_box.name:  # pragma: no cover
         # note: this is not a thing
         stringified += f" ({shulker_box.name})"
     return stringified

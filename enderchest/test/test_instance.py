@@ -46,6 +46,10 @@ class TestInstanceEquality:
 
 
 class TestInstanceMerging:
+    def test_supplying_no_instances_raises_a_sensible_error(self):
+        with pytest.raises(ValueError, match="at least one instance"):
+            i.merge()
+
     def test_merging_a_single_instance_results_in_a_copy(self):
         original = instance(
             name="an instance",
@@ -70,7 +74,9 @@ class TestInstanceMerging:
             instance("one", Path("path"), minecraft_versions=("1.20.2",)),
             instance(
                 "two",
-                Path("path", modloader="blacksmith", groups=("forgery",)),
+                Path("path"),
+                modloader="blacksmith",
+                groups=("forgery",),
                 tags=("you're it",),
             ),
             instance(

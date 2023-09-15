@@ -572,6 +572,23 @@ class TestShulkerInstanceMatching:
             "Chest Boat",
         ]
 
+    def test_loader_matching_knows_how_to_interpret_fabric_like(self, tmp_path):
+        (tmp_path / "shulker.cfg").write_text("[modloader]\nFabric-Like\n")
+
+        loader_matching_shulker = ShulkerBox.from_cfg(tmp_path / "shulker.cfg")
+
+        instances = [
+            utils.instance("match_me", Path("foo"), modloader="Fabric Loader"),
+            utils.instance("dont-match-me", Path("blah"), modloader="Fabulous Loader"),
+            utils.instance("match me too", Path("bruh"), modloader="Quilt Loader"),
+        ]
+
+        assert [
+            instance.name
+            for instance in instances
+            if loader_matching_shulker.matches(instance)
+        ] == ["match_me", "match me too"]
+
     def test_loader_checks_multi_argument(self):
         loader_matching_shulker = ShulkerBox(
             0,

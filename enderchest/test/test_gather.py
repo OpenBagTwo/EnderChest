@@ -14,6 +14,11 @@ from enderchest import instance as i
 from . import utils
 
 
+class TestLoadEnderChestInstances:
+    def test_bad_folder_just_returns_empty(self, tmp_path, caplog):
+        assert gather.load_ender_chest_instances(tmp_path) == []
+
+
 class TestListShulkerBoxes:
     @pytest.fixture(autouse=True)
     def populate_shulker_boxes(self, minecraft_root):
@@ -25,6 +30,23 @@ class TestListShulkerBoxes:
         bad_ini = minecraft_root / "EnderChest" / "not_ini" / fs.SHULKER_BOX_CONFIG_NAME
         bad_ini.parent.mkdir()
         bad_ini.write_text("is_this_valid_ini=no")
+
+    def test_bad_folder_just_returns_empty(self, tmp_path, caplog):
+        assert gather.load_shulker_boxes(tmp_path) == []
+
+    def test_warn_for_a_chest_without_boxes(self, tmp_path, caplog):
+        root = tmp_path / "nowhere"
+        root.mkdir()
+        craft.craft_ender_chest(root, remotes=(), overwrite=True)
+        _ = gather.load_shulker_boxes(root)
+
+        assert "There are no shulker boxes" in "\n".join(
+            (
+                record.msg
+                for record in caplog.records
+                if record.levelno == logging.WARNING
+            )
+        )
 
     def test_list_shulker_box_reports_the_boxes_in_order(self, minecraft_root, caplog):
         _ = gather.load_shulker_boxes(minecraft_root)
@@ -68,6 +90,9 @@ class TestLoadBoxInstanceMatches:
         utils.pre_populate_enderchest(
             minecraft_root / "EnderChest", *utils.TESTING_SHULKER_CONFIGS
         )
+
+    def test_bad_folder_just_returns_empty(self, tmp_path, caplog):
+        assert gather.get_shulker_boxes_matching_instance(tmp_path, "outstance") == []
 
     @pytest.mark.parametrize(
         "instance_name",
