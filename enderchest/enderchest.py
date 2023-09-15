@@ -157,11 +157,12 @@ class EnderChest:
         - If this instance shares a path with an existing instance, it will
           replace that instance
         """
-        self._instances = [
-            old_instance
-            for old_instance in self._instances
-            if not i.equals(abspath_from_uri(self._uri), instance, old_instance)
-        ]
+        matching_instances: list[i.InstanceSpec] = []
+        for old_instance in self._instances:
+            if i.equals(abspath_from_uri(self._uri), instance, old_instance):
+                matching_instances.append(old_instance)
+                self._instances.remove(old_instance)
+
         name = instance.name
         counter = 0
         taken_names = {old_instance.name for old_instance in self._instances}
@@ -170,6 +171,8 @@ class EnderChest:
                 break
             counter += 1
             name = f"{instance.name}.{counter}"
+
+        instance = i.merge(*matching_instances, instance)
 
         GATHER_LOGGER.debug(f"Registering instance {instance.name} at {instance.root}")
         self._instances.append(instance._replace(name=name))

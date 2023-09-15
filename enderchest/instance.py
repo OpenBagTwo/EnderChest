@@ -155,3 +155,27 @@ def parse_version(version_string: str) -> str:
     if re.match(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)$", version_string):
         return version_string + ".0"
     return version_string
+
+
+def merge(*instances: InstanceSpec) -> InstanceSpec:
+    """Merge multiple instances, layering information from the ones provided later
+    on top of the ones provided earlier
+
+    Parameters
+    ----------
+    *instances : InstanceSpec
+        The instances to combine
+
+    Returns
+    -------
+    InstanceSpec
+        The merged instance
+    """
+    try:
+        combined_instance = instances[-1]
+    except IndexError as nothing_to_merge:
+        raise ValueError(
+            "Must provide at least one instance to merge"
+        ) from nothing_to_merge
+    tags = tuple(sorted(set(sum((instance.tags_ for instance in instances), ()))))
+    return combined_instance._replace(tags_=tags)
