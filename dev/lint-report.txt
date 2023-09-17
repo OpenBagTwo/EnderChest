@@ -11,13 +11,14 @@ enderchest/gather.py:680:8: W0612: Unused variable 'bad_json' (unused-variable)
 enderchest/gather.py:684:8: W0612: Unused variable 'weird_json' (unused-variable)
 enderchest/gather.py:693:4: W0612: Unused variable 'no_cfg' (unused-variable)
 ************* Module enderchest.instance
-enderchest/instance.py:70:0: R0911: Too many return statements (7/6) (too-many-return-statements)
+enderchest/instance.py:73:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/instance.py:77:0: R0911: Too many return statements (7/6) (too-many-return-statements)
 ************* Module enderchest.enderchest
 enderchest/enderchest.py:125:4: C0116: Missing function or method docstring (missing-function-docstring)
 enderchest/enderchest.py:132:4: C0116: Missing function or method docstring (missing-function-docstring)
 enderchest/enderchest.py:136:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:179:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:212:4: R0914: Too many local variables (18/15) (too-many-locals)
+enderchest/enderchest.py:182:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:215:4: R0914: Too many local variables (18/15) (too-many-locals)
 ************* Module enderchest.cli
 enderchest/cli.py:633:5: W0511: TODO: set log levels per logger based on the command (fixme)
 enderchest/cli.py:636:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
@@ -61,7 +62,8 @@ enderchest/test/mock_paramiko.py:116:8: W0613: Unused argument 'uri' (unused-arg
 enderchest/test/mock_paramiko.py:116:26: W0613: Unused argument 'timeout' (unused-argument)
 ************* Module enderchest.test.utils
 enderchest/test/utils.py:366:8: C0103: Variable name "mc" doesn't conform to snake_case naming style (invalid-name)
-enderchest/test/utils.py:458:23: C0103: Argument name "mc" doesn't conform to snake_case naming style (invalid-name)
+enderchest/test/utils.py:445:0: R0913: Too many arguments (6/5) (too-many-arguments)
+enderchest/test/utils.py:464:23: C0103: Argument name "mc" doesn't conform to snake_case naming style (invalid-name)
 ************* Module enderchest.sync.sftp
 enderchest/sync/sftp.py:226:0: R0913: Too many arguments (6/5) (too-many-arguments)
 enderchest/sync/sftp.py:226:0: R0914: Too many local variables (21/15) (too-many-locals)
@@ -137,5 +139,5 @@ enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
         else: (duplicate-code)
 
 -----------------------------------
-Your code has been rated at 9.59/10
+Your code has been rated at 9.58/10
 
