@@ -69,6 +69,10 @@ class EnderChest:
         (`confirm=False`) or by requiring that the user explicitly confirms
         the sync (`confirm=True`). This default behavior can also be overridden
         when actually calling the sync commands.
+    place_after_open: bool
+        By default, EnderChest will follow up any `enderchest open` operation
+        with an `enderchest place` to refresh any changed symlinks. This
+        functionality can be disabled by setting this parameter to False.
     do_not_sync : list of str
         Glob patterns of files that should not be synced between EnderChest
         installations. By default, this list comprises `EnderChest/enderchest.cfg`,
@@ -82,6 +86,7 @@ class EnderChest:
     _remotes: dict[str, ParseResult]
     offer_to_update_symlink_allowlist: bool = True
     sync_confirm_wait: bool | int = 5
+    place_after_open: bool = True
     do_not_sync = ["EnderChest/enderchest.cfg", "EnderChest/.*", ".DS_Store"]
 
     def __init__(
@@ -244,6 +249,7 @@ class EnderChest:
         netloc: str | None = None
         name: str | None = None
         sync_confirm_wait: str | None = None
+        place_after_open: bool | None = None
         offer_to_update_symlink_allowlist: bool = True
         do_not_sync: list[str] | None = None
 
@@ -253,6 +259,7 @@ class EnderChest:
                 netloc = config[section].get("address")
                 name = config[section].get("name")
                 sync_confirm_wait = config[section].get("sync-confirmation-time")
+                place_after_open = config[section].getboolean("place-after-open")
                 offer_to_update_symlink_allowlist = config[section].getboolean(
                     "offer-to-update-symlink-allowlist", True
                 )
@@ -289,9 +296,20 @@ class EnderChest:
                             "Invalid value for sync-confirmation-time:"
                             f" {sync_confirm_wait}"
                         ) from bad_input
+        if place_after_open is None:
+            GATHER_LOGGER.warning(
+                "This EnderChest does not have a value set for place-after-open."
+                "\nIt is being set to False for now. To enable this functionality,"
+                "\nedit the value in %s",
+                config_file,
+            )
+            place_after_open = False
+            ender_chest.write_to_cfg(config_file)
+        ender_chest.place_after_open = place_after_open
         ender_chest.offer_to_update_symlink_allowlist = (
             offer_to_update_symlink_allowlist
         )
+
         if do_not_sync is not None:
             ender_chest.do_not_sync = do_not_sync
             chest_cfg_exclusion = "/".join(
@@ -301,7 +319,7 @@ class EnderChest:
                 GATHER_LOGGER.warning(
                     "This EnderChest was not configured to exclude the EnderChest"
                     " config file from sync operations."
-                    "\n That is being fixed now."
+                    "\nThat is being fixed now."
                 )
                 ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
                 ender_chest.write_to_cfg(config_file)
@@ -335,6 +353,7 @@ class EnderChest:
         else:
             properties["sync-confirmation-time"] = self.sync_confirm_wait
 
+        properties["place-after-open"] = self.place_after_open
         properties[
             "offer-to-update-symlink-allowlist"
         ] = self.offer_to_update_symlink_allowlist
