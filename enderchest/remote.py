@@ -5,7 +5,7 @@ from time import sleep
 from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs
-from . import gather
+from . import gather, place
 from .enderchest import EnderChest
 from .loggers import IMPORTANT, SYNC_LOGGER
 from .prompt import confirm
@@ -235,6 +235,14 @@ def sync_with_remotes(
         else:
             synced_somewhere = True
             if pull_or_push == "pull":
+                if this_chest.place_after_open:
+                    place.place_ender_chest(
+                        minecraft_root,
+                        keep_broken_links=False,
+                        keep_stale_links=False,
+                        error_handling="abort",
+                        relative=False,
+                    )
                 break
     if not synced_somewhere:
         SYNC_LOGGER.error("Could not sync with any remote EnderChests")
