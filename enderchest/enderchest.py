@@ -237,6 +237,7 @@ class EnderChest:
         FileNotFoundError
             If there is no config file at the specified location
         """
+        GATHER_LOGGER.debug("Reading config file from %s", config_file)
         config = cfg.read_cfg(config_file)
 
         # All I'm gonna say is that Windows pathing is the worst
@@ -378,6 +379,7 @@ class EnderChest:
         )
 
         if config_file:
+            CRAFT_LOGGER.debug("Writing configuration file to %s", config_file)
             config_file.write_text(config)
         return config
 
