@@ -303,7 +303,7 @@ class TestGatherInstances:
     def test_updating_an_instance_does_not_overwrite_tags(self, minecraft_root, home):
         enderchest = gather.load_ender_chest(minecraft_root)
 
-        expected: dict[Path, tuple[str, ...]] = {}
+        expected: dict[str, tuple[str, ...]] = {}
         for idx, instance in enumerate(enderchest._instances):
             tags = tuple((str(num) for num in range(idx + 1)))
             expected[instance.name] = tuple(sorted(tags + instance.groups_))
