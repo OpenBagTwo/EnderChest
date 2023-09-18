@@ -151,7 +151,7 @@ def sync_with_remotes(
         )
         return
     if not remotes:
-        SYNC_LOGGER.error("Enderchest has no remotes. Aborting")
+        SYNC_LOGGER.error("EnderChest has no remotes. Aborting.")
         return  # kinda unnecessary
 
     synced_somewhere = False
