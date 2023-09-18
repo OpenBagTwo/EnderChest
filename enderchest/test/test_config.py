@@ -177,3 +177,39 @@ class TestConfigParsing:
         )
         with pytest.raises(ValueError, match="is not a valid URI"):
             _ = EnderChest.from_cfg(config_file)
+
+    def test_sync_confirm_wait_prompt_is_read_as_true(self, tmp_path):
+        config_file = tmp_path / "enderchest.cfg"
+        config_file.write_text(
+            "[properties]"
+            "\nname=tester"
+            "\nplace-after-open=no"
+            "\nsync-confirmation-time=prompt"
+        )
+        assert EnderChest.from_cfg(config_file).sync_confirm_wait is True
+
+    def test_raise_on_invalid_sync_confirm_wait(self, tmp_path):
+        config_file = tmp_path / "enderchest.cfg"
+        config_file.write_text(
+            "[properties]"
+            "\nname=tester"
+            "\nplace-after-open=no"
+            "\nsync-confirmation-time=sounds like a good idea"
+        )
+        with pytest.raises(ValueError, match="Invalid value for"):
+            _ = EnderChest.from_cfg(config_file).sync_confirm_wait
+
+    def test_raise_when_remote_has_no_alias(self, tmp_path):
+        config_file = tmp_path / "enderchest.cfg"
+        config_file.write_text(
+            "[properties]"
+            "\nname=tester"
+            "\nplace-after-open=no"
+            "\n\n[remotes]"
+            "\n/some/where"
+        )
+
+        with pytest.raises(
+            ValueError, match="All remotes must have an alias specified"
+        ):
+            _ = EnderChest.from_cfg(config_file)
