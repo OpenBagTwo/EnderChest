@@ -281,10 +281,14 @@ you five seconds to review the dry run log and interrupt the sync if things
 are about to go sideways (documentation for overriding this behavior is available
 in the [CLI docs](../cli/#enderchest-open)).
 
-Finally, make sure to run:
+!!! tip "Bonus"
+    Starting with v0.1.3, after a successful `enderchest open`, EnderChest will
+    automatically update all of your instances' symlinks, saving you from needing
+    to remember to run:
 
-```bash
-enderchest place
-```
+    ```bash
+    enderchest place
+    ```
 
-after a successful `enderchest open` to update all of your instances' symlinks.
+    (this behavior can be disabled by editing the `place-after-open` setting in
+    your `enderchest.cfg` file).
