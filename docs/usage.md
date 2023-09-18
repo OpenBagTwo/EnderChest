@@ -30,7 +30,7 @@ Go to that directory in your terminal.
     enderchest craft --root /path/to/my_minecraft_stuff
     ```
 !!! tip
-    You can also specify your Minecraft Root by using an enviroment variable.
+    You can also specify your Minecraft root by using an enviroment variable.
     ```bash
     export MINECRAFT_ROOT=/path/to/my_minecraft_stuff
     ```
