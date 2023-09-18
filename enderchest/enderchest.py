@@ -246,6 +246,8 @@ class EnderChest:
         instances: list[i.InstanceSpec] = []
         remotes: list[str | tuple[str, str]] = []
 
+        requires_rewrite = False
+
         scheme: str | None = None
         netloc: str | None = None
         name: str | None = None
@@ -274,6 +276,7 @@ class EnderChest:
                         raise ValueError("All remotes must have an alias specified")
                     remotes.append((remote[1], remote[0]))
             else:
+                # TODO: flag requires_rewrite if instance was normalized
                 instances.append(i.InstanceSpec.from_cfg(config[section]))
 
         scheme = scheme or sync.DEFAULT_PROTOCOL
@@ -304,10 +307,11 @@ class EnderChest:
                 "\nedit the value in %s",
                 config_file,
             )
-            place_after_open = False
-            ender_chest.write_to_cfg(config_file)
-            return cls.from_cfg(config_file)
-        ender_chest.place_after_open = place_after_open
+            ender_chest.place_after_open = False
+            requires_rewrite = True
+        else:
+            ender_chest.place_after_open = place_after_open
+
         ender_chest.offer_to_update_symlink_allowlist = (
             offer_to_update_symlink_allowlist
         )
@@ -324,8 +328,11 @@ class EnderChest:
                     "\nThat is being fixed now."
                 )
                 ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
-                ender_chest.write_to_cfg(config_file)
-                return cls.from_cfg(config_file)
+                requires_rewrite = True
+
+        if requires_rewrite:
+            ender_chest.write_to_cfg(config_file)
+            return cls.from_cfg(config_file)
         return ender_chest
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
