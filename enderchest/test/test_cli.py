@@ -77,6 +77,11 @@ class ActionTestSuite:
         )
         assert root == Path("/home")
 
+    def test_root_can_also_be_provided_by_systemenv(self, monkeypatch):
+        monkeypatch.setenv("MINECRAFT_ROOT", "/mnt/drive/minecraft/")
+        _, root, _, _ = cli.parse_args(["enderchest", *self.action.split(), *self.required_args])
+        assert root == Path("/mnt/drive/minecraft/")
+
     @pytest.mark.parametrize(
         "verbosity_flag, expected_verbosity",
         (
