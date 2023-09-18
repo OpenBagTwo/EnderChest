@@ -6,6 +6,7 @@ import pytest
 
 from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import config as cfg
+from enderchest import filesystem as fs
 from enderchest.gather import load_shulker_boxes
 from enderchest.shulker_box import create_shulker_box
 from enderchest.test import utils
@@ -99,11 +100,11 @@ class TestConfigWriting:
         )
         assert parsed_ender_chest.__dict__ == original_ender_chest.__dict__
 
-    def test_ender_chest_self_corrects_its_config(self, tmpdir):
-        (tmpdir / "EnderChest").mkdir()
+    def test_ender_chest_self_corrects_its_config(self, tmp_path):
+        (tmp_path / "EnderChest").mkdir()
 
         original_ender_chest = EnderChest(
-            urlparse(Path(tmpdir).absolute().as_uri()),
+            urlparse(tmp_path.absolute().as_uri()),
             name="tester",
             instances=(
                 InstanceSpec(
@@ -119,16 +120,34 @@ class TestConfigWriting:
         original_ender_chest.do_not_sync = ["*.local"]
 
         original_ender_chest.write_to_cfg(
-            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
+            fs.ender_chest_config(tmp_path, check_exists=False)
         )
+        config_text = fs.ender_chest_config(tmp_path).read_text("utf-8").splitlines()
+        config_text.remove("place-after-open = True")
+        fs.ender_chest_config(tmp_path).write_text("\n".join(config_text))
 
-        parsed_ender_chest = EnderChest.from_cfg(
-            Path(tmpdir) / "EnderChest" / "enderchest.cfg"
-        )
+        parsed_ender_chest = EnderChest.from_cfg(fs.ender_chest_config(tmp_path))
+
         assert {
             "do-not-sync": parsed_ender_chest.do_not_sync,
+            "place-after-open": parsed_ender_chest.place_after_open,
             "modloader": parsed_ender_chest.instances[0].modloader,
         } == {
             "do-not-sync": ["EnderChest/enderchest.cfg", "*.local"],
+            "place-after-open": False,
             "modloader": "",
         }
+
+    def test_sync_confirm_wait_true_is_rendered_as_prompt(self):
+        original_ender_chest = EnderChest(
+            Path("ignoreme"),
+            name="tester",
+        )
+        original_ender_chest.sync_confirm_wait = True
+        config_text = original_ender_chest.write_to_cfg().splitlines()
+        for line in config_text:
+            if line.startswith("sync-confirmation-time"):
+                assert line == "sync-confirmation-time = prompt"
+                break
+        else:
+            raise KeyError("sync-confirm-wait line not found in config")
