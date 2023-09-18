@@ -86,6 +86,7 @@ class TestConfigWriting:
         )
 
         original_ender_chest.sync_confirm_wait = 27
+        original_ender_chest.place_after_open = False
         original_ender_chest.offer_to_update_symlink_allowlist = False
         original_ender_chest.do_not_sync = ["EnderChest/enderchest.cfg", "*.local"]
 

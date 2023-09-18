@@ -159,13 +159,6 @@ class TestGatherInstances:
         utils.pre_populate_enderchest(
             fs.ender_chest_folder(minecraft_root, check_exists=False)
         )
-        with fs.ender_chest_config(minecraft_root).open("a") as ec_config:
-            ec_config.write(
-                """
-[properties]
-offer-to-update-symlink-allowlist = False
-"""
-            )
 
         yield
 
@@ -286,7 +279,7 @@ offer-to-update-symlink-allowlist = False
             fs.ender_chest_config(minecraft_root).read_text("utf-8").splitlines()
         )
         # this is a horrible way tp do this
-        ec_config[6] = "offer-to-update-symlink-allowlist = False"
+        ec_config[7] = "offer-to-update-symlink-allowlist = False"
         fs.ender_chest_config(minecraft_root).write_text("\n".join(ec_config))
         assert gather.load_ender_chest(minecraft_root).instances == ()
         gather.update_ender_chest(minecraft_root, (home, minecraft_root / "instances"))
