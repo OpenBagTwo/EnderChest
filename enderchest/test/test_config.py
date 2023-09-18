@@ -104,7 +104,7 @@ class TestConfigWriting:
         (tmp_path / "EnderChest").mkdir()
 
         original_ender_chest = EnderChest(
-            urlparse(tmp_path.absolute().as_uri()),
+            tmp_path,
             name="tester",
             instances=(
                 InstanceSpec(
