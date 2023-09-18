@@ -306,6 +306,7 @@ class EnderChest:
             )
             place_after_open = False
             ender_chest.write_to_cfg(config_file)
+            return cls.from_cfg(config_file)
         ender_chest.place_after_open = place_after_open
         ender_chest.offer_to_update_symlink_allowlist = (
             offer_to_update_symlink_allowlist
@@ -324,6 +325,7 @@ class EnderChest:
                 )
                 ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
                 ender_chest.write_to_cfg(config_file)
+                return cls.from_cfg(config_file)
         return ender_chest
 
     def write_to_cfg(self, config_file: Path | None = None) -> str:
