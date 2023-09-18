@@ -283,6 +283,40 @@ class TestFileSync:
             else "sparkle"
         )
 
+    @pytest.mark.parametrize("fail_type", ("no_remotes", "bad_remotes"))
+    def test_does_not_place_after_failed_open(
+        self, minecraft_root, remote, fail_type, caplog
+    ):
+        # TODO: move this into TestFileSyncOnly as there is no value in testing
+        #       this for multiple protocols
+
+        test_path = (
+            minecraft_root
+            / "instances"
+            / "axolotl"
+            / ".minecraft"
+            / "conflict"
+            / "diamond.png"
+        )
+        enderchest = gather.load_ender_chest(minecraft_root)
+        if fail_type == "bad_remotes":
+            enderchest.register_remote("file://i/do/not/exist", "does not exist")
+        enderchest.place_after_open = True
+        enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+
+        failure_messages = {
+            "no_remotes": "EnderChest has no remotes. Aborting.",
+            "bad_remotes": "Could not sync with any remote EnderChests",
+        }
+
+        assert [  # meta-test
+            record.msg for record in caplog.records if record.levelno == logging.ERROR
+        ] == [failure_messages[fail_type]]
+
+        assert not test_path.exists()
+
     @pytest.mark.parametrize("operation", ("pull", "push"))
     def test_timeout_argument_doesnt_obviously_break_(
         self, minecraft_root, remote, operation
