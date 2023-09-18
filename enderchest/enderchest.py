@@ -209,11 +209,11 @@ class EnderChest:
         try:
             remote = remote if isinstance(remote, ParseResult) else urlparse(remote)
             alias = alias or remote.hostname
-            if not alias:
+            if not alias:  # pragma: no cover
                 raise AttributeError(f"{remote.geturl()} has no hostname")
             GATHER_LOGGER.debug("Registering remote %s (%s)", remote.geturl(), alias)
             self._remotes[alias] = remote
-        except AttributeError as parse_problem:
+        except AttributeError as parse_problem:  # pragma: no cover
             raise ValueError(f"{remote} is not a valid URI") from parse_problem
 
     @classmethod
