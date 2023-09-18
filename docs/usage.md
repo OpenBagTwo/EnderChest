@@ -29,7 +29,11 @@ Go to that directory in your terminal.
     ```bash
     enderchest craft --root /path/to/my_minecraft_stuff
     ```
-
+!!! tip
+    You can also specify your Minecraft Root by using an enviroment variable.
+    ```bash
+    export MINECRAFT_ROOT=/path/to/my_minecraft_stuff
+    ```
 ## Creating an EnderChest
 
 When ready, run the command:
