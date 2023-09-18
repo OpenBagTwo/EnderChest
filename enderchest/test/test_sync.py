@@ -1,4 +1,5 @@
 """Tests around file transfer functionality"""
+import itertools
 import json
 import logging
 import os
@@ -11,7 +12,7 @@ import pytest
 
 from enderchest import craft
 from enderchest import filesystem as fs
-from enderchest import gather
+from enderchest import gather, place
 from enderchest import remote as r
 from enderchest import sync
 
@@ -246,6 +247,42 @@ class TestFileSync:
             minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
         ).read_text() == "chunky\n"
 
+    @pytest.mark.parametrize(
+        "dry_run, place_after",
+        (
+            (False, False),
+            (False, True),
+            # no point in testing dry-run-False
+            (True, True),
+        ),
+        ids=("False", "True", "dry-run"),
+    )
+    def test_place_after_open(self, minecraft_root, remote, dry_run, place_after):
+        test_path = (
+            minecraft_root
+            / "instances"
+            / "axolotl"
+            / ".minecraft"
+            / "conflict"
+            / "diamond.png"
+        )
+
+        # meta-test
+        place.place_ender_chest(minecraft_root)
+        assert test_path.read_text("utf-8") == "sparkle"
+
+        enderchest = gather.load_ender_chest(minecraft_root)
+        enderchest.register_remote(remote, alias="not so remote")
+        enderchest.place_after_open = place_after
+        enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        r.sync_with_remotes(minecraft_root, "pull", dry_run=dry_run, verbosity=-1)
+        assert (
+            test_path.read_text("utf-8") == "lab-grown!"
+            if place_after and not dry_run
+            else "sparkle"
+        )
+
     @pytest.mark.parametrize("operation", ("pull", "push"))
     def test_timeout_argument_doesnt_obviously_break_(
         self, minecraft_root, remote, operation
@@ -342,6 +379,24 @@ class TestFileSync:
 
         assert len(warnings) == 1
         assert "Could not sync changes with prayer://unreachable" in warnings[0]
+
+    def test_never_places_after_close(self, minecraft_root, remote):
+        test_path = (
+            minecraft_root
+            / "instances"
+            / "bee"
+            / ".minecraft"
+            / "mods"
+            / "optifine.jar"
+        )
+
+        enderchest = gather.load_ender_chest(minecraft_root)
+        enderchest.register_remote(remote, alias="not so remote")
+        enderchest.place_after_open = True
+        enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        assert not test_path.exists()
 
     ############################################################################
     # low-level tests                                                          #
