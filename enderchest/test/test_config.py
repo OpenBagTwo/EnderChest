@@ -1,4 +1,5 @@
 """Tests for reading and writing config files"""
+import warnings
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -115,6 +116,14 @@ class TestConfigWriting:
                     (),
                     ("your", "it"),
                 ),
+                InstanceSpec(
+                    "puppet",
+                    Path("..") / "instances" / "puppeteer" / ".minecraft",
+                    ("1.20.2",),
+                    "fabric",
+                    (),
+                    (),
+                ),
             ),
         )
         original_ender_chest.do_not_sync = ["*.local"]
@@ -132,10 +141,12 @@ class TestConfigWriting:
             "do-not-sync": parsed_ender_chest.do_not_sync,
             "place-after-open": parsed_ender_chest.place_after_open,
             "modloader": parsed_ender_chest.instances[0].modloader,
+            "dupe_instance_name": parsed_ender_chest.instances[1].name,
         } == {
             "do-not-sync": ["EnderChest/enderchest.cfg", "*.local"],
             "place-after-open": False,
             "modloader": "",
+            "dupe_instance_name": "puppet.1",
         }
 
     def test_sync_confirm_wait_true_is_rendered_as_prompt(self):
@@ -151,3 +162,18 @@ class TestConfigWriting:
                 break
         else:
             raise KeyError("sync-confirm-wait line not found in config")
+
+
+class TestConfigParsing:
+    @pytest.mark.xfail(reason="Believe it or not, this can be turned into a URI")
+    def test_raise_when_address_cannot_be_turned_into_a_uri(self, tmp_path):
+        config_file = tmp_path / "enderchest.cfg"
+        config_file.write_text(
+            "[properties]"
+            "\nname=tester\n"
+            r"address=¯\_(ツ)_/¯"
+            "\nsync-protocol=file"
+            "\nplace-after-open=no"
+        )
+        with pytest.raises(ValueError, match="is not a valid URI"):
+            _ = EnderChest.from_cfg(config_file)

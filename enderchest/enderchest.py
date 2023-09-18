@@ -104,7 +104,7 @@ class EnderChest:
                 self._uri = urlparse(uri.absolute().as_uri())
             else:
                 self._uri = urlparse(uri)
-        except AttributeError as parse_problem:
+        except AttributeError as parse_problem:  # pragma: no cover
             raise ValueError(f"{uri} is not a valid URI") from parse_problem
 
         if not self._uri.netloc:
@@ -179,8 +179,8 @@ class EnderChest:
             counter += 1
             name = f"{instance.name}.{counter}"
 
-        GATHER_LOGGER.debug(f"Registering instance {instance.name} at {instance.root}")
-        self._instances.append(instance)
+        GATHER_LOGGER.debug(f"Registering instance {name} at {instance.root}")
+        self._instances.append(instance._replace(name=name))
         return self._instances[-1]
 
     @property
