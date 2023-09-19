@@ -613,11 +613,11 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
             MINECRAFT_ROOT = os.getenv("MINECRAFT_ROOT")
 
             return (
-                    actions[aliases[command]],
-                    Path(root_arg or root_flag or MINECRAFT_ROOT or os.getcwd()),
-                    log_level,
-                    action_kwargs,
-                    )
+                actions[aliases[command]],
+                Path(root_arg or root_flag or MINECRAFT_ROOT or os.getcwd()),
+                log_level,
+                action_kwargs,
+            )
 
     enderchest_parser.print_help(sys.stderr)
     sys.exit(1)
