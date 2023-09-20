@@ -1,6 +1,7 @@
 """Useful setup / teardown fixtures"""
 from importlib.resources import as_file
 from pathlib import Path
+from typing import Generator
 
 import pytest
 
@@ -17,7 +18,7 @@ def use_local_ssh(request):
 
 
 @pytest.fixture
-def file_system(tmp_path):
+def file_system(tmp_path) -> Generator[tuple[Path, Path], None, None]:
     """Create a testing file system and throw a bunch of random files across
     it.
 

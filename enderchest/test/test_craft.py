@@ -37,7 +37,9 @@ class TestEnderChestCrafting:
 
         craft.craft_ender_chest(minecraft_root / "trunk")
 
-    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch, tmpdir):
+    def test_no_kwargs_routes_to_the_interactive_prompter(
+        self, monkeypatch, tmpdir
+    ) -> None:
         prompt_log: list[Path] = []
 
         def mock_prompt(root) -> Any:
@@ -72,7 +74,7 @@ class TestEnderChestCrafting:
         argument,
         value,
         minecraft_root,
-    ):
+    ) -> None:
         def mock_prompt(root) -> Any:
             raise AssertionError("I was not to be called.")
 
@@ -247,7 +249,7 @@ class TestShulkerBoxCrafting:
             == 0
         )
 
-    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch):
+    def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch) -> None:
         prompt_log: list[tuple[Path, str]] = []
 
         def mock_prompt(root, name) -> Any:
@@ -280,7 +282,7 @@ class TestShulkerBoxCrafting:
     )
     def test_any_kwarg_avoids_the_interactive_prompter(
         self, monkeypatch, argument, value
-    ):
+    ) -> None:
         def mock_prompt(root) -> Any:
             raise AssertionError("I was not to be called.")
 
