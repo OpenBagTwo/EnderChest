@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.3.2">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.046329b4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.30068a00.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1113,9 +1113,15 @@ the Minecraft root, <em>e.g.</em>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>enderchest<span class="w"> </span>craft<span class="w"> </span>--root<span class="w"> </span>/path/to/my_minecraft_stuff
 </span></code></pre></div></p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can also specify your Minecraft root by using an enviroment variable.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MINECRAFT_ROOT</span><span class="o">=</span>/path/to/my_minecraft_stuff
+</span></code></pre></div></p>
+</div>
 <h2 id="creating-an-enderchest">Creating an EnderChest</h2>
 <p>When ready, run the command:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>enderchest<span class="w"> </span>craft
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>enderchest<span class="w"> </span>craft
 </span></code></pre></div>
 <p>to begin the guided setup process. This process will ask you about directories
 to look for Minecraft installations inside. Note that these will be the
@@ -1134,19 +1140,19 @@ it easy to, for example, manually add a tag to an instance.</p>
 <p class="admonition-title">Info</p>
 <p>When a given entry can have multiple values, you can separate those values
 by commas, <em>e.g.</em>
-<div class="language-ini highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">vanilla_plus, modded, sodium</span>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">vanilla_plus, modded, sodium</span>
 </span></code></pre></div>
 or by putting each entry on its own (indented) line, <em>e.g.</em>
-<div class="language-ini highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">tags</span><span class="w"> </span><span class="o">=</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="na">aether</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="na">modded</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="na">optifine</span>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="na">tags</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="na">aether</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="na">modded</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="na">optifine</span>
 </span></code></pre></div></p>
 </div>
 <h3 id="registering-additional-instances">Registering Additional Instances</h3>
 <p>Once you have an EnderChest installed, you can register additional instances
 at any time by using the <code>gather</code> action. Running:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>minecraft<span class="w"> </span>&lt;path&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>minecraft<span class="w"> </span>&lt;path&gt;
 </span></code></pre></div>
 <p>will recursively search the provided directory for folders named <code>.minecraft</code>
 and attempt to register them.</p>
@@ -1159,7 +1165,7 @@ commands by using the <code>--verbose</code> (<code>-v</code>) and <code>--quiet
 <p>Once you've populated your EnderChest configuration with all the Minecraft
 instances you want to manage, it's time to start crafting shulker boxes.</p>
 <p>Running:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>enderchest<span class="w"> </span>craft<span class="w"> </span>shulker_box<span class="w"> </span>&lt;name&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>enderchest<span class="w"> </span>craft<span class="w"> </span>shulker_box<span class="w"> </span>&lt;name&gt;
 </span></code></pre></div>
 <p>will take you through a guided setup that will let to control how your shulker
 box will know which instances will link to it along with what other remote
@@ -1187,7 +1193,7 @@ be considered highly experimental.</p>
 <h2 id="linking-your-instances">Linking Your Instances</h2>
 <p>Once everything is set up, to actually link up all of your instances, you
 just need to run:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>enderchest<span class="w"> </span>place
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>enderchest<span class="w"> </span>place
 </span></code></pre></div>
 <div class="admonition danger">
 <p class="admonition-title">Important!!</p>
@@ -1204,7 +1210,7 @@ EnderChest will never create any file or symlink without your consent and will
 never place a symlink pointing directly to a place outside of your EnderChest.</p>
 <p>If you would like to get a full report of all symlinks EnderChest places,
 you can run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>enderchest<span class="w"> </span>place<span class="w"> </span>--verbose
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>enderchest<span class="w"> </span>place<span class="w"> </span>--verbose
 </span></code></pre></div>
 to get a full audit.</p>
 </div>
@@ -1214,7 +1220,7 @@ you forgot to clean out an existing instance. Other times, your shulker box
 configurations might be <a href="../suggestions#collisions-and-conflicts">conflicting with each other</a>.
 Regardless, rather than just overwriting your data, EnderChest will ask you
 how you want to proceed. And once you've fixed the issue, you can just run</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>enderchest<span class="w"> </span>place
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>enderchest<span class="w"> </span>place
 </span></code></pre></div>
 <p>again--running <code>place</code> multiple times is completely safe (and is something you
 should do regularly! and particularly after any shulker box modification or file
@@ -1238,7 +1244,7 @@ via <a href="https://www.cygwin.com/packages/summary/rsync.html">Cygwin</a> or
 and Windows users may be better off using
 <a href="../suggestions#other-syncing-protocols">a different protocol</a>.</p>
 <p>To register a remote with your EnderChest, you just need to run the following command:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>enderchests<span class="w"> </span>&lt;remote&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>enderchests<span class="w"> </span>&lt;remote&gt;
 </span></code></pre></div>
 <p>where <code>&lt;remote&gt;</code> is the URI to the remote chest.</p>
 <h3 id="understanding-uris">Understanding URIs</h3>
@@ -1246,7 +1252,7 @@ and Windows users may be better off using
 or URI, is a way of referencing files or folders--oftentimes on other computers--
 in a standard way. URLs, like you're familiar with from web browsers, are a type
 of URI. The format of a URI typically follows the following schema:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&lt;protocol&gt;://[[&lt;username&gt;@]&lt;host&gt;[:port]&lt;path&gt;[?&lt;query&gt;]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&lt;protocol&gt;://[[&lt;username&gt;@]&lt;host&gt;[:port]&lt;path&gt;[?&lt;query&gt;]
 </span></code></pre></div>
 <p>The important bits right now are:
 - the protocol must be one that's supported by both EnderChest and by your machine
@@ -1271,8 +1277,8 @@ file name or
 <a href="https://www.oreilly.com/library/view/beginning-applescript/9780764574009/9780764574009_path_names_colon_traditional_mac_and_pos.html">POSIX</a>
 path as a URI. You can also get the URI to your current directory in Python
 by running the following code:
-<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_uri</span><span class="p">())</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_uri</span><span class="p">())</span>
 </span></code></pre></div>
 While that will give you the <a href="../suggestions#file-protocol"><code>file://</code> protocol</a>,
 URI you can then just replace the <code>file://</code> part (make sure not to grab
@@ -1282,10 +1288,10 @@ of your choice.</p>
 <h2 id="syncing">Syncing</h2>
 <p>Once you have some remote EnderChests set up, the way you sync with them is via
 the <code>close</code> and <code>open</code> actions:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>enderchest<span class="w"> </span>close
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>enderchest<span class="w"> </span>close
 </span></code></pre></div>
 <p>will push your local changes to all registered remote chests</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>enderchest<span class="w"> </span>open
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>enderchest<span class="w"> </span>open
 </span></code></pre></div>
 <p>will pull changes from your other EnderChests while</p>
 <div class="admonition info">
@@ -1313,7 +1319,7 @@ in the <a href="../cli/#enderchest-open">CLI docs</a>).</p>
 <p>Starting with v0.1.3, after a successful <code>enderchest open</code>, EnderChest will
 automatically update all of your instances' symlinks, saving you from needing
 to remember to run:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>enderchest<span class="w"> </span>place
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>enderchest<span class="w"> </span>place
 </span></code></pre></div>
 <p>(this behavior can be disabled by editing the <code>place-after-open</code> setting in
 your <code>enderchest.cfg</code> file).</p>

@@ -54,8 +54,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">139 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">119<span class="text"> run</span></button>
+            <span class="text">140 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">120<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">20<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">4<span class="text"> excluded</span></button>
         </h2>
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_config_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-09-18 16:36 +0000
+            created at 2023-09-20 13:04 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -692,33 +692,35 @@
     <p class="pln"><span class="n"><a id="t610" href="#t610">610</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t611" href="#t611">611</a></span><span class="t">            <span class="nam">log_level</span> <span class="op">=</span> <span class="nam">loggers</span><span class="op">.</span><span class="nam">verbosity_to_log_level</span><span class="op">(</span><span class="nam">verbosity</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t612" href="#t612">612</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t613" href="#t613">613</a></span><span class="t">            <span class="key">return</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t614" href="#t614">614</a></span><span class="t">                <span class="nam">action</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t615" href="#t615">615</a></span><span class="t">                <span class="nam">Path</span><span class="op">(</span><span class="nam">root_arg</span> <span class="key">or</span> <span class="nam">root_flag</span> <span class="key">or</span> <span class="nam">os</span><span class="op">.</span><span class="nam">getcwd</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t616" href="#t616">616</a></span><span class="t">                <span class="nam">log_level</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t617" href="#t617">617</a></span><span class="t">                <span class="nam">action_kwargs</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t618" href="#t618">618</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t619" href="#t619">619</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t620" href="#t620">620</a></span><span class="t">    <span class="nam">enderchest_parser</span><span class="op">.</span><span class="nam">print_help</span><span class="op">(</span><span class="nam">sys</span><span class="op">.</span><span class="nam">stderr</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t621" href="#t621">621</a></span><span class="t">    <span class="nam">sys</span><span class="op">.</span><span class="nam">exit</span><span class="op">(</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t622" href="#t622">622</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t623" href="#t623">623</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t624" href="#t624">624</a></span><span class="t"><span class="key">def</span> <span class="nam">main</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t625" href="#t625">625</a></span><span class="t">    <span class="str">"""CLI Entrypoint"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t626" href="#t626">626</a></span><span class="t">    <span class="nam">logger</span> <span class="op">=</span> <span class="nam">logging</span><span class="op">.</span><span class="nam">getLogger</span><span class="op">(</span><span class="nam">__package__</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t627" href="#t627">627</a></span><span class="t">    <span class="nam">cli_handler</span> <span class="op">=</span> <span class="nam">logging</span><span class="op">.</span><span class="nam">StreamHandler</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t628" href="#t628">628</a></span><span class="t">    <span class="nam">cli_handler</span><span class="op">.</span><span class="nam">setFormatter</span><span class="op">(</span><span class="nam">loggers</span><span class="op">.</span><span class="nam">CLIFormatter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t629" href="#t629">629</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">addHandler</span><span class="op">(</span><span class="nam">cli_handler</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t630" href="#t630">630</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t631" href="#t631">631</a></span><span class="t">    <span class="nam">action</span><span class="op">,</span> <span class="nam">root</span><span class="op">,</span> <span class="nam">log_level</span><span class="op">,</span> <span class="nam">kwargs</span> <span class="op">=</span> <span class="nam">parse_args</span><span class="op">(</span><span class="nam">sys</span><span class="op">.</span><span class="nam">argv</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t613" href="#t613">613</a></span><span class="t">            <span class="nam">MINECRAFT_ROOT</span> <span class="op">=</span> <span class="nam">os</span><span class="op">.</span><span class="nam">getenv</span><span class="op">(</span><span class="str">"MINECRAFT_ROOT"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t614" href="#t614">614</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t615" href="#t615">615</a></span><span class="t">            <span class="key">return</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t616" href="#t616">616</a></span><span class="t">                <span class="nam">actions</span><span class="op">[</span><span class="nam">aliases</span><span class="op">[</span><span class="nam">command</span><span class="op">]</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t617" href="#t617">617</a></span><span class="t">                <span class="nam">Path</span><span class="op">(</span><span class="nam">root_arg</span> <span class="key">or</span> <span class="nam">root_flag</span> <span class="key">or</span> <span class="nam">MINECRAFT_ROOT</span> <span class="key">or</span> <span class="nam">os</span><span class="op">.</span><span class="nam">getcwd</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t618" href="#t618">618</a></span><span class="t">                <span class="nam">log_level</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t619" href="#t619">619</a></span><span class="t">                <span class="nam">action_kwargs</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t620" href="#t620">620</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t621" href="#t621">621</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t622" href="#t622">622</a></span><span class="t">    <span class="nam">enderchest_parser</span><span class="op">.</span><span class="nam">print_help</span><span class="op">(</span><span class="nam">sys</span><span class="op">.</span><span class="nam">stderr</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t623" href="#t623">623</a></span><span class="t">    <span class="nam">sys</span><span class="op">.</span><span class="nam">exit</span><span class="op">(</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t624" href="#t624">624</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t625" href="#t625">625</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t626" href="#t626">626</a></span><span class="t"><span class="key">def</span> <span class="nam">main</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t627" href="#t627">627</a></span><span class="t">    <span class="str">"""CLI Entrypoint"""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t628" href="#t628">628</a></span><span class="t">    <span class="nam">logger</span> <span class="op">=</span> <span class="nam">logging</span><span class="op">.</span><span class="nam">getLogger</span><span class="op">(</span><span class="nam">__package__</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t629" href="#t629">629</a></span><span class="t">    <span class="nam">cli_handler</span> <span class="op">=</span> <span class="nam">logging</span><span class="op">.</span><span class="nam">StreamHandler</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t630" href="#t630">630</a></span><span class="t">    <span class="nam">cli_handler</span><span class="op">.</span><span class="nam">setFormatter</span><span class="op">(</span><span class="nam">loggers</span><span class="op">.</span><span class="nam">CLIFormatter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t631" href="#t631">631</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">addHandler</span><span class="op">(</span><span class="nam">cli_handler</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t632" href="#t632">632</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t633" href="#t633">633</a></span><span class="t">    <span class="com"># TODO: set log levels per logger based on the command</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t634" href="#t634">634</a></span><span class="t">    <span class="nam">cli_handler</span><span class="op">.</span><span class="nam">setLevel</span><span class="op">(</span><span class="nam">log_level</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t635" href="#t635">635</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t636" href="#t636">636</a></span><span class="t">    <span class="com"># TODO: when we add log files, set this to minimum log level across all handlers</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t637" href="#t637">637</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">setLevel</span><span class="op">(</span><span class="nam">log_level</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t638" href="#t638">638</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t639" href="#t639">639</a></span><span class="t">    <span class="nam">action</span><span class="op">(</span><span class="nam">root</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t633" href="#t633">633</a></span><span class="t">    <span class="nam">action</span><span class="op">,</span> <span class="nam">root</span><span class="op">,</span> <span class="nam">log_level</span><span class="op">,</span> <span class="nam">kwargs</span> <span class="op">=</span> <span class="nam">parse_args</span><span class="op">(</span><span class="nam">sys</span><span class="op">.</span><span class="nam">argv</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t634" href="#t634">634</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t635" href="#t635">635</a></span><span class="t">    <span class="com"># TODO: set log levels per logger based on the command</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t636" href="#t636">636</a></span><span class="t">    <span class="nam">cli_handler</span><span class="op">.</span><span class="nam">setLevel</span><span class="op">(</span><span class="nam">log_level</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t637" href="#t637">637</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t638" href="#t638">638</a></span><span class="t">    <span class="com"># TODO: when we add log files, set this to minimum log level across all handlers</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t639" href="#t639">639</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">setLevel</span><span class="op">(</span><span class="nam">log_level</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t640" href="#t640">640</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t641" href="#t641">641</a></span><span class="t">    <span class="nam">action</span><span class="op">(</span><span class="nam">root</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -728,7 +730,7 @@
             <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9_config_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-09-18 16:36 +0000
+            created at 2023-09-20 13:04 +0000
         </p>
     </div>
 </footer>

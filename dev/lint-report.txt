@@ -24,12 +24,14 @@ enderchest/enderchest.py:220:4: R0914: Too many local variables (20/15) (too-man
 enderchest/enderchest.py:220:4: R0912: Too many branches (14/12) (too-many-branches)
 enderchest/enderchest.py:220:4: R0915: Too many statements (57/50) (too-many-statements)
 ************* Module enderchest.cli
-enderchest/cli.py:633:5: W0511: TODO: set log levels per logger based on the command (fixme)
-enderchest/cli.py:636:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
+enderchest/cli.py:635:5: W0511: TODO: set log levels per logger based on the command (fixme)
+enderchest/cli.py:638:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
 enderchest/cli.py:25:0: R0903: Too few public methods (1/2) (too-few-public-methods)
 enderchest/cli.py:32:0: R0913: Too many arguments (9/5) (too-many-arguments)
 enderchest/cli.py:208:0: R0914: Too many local variables (23/15) (too-many-locals)
 enderchest/cli.py:208:0: R0915: Too many statements (59/50) (too-many-statements)
+enderchest/cli.py:559:0: R0914: Too many local variables (16/15) (too-many-locals)
+enderchest/cli.py:613:12: C0103: Variable name "MINECRAFT_ROOT" doesn't conform to snake_case naming style (invalid-name)
 ************* Module enderchest.shulker_box
 enderchest/shulker_box.py:116:17: W0511: TODO check to make sure properties hasn't been read before (fixme)
 enderchest/shulker_box.py:122:17: W0511: TODO: support specifying filters (and link-folders) in the properties section (fixme)
@@ -105,13 +107,13 @@ enderchest/sync/utils.py:101:4: C0116: Missing function or method docstring (mis
 enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[135:142]
 ==enderchest.sync.sftp:[356:363]
-    for path, path_stat, operation in sync_diff:
-        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
-            case (Op.CREATE, True):
-                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
-                (destination_path / path).mkdir(parents=True, exist_ok=True)
-            case (Op.CREATE, False) | (Op.REPLACE, False):
-                SYNC_LOGGER.debug( (duplicate-code)
+        for path, path_stat, operation in sync_diff:
+            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+                case (Op.CREATE, True):
+                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                    (destination_path / path).mkdir(parents=True, exist_ok=True)
+                case (Op.CREATE, False) | (Op.REPLACE, False):
+                    SYNC_LOGGER.debug( (duplicate-code)
 enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[127:136]
 ==enderchest.sync.sftp:[484:493]
@@ -143,5 +145,5 @@ enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
         else: (duplicate-code)
 
 -----------------------------------
-Your code has been rated at 9.57/10
+Your code has been rated at 9.56/10
 
