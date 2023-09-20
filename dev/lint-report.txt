@@ -54,12 +54,13 @@ enderchest/craft.py:400:0: R0914: Too many local variables (16/15) (too-many-loc
 enderchest/craft.py:400:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/craft.py:400:0: R0915: Too many statements (56/50) (too-many-statements)
 ************* Module enderchest.place
-enderchest/place.py:119:38: W0511: TODO: reevaluate default (it's 50/50 due to link folders) (fixme)
 enderchest/place.py:16:0: R0913: Too many arguments (6/5) (too-many-arguments)
-enderchest/place.py:16:0: R0914: Too many local variables (23/15) (too-many-locals)
-enderchest/place.py:167:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
-enderchest/place.py:16:0: R0912: Too many branches (25/12) (too-many-branches)
-enderchest/place.py:16:0: R0915: Too many statements (86/50) (too-many-statements)
+enderchest/place.py:16:0: R0914: Too many local variables (24/15) (too-many-locals)
+enderchest/place.py:96:4: R0911: Too many return statements (7/6) (too-many-return-statements)
+enderchest/place.py:172:4: R1702: Too many nested blocks (7/5) (too-many-nested-blocks)
+enderchest/place.py:172:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+enderchest/place.py:16:0: R0912: Too many branches (31/12) (too-many-branches)
+enderchest/place.py:16:0: R0915: Too many statements (100/50) (too-many-statements)
 ************* Module enderchest.remote
 enderchest/remote.py:92:0: R0914: Too many local variables (17/15) (too-many-locals)
 enderchest/remote.py:92:0: R0912: Too many branches (22/12) (too-many-branches)
@@ -117,15 +118,15 @@ enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
 enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[127:136]
 ==enderchest.sync.sftp:[484:493]
-        )
+    )
 
-        sync_diff = diff(source_contents, destination_contents)
+    sync_diff = diff(source_contents, destination_contents)
 
-        if dry_run:
-            generate_sync_report(sync_diff)
-            return
+    if dry_run:
+        generate_sync_report(sync_diff)
+        return
 
-        for path, path_stat, operation in sync_diff: (duplicate-code)
+    for path, path_stat, operation in sync_diff: (duplicate-code)
 enderchest/sync/utils.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[89:95]
 ==enderchest.sync.sftp:[290:296]
