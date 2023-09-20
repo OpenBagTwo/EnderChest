@@ -300,7 +300,9 @@ class TestGatherInstances:
             ]
         )
 
-    def test_updating_an_instance_does_not_overwrite_tags(self, minecraft_root, home):
+    def test_updating_an_instance_does_not_overwrite_tags(
+        self, minecraft_root, home
+    ) -> None:
         enderchest = gather.load_ender_chest(minecraft_root)
 
         expected: dict[str, tuple[str, ...]] = {}

@@ -27,7 +27,7 @@ class TestRglob:
 
         assert rglob == sorted(place._rglob(minecraft_root / "workspace", 0))
 
-    def test_max_depth_of_two_returns_subdirectories(self, minecraft_root):
+    def test_max_depth_of_two_returns_subdirectories(self, minecraft_root) -> None:
         instances_folder = minecraft_root / "instances"
         expected: list[Path] = [instances_folder / "instgroups.json"]
         for instance in utils.TESTING_INSTANCES[1:]:
@@ -817,7 +817,7 @@ class TestMultiShulkerPlacing:
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
         ).exists()
 
-    def test_prompt_and_retry(self, home, minecraft_root, caplog, monkeypatch):
+    def test_prompt_and_retry(self, home, minecraft_root, caplog, monkeypatch) -> None:
         conflict_file_path = home / ".minecraft" / "options.txt"
         safe_keeping = minecraft_root / "options.txt.bkp"
 
