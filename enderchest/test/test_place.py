@@ -1,4 +1,5 @@
 """Tests around instance-linking functionality"""
+import logging
 import os
 import re
 from pathlib import Path
@@ -71,6 +72,34 @@ class TestSingleShulkerPlace:
         # check on teardown that all those "do_not_touch" files are untouched
         for path, contents in do_not_touch.items():
             assert path.read_text() == contents
+
+    def test_place_exits_when_there_is_no_enderchest(self, minecraft_root, caplog):
+        place.place_ender_chest(minecraft_root.parent)
+        assert len(caplog.records) == 1
+        assert (
+            caplog.records[0].levelno,
+            caplog.records[0].message.split(" from")[0],  # hacky "startswith"
+        ) == (logging.ERROR, "Could not load EnderChest")
+
+    @pytest.mark.parametrize(
+        "error_handling",
+        ("abort", "ignore", "skip", "skip-instance", "skip-shulker-box"),
+    )
+    def test_place_handles_error_when_an_instance_is_missing(
+        self, minecraft_root, error_handling, caplog
+    ):
+        instance_folder = minecraft_root / "instances" / "axolotl"
+        safe_keeping = minecraft_root / "axolotl.bkp"
+
+        instance_folder.rename(safe_keeping)
+
+        try:
+            place.place_ender_chest(minecraft_root, error_handling=error_handling)
+        finally:
+            safe_keeping.rename(instance_folder)
+
+        errors = [record for record in caplog.records if record.levelname == "ERROR"]
+        assert errors[0].msg.startswith("No minecraft instance exists at")
 
     @pytest.mark.parametrize("relative", (True, False), ids=("relative", "absolute"))
     @utils.parametrize_over_instances("official", "axolotl")
@@ -342,17 +371,25 @@ class TestSingleShulkerPlace:
         assert stale_link in stale_link.parent.iterdir()
 
     @utils.parametrize_over_instances("official", "axolotl")
+    @pytest.mark.parametrize(
+        "error_handling",
+        ("abort", "ignore", "skip", "skip-instance", "skip-shulker-box"),
+    )
     def test_place_will_not_overwrite_a_non_empty_folder(
-        self, minecraft_root, instance, caplog
+        self,
+        minecraft_root,
+        instance,
+        caplog,
+        error_handling,
     ):
         instance_folder = utils.resolve(instance.root, minecraft_root)
         existing_file = instance_folder / "screenshots" / "thumbs.db"
         existing_file.write_text("opposable")
 
-        place.place_ender_chest(minecraft_root)
+        place.place_ender_chest(minecraft_root, error_handling=error_handling)
 
         error_log = "\n".join(
-            record.msg for record in caplog.records if record.levelname == "ERROR"
+            record.msg for record in caplog.records if record.levelno == logging.ERROR
         )
         assert re.search(
             rf"{instance.name}((.|\n)*)screenshots((.|\n)*)empty", error_log
@@ -771,8 +808,45 @@ class TestMultiShulkerPlacing:
             + " already exists\nAborting"
         )
 
-    def test_skip_match(self, home, minecraft_root, caplog):
-        place.place_ender_chest(minecraft_root, error_handling="skip")
+    @pytest.mark.parametrize("prompt", (False, True), ids=["", "prompted"])
+    def test_ignore_failures(
+        self, home, minecraft_root, prompt, monkeypatch, caplog, capsys
+    ):
+        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("c",)))
+
+        place.place_ender_chest(
+            minecraft_root,
+            error_handling="prompt" if prompt else "ignore",
+            relative=False,
+        )
+        _ = capsys.readouterr()  # suppress outputs
+
+        errors = [
+            i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
+        ]
+
+        assert len(errors) == 1
+        error_idx = errors[0]
+        assert "options.txt already exists" in caplog.records[error_idx].msg
+
+        # note: there's actually no guarantee that this link didn't generate
+        #       before the failure...
+        assert (
+            home / ".minecraft" / "mods" / "FoxNap.jar"
+        ).readlink() == fs.shulker_box_root(
+            minecraft_root, "1.19"
+        ) / "mods" / "FoxNap.jar"
+
+    @pytest.mark.parametrize("prompt", (False, True), ids=["", "prompted"])
+    def test_skip_match(
+        self, home, minecraft_root, prompt, monkeypatch, caplog, capsys
+    ):
+        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("m",)))
+
+        place.place_ender_chest(
+            minecraft_root, error_handling="prompt" if prompt else "skip"
+        )
+        _ = capsys.readouterr()  # suppress outputs
 
         errors = [
             i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
@@ -798,16 +872,28 @@ class TestMultiShulkerPlacing:
             home / ".minecraft" / "data" / "achievements.txt"
         ).read_text() == "Spelled acheivements correctly!"
 
-    def test_skip_instance(self, home, minecraft_root):
-        place.place_ender_chest(minecraft_root, error_handling="skip-instance")
+    @pytest.mark.parametrize("prompt", (False, True), ids=["", "prompted"])
+    def test_skip_instance(self, home, minecraft_root, prompt, monkeypatch, capsys):
+        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("i",)))
+
+        place.place_ender_chest(
+            minecraft_root, error_handling="prompt" if prompt else "skip-instance"
+        )
+        _ = capsys.readouterr()  # suppress outputs
 
         assert (
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
         ).read_text() == "autoJump:true"
         assert not (home / ".minecraft" / "data" / "achievements.txt").exists()
 
-    def test_skip_shulker_box(self, home, minecraft_root):
-        place.place_ender_chest(minecraft_root, error_handling="skip-shulker")
+    @pytest.mark.parametrize("prompt", (False, True), ids=["", "prompted"])
+    def test_skip_shulker_box(self, home, minecraft_root, prompt, monkeypatch, capsys):
+        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("s",)))
+
+        place.place_ender_chest(
+            minecraft_root, error_handling="prompt" if prompt else "skip-shulker"
+        )
+        _ = capsys.readouterr()  # suppress outputs
 
         assert (
             home / ".minecraft" / "data" / "achievements.txt"
@@ -816,6 +902,27 @@ class TestMultiShulkerPlacing:
         assert not (
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
         ).exists()
+
+    def test_raise_on_invalid_error_handling_arg(self, home, minecraft_root, caplog):
+        with pytest.raises(ValueError, match="Unrecognized error-handling method"):
+            place.place_ender_chest(minecraft_root, error_handling="not a thing")
+
+    def test_prompt_and_quit(self, home, minecraft_root, caplog, monkeypatch, capsys):
+        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("q",)))
+
+        place.place_ender_chest(minecraft_root, error_handling="prompt")
+        _ = capsys.readouterr()  # suppress outputs
+
+        errors = [
+            i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
+        ]
+        assert len(errors) == 2
+        error_idx = errors[0]
+        assert "options.txt already exists" in caplog.records[error_idx].msg
+
+        # and then make sure that it actually did abort
+
+        assert not (home / ".minecraft" / "data" / "achievements.txt").exists()
 
     def test_prompt_and_retry(self, home, minecraft_root, caplog, monkeypatch) -> None:
         conflict_file_path = home / ".minecraft" / "options.txt"
@@ -854,6 +961,22 @@ class TestMultiShulkerPlacing:
             if safe_keeping.exists():
                 conflict_file_path.unlink(missing_ok=True)
                 safe_keeping.rename(conflict_file_path)
+
+    def test_invalid_prompt_response_will_just_keep_asking(
+        self, home, minecraft_root, caplog, monkeypatch, capsys
+    ):
+        monkeypatch.setattr(
+            "builtins.input",
+            utils.scripted_prompt(("blargh", "grahr", "rrgh", "i dunno man", "q")),
+        )
+
+        place.place_ender_chest(minecraft_root, error_handling="prompt")
+        _ = capsys.readouterr()  # suppress outputs
+
+        errors = [
+            i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
+        ]
+        assert len(errors) == 6
 
     def test_skip_shulker_box_that_doesnt_match_host(self, home, minecraft_root):
         with fs.shulker_box_config(minecraft_root, "1.19").open("a") as config_file:
