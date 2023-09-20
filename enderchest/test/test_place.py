@@ -817,6 +817,44 @@ class TestMultiShulkerPlacing:
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
         ).exists()
 
+    def test_prompt_and_retry(self, home, minecraft_root, caplog, monkeypatch):
+        conflict_file_path = home / ".minecraft" / "options.txt"
+        safe_keeping = minecraft_root / "options.txt.bkp"
+
+        calls: list[str | None] = []
+
+        def ope_lemme_delete_that(prompt: str | None = None) -> str:
+            if calls:
+                raise AssertionError("Should have only been called once")
+            calls.append(prompt)
+            conflict_file_path.rename(safe_keeping)
+            return ""
+
+        monkeypatch.setattr("builtins.input", ope_lemme_delete_that)
+
+        try:
+            place.place_ender_chest(
+                minecraft_root, error_handling="prompt", relative=False
+            )
+
+            errors = [
+                i
+                for i, record in enumerate(caplog.records)
+                if record.levelname == "ERROR"
+            ]
+            # meta-tests that I found the right line
+            assert len(errors) == 1
+            error_idx = errors[0]
+            assert "options.txt already exists" in caplog.records[error_idx].msg
+
+            assert conflict_file_path.readlink() == (
+                fs.shulker_box_root(minecraft_root, "1.19") / "options.txt"
+            )
+        finally:
+            if safe_keeping.exists():
+                conflict_file_path.unlink(missing_ok=True)
+                safe_keeping.rename(conflict_file_path)
+
     def test_skip_shulker_box_that_doesnt_match_host(self, home, minecraft_root):
         with fs.shulker_box_config(minecraft_root, "1.19").open("a") as config_file:
             config_file.write(
