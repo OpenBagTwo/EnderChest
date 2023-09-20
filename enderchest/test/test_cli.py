@@ -2,6 +2,7 @@
 import logging
 import os
 from pathlib import Path
+from typing import Generator
 
 import pytest
 
@@ -205,7 +206,7 @@ class TestPlace(ActionTestSuite):
     action = "place"
 
     @pytest.fixture
-    def place_log(self, monkeypatch):
+    def place_log(self, monkeypatch) -> Generator[list[tuple[Path, dict]], None, None]:
         place_log: list[tuple[Path, dict]] = []
 
         def mock_place(path, **kwargs):
@@ -394,10 +395,10 @@ class TestOpen:
     action = "open"
     op = "pull"
 
-    def test_op_is_routed_successfully(self, monkeypatch):
+    def test_op_is_routed_successfully(self, monkeypatch) -> None:
         sync_log: list[tuple[str, str, dict]] = []
 
-        def mock_sync(root, op, **kwargs):
+        def mock_sync(root, op, **kwargs) -> None:
             sync_log.append((root, op, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
@@ -422,10 +423,10 @@ class TestOpen:
     )
     def test_verbosity_modifier_is_passed_to_op(
         self, monkeypatch, verbosity_flag, expected_verbosity
-    ):
+    ) -> None:
         sync_log: list[tuple[str, str, dict]] = []
 
-        def mock_sync(root, op, **kwargs):
+        def mock_sync(root, op, **kwargs) -> None:
             sync_log.append((root, op, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
@@ -438,10 +439,10 @@ class TestOpen:
         assert len(sync_log) == 1
         assert sync_log[0][2]["verbosity"] == expected_verbosity
 
-    def test_dry_run_is_false_by_default(self, monkeypatch):
+    def test_dry_run_is_false_by_default(self, monkeypatch) -> None:
         sync_log: list[tuple[str, str, dict]] = []
 
-        def mock_sync(root, op, **kwargs):
+        def mock_sync(root, op, **kwargs) -> None:
             sync_log.append((root, op, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
@@ -452,10 +453,10 @@ class TestOpen:
         assert len(sync_log) == 1
         assert sync_log[0][2]["dry_run"] is False
 
-    def test_passing_a_bunch_of_args(self, monkeypatch):
+    def test_passing_a_bunch_of_args(self, monkeypatch) -> None:
         sync_log: list[tuple[str, str, dict]] = []
 
-        def mock_sync(root, op, **kwargs):
+        def mock_sync(root, op, **kwargs) -> None:
             sync_log.append((root, op, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
