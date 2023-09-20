@@ -105,6 +105,7 @@ def place_ender_chest(
         -------
         str
             Instructions on what to do next. Options are:
+              - retry
               - return
               - break
               - continue
@@ -114,9 +115,9 @@ def place_ender_chest(
             proceed_how = (
                 prompt(
                     "How would you like to proceed?"
-                    "\n[Q]uit, [C]ontinue, abort linking the rest of this shulker/instance [M]atch?"
-                    "\nskip the rest of this [I]nstance, skip the rest of this [S]hulker box?",
-                    suggestion="I",  # TODO: reevaluate default (it's 50/50 due to link folders)
+                    "\n[Q]uit; [R]etry; [C]ontinue; skip linking the rest of this:"
+                    "\n[I]nstance, [S]hulker box, shulker/instance [M]atch?",
+                    suggestion="R",
                 )
                 .lower()
                 .replace(" ", "")
@@ -124,6 +125,8 @@ def place_ender_chest(
                 .replace("_", "")
             )
             match proceed_how:
+                case "" | "r":
+                    proceed_how = "retry"
                 case "" | "i" | "instance" | "skipinstance":
                     proceed_how = "skip-instance"
                 case "q" | "quit" | "abort" | "exit" | "stop":
@@ -141,6 +144,8 @@ def place_ender_chest(
             proceed_how = error_handling
 
         match proceed_how:
+            case "retry":
+                return "retry"
             case "abort" | "stop" | "quit" | "exit":
                 PLACE_LOGGER.error("Aborting")
                 return "return"
@@ -166,12 +171,20 @@ def place_ender_chest(
 
     for instance in instances:
         instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
-        if not instance_root.exists():
+
+        handling: str | None = "retry"
+        while handling == "retry":
+            if instance_root.exists():
+                handling = None
+                break
+
             PLACE_LOGGER.error(
                 "No minecraft instance exists at"
                 f" {instance_root.expanduser().absolute()}"
             )
-            match handle_error(None):
+            handling = handle_error(None)
+        if handling is not None:
+            match handling:
                 case "return":
                     return
                 case "break":
@@ -205,16 +218,22 @@ def place_ender_chest(
             for link_folder in shulker_box.link_folders:
                 resources -= {box_root / link_folder}
                 resources -= set((box_root / link_folder).rglob("*"))
-                try:
-                    link_resource(link_folder, box_root, instance_root, relative)
-                except OSError:
-                    PLACE_LOGGER.error(
-                        f"Error linking shulker box {shulker_box.name}"
-                        f" to instance {instance.name}:"
-                        f"\n  {(instance.root / link_folder)} is a"
-                        " non-empty directory"
-                    )
-                    match handle_error(shulker_box):
+
+                handling = "retry"
+                while handling == "retry":
+                    try:
+                        link_resource(link_folder, box_root, instance_root, relative)
+                        handling = None
+                    except OSError:
+                        PLACE_LOGGER.error(
+                            f"Error linking shulker box {shulker_box.name}"
+                            f" to instance {instance.name}:"
+                            f"\n  {(instance.root / link_folder)} is a"
+                            " non-empty directory"
+                        )
+                        handling = handle_error(shulker_box)
+                if handling is not None:
+                    match handling:
                         case "return":
                             return
                         case "break":
@@ -242,21 +261,26 @@ def place_ender_chest(
                             )
                             break
                     else:
-                        try:
-                            link_resource(
-                                resource_path,
-                                box_root,
-                                instance_root,
-                                relative,
-                            )
-                        except OSError:
-                            PLACE_LOGGER.error(
-                                f"Error linking shulker box {shulker_box.name}"
-                                f" to instance {instance.name}:"
-                                f"\n  {(instance.root / resource_path)}"
-                                " already exists"
-                            )
-                            match handle_error(shulker_box):
+                        handling = "retry"
+                        while handling == "retry":
+                            try:
+                                link_resource(
+                                    resource_path,
+                                    box_root,
+                                    instance_root,
+                                    relative,
+                                )
+                                handling = None
+                            except OSError:
+                                PLACE_LOGGER.error(
+                                    f"Error linking shulker box {shulker_box.name}"
+                                    f" to instance {instance.name}:"
+                                    f"\n  {(instance.root / resource_path)}"
+                                    " already exists"
+                                )
+                                handling = handle_error(shulker_box)
+                        if handling is not None:
+                            match handling:
                                 case "return":
                                     return
                                 case "break":
