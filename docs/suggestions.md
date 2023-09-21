@@ -58,7 +58,7 @@ and
 
 ## Collisions and Conflicts
 
-### Keeping Local Boxes Local
+## Keeping Local Boxes Local
 
 EnderChest's default behavior is to sync _all_ shulker boxes across _all_ installations,
 even if that shulker box won't be used on other machines. This is done so that your
@@ -95,15 +95,13 @@ the lcoal machine / EnderChest--this means that while running `enderchest close`
 from one machine may exclude a shulker box from being pushed, running `enderchest open`
 from that that other machine may grab that box anyway.
 
-## Managing Backups
-
-### Version control with `git`
+## Version control with Git
 
 As mentioned [above](#keeping-local-boxes-local), if a folder in your
 EnderChest is prefixed with a "." then EnderChest by default _will not_ sync
 it with other machines or place links into that folder. One reason for this
 is to make it easier to create incremental backups and put your configurations
-under full version control using something like [git](https://git-scm.com/).
+under full version control using something like [Git](https://git-scm.com/).
 
 If you navigate _into_ your EnderChest folder and run the command
 
@@ -111,11 +109,18 @@ If you navigate _into_ your EnderChest folder and run the command
 git init
 ```
 
-then assuming you have `git` installed on your system, it will turn your
+then assuming you have Git installed on your system, it will turn your
 entire EnderChest into a repository and store its version history in the
 hidden ".git" folder. This isn't the place for a full tutorial, but
 a handy cheat-sheet of the basic `git` commands can be found
 [here](https://training.github.com/downloads/github-git-cheat-sheet/).
+
+!!! tip "Shameless Plug"
+    If you like the idea of version controls and backups but are intimidated
+    by the complexity of Git, have a look at one of my other projects:
+    [**G**ame **S**ave **B**ackups](https://github.com/OpenBagTwo/gsb), which
+    distills the all the essential backup management operations down to a few
+    simple verbs.
 
 The relevant section for you is the one that reads "Make changes."
 You probably don't want to be pushing your EnderChest (which probably
