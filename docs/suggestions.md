@@ -47,7 +47,197 @@ shared drive before using them can help avoid conflicts and corruption.
     EnderChest **does not** support using the file protocol to sync files between
     different computers, nor does it support authenticating as different users.
 
-## Passwordless SSH Authentication
+## Suggested Shulker Box Layouts
+
+### Hierarchical
+
+My personal strategy for effective, collision-free linking is to break down
+one's Minecraft playing habits into a classification hierarchy:
+
+1. These are the things I will want _every_ time I play Minecraft
+1. These are the things I'll want whenever I want to play _a certain kind_ of
+   Minecraft
+1. These are the things I'll want whenever I'm playing _this particular_
+   Minecraft
+1. These are the things I only want when I'm playing Minecraft _on this
+   particular computer_.
+
+Remember that EnderChest respects a _priority order_ you set on each shulker
+box, with lower priority boxes getting linked first, and higher priority ones
+overwriting any links created by the earlier boxes. Use this when thinking about
+what kinds of boxes to create, and about what items to put in each box.
+
+!!! tip "Pro Tip"
+    It's a good idea to give each Shulker Box a unique priority value. It's
+    an even better idea to start off by making these priorities, say, multiples
+    of 10 or 100 so that later on you can easily slot in new boxes without
+    having to change the priority of every other box.
+
+For example, here is how I have my boxes laid out (the number at the
+start is their priority values):
+
+* (-20) Global: This shulker box is configured to link to everything and
+  contains my `usercache.json` and `usernamecache.json` files, a bunch of
+  resource packs that work across  a wide swath of Minecraft versions,
+  as well as the "Standard" linked folders (backups, logs, crash reports,
+  screenshots, etc.)
+
+    !!! note
+        If you're creating your shulker box through the command-line interface,
+        this is pretty much the only sort of box where I'd recommend selecting
+        the "Standard" set of linked-folders.
+
+   This is also where I have a baseline `options.txt` file. It's almost certain
+   to get replaced in the actual instance, but it saves me so much aggravation
+   to be able to create and onboard a new instance and not have to remember to
+   turn off `autoJump` before hopping into a world.
+
+* (-10) Shaders: Because shaders tend to be compatible across pretty much any
+  supported Minecraft version, this box is set up to link with any instance
+  that has Optifine or Iris installed, which for me is just anything
+  non-vanilla, so the `shulkerbox.cfg` looks like:
+  ```ini
+  [minecraft]
+  *
+
+  [modloader]
+  forge
+  fabric-like
+  ```
+  I also have another box ((-11) Modconfigs) where I put baseline configuration
+  files for mods where the config format hasn't changed or is
+  generally backwards / forwards compatible (so things like "Replay Mod: don't
+  record single-player by default" or
+  "[IndyPets](https://modrinth.com/mod/indypets): pets should not be independent
+  by default"). Even though not every instance linked will use these configs,
+  the files won't hurt anything by being there.
+
+* (0) 1.20, and also:
+    * (1) 1.12
+    * (2) 1.16
+    * (3) 1.18
+    * (4) 20w14infinite
+    * (5) 23w13a_or_b
+
+    these version-specific shulker boxes contain all the resource packs that
+    were built for just those Minecraft versions along with customized
+    `options.txt` files that overwrite the one in the "(-20) Global" box.
+    The last two boxes also contain the worlds for those versions, since
+    it's not like there are modpacks for the April Fool's updates.
+
+* (10) 1.20 Quilt, and also:
+    * (11) 1.12 Forge
+    * (12) 1.16 Forge
+    * (13) 1.18 Fabric
+    * (14) 1.18 Forge
+
+    these boxes contain the optimization, performance and other "no regrets"
+    mods that I would _always_ want installed for that version and modloader:
+    things like Optifine, Sodium, Iris, Replay Mod,
+    [Shulker Box Tooltip](https://modrinth.com/mod/shulkerboxtooltip?hl=en-US),
+    etc.
+
+* (100) [Better End](https://modrinth.com/mod/betterend), and also:
+    * (110) [Fox Nap](https://modrinth.com/mod/foxnap)
+
+    !!! note
+        See how I jumped from priority 13 to 100? This is to make sure that
+        there's plenty of space for future Minecraft version x modloader combos.
+
+    This next level is for mods that I use across different instances but maybe
+    not _all_ instances for a given loader and version. The matching is done
+    via tag (as well as version and loader), and I have at times had sub-boxes
+    (Better End 1.18, 1.19, 1.20; Fox Nap 1.19.0, 1.19.2, 1.19.3) to contain
+    the most up-to-date mod-specific builds while the configuration files go
+    in the main box.
+
+* (200)-(299) Instance-specific boxes. Each instance then gets their own box that
+    explicitly specifies each mod going into that instance, along with any
+    tweaked options or configuration files.
+
+* (300) Battlestation.local, and also:
+    * (310) Couch-Gamer.local
+    * (320) Steam-Deck.local
+
+    These boxes contain computer-specific optimizations, such as overriding
+    shaderpack settings and changing keybindings. These have the highest priority
+    so as to get applied **last** (and consequently, I'll also sometimes have
+    instance-specific, machine-specific boxes that further tweak these settings).
+    You may find you have better luck giving "local" boxes _lower_ priority
+    (in the -10 range) and then having your instance/machine-specific tweaks set
+    at the instance or modpack priority level.
+
+And yes, at the end of the day, I end up with _a lot_ of boxes
+(45 as of this writng). And since the  system _relies_ on links overwriting
+links as you go from broad to specific, it can be difficult to trace back
+[where an individual file _actually comes from_](https://github.com/OpenBagTwo/EnderChest/issues/83)
+or which other instances it is shared with.
+
+But the advantage is that when I get notified that there's version of a mod,
+I know exactly where to put it so that the right instances get the new build, and
+the same goes for settings--I make a tweak to my
+[Do A Barrel Roll](https://modrinth.com/mod/do-a-barrel-roll) settings? It gets
+automatically applied to every Minecraft instance that works with that config.
+
+### Chest Monster
+
+The polar opposite of the careful hierarchical approach takes advantage of
+the ability of _symlinks to point to other symlinks_.
+
+This strategy relies on having a ***non-shulker-box*** folder that gets synced
+within your EnderChest that contains every single mod, resource pack, world,
+config file, etc. that you want to use, and _every version or permutation_ of
+each of those files (so, for example, you could have `options.basic.txt`
+alongside an `options.controller.txt` that remaps keybinds for instances running
+on the Steam Deck or other handhelds).
+
+From there, you then create a shulker box for each instance that contains
+_symlinks_ pointing into the files that live in the EnderChest (_e.g._
+`instance_shulker/options.txt -> Chest Monster/options files/basic_options.txt`).
+
+Each instance will probably want to use the standard set of linked folders so
+that when an instance generates new screenshots, logs, crash reports, etc., they
+go into the EnderChest, and by making the "folders" inside of the shulker boxes
+_symlinks themselves_, they can point into either shared or separated folders
+within the Chest Monster (_i.e._ `instance_shulker/saves -> Chest Monster/worlds`
+vs. `instance_shulker/saves -> Chest Monster/worlds/instance's worlds`).
+
+This strategy has the advantage of ensuring that there are no linking conflicts,
+as in its purest form, each instance is linked to only one chest, and onboarding
+an existing instance following this approach is comparatively
+straightforward--just move all of the instance's contents into the shulker box,
+then move each file one-by-one from the shulker into the Chest Monster, putting
+a link in the shulker box in the place of each file.
+
+The downside, however, is that this process needs to be carried out _every_ time
+there's a new instance, and replacing a mod with a newer version of that mod
+requires updating every single link in each of your shulker boxes.
+
+!!! tip "Pro Tip"
+    If you remove the build and mod-version information from a mod's filename,
+    then when you replace that file with a newer build, all the existing links
+    will still work.
+
+    You can also accomplish a similar effect by creating symlinks named
+    `<mod>.<minecraft_version>.latest.jar` that point to the actual latest
+    version. Then you can have the links in your shulker boxes safely point to
+    that "latest" file, and when you upgrade the mod, you only need to update
+    one symlink.
+
+The other downside is that you can end up with "orphaned" files in your Chest
+Monster that are no longer linked to by any shulker box.
+
+There are, of course, hybrid approaches (for example, even though I mostly
+follow the hierarchical approach for my instances, all of my worlds actually
+live within structured folders inside of a "Chest Monster" for ease of
+[backup management](https://github.com/OpenBagTwo/gsb)), and if you come up
+with a different workflow that works for you,
+[I'd be delighted to hear about it.](https://github.com/OpenBagTwo/EnderChest/issues/new)
+
+
+## Effective Syncing
+
+### Passwordless SSH Authentication
 When connecting to an SSH server (rsync / sftp), it is both more secure and
 more convenient to use **public key authentication** instead of a password.
 Instructions for setting up pubkey authentication can be found
@@ -55,10 +245,7 @@ Instructions for setting up pubkey authentication can be found
 and
 [here for macOS and Linux](https://www.redhat.com/sysadmin/key-based-authentication-ssh)
 
-
-## Collisions and Conflicts
-
-## Keeping Local Boxes Local
+### Keeping Local Boxes Local
 
 EnderChest's default behavior is to sync _all_ shulker boxes across _all_ installations,
 even if that shulker box won't be used on other machines. This is done so that your
@@ -115,6 +302,13 @@ hidden ".git" folder. This isn't the place for a full tutorial, but
 a handy cheat-sheet of the basic `git` commands can be found
 [here](https://training.github.com/downloads/github-git-cheat-sheet/).
 
+The relevant section for you is the one that reads "Make changes."
+You probably don't want to be pushing your EnderChest (which probably
+contains a large number of very large files) to GitHub, though adding
+the ability for EnderChest to sync between installations directly
+via the Git protocol is
+[definitely under consideration](https://github.com/OpenBagTwo/EnderChest/issues/30).
+
 !!! tip "Shameless Plug"
     If you like the idea of version controls and backups but are intimidated
     by the complexity of Git, have a look at one of my other projects:
@@ -122,20 +316,12 @@ a handy cheat-sheet of the basic `git` commands can be found
     distills the all the essential backup management operations down to a few
     simple verbs.
 
-The relevant section for you is the one that reads "Make changes."
-You probably don't want to be pushing your EnderChest (which probably
-contains a large number of very large files) to GitHub, though adding
-the ability for EnderChest to sync between installations directly
-via the `git` protocol is
-[definitely under consideration](https://github.com/OpenBagTwo/EnderChest/issues/30).
-
-
-## Integration with Auto-Update Tools
+## Launcher Integration
 
 ### Startup and Shutdown Scripts
 
-Launchers like PrismLauncher can be configured to run commands
-before an  instance is launched or after it's closed. Consider putting
+Launchers like [PrismLauncher](prismlauncher.org/) can be configured to run
+commands before an  instance is launched or after it's closed. Consider putting
 `enderchest open /path/to/minecraft_root` in your startup scripts and
 `enderchest close /path/to/minecraft_root` in your shutdown scripts (where
 "minecraft_root" is the location where you usually run the enderchest commands,
