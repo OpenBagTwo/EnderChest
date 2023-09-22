@@ -22,11 +22,20 @@ python3 -V
 
 ## Installing EnderChest
 
-### Inside a conda environment
+The recommended way to install EnderChest is via [`pipx`](https://pypa.github.io/pipx/):
+```bash
+pipx install enderchest
+```
 
-Skip this sub-section if you're using the system Python.
+If you can't install `pipx` on your system or if your system Python is too old,
+you can use a conda environment instead following the instructions in the next
+section. If you prefer to use `pip` directly with the system Python, skip to
+[this section](#installation-via-pip).
 
-These instructions assume that you've already downloaded and installed mambaforge
+### Creating a conda environment
+
+These instructions assume that you've already downloaded and installed
+[mambaforge](https://github.com/conda-forge/miniforge#mambaforge)
 or another conda distribution and that mamba/conda is already registered
 to your system path.
 
@@ -34,8 +43,7 @@ to your system path.
    ```bash
    mamba create -n enderchest "python>=3.10" "pip>22"
    ```
-   (substitute `conda` for `mamba` as needed, and skip this step and the next if
-    you're using the system Python)
+   (substitute `conda` for `mamba` as needed)
 
 1. Activate your new environment:
     ```bash
@@ -54,11 +62,10 @@ Then continue onto the next section.
     !!! info "Optional"
         If you plan on connecting to any remote servers via
         [SFTP](../suggestions#sftp-protocol) instead of `rsync`, include the
-        `sftp` extras:
+        `sftp` extra:
          ```bash
          python3 -m pip install --user enderchest[sftp,test]
          ```
-
 
 4. Ensure that EnderChest is compatible with your system by running:
     ```bash
@@ -125,7 +132,7 @@ Luckily, [other protocols are available](../suggestions#other-syncing-protocols)
 though they may require re-installing EnderChest with additional extras, _i.e._
 
 ```bash
-python3 -m pip install --user enderchest[sftp,test]
+pipx install enderchest[sftp]
 ```
 
 ## Bleeding Edge
