@@ -191,16 +191,22 @@ each of those files (so, for example, you could have `options.basic.txt`
 alongside an `options.controller.txt` that remaps keybinds for instances running
 on the Steam Deck or other handhelds).
 
+!!! tip
+    Name your Chest Monster something like "_Chest Monster" so that it shows up
+    first (or last) when viewing your EnderChest contents alphabetically
+
 From there, you then create a shulker box for each instance that contains
 _symlinks_ pointing into the files that live in the EnderChest (_e.g._
-`instance_shulker/options.txt -> Chest Monster/options files/basic_options.txt`).
+`instance_shulker/options.txt -> _Chest Monster/options files/basic_options.txt`).
 
 Each instance will probably want to use the standard set of linked folders so
 that when an instance generates new screenshots, logs, crash reports, etc., they
 go into the EnderChest, and by making the "folders" inside of the shulker boxes
 _symlinks themselves_, they can point into either shared or separated folders
-within the Chest Monster (_i.e._ `instance_shulker/saves -> Chest Monster/worlds`
-vs. `instance_shulker/saves -> Chest Monster/worlds/instance's worlds`).
+within the Chest Monster, _i.e._
+
+* `instance_shulker/saves -> _Chest Monster/worlds`, vs.
+* `instance_shulker/saves -> _Chest Monster/worlds/instance's worlds`
 
 This strategy has the advantage of ensuring that there are no linking conflicts,
 as in its purest form, each instance is linked to only one chest, and onboarding
@@ -244,6 +250,37 @@ Instructions for setting up pubkey authentication can be found
 [here for Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement)
 and
 [here for macOS and Linux](https://www.redhat.com/sysadmin/key-based-authentication-ssh)
+
+### Pointing Links Outside of Your EnderChest
+
+While link-folders (entire folders inside of your shulker box that are linked
+to from your Minecraft instances) are great for centralizing things like
+backups, logs, and crash reports that you probably don't need to have
+split by instance, you _probably don't_ need to sync them across different
+computers. My suggestion is to structure your minecraft folder (the parent of
+your EnderChest folder) as follows:
+
+```
+<minecraft root>: a single folder where all your minecraft data will live
+ ├── instances: your MultiMC-type instances (most launchers let you set a custom location)
+ ├── backups
+ ├── crash reports
+ ├── logs
+ ├── EnderChest: the root directory for all resources managed by this package
+ │   ├── global: shulker box that links to all instances
+ │   │   ├── backups ↵ -> ../../../backups
+ │   │   ├── crash-reports ↵ -> ../../../crash reports
+ │   │   ├── logs ↵ -> ../../../logs
+ │   │   ├── screenshots ↵ -> ~/Pictures/minecraft screenshots
+```
+
+Since backups, crash reports, logs and, in my example, screenshots, live _outside_
+of the Enderchest, the contents won't actually be synced. Meanwhile, because
+the links themselves _do_ sync, and because I've used
+[relative links](https://feryn.eu/blog/relative-symlinks/), this EnderChest
+configuration will work on any EnderChest installation that uses this folder
+structure, and all without needing to muck with the `do-not-sync` settings
+in the config file!
 
 ### Keeping Local Boxes Local
 
@@ -315,6 +352,13 @@ via the Git protocol is
     [**G**ame **S**ave **B**ackups](https://github.com/OpenBagTwo/gsb), which
     distills the all the essential backup management operations down to a few
     simple verbs.
+
+!!! tip
+    If following the [Chest Monster](#chest-monster) approach, you may want to
+    add the Chest Monster's folder to your
+    [`.gitignore`](https://www.atlassian.com/git/tutorials/saving-changes/gitignore)
+    file to prevent changes from being tracked (I personally prefer to manage
+    my world-save backups separately using `gsb`)
 
 ## Launcher Integration
 
