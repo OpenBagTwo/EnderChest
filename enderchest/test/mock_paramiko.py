@@ -47,6 +47,7 @@ class MockSFTP:
         self.lstat_cache: dict[Path, CachedStat] = {
             root
             / stat["filename"]: CachedStat(**stat)._replace(
+                st_size=(root / stat["filename"]).stat().st_size,
                 st_mtime=(root / stat["filename"]).stat().st_mtime,
                 st_atime=(root / stat["filename"]).stat().st_atime,
             )
