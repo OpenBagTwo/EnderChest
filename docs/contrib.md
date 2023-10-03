@@ -154,11 +154,11 @@ The current procedure to regenerate that cache is:
 1. Un-comment [this unit test](https://github.com/OpenBagTwo/EnderChest/blob/853bdbac76124fb9e6d4a754f4dd73c48e66d829/enderchest/test/test_sync.py#L542-L545)
 1. Run
    ```bash
-   pytest enderchest/tests/test_sync.py::TestSFTPSync::test_generate_lstat_cache --use-local-ssh
+   pytest enderchest/test/test_sync.py::TestSFTPSync::test_generate_lstat_cache --use-local-ssh
    ```
 1. Re-comment-out that test, then make sure the cache is working by running
    ```bash
-   pytest -vvx enderchest/tests/test_sync.py::TestSFTPSync
+   pytest -vvx enderchest/test/test_sync.py::TestSFTPSync
    ```
 1. If all tests pass when using the cache, then make sure to `git add` the
    regenerated testing file and include it in your next commit
