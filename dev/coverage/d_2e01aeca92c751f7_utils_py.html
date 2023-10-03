@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="covindex.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="covindex.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-09-20 19:11 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.3.2">coverage.py v7.3.2</a>,
+            created at 2023-10-03 20:19 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -216,9 +216,9 @@
     <p class="pln"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">    <span class="key">if</span> <span class="nam">stat</span><span class="op">.</span><span class="nam">S_ISREG</span><span class="op">(</span><span class="nam">object_one</span><span class="op">.</span><span class="nam">st_mode</span> <span class="key">or</span> <span class="num">0</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">        <span class="com"># these comparisons should only be run on files</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">        <span class="key">if</span> <span class="nam">object_one</span><span class="op">.</span><span class="nam">st_size</span> <span class="op">!=</span> <span class="nam">object_two</span><span class="op">.</span><span class="nam">st_size</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">        <span class="key">if</span> <span class="nam">int</span><span class="op">(</span><span class="nam">object_one</span><span class="op">.</span><span class="nam">st_size</span> <span class="key">or</span> <span class="num">0</span><span class="op">)</span> <span class="op">!=</span> <span class="nam">int</span><span class="op">(</span><span class="nam">object_two</span><span class="op">.</span><span class="nam">st_size</span> <span class="key">or</span> <span class="num">0</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">            <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">        <span class="key">if</span> <span class="nam">object_one</span><span class="op">.</span><span class="nam">st_mtime</span> <span class="op">!=</span> <span class="nam">object_two</span><span class="op">.</span><span class="nam">st_mtime</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">        <span class="key">if</span> <span class="nam">int</span><span class="op">(</span><span class="nam">object_one</span><span class="op">.</span><span class="nam">st_mtime</span> <span class="key">or</span> <span class="num">0</span><span class="op">)</span> <span class="op">!=</span> <span class="nam">int</span><span class="op">(</span><span class="nam">object_two</span><span class="op">.</span><span class="nam">st_mtime</span> <span class="key">or</span> <span class="num">0</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">            <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">    <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -388,8 +388,8 @@
             <a id="indexLink" class="nav" href="covindex.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="covindex.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.3.1">coverage.py v7.3.1</a>,
-            created at 2023-09-20 19:11 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.3.2">coverage.py v7.3.2</a>,
+            created at 2023-10-03 20:19 +0000
         </p>
     </div>
 </footer>
