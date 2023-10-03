@@ -843,26 +843,6 @@ class TestSFTPSync(TestFileSync):
             )
             monkeypatch.setattr(sftp, "rglob", mock_paramiko.mock_rglob)
 
-    @pytest.fixture(autouse=True)
-    def patch_mtime_comparison(self, monkeypatch, use_local_ssh) -> None:
-        if not use_local_ssh:
-            inner_identical_check = sync_utils.is_identical
-
-            def patched_is_identical(
-                object_one: sync_utils._StatLike, object_two: sync_utils._StatLike
-            ) -> bool:
-                if isinstance(object_one, mock_paramiko.CachedStat):
-                    object_one = object_one._replace(
-                        st_mtime=object_two.st_mtime  # type: ignore[arg-type]
-                    )
-                elif isinstance(object_two, mock_paramiko.CachedStat):
-                    object_two = object_two._replace(
-                        st_mtime=object_one.st_mtime  # type: ignore[arg-type]
-                    )
-                return inner_identical_check(object_one, object_two)
-
-            monkeypatch.setattr(sync_utils, "is_identical", patched_is_identical)
-
     @pytest.fixture(autouse=False)
     def generate_lstat_cache(self, remote):
         from enderchest.sync import sftp

@@ -1,6 +1,8 @@
 """A mock Paramiko SFTP client to be used for testing on systems without local SSH"""
 import json
+import os
 import shutil
+import time
 from contextlib import contextmanager
 from importlib.resources import as_file
 from pathlib import Path
@@ -17,12 +19,15 @@ class CachedStat(NamedTuple):
     filename: str
     st_mode: int
     st_size: float
+    st_atime: float
     st_mtime: float
 
 
-A_DIRECTORY = CachedStat(filename="", st_mode=16877, st_size=-1, st_mtime=-1)
-A_FILE = CachedStat(filename="", st_mode=33188, st_size=-1, st_mtime=-1)
-A_SYMLINK = CachedStat(filename="", st_mode=41471, st_size=-1, st_mtime=-1)
+A_DIRECTORY = CachedStat(
+    filename="", st_mode=16877, st_size=-1, st_atime=-1, st_mtime=-1
+)
+A_FILE = CachedStat(filename="", st_mode=33188, st_size=-1, st_atime=-1, st_mtime=-1)
+A_SYMLINK = CachedStat(filename="", st_mode=41471, st_size=-1, st_atime=-1, st_mtime=-1)
 
 
 class MockSFTP:
@@ -40,7 +45,12 @@ class MockSFTP:
             cached_lstats: list[dict] = json.loads(lstat_cache_file.read_text("UTF-8"))
 
         self.lstat_cache: dict[Path, CachedStat] = {
-            root / stat["filename"]: CachedStat(**stat) for stat in cached_lstats
+            root
+            / stat["filename"]: CachedStat(**stat)._replace(
+                st_mtime=(root / stat["filename"]).stat().st_mtime,
+                st_atime=(root / stat["filename"]).stat().st_atime,
+            )
+            for stat in cached_lstats
         }
 
     def lstat(self, path: str) -> CachedStat:
@@ -86,6 +96,10 @@ class MockSFTP:
             Path(url2pathname(path)),
             follow_symlinks=False,
         )
+
+    def utime(self, path: str, times: tuple[float, float]) -> None:
+        """Set the modification and access times of a remote file"""
+        os.utime(Path(url2pathname(path)), times)
 
     def remove(self, path: str) -> None:
         """Delete a file on the "remote" file system"""
