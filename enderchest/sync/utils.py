@@ -134,9 +134,9 @@ def is_identical(object_one: _StatLike, object_two: _StatLike) -> bool:
 
     if stat.S_ISREG(object_one.st_mode or 0):
         # these comparisons should only be run on files
-        if object_one.st_size != object_two.st_size:
+        if int(object_one.st_size or 0) != int(object_two.st_size or 0):
             return False
-        if object_one.st_mtime != object_two.st_mtime:
+        if int(object_one.st_mtime or 0) != int(object_two.st_mtime or 0):
             return False
     return True
 
