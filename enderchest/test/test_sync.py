@@ -1,5 +1,4 @@
 """Tests around file transfer functionality"""
-import itertools
 import json
 import logging
 import os
@@ -15,6 +14,7 @@ from enderchest import filesystem as fs
 from enderchest import gather, place
 from enderchest import remote as r
 from enderchest import sync
+from enderchest.sync import utils as sync_utils
 
 from . import mock_paramiko, utils
 from .testing_files import LSTAT_CACHE
@@ -104,6 +104,32 @@ class TestFileSync:
         )
         (another_root / "EnderChest" / "optifine" / "mods" / "optifine.jar").write_text(
             "it's okay"
+        )
+
+        (minecraft_root / "EnderChest" / "1.19" / "resourcepacks").mkdir()
+        (another_root / "EnderChest" / "1.19" / "resourcepacks").mkdir()
+        (
+            minecraft_root
+            / "EnderChest"
+            / "1.19"
+            / "resourcepacks"
+            / "TEAVSRP_lite.zip"
+        ).write_text("I am haggling you\n")
+        shutil.copy2(
+            (
+                minecraft_root
+                / "EnderChest"
+                / "1.19"
+                / "resourcepacks"
+                / "TEAVSRP_lite.zip"
+            ),
+            (
+                another_root
+                / "EnderChest"
+                / "1.19"
+                / "resourcepacks"
+                / "TEAVSRP_lite.zip"
+            ),
         )
 
         yield not_so_remote._uri
@@ -323,6 +349,22 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, operation, verbosity=-1, timeout=15)
+
+    @pytest.mark.parametrize("operation", ("pull", "push"))
+    def test_identical_contents_are_not_synced(
+        self, minecraft_root, remote, caplog, operation, capfd
+    ):
+        caplog.set_level(logging.DEBUG)
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        r.sync_with_remotes(minecraft_root, operation)
+        capfd.readouterr()  # forced output suppression
+        assert not [
+            record.msg % record.args
+            for record in caplog.records
+            if record.levelno == logging.DEBUG
+            and "TEAVSRP_lite.zip" in record.msg % record.args
+            and "is identical" not in record.msg % record.args
+        ]
 
     @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_close_overwrites_with_changes_from_local(
@@ -780,6 +822,26 @@ class TestSFTPSync(TestFileSync):
                 sftp, "connect", mock_paramiko.generate_mock_connect(mock_sftp)
             )
             monkeypatch.setattr(sftp, "rglob", mock_paramiko.mock_rglob)
+
+    @pytest.fixture(autouse=True)
+    def patch_mtime_comparison(self, monkeypatch, use_local_ssh) -> None:
+        if not use_local_ssh:
+            inner_identical_check = sync_utils.is_identical
+
+            def patched_is_identical(
+                object_one: sync_utils._StatLike, object_two: sync_utils._StatLike
+            ) -> bool:
+                if isinstance(object_one, mock_paramiko.CachedStat):
+                    object_one = object_one._replace(
+                        st_mtime=object_two.st_mtime  # type: ignore[arg-type]
+                    )
+                elif isinstance(object_two, mock_paramiko.CachedStat):
+                    object_two = object_two._replace(
+                        st_mtime=object_one.st_mtime  # type: ignore[arg-type]
+                    )
+                return inner_identical_check(object_one, object_two)
+
+            monkeypatch.setattr(sync_utils, "is_identical", patched_is_identical)
 
     @pytest.fixture(autouse=False)
     def generate_lstat_cache(self, remote):
