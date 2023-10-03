@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import shutil
+import time
 from importlib.resources import as_file
 from pathlib import Path
 from urllib.parse import ParseResult, urlparse
@@ -351,20 +352,19 @@ class TestFileSync:
         r.sync_with_remotes(minecraft_root, operation, verbosity=-1, timeout=15)
 
     @pytest.mark.parametrize("operation", ("pull", "push"))
-    def test_identical_contents_are_not_synced(
-        self, minecraft_root, remote, caplog, operation, capfd
+    def test_identical_objects_are_not_synced(
+        self, minecraft_root, remote, caplog, operation
     ):
         caplog.set_level(logging.DEBUG)
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, operation)
-        capfd.readouterr()  # forced output suppression
-        assert not [
+        r.sync_with_remotes(minecraft_root, operation, verbosity=-1)
+        debug_logs = [
             record.msg % record.args
             for record in caplog.records
             if record.levelno == logging.DEBUG
-            and "TEAVSRP_lite.zip" in record.msg % record.args
-            and "is identical" not in record.msg % record.args
         ]
+        assert debug_logs  # meta-test
+        assert not [message for message in debug_logs if "TEAVSRP_lite.zip" in message]
 
     @pytest.mark.parametrize("root_type", ("absolute", "relative"))
     def test_close_overwrites_with_changes_from_local(
@@ -385,6 +385,26 @@ class TestFileSync:
             / "conflict"
             / "diamond.png"
         ).read_text() == "sparkle"
+
+    @pytest.mark.parametrize("operation", ("pull", "push"))
+    def test_objects_are_identical_after_sync(
+        self, minecraft_root, remote, caplog, operation
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+        time.sleep(1)  # ugh
+        r.sync_with_remotes(minecraft_root, operation, verbosity=-1)
+        assert sync_utils.is_identical(
+            (
+                minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
+            ).stat(),
+            (
+                sync.abspath_from_uri(remote)
+                / "EnderChest"
+                / "vanilla"
+                / "conflict"
+                / "diamond.png"
+            ).stat(),
+        )
 
     def test_close_dry_run_does_nothing(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
