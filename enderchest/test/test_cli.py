@@ -61,6 +61,7 @@ class ActionTestSuite:
 
     def test_default_root_is_cwd(self, monkeypatch):
         monkeypatch.setattr(os, "getcwd", lambda: "~~dummy~~")
+        monkeypatch.delenv("MINECRAFT_ROOT", raising=False)
         _, root, _, _ = cli.parse_args(
             ["enderchest", *self.action.split(), *self.required_args]
         )
@@ -299,7 +300,10 @@ class TestGather(ActionTestSuite):
         _ = capsys.readouterr()  # suppress outputs
 
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
-    def test_single_arg_interpreted_as_search_path(self, with_root, capsys):
+    def test_single_arg_interpreted_as_search_path(
+        self, with_root, capsys, monkeypatch
+    ):
+        monkeypatch.delenv("MINECRAFT_ROOT", raising=False)
         more_args = ("--root", ".") if with_root else ()
 
         _, root, _, options = cli.parse_args(
@@ -344,7 +348,8 @@ class TestGatherRemote(ActionTestSuite):
         _ = capsys.readouterr()  # suppress outputs
 
     @pytest.mark.parametrize("with_root", (False, True), ids=("no_root", "with-root"))
-    def test_single_arg_interpreted_as_remote(self, with_root):
+    def test_single_arg_interpreted_as_remote(self, with_root, monkeypatch):
+        monkeypatch.delenv("MINECRAFT_ROOT", raising=False)
         more_args = ("--root", ".") if with_root else ()
 
         _, root, _, options = cli.parse_args(
