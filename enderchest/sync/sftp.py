@@ -1,4 +1,5 @@
 """paramiko-based sftp sync implementation"""
+import os
 import posixpath
 import stat
 from contextlib import contextmanager
@@ -102,7 +103,7 @@ def download_file(
     client: paramiko.sftp_client.SFTPClient,
     remote_loc: str,
     local_path: Path,
-    is_symlink: bool,
+    remote_stat: paramiko.SFTPAttributes,
 ) -> None:
     """Download a file from a remote SFTP server and save it at the specified
     location.
@@ -115,20 +116,24 @@ def download_file(
         The POSIX path of the file to download
     local_path : Path
         The path to locally save the file
-    is_symlink : bool
-        Whether the file is a symbolic link (which should have been determined
-        earlier)
+    remote_stat : stat-like
+        The `os.stat_result`-like properties of the remote object
 
     Notes
     -----
-    This is just a wrapper around `client.get()` that can handle symlinks.
-    It does not check if either path is valid, points to a file, lives in an
-    existing folder, etc.
+    This is a wrapper around `client.get()` that can handle symlinks and
+    updating timestamps. It does not check if either path is valid, points
+    to a file, lives in an existing folder, etc.
     """
-    if is_symlink:
+    if stat.S_ISLNK(remote_stat.st_mode or 0):
         local_path.symlink_to(Path((client.readlink(remote_loc) or "")))
     else:
         client.get(remote_loc, local_path)
+        if remote_stat.st_atime and remote_stat.st_mtime:
+            os.utime(
+                local_path,
+                times=(remote_stat.st_atime, remote_stat.st_mtime),
+            )
 
 
 def upload_file(
@@ -157,6 +162,9 @@ def upload_file(
         client.symlink(local_path.readlink().as_posix(), remote_loc)
     else:
         client.put(local_path, remote_loc)
+        client.utime(
+            remote_loc, times=(local_path.stat().st_atime, local_path.stat().st_mtime)
+        )
 
 
 def rglob(
@@ -324,7 +332,7 @@ def pull(
                     remote,
                     remote_loc,
                     destination_path,
-                    is_symlink=stat.S_ISLNK(source_target.st_mode or 0),
+                    source_target,
                 )
             return
 
@@ -369,7 +377,7 @@ def pull(
                         remote,
                         posixpath.join(remote_loc, path.as_posix()),
                         destination_path / path,
-                        stat.S_ISLNK(path_stat.st_mode or 0),
+                        path_stat,  # type: ignore[arg-type]
                     )
                 case (Op.DELETE, True):
                     # recall that for deletions, it's the *destination's* stats
