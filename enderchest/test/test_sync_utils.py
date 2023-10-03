@@ -91,7 +91,7 @@ class TestIsIdentical:
         one.write_text("I'm the original")
         two = tmp_path / "two"
         shutil.copy(one, two)
-        time.sleep(0.01)
+        time.sleep(1)  # ugh
         two.write_text("I'm the original")
 
         # meta-test that the file contents are identical
@@ -103,7 +103,7 @@ class TestIsIdentical:
         one = tmp_path / "one"
         one.mkdir(parents=True)
         two = tmp_path / "two"
-        time.sleep(0.01)
+        time.sleep(1)  # ugh
         two.mkdir()
         assert sync_utils.is_identical(one.stat(), two.stat())
 
