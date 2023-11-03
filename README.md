@@ -9,7 +9,7 @@
 ![MacOS](https://img.shields.io/badge/mac%20os-000000?style=flat-square&logo=apple&logoColor=white&color=434334)
 ![RaspberryPi](https://img.shields.io/badge/Raspberry%20Pi-000000?style=flat-square&logo=raspberrypi&logoColor=white&color=c51a4a)
 
-[![python](https://img.shields.io/badge/Python-3.10,3.11-3776AB.svg?style=flat&logo=python&logoColor=white&color=ffdc53&labelColor=3d7aaa)](https://www.python.org)
+[![Python](https://img.shields.io/badge/Python-3.10,3.11,3.12-3776AB.svg?style=flat&logo=python&logoColor=white&color=ffdc53&labelColor=3d7aaa)](https://www.python.org)
 [![coverage](https://openbagtwo.github.io/EnderChest/dev/img/coverage.svg)](https://openbagtwo.github.io/EnderChest/dev/coverage)
 [![lint](https://openbagtwo.github.io/EnderChest/dev/img/pylint.svg)](https://openbagtwo.github.io/EnderChest/dev/lint-report.txt)
 
