@@ -24,7 +24,7 @@ python3 -V
 
 The recommended way to install EnderChest is via [`pipx`](https://pypa.github.io/pipx/):
 ```bash
-pipx install enderchest
+pipx install enderchest[test]
 ```
 
 If you can't install `pipx` on your system or if your system Python is too old,
@@ -35,7 +35,7 @@ section. If you prefer to use `pip` directly with the system Python, skip to
 ### Creating a conda environment
 
 These instructions assume that you've already downloaded and installed
-[mambaforge](https://github.com/conda-forge/miniforge#mambaforge)
+[miniforge](https://github.com/conda-forge/miniforge)
 or another conda distribution and that mamba/conda is already registered
 to your system path.
 
