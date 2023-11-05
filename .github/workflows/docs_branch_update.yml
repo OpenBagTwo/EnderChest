@@ -21,7 +21,7 @@ jobs:
       run: |
         $CONDA/bin/conda env create -q -f environment.yml
         source $CONDA/bin/activate enderchest
-        pip install -e .[test]
+        pip install -e .[test,sftp]
     - name: configure git
       run: |
         git config --global user.name docs-golem
@@ -40,7 +40,7 @@ jobs:
     - name: generate coverage report (by running unit tests)
       run: |
         source $CONDA/bin/activate enderchest
-        coverage run --source enderchest -m enderchest test --use-local-ssh
+        coverage run --source enderchest -m pytest --use-local-ssh
         coverage html
         coverage report -m
     - name: generate coverage badge
