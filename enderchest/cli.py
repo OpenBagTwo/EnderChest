@@ -1,11 +1,12 @@
 """Command-line interface"""
+import argparse
 import inspect
 import logging
 import os
 import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
-from typing import Any, Protocol, Sequence
+from typing import Any, Iterable, Protocol, Sequence
 
 from . import craft, gather, loggers, place, remote
 from ._version import get_versions
@@ -112,6 +113,24 @@ def _close(minecraft_root: Path, verbosity: int = 0, **kwargs):
     remote.sync_with_remotes(minecraft_root, "push", verbosity=verbosity, **kwargs)
 
 
+def _test(
+    minecraft_root: Path, use_local_ssh: bool = False, pytest_args: Iterable[str] = ()
+):
+    """Run the EnderChest test suite to ensure that it is running correctly on your
+    system. Requires you to have installed GSB with the test extra
+    (i.e. pipx install enderchest[test])."""
+    import pytest
+
+    from enderchest.test import plugin
+
+    if use_local_ssh:
+        pytest_args = ("--use-local-ssh", *pytest_args)
+    pytest.main(
+        ["--pyargs", "enderchest.test", *pytest_args],
+        plugins=(plugin,),
+    )
+
+
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     # action names (first one is canonical), action description, action method
     (
@@ -202,6 +221,11 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
         "push changes to other EnderChests",
         _close,
     ),
+    (
+        ("test",),
+        "run the EnderChest test suite",
+        _test,
+    ),
 )
 
 
@@ -259,38 +283,39 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
             prog=f"enderchest {verb}",
             description=description,
         )
-        root = parser.add_mutually_exclusive_group()
-        root.add_argument(
-            "root",
-            nargs="?",
-            help=(
-                "optionally specify your root minecraft directory."
-                "  If no path is given, the current working directory will be used."
-            ),
-            type=Path,
-        )
-        root.add_argument(
-            "--root",
-            dest="root_flag",
-            help="specify your root minecraft directory",
-            type=Path,
-        )
+        if verb != "test":
+            root = parser.add_mutually_exclusive_group()
+            root.add_argument(
+                "root",
+                nargs="?",
+                help=(
+                    "optionally specify your root minecraft directory."
+                    "  If no path is given, the current working directory will be used."
+                ),
+                type=Path,
+            )
+            root.add_argument(
+                "--root",
+                dest="root_flag",
+                help="specify your root minecraft directory",
+                type=Path,
+            )
 
-        # I'm actually okay with -vvqvqqv hilarity
-        parser.add_argument(
-            "--verbose",
-            "-v",
-            action="count",
-            default=0,
-            help="increase the amount of information that's printed",
-        )
-        parser.add_argument(
-            "--quiet",
-            "-q",
-            action="count",
-            default=0,
-            help="decrease the amount of information that's printed",
-        )
+            # I'm actually okay with -vvqvqqv hilarity
+            parser.add_argument(
+                "--verbose",
+                "-v",
+                action="count",
+                default=0,
+                help="increase the amount of information that's printed",
+            )
+            parser.add_argument(
+                "--quiet",
+                "-q",
+                action="count",
+                default=0,
+                help="decrease the amount of information that's printed",
+            )
         action_parsers[verb] = parser
 
     # craft options
@@ -553,6 +578,25 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
             ),
         )
 
+    # test pass-through
+    test_parser = action_parsers["test"]
+    test_parser.add_argument(
+        "--use-local-ssh",
+        action="store_true",
+        dest="use_local_ssh",
+        help=(
+            "By default, tests of SSH functionality will be run against a mock"
+            " SSH server. If you are running EnderChest on a machine you can SSH"
+            " into locally (by running `ssh localhost`) without requiring a password,"
+            " running the tests with this flag will produce more accurate results."
+        ),
+    )
+    test_parser.add_argument(
+        "pytest_args",
+        nargs=argparse.REMAINDER,
+        help="Any additional arguments to pass through to py.test",
+    )
+
     return enderchest_parser, action_parsers
 
 
@@ -591,6 +635,17 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
 
     for command in sorted(aliases.keys(), key=lambda x: -len(x)):  # longest first
         if " ".join((*argv[1:], "")).startswith(command + " "):
+            if command == "test":
+                parsed, extra = action_parsers["test"].parse_known_args(argv[2:])
+                return (
+                    actions["test"],
+                    Path(),
+                    0,
+                    {
+                        "use_local_ssh": parsed.use_local_ssh,
+                        "pytest_args": [*parsed.pytest_args, *extra],
+                    },
+                )
             action_kwargs = vars(
                 action_parsers[aliases[command]].parse_args(
                     argv[1 + len(command.split()) :]
