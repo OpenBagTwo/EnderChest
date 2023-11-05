@@ -69,7 +69,7 @@ Then continue onto the next section.
 
 4. Ensure that EnderChest is compatible with your system by running:
     ```bash
-    python3 -m pytest --pyargs enderchest.test
+    enderchest test
     ```
     If all tests pass, then you're good to go!
 
