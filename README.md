@@ -53,10 +53,10 @@ Note that the recommended sync protocol is
 [version 3.2 or newer](https://dev.to/al5ina5/updating-rsync-on-macos-so-you-re-not-stuck-with-14-year-old-software-1b5i).
 However, other protocols are available if a modern `rsync` is not an option for you.
 
-The latest release can be installed from PyPI via `pip`:
+The latest release can be installed from PyPI via [`pipx`](https://pypa.github.io/pipx/):
 
 ```bash
-$ python -m pip install --user enderchest
+pipx install enderchest
 ```
 
 Full installation instructions can be found on
