@@ -57,10 +57,10 @@ jobs:
       run: |
         mkdir -p sandbox
         cd sandbox
-        python -m pytest -vv -p enderchest.test.plugin --pyargs enderchest.test --doctest-modules --ignore-glob="docs/**" --log-level=DEBUG --use-local-ssh
+        enderchest test -vv --doctest-modules --ignore-glob="docs/**" --log-level=DEBUG --use-local-ssh
     - name: Run unit tests (using mock SSH)
       if: matrix.os == 'windows-latest'
       run: |
         mkdir -p sandbox
         cd sandbox
-        python -m pytest -vv --pyargs enderchest.test --doctest-modules --ignore-glob="docs/**" --log-level=DEBUG
+        enderchest test -vv --doctest-modules --ignore-glob="docs/**" --log-level=DEBUG
