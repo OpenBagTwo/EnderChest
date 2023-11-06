@@ -267,13 +267,13 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     # (the parsed args aren't actually used)
     enderchest_parser.add_argument(
         "action",
-        help=f"the action to perform. Options are:{root_description}",
+        help=f"The action to perform. Options are:{root_description}",
         type=str,
     )
     enderchest_parser.add_argument(
         "arguments",
         nargs="*",
-        help="any additional arguments for the specific action."
+        help="Any additional arguments for the specific action."
         " To learn more, try: enderchest {action} -h",
     )
 
@@ -289,7 +289,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
                 "root",
                 nargs="?",
                 help=(
-                    "optionally specify your root minecraft directory."
+                    "Optionally specify your root minecraft directory."
                     "  If no path is given, the current working directory will be used."
                 ),
                 type=Path,
@@ -432,12 +432,14 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         action="count",
         default=0,
         help=(
-            "Shorthand for the above cleanup options:"
+            "shorthand for the above cleanup options:"
             " -k will --keep-stale-links,"
             " and -kk will --keep-broken-links as well"
         ),
     )
-    error_handling = place_parser.add_mutually_exclusive_group()
+    error_handling = place_parser.add_argument_group(
+        title="error handling"
+    ).add_mutually_exclusive_group()
     error_handling.add_argument(
         "--stop-at-first-failure",
         "-x",
@@ -508,7 +510,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         nargs="+",
         action="extend",
         help=(
-            "provide URIs (e.g. rsync://deck@my-steam-deck/home/deck/) of any"
+            "Provide URIs (e.g. rsync://deck@my-steam-deck/home/deck/) of any"
             " remote EnderChest installation to register with this one."
             "Note: you should not use this method if the alias (name) of the"
             "remote does not match the remote's hostname (in this example,"
@@ -531,7 +533,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     # list shulker options
     list_shulker_parser = action_parsers[f"{_list_aliases[0]} {_shulker_aliases[0]}"]
     list_shulker_parser.add_argument(
-        "shulker_box_name", help="The name of the shulker box to query"
+        "shulker_box_name", help="the name of the shulker box to query"
     )
 
     # open / close options
@@ -542,7 +544,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
             "--dry-run",
             action="store_true",
             help=(
-                "Perform a dry run of the sync operation,"
+                "perform a dry run of the sync operation,"
                 " reporting the operations that will be performed"
                 " but not actually carrying them out"
             ),
@@ -559,24 +561,36 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
             "-t",
             type=int,
             help=(
-                "Set a maximum number of seconds to try to sync to a remote chest"
+                "set a maximum number of seconds to try to sync to a remote chest"
                 " before giving up and going on to the next one"
             ),
         )
-        sync_confirm_wait = sync_parser.add_mutually_exclusive_group()
+        sync_confirm_wait = sync_parser.add_argument_group(
+            title="sync confirmation control",
+            description=(
+                "The default behavior when syncing EnderChests is to first perform a"
+                " dry run of every sync operation and then wait 5 seconds before"
+                " proceeding with the real sync. The idea is to give you time to"
+                " interrupt the sync if the dry run looks wrong. You can raise or"
+                " lower that wait time through these flags. You can also modify it"
+                " by editing the enderchest.cfg file."
+            ),
+        ).add_mutually_exclusive_group()
         sync_confirm_wait.add_argument(
             "--wait",
             "-w",
             dest="sync_confirm_wait",
             type=int,
-            help=(
-                "The default behavior when syncing EnderChests is to first perform a"
-                " dry run of every sync operation and then wait 5 seconds before"
-                " proceeding with the real sync. The idea is to give you time to"
-                " interrupt the sync if the dry run looks wrong. You can raise or"
-                " lower that wait time through this flag. You can also modify it"
-                " by editing the enderchest.cfg file."
-            ),
+            help="set the time in seconds to wait after performing a dry run"
+            " before the real sync is performed",
+        )
+        sync_confirm_wait.add_argument(
+            "--confirm",
+            "-c",
+            dest="sync_confirm_wait",
+            action="store_true",
+            help="after performing the dry run, explicitly ask for confirmation"
+            " before performing the real sync",
         )
 
     # test pass-through
@@ -595,7 +609,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     test_parser.add_argument(
         "pytest_args",
         nargs=argparse.REMAINDER,
-        help="Any additional arguments to pass through to py.test",
+        help="any additional arguments to pass through to py.test",
     )
 
     return enderchest_parser, action_parsers
