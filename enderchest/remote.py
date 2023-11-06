@@ -235,7 +235,7 @@ def sync_with_remotes(
         else:
             synced_somewhere = True
             if pull_or_push == "pull":
-                if this_chest.place_after_open:
+                if this_chest.place_after_open and not dry_run:
                     place.place_ender_chest(
                         minecraft_root,
                         keep_broken_links=False,
