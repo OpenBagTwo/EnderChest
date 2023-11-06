@@ -444,6 +444,61 @@ class TestOpen:
         assert len(sync_log) == 1
         assert sync_log[0][2]["verbosity"] == expected_verbosity
 
+    def test_sync_confirm_wait_is_none_by_default(self, monkeypatch) -> None:
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs) -> None:
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(["enderchest", *self.action.split()])
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][2]["sync_confirm_wait"] is None
+
+    @pytest.mark.parametrize(
+        "arguments, expected_value",
+        (
+            (("--wait", "5"), 5),
+            (("-w0",), 0),
+            (("--confirm",), True),
+            (("-c",), True),
+        ),
+    )
+    def test_sync_confirm_wait(
+        self,
+        monkeypatch,
+        arguments: tuple[str, ...],
+        expected_value: int | bool,
+    ) -> None:
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs) -> None:
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(
+            ["enderchest", *self.action.split(), *arguments]
+        )
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][2]["sync_confirm_wait"] == expected_value
+
+    def test_raise_if_wait_and_confirm_are_both_provided(self, monkeypatch) -> None:
+        def mock_sync(root, op, **kwargs) -> None:
+            raise AssertionError("I should not have been called!")
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        with pytest.raises(SystemExit):
+            action, root, _, kwargs = cli.parse_args(
+                ["enderchest", *self.action.split(), "--confirm", "-w0"]
+            )
+
     def test_dry_run_is_false_by_default(self, monkeypatch) -> None:
         sync_log: list[tuple[str, str, dict]] = []
 
@@ -511,8 +566,7 @@ class TestOpen:
                 "-e",
                 "private",
                 "super-private",
-                "-w",
-                "6",
+                "--confirm",
                 "--exclude",
                 "do-not-sync",
                 "-vv",
@@ -523,7 +577,7 @@ class TestOpen:
         assert len(sync_log) == 1
         assert sync_log[0][2] == {
             "dry_run": True,
-            "sync_confirm_wait": 6,
+            "sync_confirm_wait": True,
             "exclude": ["*.secret", "private", "super-private", "do-not-sync"],
             "verbosity": 2,
             "timeout": None,
