@@ -178,13 +178,14 @@ class TestConfigParsing:
         with pytest.raises(ValueError, match="is not a valid URI"):
             _ = EnderChest.from_cfg(config_file)
 
-    def test_sync_confirm_wait_prompt_is_read_as_true(self, tmp_path):
+    @pytest.mark.parametrize("value", ("prompt", "CONFIRM"))
+    def test_sync_confirm_wait_prompt_is_read_as_true(self, tmp_path, value):
         config_file = tmp_path / "enderchest.cfg"
         config_file.write_text(
             "[properties]"
             "\nname=tester"
             "\nplace-after-open=no"
-            "\nsync-confirmation-time=prompt"
+            f"\nsync-confirmation-time={value}"
         )
         assert EnderChest.from_cfg(config_file).sync_confirm_wait is True
 
