@@ -288,7 +288,7 @@ class EnderChest:
         ender_chest = EnderChest(uri, name, remotes, instances)
         if sync_confirm_wait is not None:
             match sync_confirm_wait.lower():
-                case "true" | "prompt" | "yes":
+                case "true" | "prompt" | "yes" | "confirm":
                     ender_chest.sync_confirm_wait = True
                 case "false" | "no" | "skip":
                     ender_chest.sync_confirm_wait = False
