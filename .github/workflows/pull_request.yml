@@ -47,7 +47,7 @@ jobs:
     - name: Verify Local SSH
       if: matrix.os != 'windows-latest'
       run: |
-        ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes $USER@$HOSTNAME "echo It works"
+        ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes $USER@localhost "echo It works"
     - name: Install Rsync
       if: matrix.os == 'macos-latest'
       run: brew install rsync
