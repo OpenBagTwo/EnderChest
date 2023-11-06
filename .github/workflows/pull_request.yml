@@ -44,6 +44,7 @@ jobs:
         EOF
         cat ~/.ssh/id_ed25519.pub > ~/.ssh/authorized_keys
         chmod -R 700 ~/.ssh
+        echo "SSH configured for local passwordless authentication"
         ssh -o 'StrictHostKeyChecking no' $USER@$HOSTNAME "echo It works"
     - name: Install Rsync
       if: matrix.os == 'macos-latest'
