@@ -550,6 +550,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         sync_parser.add_argument(
             "--exclude",
             "-e",
+            action="extend",
             nargs="+",
             help="Provide any file patterns you would like to skip syncing",
         )
