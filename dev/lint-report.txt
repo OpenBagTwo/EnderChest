@@ -106,13 +106,13 @@ enderchest/sync/sftp.py:396:0: R0915: Too many statements (55/50) (too-many-stat
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[135:142]
 ==enderchest.sync.sftp:[364:371]
-        for path, path_stat, operation in sync_diff:
-            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
-                case (Op.CREATE, True):
-                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
-                    (destination_path / path).mkdir(parents=True, exist_ok=True)
-                case (Op.CREATE, False) | (Op.REPLACE, False):
-                    SYNC_LOGGER.debug( (duplicate-code)
+    for path, path_stat, operation in sync_diff:
+        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+            case (Op.CREATE, True):
+                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                (destination_path / path).mkdir(parents=True, exist_ok=True)
+            case (Op.CREATE, False) | (Op.REPLACE, False):
+                SYNC_LOGGER.debug( (duplicate-code)
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[127:136]
 ==enderchest.sync.sftp:[492:501]
