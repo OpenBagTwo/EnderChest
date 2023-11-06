@@ -119,6 +119,10 @@ There are a variety of other style conventions, especially around non-Python
 files, but they will be automatically enforced by
 [pre-commit](https://github.com/OpenBagTwo/EnderChest/blob/dev/.pre-commit-config.yaml).
 
+<!---  TODO: guidance over capitalization and punctuation
+       TODO: CLI help style guide
+--->
+
 ## Unit Testing
 
 While unit tests are not globally required, any PR will require validation that
