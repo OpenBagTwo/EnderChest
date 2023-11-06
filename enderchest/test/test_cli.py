@@ -493,6 +493,42 @@ class TestOpen:
             "verbosity": 0,
         }
 
+    def test_passing_in_multiple_exclude_flags(self, monkeypatch) -> None:
+        sync_log: list[tuple[str, str, dict]] = []
+
+        def mock_sync(root, op, **kwargs) -> None:
+            sync_log.append((root, op, kwargs))
+
+        monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
+
+        action, root, _, kwargs = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                "--exclude",
+                "*.secret",
+                "--dry-run",
+                "-e",
+                "private",
+                "super-private",
+                "-w",
+                "6",
+                "--exclude",
+                "do-not-sync",
+                "-vv",
+            ]
+        )
+        action(root, **kwargs)
+
+        assert len(sync_log) == 1
+        assert sync_log[0][2] == {
+            "dry_run": True,
+            "sync_confirm_wait": 6,
+            "exclude": ["*.secret", "private", "super-private", "do-not-sync"],
+            "verbosity": 2,
+            "timeout": None,
+        }
+
 
 class TestClose(TestOpen):
     action = "close"
