@@ -344,6 +344,27 @@ class TestFileSync:
 
         assert not test_path.exists()
 
+    def test_does_not_place_after_dry_run(self, minecraft_root, remote, caplog):
+        # TODO: move this into TestFileSyncOnly as there is no value in testing
+        #       this for multiple protocols
+
+        test_path = (
+            minecraft_root
+            / "instances"
+            / "axolotl"
+            / ".minecraft"
+            / "conflict"
+            / "diamond.png"
+        )
+        enderchest = gather.load_ender_chest(minecraft_root)
+        enderchest.register_remote(remote, alias="not so remote")
+        enderchest.place_after_open = True
+        enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1, dry_run=True)
+
+        assert not test_path.exists()
+
     @pytest.mark.parametrize("operation", ("pull", "push"))
     def test_timeout_argument_doesnt_obviously_break_(
         self, minecraft_root, remote, operation
