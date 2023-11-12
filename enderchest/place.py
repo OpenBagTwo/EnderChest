@@ -3,6 +3,7 @@ import fnmatch
 import itertools
 import logging
 import os
+from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
 
@@ -19,8 +20,8 @@ def place_ender_chest(
     keep_stale_links: bool = False,
     error_handling: str = "abort",
     relative: bool = True,
-    rollback=False,
-) -> None:
+    rollback: bool = False,
+) -> dict[str, dict[Path, list[str]]]:
     """Link all instance files and folders to all shulker boxes
 
     Parameters
@@ -58,6 +59,20 @@ def place_ender_chest(
         can be used to roll back any changes that have already been applied
         based on the error-handling method specified.
 
+    Returns
+    -------
+    dict
+        A record of the placed symlinks, structured as a nested dict:
+
+        - the top-level keys are the instance names, with the values being a map
+          of the links placed within those instances:
+            - the keys of those mappings are the relative paths of the placed
+              symlinks inside the instance folder
+            - the values are the list of shulker boxes, sorted in ascending
+              priority, into which that symlink was linked (explicitly, the
+              _last_ entry in each list corresponds to the shulker box inside
+              which that link currently points)
+
     Notes
     -----
     - If one of the files or folders being placed is itself a symlink, relative
@@ -68,6 +83,10 @@ def place_ender_chest(
       an outdated symlink if the fully resolved target of a link falls outside
       the EnderChest folder.
     """
+    placements: dict[str, dict[Path, list[str]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+
     if rollback is not False:  # pragma: no cover
         raise NotImplementedError("Rollbacks are not currently supported")
 
@@ -77,7 +96,7 @@ def place_ender_chest(
         PLACE_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
-        return
+        return {}
 
     instances = load_ender_chest_instances(minecraft_root, log_level=logging.DEBUG)
 
@@ -186,7 +205,7 @@ def place_ender_chest(
         if handling is not None:
             match handling:
                 case "return":
-                    return
+                    return placements
                 case "break":
                     break
                 case _:  # nothing to link, so might as well skip the rest
@@ -223,6 +242,9 @@ def place_ender_chest(
                 while handling == "retry":
                     try:
                         link_resource(link_folder, box_root, instance_root, relative)
+                        placements[instance.name][Path(link_folder)].append(
+                            shulker_box.name
+                        )
                         handling = None
                     except OSError:
                         PLACE_LOGGER.error(
@@ -235,7 +257,7 @@ def place_ender_chest(
                 if handling is not None:
                     match handling:
                         case "return":
-                            return
+                            return placements
                         case "break":
                             match_exit = "break"
                             break
@@ -270,6 +292,9 @@ def place_ender_chest(
                                     instance_root,
                                     relative,
                                 )
+                                placements[instance.name][resource_path].append(
+                                    shulker_box.name
+                                )
                                 handling = None
                             except OSError:
                                 PLACE_LOGGER.error(
@@ -282,7 +307,7 @@ def place_ender_chest(
                         if handling is not None:
                             match handling:
                                 case "return":
-                                    return
+                                    return placements
                                 case "break":
                                     match_exit = "break"
                                     break
@@ -302,6 +327,7 @@ def place_ender_chest(
 
             if match_exit == "break":
                 break
+    return placements
 
 
 def link_resource(
@@ -323,7 +349,7 @@ def link_resource(
         The path to the instance's ".minecraft" folder
     relative : bool
         If True, the link will be use a relative path if possible. Otherwise,
-        an absolute path will be used, regardless of whether a a relative or
+        an absolute path will be used, regardless of whether a relative or
         absolute path was provided.
 
     Raises
