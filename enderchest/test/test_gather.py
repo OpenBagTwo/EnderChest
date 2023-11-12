@@ -103,6 +103,7 @@ class TestLoadBoxInstanceMatches:
         instance_name_lookup = {
             "official": "~",
             "Chest Boat": "chest-boat",
+            "Drowned": "drowned",
         }
         box_lookup = {
             box.name: box
@@ -203,14 +204,14 @@ class TestGatherInstances:
             key=lambda instance: instance.name,
         )
 
-        assert len(instances) == 3
+        assert len(instances) == 4
 
         assert all(
             [
                 i.equals(
                     minecraft_root, instances[idx - 1], utils.TESTING_INSTANCES[idx]
                 )
-                for idx in range(1, 4)
+                for idx in range(1, 5)
             ]
         )
 
@@ -225,14 +226,14 @@ class TestGatherInstances:
             key=lambda instance: instance.name,
         )
 
-        assert len(instances) == 3
+        assert len(instances) == 4
 
         assert all(
             [
                 i.equals(
                     minecraft_root, instances[idx - 1], utils.TESTING_INSTANCES[idx]
                 )
-                for idx in range(1, 4)
+                for idx in range(1, 5)
             ]
         )
 
@@ -246,12 +247,12 @@ class TestGatherInstances:
             else "aaa",  # sorting hack
         )
 
-        assert len(instances) == 4
+        assert len(instances) == 5
 
         assert all(
             [
                 i.equals(minecraft_root, instances[idx], utils.TESTING_INSTANCES[idx])
-                for idx in range(4)
+                for idx in range(5)
             ]
         )
 
@@ -291,12 +292,12 @@ class TestGatherInstances:
             else "aaa",  # sorting hack
         )
 
-        assert len(instances) == 4
+        assert len(instances) == 5
 
         assert all(
             [
                 i.equals(minecraft_root, instances[idx], utils.TESTING_INSTANCES[idx])
-                for idx in range(4)
+                for idx in range(5)
             ]
         )
 
@@ -420,7 +421,7 @@ class TestSymlinkAllowlistHandling:
     def test_ender_chest_will_write_allowlists_with_consent(
         self, minecraft_root, home, monkeypatch, capsys
     ):
-        mkay = utils.scripted_prompt(["y"] * 2)
+        mkay = utils.scripted_prompt(["y"] * 3)
         monkeypatch.setattr("builtins.input", mkay)
 
         gather.gather_minecraft_instances(minecraft_root, home, True)
