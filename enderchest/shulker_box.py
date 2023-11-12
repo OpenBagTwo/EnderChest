@@ -214,6 +214,8 @@ class ShulkerBox(NamedTuple):
                         return False
                 case "tags":
                     for value in values:
+                        if value == "*":  # in case instance.tags is empty
+                            break
                         if fnmatch.filter(
                             [tag.lower() for tag in instance.tags], value.lower()
                         ):
