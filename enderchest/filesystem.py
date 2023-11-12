@@ -11,6 +11,8 @@ ENDER_CHEST_CONFIG_NAME = "enderchest.cfg"
 
 SHULKER_BOX_CONFIG_NAME = "shulkerbox.cfg"
 
+PLACE_CACHE_NAME = ".place_cache.json"
+
 
 def ender_chest_folder(minecraft_root: Path, check_exists: bool = True) -> Path:
     """Given a minecraft root directory, return the path to the EnderChest
@@ -121,6 +123,28 @@ def shulker_box_config(minecraft_root: Path, shulker_box_name: str) -> Path:
     This method does not check if a shulker box config exists at that location
     """
     return shulker_box_root(minecraft_root, shulker_box_name) / SHULKER_BOX_CONFIG_NAME
+
+
+def place_cache(minecraft_root: Path) -> Path:
+    """Given a minecraft root directory, return the path to the EnderChest
+    place cache file
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+
+    Returns
+    -------
+    Path
+        The path to the place cache file
+
+    Notes
+    -----
+    This method does not check if the cache file is valid or if it even exists
+    """
+    return ender_chest_folder(minecraft_root) / PLACE_CACHE_NAME
 
 
 def shulker_box_configs(minecraft_root: Path) -> Iterable[Path]:
