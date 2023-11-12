@@ -165,7 +165,7 @@ class TestEnderChestCrafting:
             ),
         )
 
-        never = utils.scripted_prompt(["no"])
+        never = utils.scripted_prompt(["no"] * 2)
         monkeypatch.setattr("builtins.input", never)
 
         craft.craft_ender_chest(
@@ -180,7 +180,7 @@ class TestEnderChestCrafting:
         assert not [record for record in caplog.records if record.levelname == "ERROR"]
 
         chest = load_ender_chest(minecraft_root)
-        assert len(chest.instances) == 4
+        assert len(chest.instances) == 5
         assert len(chest.remotes) == 1
 
     @pytest.mark.parametrize("root_type", ("absolute", "relative"))
@@ -195,11 +195,11 @@ class TestEnderChestCrafting:
     ):
         if root_type == "absolute":
             root = minecraft_root
-            n_responses = 8
+            n_responses = 9
         else:
             root = Path(minecraft_root.name)
             monkeypatch.chdir(minecraft_root.parent)
-            n_responses = 9  # because now cwd != minecraft root
+            n_responses = 10  # because now cwd != minecraft root
 
         script_reader = utils.scripted_prompt([""] * n_responses)
         monkeypatch.setattr("builtins.input", script_reader)
@@ -210,7 +210,7 @@ class TestEnderChestCrafting:
 
         assert not [record for record in caplog.records if record.levelname == "ERROR"]
 
-        assert len(chest.instances) == 4
+        assert len(chest.instances) == 5
         assert len(chest.remotes) == 0
 
         # make sure all responses were used

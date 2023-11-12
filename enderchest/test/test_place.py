@@ -1,4 +1,5 @@
 """Tests around instance-linking functionality"""
+import itertools
 import logging
 import os
 import re
@@ -500,8 +501,23 @@ class TestShulkerInstanceMatching:
             if shulker.matches(instance)
         ]
 
-    def test_shulker_box_with_no_match_conditions_matches_everything(self):
-        global_shulker = ShulkerBox(0, "global", Path("ignoreme"), (), ())
+    @pytest.mark.parametrize(
+        "star_instances, star_tags",
+        itertools.product(*((False, True),) * 2),
+        ids=("", "tags=*", "instances=*", "instances=*,tags=*"),
+    )
+    def test_shulker_box_with_no_match_conditions_matches_everything(
+        self, star_instances, star_tags
+    ):
+        match_criteria = []
+        if star_instances:
+            match_criteria.append(("instances", ("*",)))
+        if star_tags:
+            match_criteria.append(("tags", ("*",)))
+
+        global_shulker = ShulkerBox(
+            0, "global", Path("ignoreme"), tuple(match_criteria), ()
+        )
 
         assert self.matchall(global_shulker) == [
             instance.name for instance in utils.TESTING_INSTANCES
@@ -607,6 +623,7 @@ class TestShulkerInstanceMatching:
             "axolotl",
             "bee",
             "Chest Boat",
+            "Drowned",
         ]
 
     def test_loader_matching_knows_how_to_interpret_fabric_like(self, tmp_path):

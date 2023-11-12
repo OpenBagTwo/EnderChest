@@ -352,6 +352,7 @@ MATCH_CSV = """, global, 1.19, vanilla, optifine, steamdeck
 axolotl        ,   True, False,   True,    False,     False
 bee            ,   True, False,  False,     True,     False
 chest-boat     ,   True, True,   False,    False,     False
+drowned        ,   True, False,  False,    False,     False
 """
 
 
