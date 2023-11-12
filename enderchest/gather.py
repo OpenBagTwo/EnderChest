@@ -817,7 +817,7 @@ Read more: https://help.minecraft.net/hc/en-us/articles/16165590199181"""
         "Y/n",
     )
 
-    if response.lower() not in ("y", "yes"):
+    if response.lower() not in ("y", "yes", ""):
         return
 
     with symlink_allowlist.open("a") as allow_file:
