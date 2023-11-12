@@ -83,9 +83,7 @@ def place_ender_chest(
       an outdated symlink if the fully resolved target of a link falls outside
       the EnderChest folder.
     """
-    placements: dict[str, dict[Path, list[str]]] = defaultdict(
-        lambda: defaultdict(list)
-    )
+    placements: dict[str, dict[Path, list[str]]] = {}
 
     if rollback is not False:  # pragma: no cover
         raise NotImplementedError("Rollbacks are not currently supported")
@@ -190,6 +188,7 @@ def place_ender_chest(
 
     for instance in instances:
         instance_root = (minecraft_root / instance.root.expanduser()).expanduser()
+        placements[instance.name] = defaultdict(list)
 
         handling: str | None = "retry"
         while handling == "retry":
