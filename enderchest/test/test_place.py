@@ -1072,3 +1072,8 @@ not-this-chest
         assert (
             home / ".minecraft" / "data" / "achievements.txt"
         ).read_text() == "Spelled acheivements correctly!"
+
+    def test_place_cache_roundtrip(self, home, minecraft_root, caplog):
+        placements = place.place_ender_chest(minecraft_root, error_handling="ignore")
+        place.cache_placements(minecraft_root, placements)
+        assert placements == place.load_placement_cache(minecraft_root)
