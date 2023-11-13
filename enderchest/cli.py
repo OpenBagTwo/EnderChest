@@ -58,12 +58,15 @@ def _place(
     if keep_level > 1:
         keep_broken_links = True
 
-    place.place_ender_chest(
+    place.cache_placements(
         minecraft_root,
-        keep_broken_links=keep_broken_links,
-        keep_stale_links=keep_stale_links,
-        error_handling=errors,
-        relative=relative,
+        place.place_ender_chest(
+            minecraft_root,
+            keep_broken_links=keep_broken_links,
+            keep_stale_links=keep_stale_links,
+            error_handling=errors,
+            relative=relative,
+        ),
     )
 
 
