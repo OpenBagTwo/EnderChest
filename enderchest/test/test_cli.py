@@ -214,7 +214,7 @@ class TestPlace(ActionTestSuite):
             place_log.append((path, kwargs))
 
         monkeypatch.setattr(place, "place_ender_chest", mock_place)
-
+        monkeypatch.setattr(place, "cache_placements", lambda *args, **kwargs: None)
         yield place_log
 
     @pytest.mark.parametrize("option", ("keep_broken_links", "keep_stale_links"))
