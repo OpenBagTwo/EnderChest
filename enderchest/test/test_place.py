@@ -75,12 +75,14 @@ class TestSingleShulkerPlace:
             assert path.read_text() == contents
 
     def test_place_exits_when_there_is_no_enderchest(self, minecraft_root, caplog):
-        place.place_ender_chest(minecraft_root.parent)
+        placements = place.place_ender_chest(minecraft_root.parent)
         assert len(caplog.records) == 1
         assert (
             caplog.records[0].levelno,
             caplog.records[0].message.split(" from")[0],  # hacky "startswith"
         ) == (logging.ERROR, "Could not load EnderChest")
+
+        assert placements == {}
 
     @pytest.mark.parametrize(
         "error_handling",
@@ -95,44 +97,57 @@ class TestSingleShulkerPlace:
         instance_folder.rename(safe_keeping)
 
         try:
-            place.place_ender_chest(minecraft_root, error_handling=error_handling)
+            placements = place.place_ender_chest(
+                minecraft_root, error_handling=error_handling
+            )
         finally:
             safe_keeping.rename(instance_folder)
 
         errors = [record for record in caplog.records if record.levelname == "ERROR"]
         assert errors[0].msg.startswith("No minecraft instance exists at")
+        assert placements["axolotl"] == {}
 
     @pytest.mark.parametrize("relative", (True, False), ids=("relative", "absolute"))
     @utils.parametrize_over_instances("official", "axolotl")
     def test_respects_the_relative_parameter(self, minecraft_root, instance, relative):
-        place.place_ender_chest(minecraft_root, relative=relative)
+        placements = place.place_ender_chest(minecraft_root, relative=relative)
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
+        assert placements[instance.name][Path("logs")] == ["global"]
         assert (instance_folder / "logs").readlink().is_absolute() is (not relative)
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_replaces_empty_folders(self, minecraft_root, instance):
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
+        assert placements[instance.name][Path("logs")] == ["global"]
+
+        # and to be sure
         assert (instance_folder / "logs").resolve() == (
             minecraft_root / "EnderChest" / "global" / "logs"
         ).resolve()
 
-        # also, just to be explicit
-        assert (instance_folder / "logs" / "bumpona.log").exists()
+        # finally, just to be explicit
+        assert (instance_folder / "logs" / "bumpona.log").read_text(
+            "utf-8"
+        ).splitlines()[0] == "Like a bump on a bump on a log, baby."
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_is_able_to_place_files(self, minecraft_root, instance):
         # including in directories that didn't previously exist!
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
         assert not (instance_folder / "config").is_symlink()
 
-        assert (instance_folder / "config" / "iris.properties").resolve() == (
-            minecraft_root / "EnderChest" / "global" / "config" / "iris.properties"
+        resource_path = Path("config") / "iris.properties"
+        assert placements[instance.name][resource_path] == ["global"]
+
+        # and to be sure
+        assert (instance_folder / resource_path).resolve() == (
+            minecraft_root / "EnderChest" / "global" / resource_path
         )
 
     @utils.parametrize_over_instances("official", "axolotl")
@@ -140,36 +155,47 @@ class TestSingleShulkerPlace:
         self, minecraft_root, instance, monkeypatch
     ):
         monkeypatch.chdir(minecraft_root.parent)
-        place.place_ender_chest(Path(minecraft_root.name))
+        placements = place.place_ender_chest(Path(minecraft_root.name))
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
         assert not (instance_folder / "config").is_symlink()
 
-        assert (instance_folder / "config" / "iris.properties").resolve() == (
-            minecraft_root / "EnderChest" / "global" / "config" / "iris.properties"
+        resource_path = Path("config") / "iris.properties"
+        assert placements[instance.name][resource_path] == ["global"]
+
+        # and to be sure
+        assert (instance_folder / resource_path).resolve() == (
+            minecraft_root / "EnderChest" / "global" / resource_path
         )
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_is_able_to_place_root_level_files(self, minecraft_root, instance):
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
-        assert (
-            instance_folder / "usercache.json"
-        ).read_text() == "alexander\nmomoa\nbateman\n"
+        assert placements[instance.name][Path("usercache.json")] == ["global"]
 
+        # and to be sure
         assert (instance_folder / "usercache.json").resolve() == (
             minecraft_root / "EnderChest" / "global" / "usercache.json"
         )
 
+        # finally, just to be explicit
+        assert (
+            instance_folder / "usercache.json"
+        ).read_text() == "alexander\nmomoa\nbateman\n"
+
     @utils.parametrize_over_instances("official", "axolotl")
     def test_does_not_place_shulker_config(self, minecraft_root, instance):
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
+        assert placements[instance.name].get(Path(fs.SHULKER_BOX_CONFIG_NAME), []) == []
+
+        # and to be sure
         assert not (instance_folder / fs.SHULKER_BOX_CONFIG_NAME).exists()
 
     @utils.parametrize_over_instances("bee")
@@ -180,24 +206,31 @@ class TestSingleShulkerPlace:
         utils.pre_populate_enderchest(
             minecraft_root / "EnderChest", utils.OPTIFINE_SHULKER
         )
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
 
+        assert placements[instance.name][Path(fs.SHULKER_BOX_CONFIG_NAME)] == [
+            "optifine"
+        ]
+
+        # and to be sure
         assert (
             instance_folder / fs.SHULKER_BOX_CONFIG_NAME
         ).resolve() == fs.shulker_box_config(minecraft_root, "optifine")
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_link_folder_can_be_a_symlink(self, minecraft_root, instance):
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
+
+        assert placements[instance.name][Path("crash-reports")] == ["global"]
+        assert Path("crash-reports") / "20230524.log" not in placements[instance.name]
 
         # the counterpoint to the whole "one assertion per test" rule--this
         # is a cascading case of figuring way of figuring out just how badly
         # the impl is borked
-
         assert (instance_folder / "crash-reports").exists()
         assert (instance_folder / "crash-reports" / "20230524.log").read_text() == (
             "ERROR: Everything is broken\n" "WARNING: And somehow also on fire\n"
@@ -212,34 +245,44 @@ class TestSingleShulkerPlace:
     @pytest.mark.parametrize("link_type", ("absolute", "relative"))
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_places_symlinks(self, minecraft_root, instance, link_type):
-        place.place_ender_chest(minecraft_root, relative=link_type == "relative")
+        placements = place.place_ender_chest(
+            minecraft_root, relative=link_type == "relative"
+        )
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
+        save_path = Path("saves") / "test"
+
+        assert placements[instance.name][save_path] == ["global"]
+        assert save_path / "level.dat" not in placements[instance.name]
 
         # the counterpoint to the whole "one assertion per test" rule--this
         # is a cascading case of figuring way of figuring out just how badly
         # the impl is borked
 
-        assert (instance_folder / "saves" / "test").exists()
-        assert (instance_folder / "saves" / "test" / "level.dat").exists()
+        assert (instance_folder / save_path).exists()
+        assert (instance_folder / save_path / "level.dat").exists()
         assert (
-            instance_folder / "saves" / "test" / "level.dat"
+            instance_folder / save_path / "level.dat"
         ).read_text() == "hello world\n"
 
-        assert (instance_folder / "saves" / "test").is_symlink()
-        assert not (instance_folder / "saves" / "test" / "level.dat").is_symlink()
+        assert (instance_folder / save_path).is_symlink()
+        assert not (instance_folder / save_path / "level.dat").is_symlink()
 
-        assert (instance_folder / "saves" / "test" / "level.dat").resolve() == (
+        assert (instance_folder / save_path / "level.dat").resolve() == (
             minecraft_root / "worlds" / "testbench" / "level.dat"
         )
 
     @utils.parametrize_over_instances("official", "axolotl")
     def test_absolute_symlinks_fully_resolve_target(self, minecraft_root, instance):
-        place.place_ender_chest(minecraft_root, relative=False)
+        placements = place.place_ender_chest(minecraft_root, relative=False)
 
         instance_folder = utils.resolve(instance.root, minecraft_root)
+        save_path = Path("saves") / "test"
 
-        link_target = os.path.abspath(os.readlink(instance_folder / "saves" / "test"))
+        link_target = os.path.abspath(os.readlink(instance_folder / save_path))
+
+        assert placements[instance.name][save_path] == ["global"]
+        assert save_path / "level.dat" not in placements[instance.name]
 
         # Windows shenanigans: https://bugs.python.org/issue42957
         if link_target.startswith(("\\\\?\\", "\\??\\")):  # pragma: no cover
@@ -254,7 +297,7 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.iterdir()
 
-        place.place_ender_chest(minecraft_root)
+        _ = place.place_ender_chest(minecraft_root)
 
         assert broken_link not in broken_link.parent.iterdir()
 
@@ -267,7 +310,7 @@ class TestSingleShulkerPlace:
         broken_link.symlink_to(minecraft_root / "i-do-not-exist.txt")
         assert broken_link in broken_link.parent.iterdir()
 
-        place.place_ender_chest(minecraft_root, keep_broken_links=True)
+        _ = place.place_ender_chest(minecraft_root, keep_broken_links=True)
 
         assert broken_link in broken_link.parent.iterdir()
 
@@ -281,6 +324,7 @@ class TestSingleShulkerPlace:
         old_box.mkdir()
         old_file = old_box / "i-do-exist.txt"
         old_file.write_text("Hello there\n")
+        # no config file means it's not actually / no longer a shulker box
 
         stale_link = instance_folder / "old-file.txt"
         if link_type == "absolute":
@@ -288,7 +332,7 @@ class TestSingleShulkerPlace:
         else:
             stale_link.symlink_to(os.path.relpath(old_file, stale_link.parent))
 
-        place.place_ender_chest(minecraft_root)
+        _ = place.place_ender_chest(minecraft_root)
 
         assert stale_link not in stale_link.parent.iterdir()
 
@@ -313,7 +357,7 @@ class TestSingleShulkerPlace:
         else:
             stale_link.symlink_to(os.path.relpath(old_file, stale_link.parent))
 
-        place.place_ender_chest(minecraft_root)
+        _ = place.place_ender_chest(minecraft_root)
 
         assert stale_link in stale_link.parent.iterdir()
 
@@ -339,7 +383,7 @@ class TestSingleShulkerPlace:
         else:
             link_link.symlink_to(os.path.relpath(box_link, link_link.parent))
 
-        place.place_ender_chest(minecraft_root)
+        _ = place.place_ender_chest(minecraft_root)
 
         assert link_link not in link_link.parent.iterdir()
 
@@ -367,7 +411,7 @@ class TestSingleShulkerPlace:
         else:
             stale_link.symlink_to(os.path.relpath(old_file, stale_link.parent))
 
-        place.place_ender_chest(minecraft_root, keep_stale_links=True)
+        _ = place.place_ender_chest(minecraft_root, keep_stale_links=True)
 
         assert stale_link in stale_link.parent.iterdir()
 
@@ -384,10 +428,14 @@ class TestSingleShulkerPlace:
         error_handling,
     ):
         instance_folder = utils.resolve(instance.root, minecraft_root)
-        existing_file = instance_folder / "screenshots" / "thumbs.db"
+        resource_path = Path("screenshots") / "thumbs.db"
+        existing_file = instance_folder / resource_path
         existing_file.write_text("opposable")
 
-        place.place_ender_chest(minecraft_root, error_handling=error_handling)
+        placements = place.place_ender_chest(
+            minecraft_root, error_handling=error_handling
+        )
+        assert placements[instance.name].get(resource_path, []) == []
 
         error_log = "\n".join(
             record.msg for record in caplog.records if record.levelno == logging.ERROR
@@ -396,7 +444,7 @@ class TestSingleShulkerPlace:
             rf"{instance.name}((.|\n)*)screenshots((.|\n)*)empty", error_log
         )
 
-        # make sure the file is still there afterwards
+        # make sure the file is still there afterward
         assert existing_file.exists()
         assert existing_file.resolve() == existing_file
         assert existing_file.read_text() == "opposable"
@@ -404,10 +452,12 @@ class TestSingleShulkerPlace:
     @utils.parametrize_over_instances("official", "axolotl")
     def test_place_will_not_overwrite_a_file(self, minecraft_root, instance, caplog):
         instance_folder = utils.resolve(instance.root, minecraft_root)
-        existing_file = instance_folder / "usercache.json"
+        resource_path = Path("usercache.json")
+        existing_file = instance_folder / resource_path
         existing_file.write_text("isaacs\n")
 
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
+        assert placements[instance.name].get(resource_path, []) == []
 
         error_log = "\n".join(
             record.msg for record in caplog.records if record.levelname == "ERROR"
@@ -416,7 +466,7 @@ class TestSingleShulkerPlace:
             rf"{instance.name}((.|\n)*)usercache.json((.|\n)*)exists", error_log
         )
 
-        # make sure the file is still there afterwards
+        # make sure the file is still there afterward
         assert existing_file.exists()
         assert existing_file.resolve() == existing_file
         assert existing_file.read_text() == "isaacs\n"
@@ -427,21 +477,17 @@ class TestSingleShulkerPlace:
         instance_folder = utils.resolve(instance.root, minecraft_root)
         original_target = minecraft_root / "workspace" / "teavsrp_lite.zip"
         original_target.write_text("I will trade you these\nfor less of these\n")
-        existing_symlink = instance_folder / "resourcepacks" / "TEAVSRP.zip"
+        resource_path = Path("resourcepacks") / "TEAVSRP.zip"
+        existing_symlink = instance_folder / resource_path
         existing_symlink.symlink_to(original_target)
 
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
+        assert placements[instance.name][resource_path] == ["global"]
 
         assert existing_symlink.read_text() == "Breaking News!\n"
         assert (
             existing_symlink.resolve()
-            == (
-                minecraft_root
-                / "EnderChest"
-                / "global"
-                / "resourcepacks"
-                / "TEAVSRP.zip"
-            ).resolve()
+            == (minecraft_root / "EnderChest" / "global" / resource_path).resolve()
         )
 
         # also make sure the original file is okay
@@ -779,7 +825,8 @@ class TestMultiShulkerPlacing:
         should_match,
         error_handling,
     ):
-        place.place_ender_chest(minecraft_root, error_handling=error_handling)
+        _ = place.place_ender_chest(minecraft_root, error_handling=error_handling)
+        # TODO: test placements dict
 
         link_log = "\n".join(
             record.msg for record in caplog.records if record.levelname == "INFO"
@@ -793,19 +840,19 @@ class TestMultiShulkerPlacing:
     def test_multi_shulker_place_overwrites_overlapping_symlinks(
         self, minecraft_root, error_handling
     ):
-        place.place_ender_chest(minecraft_root, error_handling=error_handling)
+        resource_path = Path("resourcepacks") / "stuff.zip"
+        placements = place.place_ender_chest(
+            minecraft_root, error_handling=error_handling
+        )
+
+        assert placements["bee"][resource_path] == ["global", "optifine"]
 
         assert (
-            minecraft_root
-            / "instances"
-            / "bee"
-            / ".minecraft"
-            / "resourcepacks"
-            / "stuff.zip"
+            minecraft_root / "instances" / "bee" / ".minecraft" / resource_path
         ).read_text() == "optifine-optimized!"
 
     def test_default_behavior_is_to_stop_at_first_error(self, minecraft_root, caplog):
-        place.place_ender_chest(minecraft_root)
+        _ = place.place_ender_chest(minecraft_root)
 
         assert not (
             minecraft_root
@@ -829,14 +876,18 @@ class TestMultiShulkerPlacing:
     def test_ignore_failures(
         self, home, minecraft_root, prompt, monkeypatch, caplog, capsys
     ):
-        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("c",)))
+        if prompt:
+            monkeypatch.setattr("builtins.input", utils.scripted_prompt(("c",)))
 
-        place.place_ender_chest(
+        placements = place.place_ender_chest(
             minecraft_root,
             error_handling="prompt" if prompt else "ignore",
             relative=False,
         )
         _ = capsys.readouterr()  # suppress outputs
+
+        assert placements["official"].get(Path("options.txt"), []) == []
+        assert placements["official"][Path("mods") / "FoxNap.jar"] == ["1.19"]
 
         errors = [
             i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
@@ -854,12 +905,16 @@ class TestMultiShulkerPlacing:
     def test_skip_match(
         self, home, minecraft_root, prompt, monkeypatch, caplog, capsys
     ):
-        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("m",)))
+        if prompt:
+            monkeypatch.setattr("builtins.input", utils.scripted_prompt(("m",)))
 
-        place.place_ender_chest(
+        placements = place.place_ender_chest(
             minecraft_root, error_handling="prompt" if prompt else "skip"
         )
         _ = capsys.readouterr()  # suppress outputs
+
+        assert placements["official"].get(Path("options.txt"), []) == []
+        assert placements["official"][Path("data") / "achievements.txt"] == ["vanilla"]
 
         errors = [
             i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
@@ -887,12 +942,16 @@ class TestMultiShulkerPlacing:
 
     @pytest.mark.parametrize("prompt", (False, True), ids=["", "prompted"])
     def test_skip_instance(self, home, minecraft_root, prompt, monkeypatch, capsys):
-        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("i",)))
+        if prompt:
+            monkeypatch.setattr("builtins.input", utils.scripted_prompt(("i",)))
 
-        place.place_ender_chest(
+        placements = place.place_ender_chest(
             minecraft_root, error_handling="prompt" if prompt else "skip-instance"
         )
         _ = capsys.readouterr()  # suppress outputs
+
+        assert placements["official"].get(Path("options.txt"), []) == []
+        assert placements["Chest Boat"][Path("options.txt")] == ["1.19"]
 
         assert (
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
@@ -901,12 +960,16 @@ class TestMultiShulkerPlacing:
 
     @pytest.mark.parametrize("prompt", (False, True), ids=["", "prompted"])
     def test_skip_shulker_box(self, home, minecraft_root, prompt, monkeypatch, capsys):
-        monkeypatch.setattr("builtins.input", utils.scripted_prompt(("s",)))
+        if prompt:
+            monkeypatch.setattr("builtins.input", utils.scripted_prompt(("s",)))
 
-        place.place_ender_chest(
+        placements = place.place_ender_chest(
             minecraft_root, error_handling="prompt" if prompt else "skip-shulker"
         )
         _ = capsys.readouterr()  # suppress outputs
+
+        assert placements["official"].get(Path("options.txt"), []) == []
+        assert placements["Chest Boat"].get(Path("options.txt"), []) == []
 
         assert (
             home / ".minecraft" / "data" / "achievements.txt"
@@ -918,7 +981,7 @@ class TestMultiShulkerPlacing:
 
     def test_raise_on_invalid_error_handling_arg(self, home, minecraft_root, caplog):
         with pytest.raises(ValueError, match="Unrecognized error-handling method"):
-            place.place_ender_chest(minecraft_root, error_handling="not a thing")
+            _ = place.place_ender_chest(minecraft_root, error_handling="not a thing")
 
     def test_prompt_and_quit(self, home, minecraft_root, caplog, monkeypatch, capsys):
         monkeypatch.setattr("builtins.input", utils.scripted_prompt(("q",)))
@@ -953,9 +1016,10 @@ class TestMultiShulkerPlacing:
         monkeypatch.setattr("builtins.input", ope_lemme_delete_that)
 
         try:
-            place.place_ender_chest(
+            placements = place.place_ender_chest(
                 minecraft_root, error_handling="prompt", relative=False
             )
+            assert placements["official"].get(Path("options.txt"), []) == ["1.19"]
 
             errors = [
                 i
@@ -981,7 +1045,7 @@ class TestMultiShulkerPlacing:
             utils.scripted_prompt(("blargh", "grahr", "rrgh", "i dunno man", "q")),
         )
 
-        place.place_ender_chest(minecraft_root, error_handling="prompt")
+        _ = place.place_ender_chest(minecraft_root, error_handling="prompt")
         _ = capsys.readouterr()  # suppress outputs
 
         errors = [
@@ -998,7 +1062,8 @@ not-this-chest
 """
             )
 
-        place.place_ender_chest(minecraft_root)
+        placements = place.place_ender_chest(minecraft_root)
+        assert "1.19" not in set(sum(placements["Chest Boat"].values(), []))
 
         assert not (
             minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
