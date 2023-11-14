@@ -9,7 +9,7 @@ import pytest
 
 from enderchest import ShulkerBox
 from enderchest import filesystem as fs
-from enderchest import place
+from enderchest import gather, place
 from enderchest import shulker_box as sb
 
 from . import utils
@@ -1119,7 +1119,7 @@ class TestResourceTracing:
             pattern,
             instance_name="bee",
             placements=placement_cache,
-        ) == [(instance_folder / resource_path, ["optifine"])]
+        ) == [(instance_folder, resource_path, ["optifine"])]
 
     @pytest.mark.parametrize(
         "pattern_type",
@@ -1147,7 +1147,7 @@ class TestResourceTracing:
             pattern,
             instance_name="bee",
             placements=placement_cache,
-        ) == [(instance_folder / resource_path, ["global", "optifine"])]
+        ) == [(instance_folder, resource_path, ["global", "optifine"])]
 
     def test_track_down_multiple_files(self, placement_cache, minecraft_root):
         instance_folder = Path("instances") / "bee" / ".minecraft"
@@ -1159,16 +1159,26 @@ class TestResourceTracing:
                 instance_name="bee",
                 placements=placement_cache,
             ),
-            key=lambda x: str(x[0]).lower(),
+            key=lambda x: str(x[0] / x[1]).lower(),
         ) == [
-            (instance_folder / "resourcepacks" / "stuff.zip", ["global", "optifine"]),
-            (instance_folder / "resourcepacks" / "TEAVSRP.zip", ["global"]),
-            (instance_folder / "shaderpacks" / "Seuss CitH.zip", ["optifine"]),
+            (
+                instance_folder,
+                Path("resourcepacks") / "stuff.zip",
+                ["global", "optifine"],
+            ),
+            (instance_folder, Path("resourcepacks") / "TEAVSRP.zip", ["global"]),
+            (instance_folder, Path("shaderpacks") / "Seuss CitH.zip", ["optifine"]),
         ]
 
     def test_search_all_instances(self, placement_cache, minecraft_root):
-        def mods_folder(instance_folder_name: str) -> Path:
-            return Path("instances") / instance_folder_name / ".minecraft" / "mods"
+        instance_folders = {
+            instance.name: instance.root
+            for instance in gather.load_ender_chest_instances(
+                minecraft_root, log_level=logging.DEBUG
+            )
+        }
+
+        mods_folder = Path("mods")
 
         assert sorted(
             place.trace_resource(
@@ -1176,10 +1186,10 @@ class TestResourceTracing:
                 "*.jar",
                 placements=placement_cache,
             ),
-            key=lambda x: str(x[0]).lower(),
+            key=lambda x: str(x[0] / x[1]).lower(),
         ) == [
-            (mods_folder("bee") / "BME.jar", ["optifine"]),
-            (mods_folder("bee") / "optifine.jar", ["optifine"]),
-            (mods_folder("chest-boat") / "FoxNap.jar", ["1.19"]),
-            (Path("~") / ".minecraft" / "mods" / "FoxNap.jar", ["1.19"]),
+            (instance_folders["bee"], mods_folder / "BME.jar", ["optifine"]),
+            (instance_folders["bee"], mods_folder / "optifine.jar", ["optifine"]),
+            (instance_folders["Chest Boat"], mods_folder / "FoxNap.jar", ["1.19"]),
+            (instance_folders["official"], mods_folder / "FoxNap.jar", ["1.19"]),
         ]
