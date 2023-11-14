@@ -6,11 +6,11 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Sequence
 
 from . import filesystem as fs
 from .gather import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
-from .loggers import PLACE_LOGGER
+from .loggers import IMPORTANT, PLACE_LOGGER
 from .prompt import prompt
 from .shulker_box import ShulkerBox
 
@@ -504,7 +504,7 @@ def trace_resource(
     pattern: str,
     instance_name: str | None = None,
     placements: dict[str, dict[Path, list[str]]] | None = None,
-) -> list[tuple[Path, list[str]]]:
+) -> list[tuple[Path, Path, list[str]]]:
     """Given a filename or glob pattern, return a list of all matching
     EnderChest-placed symlinks, together with a trace-back of the shulker boxes
     each link targets
@@ -525,10 +525,12 @@ def trace_resource(
 
     Returns
     -------
-    list of (Path, list) tuples
-        - The first item in each list is the path to a linked resource
-          matching the provided pattern (and instance).
-        - The second item is the list of shulker boxes, sorted in ascending
+    list of (Path, Path, list) tuples
+        - The first item in each list is the path of the instance root
+        - The second item in each list is the path to a linked resource
+          matching the provided pattern (and instance), relative to the instance
+          root
+        - The third item is the list of shulker boxes, sorted in ascending
           priority, into which that symlink was linked (explicitly, the
           _last_ entry in each list corresponds to the shulker box inside
           which that link currently points)
@@ -559,7 +561,7 @@ def trace_resource(
             [],
         )
     instance_root = instances[instance_name].root
-    matches: list[tuple[Path, list[str]]] = []
+    matches: list[tuple[Path, Path, list[str]]] = []
     for resource_path, target_boxes in placements[instance_name].items():
         if (
             fnmatch.fnmatchcase(str(resource_path), pattern)
@@ -569,5 +571,64 @@ def trace_resource(
                 os.path.join("*", pattern),
             )
         ):
-            matches.append((instance_root / resource_path, target_boxes))
+            matches.append((instance_root, resource_path, target_boxes))
     return matches
+
+
+def report_resource_trace(
+    minecraft_root: Path, instance_root: Path, resource_path: Path, boxes: Sequence[str]
+) -> None:
+    """Print (log) the shulker boxes an instance resource is linked to
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+    instance_root : Path
+        The path of the EnderChest-placed symlink
+    resource_path : Path
+        The path to the symlink, relative to the instance root
+    boxes : list of str
+        The names of the shulker boxes, sorted by ascending priority, that are
+        targeted by this symlink (technically only the last entry in this list
+        is the actual target)
+    """
+    symlink_location = instance_root / resource_path
+    if len(boxes) == 0:  # pragma: no cover
+        # Since defaultdicts are involved, this could happen accidentally at
+        # some point and should just be ignored
+        return
+    *other_box_names, primary_box_name = boxes
+    try:
+        PLACE_LOGGER.log(
+            IMPORTANT,
+            "%s currently resolves to %s",
+            symlink_location,
+            os.path.abspath(
+                (
+                    symlink_location / (minecraft_root / symlink_location).readlink()
+                ).expanduser()
+            ),
+        )
+    except OSError:
+        PLACE_LOGGER.warning(
+            "%s no longer exists or is not a symlink", symlink_location
+        )
+
+    PLACE_LOGGER.log(
+        IMPORTANT,
+        "    based on being linked into shulker box: %s",
+        primary_box_name,
+    )
+    PLACE_LOGGER.debug(
+        "        - > %s",
+        fs.shulker_box_root(minecraft_root, primary_box_name) / resource_path,
+    )
+
+    for box_name in reversed(other_box_names):
+        PLACE_LOGGER.info("    which overwrote the link into shulker box: %s", box_name)
+        PLACE_LOGGER.debug(
+            "        - > %s",
+            fs.shulker_box_root(minecraft_root, box_name) / resource_path,
+        )
