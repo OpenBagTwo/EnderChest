@@ -759,59 +759,61 @@ class TestShulkerInstanceMatching:
         assert self.matchall(multi_condition_shulker) == ["Chest Boat"]
 
 
+@pytest.fixture
+def multi_box_setup_teardown(minecraft_root, home):
+    """Setup / teardown for this test class"""
+    chest_folder = minecraft_root / "EnderChest"
+    utils.pre_populate_enderchest(chest_folder, *utils.TESTING_SHULKER_CONFIGS)
+
+    do_not_touch = {
+        (chest_folder / "global" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
+        (chest_folder / "global" / "logs" / "bumpona.log"): (
+            "Like a bump on a bump on a log, baby.\n"
+            "Like I'm in a fist fight with a fog, baby.\n"
+            "Step-ball-change and a pirouette.\n"
+            "And I regret, I regret.\n"
+        ),
+        (chest_folder / "1.19" / "mods" / "FoxNap.jar"): "hello-maestro",
+        (chest_folder / "1.19" / "options.txt"): "autoJump:true",
+        (
+            chest_folder / "vanilla" / "data" / "achievements.txt"
+        ): "Spelled acheivements correctly!",
+        (chest_folder / "optifine" / "mods" / "optifine.jar"): "sodium4life",
+        (chest_folder / "optifine" / "shaderpacks" / "Seuss CitH.zip"): (
+            "But those trees! Oh those trees! But those truffula trees!"
+            "\nAll resplendent and gorgeous in ray-traced 3Ds"
+        ),
+        (
+            chest_folder / "optifine" / "resourcepacks" / "stuff.zip"
+        ): "optifine-optimized!",
+        (
+            minecraft_root
+            / "instances"
+            / "bee"
+            / ".minecraft"
+            / "shaderpacks"
+            / "Seuss CitH.zip.txt"
+        ): (
+            "with settings at max"
+            "\nits important to note"
+            "\nthe lag is real bad"
+            "\nbut just look at that goat!"
+        ),
+    }
+
+    for path, contents in do_not_touch.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(contents)
+
+    yield
+
+    # check on teardown that all those "do_not_touch" files are untouched
+    for path, contents in do_not_touch.items():
+        assert path.read_text() == contents
+
+
+@pytest.mark.usefixtures("multi_box_setup_teardown")
 class TestMultiShulkerPlacing:
-    @pytest.fixture(autouse=True)
-    def setup_teardown(self, minecraft_root, home):
-        """Setup / teardown for this test class"""
-        chest_folder = minecraft_root / "EnderChest"
-        utils.pre_populate_enderchest(chest_folder, *utils.TESTING_SHULKER_CONFIGS)
-
-        do_not_touch = {
-            (chest_folder / "global" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
-            (chest_folder / "global" / "logs" / "bumpona.log"): (
-                "Like a bump on a bump on a log, baby.\n"
-                "Like I'm in a fist fight with a fog, baby.\n"
-                "Step-ball-change and a pirouette.\n"
-                "And I regret, I regret.\n"
-            ),
-            (chest_folder / "1.19" / "mods" / "FoxNap.jar"): "hello-maestro",
-            (chest_folder / "1.19" / "options.txt"): "autoJump:true",
-            (
-                chest_folder / "vanilla" / "data" / "achievements.txt"
-            ): "Spelled acheivements correctly!",
-            (chest_folder / "optifine" / "mods" / "optifine"): "sodium4life",
-            (chest_folder / "optifine" / "shaderpacks" / "Seuss CitH.zip"): (
-                "But those trees! Oh those trees! But those truffula trees!"
-                "\nAll resplendent and gorgeous in ray-traced 3Ds"
-            ),
-            (
-                chest_folder / "optifine" / "resourcepacks" / "stuff.zip"
-            ): "optifine-optimized!",
-            (
-                minecraft_root
-                / "instances"
-                / "bee"
-                / ".minecraft"
-                / "shaderpacks"
-                / "Seuss CitH.zip.txt"
-            ): (
-                "with settings at max"
-                "\nits important to note"
-                "\nthe lag is real bad"
-                "\nbut just look at that goat!"
-            ),
-        }
-
-        for path, contents in do_not_touch.items():
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(contents)
-
-        yield
-
-        # check on teardown that all those "do_not_touch" files are untouched
-        for path, contents in do_not_touch.items():
-            assert path.read_text() == contents
-
     @pytest.mark.parametrize("error_handling", ("ignore", "skip"))
     @pytest.mark.parametrize(
         "shulker_box, instance, should_match", utils.TESTING_SHULKER_INSTANCE_MATCHES
@@ -1073,7 +1075,111 @@ not-this-chest
             home / ".minecraft" / "data" / "achievements.txt"
         ).read_text() == "Spelled acheivements correctly!"
 
+
+@pytest.mark.usefixtures("multi_box_setup_teardown")
+class TestPlacementCaching:
     def test_place_cache_roundtrip(self, home, minecraft_root, caplog):
         placements = place.place_ender_chest(minecraft_root, error_handling="ignore")
         place.cache_placements(minecraft_root, placements)
         assert placements == place.load_placement_cache(minecraft_root)
+
+
+class TestResourceTracing:
+    @pytest.fixture
+    def placement_cache(self, home, minecraft_root, caplog, multi_box_setup_teardown):
+        placements = place.place_ender_chest(
+            minecraft_root, error_handling="ignore", relative=False
+        )
+        place.cache_placements(minecraft_root, placements)
+        yield place.load_placement_cache(minecraft_root)
+
+    @pytest.mark.parametrize(
+        "pattern_type",
+        ("filename", "resource_path", "glob", "relative_path", "absolute_path"),
+    )
+    def test_track_down_a_simple_single_file(
+        self, placement_cache, minecraft_root, pattern_type
+    ):
+        instance_folder = Path("instances") / "bee" / ".minecraft"
+        resource_path = Path("mods") / "optifine.jar"
+
+        pattern = str(
+            {
+                "filename": resource_path.name,
+                "resource_path": resource_path,
+                "glob": "opti*.jar",
+                "relative_path": instance_folder / resource_path,
+                "absolute_path": (
+                    minecraft_root / instance_folder / resource_path
+                ).absolute(),
+            }[pattern_type]
+        )
+        assert place.trace_resource(
+            minecraft_root,
+            pattern,
+            instance_name="bee",
+            placements=placement_cache,
+        ) == [(instance_folder / resource_path, ["optifine"])]
+
+    @pytest.mark.parametrize(
+        "pattern_type",
+        ("filename", "resource_path", "glob", "relative_path", "absolute_path"),
+    )
+    def test_track_down_a_single_multi_linked_file(
+        self, placement_cache, minecraft_root, pattern_type
+    ):
+        instance_folder = Path("instances") / "bee" / ".minecraft"
+        resource_path = Path("resourcepacks") / "stuff.zip"
+
+        pattern = str(
+            {
+                "filename": resource_path.name,
+                "resource_path": resource_path,
+                "glob": "stuff*",
+                "relative_path": instance_folder / resource_path,
+                "absolute_path": (
+                    minecraft_root / instance_folder / resource_path
+                ).absolute(),
+            }[pattern_type]
+        )
+        assert place.trace_resource(
+            minecraft_root,
+            pattern,
+            instance_name="bee",
+            placements=placement_cache,
+        ) == [(instance_folder / resource_path, ["global", "optifine"])]
+
+    def test_track_down_multiple_files(self, placement_cache, minecraft_root):
+        instance_folder = Path("instances") / "bee" / ".minecraft"
+
+        assert sorted(
+            place.trace_resource(
+                minecraft_root,
+                "*.zip",
+                instance_name="bee",
+                placements=placement_cache,
+            ),
+            key=lambda x: str(x[0]).lower(),
+        ) == [
+            (instance_folder / "resourcepacks" / "stuff.zip", ["global", "optifine"]),
+            (instance_folder / "resourcepacks" / "TEAVSRP.zip", ["global"]),
+            (instance_folder / "shaderpacks" / "Seuss CitH.zip", ["optifine"]),
+        ]
+
+    def test_search_all_instances(self, placement_cache, minecraft_root):
+        def mods_folder(instance_folder_name: str) -> Path:
+            return Path("instances") / instance_folder_name / ".minecraft" / "mods"
+
+        assert sorted(
+            place.trace_resource(
+                minecraft_root,
+                "*.jar",
+                placements=placement_cache,
+            ),
+            key=lambda x: str(x[0]).lower(),
+        ) == [
+            (mods_folder("bee") / "BME.jar", ["optifine"]),
+            (mods_folder("bee") / "optifine.jar", ["optifine"]),
+            (mods_folder("chest-boat") / "FoxNap.jar", ["1.19"]),
+            (Path("~") / ".minecraft" / "mods" / "FoxNap.jar", ["1.19"]),
+        ]
