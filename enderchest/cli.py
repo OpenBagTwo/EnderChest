@@ -139,10 +139,11 @@ def _test(
 
     if use_local_ssh:
         pytest_args = ("--use-local-ssh", *pytest_args)
-    pytest.main(
+    if exit_code := pytest.main(
         ["--pyargs", "enderchest.test", *pytest_args],
         plugins=(plugin,),
-    )
+    ):
+        raise SystemExit(f"Tests Failed with exit code: {exit_code}")
 
 
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
