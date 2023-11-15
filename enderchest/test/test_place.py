@@ -1293,3 +1293,7 @@ class TestListPlacements:
                 "optifine" in logs[IMPORTANT][2].args,
             )
         )
+
+
+def test_fail():
+    assert False
