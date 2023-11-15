@@ -14,7 +14,7 @@ from ._version import get_versions
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
 _create_aliases = ("craft", "create")
 _instance_aliases = tuple(
-    alias + plural for alias in ("minecraft", "instance") for plural in ("", "s")
+    alias + plural for alias in ("instance", "minecraft") for plural in ("", "s")
 )
 _shulker_box_aliases = ("shulker_box", "shulkerbox", "shulker")
 _remote_aliases = tuple(
@@ -212,7 +212,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             for alias in _instance_aliases
             if not alias.endswith("s")
         ),
-        "list the shulker boxes that the specified instance links to",
+        "list the shulker boxes that the specified instance links into",
         _list_instance_boxes,
     ),
     (
