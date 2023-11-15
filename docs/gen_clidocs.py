@@ -16,7 +16,7 @@ cli_guide = f"""
 for verb, parser in verb_parsers.items():
     level = len(f"enderchest {verb}".split())
     cli_guide += f"""
-{"#"*level} `enderchest {verb}`
+## `enderchest {verb}`
 ```bash
 {parser.format_help()}```
 """
