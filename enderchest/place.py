@@ -664,12 +664,13 @@ def list_placements(
         PLACE_LOGGER.error(
             "No instance named %s is registered to this EnderChest", instance_name
         )
+        return
     if len(matches) == 0:
         PLACE_LOGGER.warning(
-            "Could not find any placed resources matching the pattern %s%s.",
+            "Could not find any placed resources matching the pattern %s%s."
+            "\n\nNote: this command does not check inside linked folders.",
             pattern,
             f"\nin the instance {instance_name}" if instance_name else "",
-            "\n\nNote: this command does not check inside linked folders.",
         )
         return
     for match in matches:

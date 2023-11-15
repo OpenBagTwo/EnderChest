@@ -3,6 +3,7 @@ import itertools
 import logging
 import os
 import re
+from collections import defaultdict
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,7 @@ from enderchest import ShulkerBox
 from enderchest import filesystem as fs
 from enderchest import gather, place
 from enderchest import shulker_box as sb
+from enderchest.loggers import IMPORTANT
 
 from . import utils
 
@@ -1050,9 +1052,7 @@ class TestMultiShulkerPlacing:
         _ = place.place_ender_chest(minecraft_root, error_handling="prompt")
         _ = capsys.readouterr()  # suppress outputs
 
-        errors = [
-            i for i, record in enumerate(caplog.records) if record.levelname == "ERROR"
-        ]
+        errors = [record for record in caplog.records if record.levelname == "ERROR"]
         assert len(errors) == 6
 
     def test_skip_shulker_box_that_doesnt_match_host(self, home, minecraft_root):
@@ -1084,15 +1084,17 @@ class TestPlacementCaching:
         assert placements == place.load_placement_cache(minecraft_root)
 
 
-class TestResourceTracing:
-    @pytest.fixture
-    def placement_cache(self, home, minecraft_root, caplog, multi_box_setup_teardown):
-        placements = place.place_ender_chest(
-            minecraft_root, error_handling="ignore", relative=False
-        )
-        place.cache_placements(minecraft_root, placements)
-        yield place.load_placement_cache(minecraft_root)
+@pytest.fixture
+def placement_cache(home, minecraft_root, caplog, multi_box_setup_teardown):
+    placements = place.place_ender_chest(
+        minecraft_root, error_handling="ignore", relative=False
+    )
+    place.cache_placements(minecraft_root, placements)
+    yield place.load_placement_cache(minecraft_root)
+    fs.place_cache(minecraft_root).unlink()
 
+
+class TestResourceTracing:
     @pytest.mark.parametrize(
         "pattern_type",
         ("filename", "resource_path", "glob", "relative_path", "absolute_path"),
@@ -1193,3 +1195,101 @@ class TestResourceTracing:
             (instance_folders["Chest Boat"], mods_folder / "FoxNap.jar", ["1.19"]),
             (instance_folders["official"], mods_folder / "FoxNap.jar", ["1.19"]),
         ]
+
+
+@pytest.mark.usefixtures("multi_box_setup_teardown")
+class TestListPlacements:
+    @pytest.mark.parametrize("fail_type", ("no_cache", "bad_cache"))
+    def test_if_no_cache_then_suggest_running_place(
+        self, minecraft_root, fail_type, caplog
+    ):
+        if fail_type == "bad_cache":
+            fs.place_cache(minecraft_root).write_text("This is not a json")
+
+        place.list_placements(minecraft_root, pattern="*")
+
+        errors = [record for record in caplog.records if record.levelname == "ERROR"]
+
+        assert len(errors) == 1
+        assert "enderchest place" in errors[0].message
+
+    @pytest.mark.usefixtures("placement_cache")
+    def test_errors_out_if_no_such_instance(self, minecraft_root, caplog):
+        place.list_placements(minecraft_root, pattern="*", instance_name="utopia")
+
+        errors = [record for record in caplog.records if record.levelname == "ERROR"]
+
+        assert len(errors) == 1
+        assert "No instance named" in errors[0].message
+
+    @pytest.mark.usefixtures("placement_cache")
+    def test_warns_if_no_matches(self, minecraft_root, caplog):
+        place.list_placements(minecraft_root, pattern="nemo")
+
+        problems = [
+            record
+            for record in caplog.records
+            if record.levelname in ("WARNING", "ERROR")
+        ]
+
+        assert len(problems) == 1
+        assert problems[0].levelname == "WARNING"
+        assert (
+            "Note: this command does not check inside linked folders."
+            in problems[0].message
+        )
+
+    @pytest.mark.usefixtures("placement_cache")
+    def test_only_top_priority_box_is_important(self, minecraft_root, caplog):
+        place.list_placements(minecraft_root, pattern="stuff.zip", instance_name="bee")
+
+        logs = defaultdict(list)
+        for record in caplog.records:
+            logs[record.levelno].append(record)
+
+        assert len(logs[logging.ERROR]) == len(logs[logging.WARNING]) == 0
+
+        assert len(logs[IMPORTANT]) == 2 and len(logs[logging.INFO]) == 1
+        assert all(
+            (
+                "resolves to" in logs[IMPORTANT][0].message,
+                "optifine" in logs[IMPORTANT][1].args,
+                "global" in logs[logging.INFO][0].args,
+            )
+        )
+
+    def test_warns_if_a_symlink_no_longer_exists(
+        self, minecraft_root, caplog, placement_cache
+    ):
+        placement_cache["Chest Boat"][Path("config") / "BME" / "options.txt"] = [
+            "optifine"
+        ]
+        place.cache_placements(minecraft_root, placement_cache)
+
+        place.list_placements(
+            minecraft_root, pattern="options.txt", instance_name="Chest Boat"
+        )
+
+        logs = defaultdict(list)
+        for record in caplog.records:
+            logs[record.levelno].append(record)
+
+        assert len(logs[logging.ERROR]) == 0 and len(logs[logging.INFO]) == 0
+
+        assert len(logs[logging.WARNING]) == 1 and len(logs[IMPORTANT]) == 3
+
+        assert all(
+            (
+                "no longer exists" in logs[logging.WARNING][0].message,
+                "optifine" in logs[IMPORTANT][0].args,
+                "resolves to" in logs[IMPORTANT][1].message,
+                "1.19" in logs[IMPORTANT][2].args,
+            )
+        ) or all(  # doesn't matter which comes first
+            (
+                "resolves to" in logs[IMPORTANT][0].message,
+                "1.19" in logs[IMPORTANT][1].args,
+                "no longer exists" in logs[logging.WARNING][0].message,
+                "optifine" in logs[IMPORTANT][2].args,
+            )
+        )
