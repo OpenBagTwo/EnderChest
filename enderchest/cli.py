@@ -16,7 +16,7 @@ _create_aliases = ("craft", "create")
 _instance_aliases = tuple(
     alias + plural for alias in ("minecraft", "instance") for plural in ("", "s")
 )
-_shulker_aliases = ("shulker_box", "shulkerbox", "shulker")
+_shulker_box_aliases = ("shulker_box", "shulkerbox", "shulker")
 _remote_aliases = tuple(
     alias + plural for alias in ("enderchest", "remote") for plural in ("s", "")
 )
@@ -77,11 +77,22 @@ def _craft_shulker_box(minecraft_root: Path, name: str | None = None, **kwargs):
 
 
 def _list_instance_boxes(
-    minecraft_root: Path, instance_name: str | None = None, **kwargs
+    minecraft_root: Path,
+    instance_name: str | None = None,
+    path: str | None = None,
+    **kwargs,
 ):
-    """Wrapper to handle the fact that name is a required argument"""
-    assert instance_name  # it's required by the parser, so this should be fine
-    gather.get_shulker_boxes_matching_instance(minecraft_root, instance_name, **kwargs)
+    """Wrapper to route --path flag and instance_name arg"""
+    if path is not None:
+        place.list_placements(
+            minecraft_root, pattern=path, instance_name=instance_name, **kwargs
+        )
+    elif instance_name is not None:
+        gather.get_shulker_boxes_matching_instance(
+            minecraft_root, instance_name, **kwargs
+        )
+    else:
+        gather.load_shulker_boxes(minecraft_root, **kwargs)
 
 
 def _list_shulker_box(
@@ -143,7 +154,9 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     ),
     (
         tuple(
-            f"{verb} {alias}" for verb in _create_aliases for alias in _shulker_aliases
+            f"{verb} {alias}"
+            for verb in _create_aliases
+            for alias in _shulker_box_aliases
         ),
         "create and configure a new shulker box",
         _craft_shulker_box,
@@ -180,7 +193,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             (),
         ),
         "list the shulker boxes inside your Enderchest",
-        gather.load_shulker_boxes,
+        _list_instance_boxes,
     ),
     (
         tuple(
@@ -204,7 +217,9 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     ),
     (
         tuple(
-            f"{verb} {alias}" for verb in _list_aliases for alias in _shulker_aliases
+            f"{verb} {alias}"
+            for verb in _list_aliases
+            for alias in _shulker_box_aliases
         ),
         "list the minecraft instances that match the specified shulker box",
         _list_shulker_box,
@@ -360,7 +375,9 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
     )
 
     # shulker box craft options
-    shulker_craft_parser = action_parsers[f"{_create_aliases[0]} {_shulker_aliases[0]}"]
+    shulker_craft_parser = action_parsers[
+        f"{_create_aliases[0]} {_shulker_box_aliases[0]}"
+    ]
     shulker_craft_parser.add_argument(
         "name",
         help="specify the name for this shulker box",
@@ -521,21 +538,36 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         ),
     )
 
-    # list instances options
+    # list shulker box options
 
-    # list shulkers options
-
-    # list instance box options
+    # list [instance] boxes options
+    list_boxes_parser = action_parsers[f"{_list_aliases[0]}"]
     list_instance_boxes_parser = action_parsers[
         f"{_list_aliases[0]} {_instance_aliases[0]}"
     ]
-    list_instance_boxes_parser.add_argument(
-        "instance_name", help="The name of the minecraft instance to query"
+
+    instance_name_docs = "The name of the minecraft instance to query"
+    list_boxes_parser.add_argument(
+        "--instance", "-i", dest="instance_name", help=instance_name_docs
     )
+    list_instance_boxes_parser.add_argument("instance_name", help=instance_name_docs)
+
+    for parser in (list_boxes_parser, list_instance_boxes_parser):
+        parser.add_argument(
+            "--path",
+            "-p",
+            help=(
+                "optionally, specify a specific path"
+                " (absolute, relative, filename or glob pattern"
+                " to get a report of the shulker box(es) that provide that resource"
+            ),
+        )
 
     # list shulker options
-    list_shulker_parser = action_parsers[f"{_list_aliases[0]} {_shulker_aliases[0]}"]
-    list_shulker_parser.add_argument(
+    list_shulker_box_parser = action_parsers[
+        f"{_list_aliases[0]} {_shulker_box_aliases[0]}"
+    ]
+    list_shulker_box_parser.add_argument(
         "shulker_box_name", help="the name of the shulker box to query"
     )
 

@@ -324,7 +324,7 @@ def get_shulker_boxes_matching_instance(
             break
     else:
         GATHER_LOGGER.error(
-            f"No instance named {instance_name} is registered to this EnderChest"
+            "No instance named %s is registered to this EnderChest", instance_name
         )
         return []
 

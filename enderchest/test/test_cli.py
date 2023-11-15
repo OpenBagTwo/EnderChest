@@ -7,7 +7,7 @@ from typing import Generator
 import pytest
 
 import enderchest
-from enderchest import cli, place, remote
+from enderchest import cli, gather, place, remote
 
 
 class TestHelp:
@@ -386,9 +386,96 @@ class TestGatherRemote(ActionTestSuite):
         )
 
 
-class TestInstanceInventory(ActionTestSuite):
-    action = "inventory minecraft"
-    required_args = ("cherry grove",)
+class TestInventory(ActionTestSuite):
+    action = "inventory"
+
+    def test_no_args_routes_to_load_shulker_boxes(self, monkeypatch):
+        gather_log: list[tuple[str, dict]] = []
+
+        def mock_load_shulker_boxes(root, **kwargs) -> None:
+            gather_log.append((root, kwargs))
+
+        monkeypatch.setattr(gather, "load_shulker_boxes", mock_load_shulker_boxes)
+
+        action, root, _, kwargs = cli.parse_args(["enderchest", *self.action.split()])
+        action(root, **kwargs)
+
+        assert len(gather_log) == 1
+        assert gather_log[0][1] == {}
+
+    @pytest.mark.parametrize("action_version", ("short", "long"))
+    def test_no_path_routes_to_boxes_matching_instance(
+        self, monkeypatch, action_version
+    ):
+        gather_log: list[tuple[str, str, dict]] = []
+
+        def mock_get_shulker_boxes_matching_instance(root, name, **kwargs) -> None:
+            gather_log.append((root, name, kwargs))
+
+        monkeypatch.setattr(
+            gather,
+            "get_shulker_boxes_matching_instance",
+            mock_get_shulker_boxes_matching_instance,
+        )
+
+        if action_version == "short":
+            instance_args = ("--instance", "cherry grove")
+        else:  # if action_version == "long":
+            instance_args = ("minecraft", "cherry grove")
+
+        action, root, _, kwargs = cli.parse_args(
+            ["enderchest", *self.action.split(), *instance_args]
+        )
+        action(root, **kwargs)
+
+        assert len(gather_log) == 1
+        assert gather_log[0][1:] == ("cherry grove", {})
+
+    def test_long_action_requires_instance_name(self):
+        with pytest.raises(SystemExit):
+            _ = cli.parse_args(["enderchest", *self.action.split(), "minecraft"])
+
+    @pytest.mark.parametrize(
+        "instance_how", ("no_instance", "long_action", "short_action")
+    )
+    def test_providing_a_path_always_routes_to_list_placements(
+        self, monkeypatch, instance_how
+    ):
+        def mock_get_shulker_boxes_matching_instance(*args, **kwargs) -> None:
+            raise AssertionError("I should not have been called!")
+
+        monkeypatch.setattr(
+            gather,
+            "get_shulker_boxes_matching_instance",
+            mock_get_shulker_boxes_matching_instance,
+        )
+
+        list_log: list[tuple[str, str, dict]] = []
+
+        def mock_list_placements(root, pattern, **kwargs) -> None:
+            list_log.append((root, pattern, kwargs))
+
+        monkeypatch.setattr(
+            place,
+            "list_placements",
+            mock_list_placements,
+        )
+
+        instance = None if instance_how == "no_instance" else "cherry grove"
+        if instance_how == "no_instance":
+            instance_args = []
+        elif instance_how == "long_action":
+            instance_args = ["instance", instance]
+        else:  # if instance_how == "short_action":
+            instance_args = ["-i", instance]
+
+        action, root, _, kwargs = cli.parse_args(
+            ["enderchest", *self.action.split(), *instance_args, "-p", "of_jelly.jar"]
+        )
+        action(root, **kwargs)
+
+        assert len(list_log) == 1
+        assert list_log[0][1:] == ("of_jelly.jar", {"instance_name": instance})
 
 
 class TestShulkerInventory(ActionTestSuite):
