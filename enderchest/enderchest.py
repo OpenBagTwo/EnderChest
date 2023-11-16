@@ -37,6 +37,8 @@ _DEFAULTS = (
             "logs",
             "replay_recordings",
             "screenshots",
+            "schematics",
+            "config/litematica",  # still worth having in case max_depth>2
             ".bobby",
         ),
     ),
