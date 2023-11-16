@@ -3,6 +3,8 @@ import json
 import logging
 import os
 import shutil
+import socket
+import sys
 import time
 from importlib.resources import as_file
 from pathlib import Path
@@ -19,6 +21,12 @@ from enderchest.sync import utils as sync_utils
 
 from . import mock_paramiko, utils
 from .testing_files import LSTAT_CACHE
+
+
+@pytest.fixture(autouse=True)
+def force_hostname_to_be_localhost(monkeypatch):
+    if sys.platform == "darwin":  # so far this is only needed for macOS
+        monkeypatch.setattr(socket, "gethostname", lambda: "localhost")
 
 
 class TestFileSync:
