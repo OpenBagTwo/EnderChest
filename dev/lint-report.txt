@@ -1,8 +1,6 @@
 ************* Module enderchest.shulker_box
 enderchest/shulker_box.py:116:17: W0511: TODO check to make sure properties hasn't been read before (fixme)
 enderchest/shulker_box.py:122:17: W0511: TODO: support specifying filters (and link-folders) in the properties section (fixme)
-enderchest/shulker_box.py:302:30: W0511: TODO: customize in enderchest.cfg (fixme)
-enderchest/shulker_box.py:310:28: W0511: TODO: customize in enderchest.cfg (fixme)
 enderchest/shulker_box.py:70:4: R0914: Too many local variables (17/15) (too-many-locals)
 enderchest/shulker_box.py:70:4: R0912: Too many branches (17/12) (too-many-branches)
 enderchest/shulker_box.py:193:4: R0912: Too many branches (14/12) (too-many-branches)
@@ -34,28 +32,29 @@ enderchest/instance.py:77:0: R0911: Too many return statements (7/6) (too-many-r
 enderchest/remote.py:92:0: R0914: Too many local variables (17/15) (too-many-locals)
 enderchest/remote.py:92:0: R0912: Too many branches (22/12) (too-many-branches)
 ************* Module enderchest.craft
-enderchest/craft.py:533:9: W0511: TODO: stop wastefully reloading the cfg (fixme)
-enderchest/craft.py:696:9: W0511: TODO: should this be most common among matches? (fixme)
+enderchest/craft.py:703:9: W0511: TODO: should this be most common among matches? (fixme)
 enderchest/craft.py:29:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/craft.py:133:0: R0913: Too many arguments (8/5) (too-many-arguments)
-enderchest/craft.py:187:12: R0916: Too many boolean expressions in if statement (6/5) (too-many-boolean-expressions)
-enderchest/craft.py:234:0: R0914: Too many local variables (16/15) (too-many-locals)
-enderchest/craft.py:319:15: W0718: Catching too general exception Exception (broad-exception-caught)
-enderchest/craft.py:234:0: R0912: Too many branches (23/12) (too-many-branches)
-enderchest/craft.py:234:0: R0915: Too many statements (63/50) (too-many-statements)
-enderchest/craft.py:400:0: R0914: Too many local variables (16/15) (too-many-locals)
-enderchest/craft.py:400:0: R0912: Too many branches (16/12) (too-many-branches)
-enderchest/craft.py:400:0: R0915: Too many statements (56/50) (too-many-statements)
+enderchest/craft.py:188:12: R0916: Too many boolean expressions in if statement (6/5) (too-many-boolean-expressions)
+enderchest/craft.py:235:0: R0914: Too many local variables (16/15) (too-many-locals)
+enderchest/craft.py:320:15: W0718: Catching too general exception Exception (broad-exception-caught)
+enderchest/craft.py:235:0: R0912: Too many branches (23/12) (too-many-branches)
+enderchest/craft.py:235:0: R0915: Too many statements (63/50) (too-many-statements)
+enderchest/craft.py:401:0: R0914: Too many local variables (17/15) (too-many-locals)
+enderchest/craft.py:401:0: R0912: Too many branches (16/12) (too-many-branches)
+enderchest/craft.py:401:0: R0915: Too many statements (58/50) (too-many-statements)
 ************* Module enderchest.enderchest
-enderchest/enderchest.py:279:17: W0511: TODO: flag requires_rewrite if instance was normalized (fixme)
-enderchest/enderchest.py:17:0: R0902: Too many instance attributes (8/7) (too-many-instance-attributes)
-enderchest/enderchest.py:130:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:137:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:141:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:187:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:220:4: R0914: Too many local variables (20/15) (too-many-locals)
-enderchest/enderchest.py:220:4: R0912: Too many branches (14/12) (too-many-branches)
-enderchest/enderchest.py:220:4: R0915: Too many statements (57/50) (too-many-statements)
+enderchest/enderchest.py:335:17: W0511: TODO: flag requires_rewrite if instance was normalized (fixme)
+enderchest/enderchest.py:49:0: R0902: Too many instance attributes (11/7) (too-many-instance-attributes)
+enderchest/enderchest.py:175:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:182:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:186:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:232:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:265:4: R0914: Too many local variables (23/15) (too-many-locals)
+enderchest/enderchest.py:323:31: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+enderchest/enderchest.py:388:8: C0206: Consider iterating with .items() (consider-using-dict-items)
+enderchest/enderchest.py:265:4: R0912: Too many branches (18/12) (too-many-branches)
+enderchest/enderchest.py:265:4: R0915: Too many statements (64/50) (too-many-statements)
 ************* Module enderchest.cli
 enderchest/cli.py:741:5: W0511: TODO: set log levels per logger based on the command (fixme)
 enderchest/cli.py:744:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
@@ -108,25 +107,25 @@ enderchest/sync/sftp.py:396:0: R0915: Too many statements (55/50) (too-many-stat
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[135:142]
 ==enderchest.sync.sftp:[364:371]
-        for path, path_stat, operation in sync_diff:
-            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
-                case (Op.CREATE, True):
-                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
-                    (destination_path / path).mkdir(parents=True, exist_ok=True)
-                case (Op.CREATE, False) | (Op.REPLACE, False):
-                    SYNC_LOGGER.debug( (duplicate-code)
+    for path, path_stat, operation in sync_diff:
+        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+            case (Op.CREATE, True):
+                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                (destination_path / path).mkdir(parents=True, exist_ok=True)
+            case (Op.CREATE, False) | (Op.REPLACE, False):
+                SYNC_LOGGER.debug( (duplicate-code)
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[127:136]
 ==enderchest.sync.sftp:[492:501]
-        )
+    )
 
-        sync_diff = diff(source_contents, destination_contents)
+    sync_diff = diff(source_contents, destination_contents)
 
-        if dry_run:
-            generate_sync_report(sync_diff)
-            return
+    if dry_run:
+        generate_sync_report(sync_diff)
+        return
 
-        for path, path_stat, operation in sync_diff: (duplicate-code)
+    for path, path_stat, operation in sync_diff: (duplicate-code)
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[89:95]
 ==enderchest.sync.sftp:[298:304]
@@ -146,5 +145,5 @@ enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
         else: (duplicate-code)
 
 -----------------------------------
-Your code has been rated at 9.57/10
+Your code has been rated at 9.58/10
 
