@@ -110,6 +110,13 @@ class EnderChest:
         installations. By default, this list comprises `EnderChest/enderchest.cfg`,
         any top-level folders starting with a "." (like .git) and
         `.DS_Store` (for all you mac gamers).
+    shulker_box_folders : list of str
+        The folders that will be created inside each new shulker box
+    standard_link_folders : list of str
+        The default set of "link folders" when crafting a new shulker box
+    global_link_folders : list of str
+        The "global" set of "link folders," offered as a suggestion when
+        crafting a new shulker box
     """
 
     name: str
