@@ -8,8 +8,9 @@ import pytest
 
 from enderchest import EnderChest, ShulkerBox, craft
 from enderchest import filesystem as fs
-from enderchest.enderchest import _DEFAULTS, create_ender_chest
+from enderchest.enderchest import create_ender_chest
 from enderchest.gather import load_ender_chest
+from enderchest.place import place_ender_chest
 
 from . import utils
 
@@ -357,6 +358,49 @@ class TestShulkerBoxCrafting:
             "This shulker box will not link to any instances on this machine"
             in warn_log
         )
+
+    def test_global_box_links_nested_litematica_folder(
+        self, monkeypatch, minecraft_root, home, capsys, caplog
+    ):
+        utils.pre_populate_enderchest(minecraft_root / "EnderChest")
+
+        script_reader = utils.scripted_prompt(
+            [
+                "F",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "G",
+                "-100",
+                "",
+                "",  # this is the final writeme confirmation
+            ]
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        craft.create_shulker_box(
+            minecraft_root,
+            craft.specify_shulker_box_from_prompt(minecraft_root, "olam"),
+            (),  # sneakily testing that it'll create parent dirs
+        )
+
+        resource_path = (
+            Path("config") / "litematica" / "material_list_2023-11-16_15.43.17.txt"
+        )
+
+        (fs.shulker_box_root(minecraft_root, "olam") / resource_path).write_text(
+            "lots of TNT\n"
+        )
+
+        placements = place_ender_chest(minecraft_root)
+
+        assert (
+            placements["axolotl"].get(resource_path, []),
+            placements["axolotl"][resource_path.parent],
+        ) == ([], ["olam"])
 
 
 class TestPromptByFilter:
