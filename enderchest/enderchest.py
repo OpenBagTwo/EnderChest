@@ -12,6 +12,36 @@ from . import sync
 from .loggers import CRAFT_LOGGER, GATHER_LOGGER
 from .sync import abspath_from_uri
 
+_DEFAULTS = (
+    ("offer_to_update_symlink_allowlist", True),
+    ("sync_confirm_wait", 5),
+    ("place_after_open", True),
+    ("do_not_sync", ("EnderChest/enderchest.cfg", "EnderChest/.*", ".DS_Store")),
+    (
+        "shulker_box_folders",
+        (
+            "config",
+            "mods",
+            "resourcepacks",
+            "saves",
+            "shaderpacks",
+        ),
+    ),
+    ("standard_link_folders", ()),
+    (
+        "global_link_folders",
+        (
+            "backups",
+            "cachedImages",
+            "crash-reports",
+            "logs",
+            "replay_recordings",
+            "screenshots",
+            ".bobby",
+        ),
+    ),
+)
+
 
 @dataclass(init=False, repr=False, eq=False)
 class EnderChest:
@@ -84,10 +114,13 @@ class EnderChest:
     _uri: ParseResult
     _instances: list[i.InstanceSpec]
     _remotes: dict[str, ParseResult]
-    offer_to_update_symlink_allowlist: bool = True
-    sync_confirm_wait: bool | int = 5
-    place_after_open: bool = True
-    do_not_sync = ["EnderChest/enderchest.cfg", "EnderChest/.*", ".DS_Store"]
+    offer_to_update_symlink_allowlist: bool
+    sync_confirm_wait: bool | int
+    place_after_open: bool
+    do_not_sync: list[str]
+    shulker_box_folders: list[str]
+    standard_link_folders: list[str]
+    global_link_folders: list[str]
 
     def __init__(
         self,
@@ -97,6 +130,9 @@ class EnderChest:
         | None = None,
         instances: Iterable[i.InstanceSpec] | None = None,
     ):
+        for setting, value in _DEFAULTS:
+            setattr(self, setting, list(value) if isinstance(value, tuple) else value)
+
         try:
             if isinstance(uri, ParseResult):
                 self._uri = uri
@@ -255,6 +291,11 @@ class EnderChest:
         place_after_open: bool | None = None
         offer_to_update_symlink_allowlist: bool = True
         do_not_sync: list[str] | None = None
+        folder_defaults: dict[str, list[str] | None] = {
+            "shulker_box_folders": None,
+            "standard_link_folders": None,
+            "global_link_folders": None,
+        }
 
         for section in config.sections():
             if section == "properties":
@@ -270,6 +311,12 @@ class EnderChest:
                     do_not_sync = cfg.parse_ini_list(
                         config[section]["do-not-sync"] or ""
                     )
+                for setting in folder_defaults.keys():
+                    setting_key = setting.replace("_", "-")
+                    if setting_key in config[section].keys():
+                        folder_defaults[setting] = cfg.parse_ini_list(
+                            config[section][setting_key] or ""
+                        )
             elif section == "remotes":
                 for remote in config[section].items():
                     if remote[1] is None:
@@ -329,6 +376,11 @@ class EnderChest:
                 )
                 ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
                 requires_rewrite = True
+        for setting in folder_defaults:
+            if folder_defaults[setting] is None:
+                folder_defaults[setting] = dict(_DEFAULTS)[setting]  # type: ignore
+                # requires_rewrite = True  # though I'm considering it
+            setattr(ender_chest, setting, folder_defaults[setting])
 
         if requires_rewrite:
             ender_chest.write_to_cfg(config_file)
@@ -363,12 +415,11 @@ class EnderChest:
         else:
             properties["sync-confirmation-time"] = self.sync_confirm_wait
 
-        properties["place-after-open"] = self.place_after_open
-        properties[
-            "offer-to-update-symlink-allowlist"
-        ] = self.offer_to_update_symlink_allowlist
-
-        properties["do-not-sync"] = self.do_not_sync
+        for setting, _ in _DEFAULTS:
+            if setting == "sync_confirm_wait":
+                continue  # already did this one
+            setting_key = setting.replace("_", "-")
+            properties[setting_key] = getattr(self, setting)
 
         remotes: dict[str, str] = {name: uri.geturl() for uri, name in self.remotes}
 
