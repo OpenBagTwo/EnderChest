@@ -8,9 +8,8 @@ import pytest
 
 from enderchest import EnderChest, ShulkerBox, craft
 from enderchest import filesystem as fs
-from enderchest.enderchest import create_ender_chest
+from enderchest.enderchest import _DEFAULTS, create_ender_chest
 from enderchest.gather import load_ender_chest
-from enderchest.shulker_box import DEFAULT_SHULKER_FOLDERS, STANDARD_LINK_FOLDERS
 
 from . import utils
 
@@ -237,37 +236,32 @@ class TestEnderChestCrafting:
 
 
 class TestShulkerBoxCrafting:
-    def test_default_folders_and_link_folders_do_not_overlap(self):
-        assert (
-            len(
-                [
-                    folder
-                    for folder in STANDARD_LINK_FOLDERS
-                    if folder in DEFAULT_SHULKER_FOLDERS
-                ]
-            )
-            == 0
-        )
-
     def test_no_kwargs_routes_to_the_interactive_prompter(self, monkeypatch) -> None:
         prompt_log: list[tuple[Path, str]] = []
 
-        def mock_prompt(root, name) -> Any:
+        def mock_prompt(root: Path, name: str) -> str:
             prompt_log.append((root, name))
             return "MockShulkerBox"
 
-        create_log: list[tuple[Path, Any]] = []
+        create_log: list[tuple[Path, str, list[str]]] = []
 
-        def mock_create(root, box) -> None:
-            create_log.append((root, box))
+        def mock_create(root: Path, box: str, folders: list[str]) -> None:
+            create_log.append((root, box, folders))
+
+        class MockEnderChest:
+            shulker_box_folders = ["stuff", "junk"]
+
+        def mock_load_ender_chest(root: Path) -> MockEnderChest:
+            return MockEnderChest()
 
         monkeypatch.setattr(craft, "specify_shulker_box_from_prompt", mock_prompt)
         monkeypatch.setattr(craft, "create_shulker_box", mock_create)
+        monkeypatch.setattr(craft, "load_ender_chest", mock_load_ender_chest)
 
         craft.craft_shulker_box(Path("/"), "spitty")
 
         assert prompt_log == [(Path("/"), "spitty")]
-        assert create_log == [(Path("/"), "MockShulkerBox")]
+        assert create_log == [(Path("/"), "MockShulkerBox", ["stuff", "junk"])]
 
     @pytest.mark.parametrize(
         "argument, value",
@@ -286,10 +280,10 @@ class TestShulkerBoxCrafting:
         def mock_prompt(root) -> Any:
             raise AssertionError("I was not to be called.")
 
-        create_log: list[tuple[Path, Any]] = []
+        create_log: list[tuple[Path, str, list[str]]] = []
 
-        def mock_create(root, box) -> None:
-            create_log.append((root, box))
+        def mock_create(root, box, folders) -> None:
+            create_log.append((root, box, folders))
 
         class FakePath:
             def exists(self) -> bool:
@@ -298,9 +292,16 @@ class TestShulkerBoxCrafting:
         def mock_fs(*args, **kwargs) -> Any:
             return FakePath()
 
+        class MockEnderChest:
+            shulker_box_folders = ["tchotchkes"]
+
+        def mock_load_ender_chest(root) -> MockEnderChest:
+            return MockEnderChest()
+
         monkeypatch.setattr(craft, "specify_shulker_box_from_prompt", mock_prompt)
         monkeypatch.setattr(craft, "create_shulker_box", mock_create)
         monkeypatch.setattr(fs, "shulker_box_config", mock_fs)
+        monkeypatch.setattr(craft, "load_ender_chest", mock_load_ender_chest)
 
         craft.craft_shulker_box(Path("minceraft"), "bacon", **{argument: value})
         assert len(create_log) == 1
@@ -318,10 +319,9 @@ class TestShulkerBoxCrafting:
                 "",
                 "",
                 "",
-                "",
                 "m",
                 # while we're here we might as well check setting
-                # the other shulker properties
+                # the other box properties
                 "cachedImages, logs",
                 "-12",
                 "somewhere_out_there",

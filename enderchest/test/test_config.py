@@ -8,6 +8,7 @@ import pytest
 from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import config as cfg
 from enderchest import filesystem as fs
+from enderchest.enderchest import _DEFAULTS
 from enderchest.gather import load_shulker_boxes
 from enderchest.shulker_box import create_shulker_box
 from enderchest.test import utils
@@ -67,7 +68,9 @@ class TestConfigWriting:
 
         utils.pre_populate_enderchest(minecraft_root / "EnderChest")
 
-        create_shulker_box(minecraft_root, original_shulker)
+        create_shulker_box(
+            minecraft_root, original_shulker, dict(_DEFAULTS)["shulker_box_folders"]
+        )
 
         parsed_boxes = load_shulker_boxes(minecraft_root)
 
