@@ -389,7 +389,7 @@ class TestGatherRemote(ActionTestSuite):
 class TestInventory(ActionTestSuite):
     action = "inventory"
 
-    def test_no_args_routes_to_load_shulker_boxes(self, monkeypatch):
+    def test_no_args_routes_to_load_shulker_boxes(self, monkeypatch) -> None:
         gather_log: list[tuple[str, dict]] = []
 
         def mock_load_shulker_boxes(root, **kwargs) -> None:
@@ -406,7 +406,7 @@ class TestInventory(ActionTestSuite):
     @pytest.mark.parametrize("action_version", ("short", "long"))
     def test_no_path_routes_to_boxes_matching_instance(
         self, monkeypatch, action_version
-    ):
+    ) -> None:
         gather_log: list[tuple[str, str, dict]] = []
 
         def mock_get_shulker_boxes_matching_instance(root, name, **kwargs) -> None:
@@ -440,7 +440,7 @@ class TestInventory(ActionTestSuite):
     )
     def test_providing_a_path_always_routes_to_list_placements(
         self, monkeypatch, instance_how
-    ):
+    ) -> None:
         def mock_get_shulker_boxes_matching_instance(*args, **kwargs) -> None:
             raise AssertionError("I should not have been called!")
 
@@ -461,13 +461,15 @@ class TestInventory(ActionTestSuite):
             mock_list_placements,
         )
 
-        instance = None if instance_how == "no_instance" else "cherry grove"
         if instance_how == "no_instance":
-            instance_args = []
-        elif instance_how == "long_action":
-            instance_args = ["instance", instance]
-        else:  # if instance_how == "short_action":
-            instance_args = ["-i", instance]
+            instance = None
+            instance_args: list[str] = []
+        else:
+            instance = "cherry grove"
+            if instance_how == "long_action":
+                instance_args = ["instance", instance]
+            else:  # if instance_how == "short_action":
+                instance_args = ["-i", instance]
 
         action, root, _, kwargs = cli.parse_args(
             ["enderchest", *self.action.split(), *instance_args, "-p", "of_jelly.jar"]

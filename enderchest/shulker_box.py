@@ -2,7 +2,7 @@
 import fnmatch
 import os
 from pathlib import Path
-from typing import Any, NamedTuple
+from typing import Any, Iterable, NamedTuple
 
 import semantic_version as semver
 
@@ -299,26 +299,9 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
         return fnmatch.fnmatchcase(version_string.lower(), version_spec.lower())
 
 
-DEFAULT_SHULKER_FOLDERS = (  # TODO: customize in enderchest.cfg
-    "config",
-    "mods",
-    "resourcepacks",
-    "saves",
-    "shaderpacks",
-)
-
-STANDARD_LINK_FOLDERS = (  # TODO: customize in enderchest.cfg
-    "backups",
-    "cachedImages",
-    "crash-reports",
-    "logs",
-    "replay_recordings",
-    "screenshots",
-    ".bobby",
-)
-
-
-def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
+def create_shulker_box(
+    minecraft_root: Path, shulker_box: ShulkerBox, folders: Iterable[str]
+) -> None:
     """Create a shulker box folder based on the provided configuration
 
     Parameters
@@ -328,6 +311,8 @@ def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
         that's the parent of your EnderChest folder)
     shulker_box : ShulkerBox
         The spec of the box to create
+    folders : list-like of str
+        The folders to create inside the shulker box (not including link folders)
 
     Notes
     -----
@@ -337,13 +322,13 @@ def create_shulker_box(minecraft_root: Path, shulker_box: ShulkerBox) -> None:
     - This method will fail if there is no EnderChest set up in the minecraft
       root
     - This method does not check to see if there is already a shulker box
-      set up at the specificed location--if one exists, its config will
+      set up at the specified location--if one exists, its config will
       be overwritten
     """
     root = fs.shulker_box_root(minecraft_root, shulker_box.name)
     root.mkdir(exist_ok=True)
 
-    for folder in (*DEFAULT_SHULKER_FOLDERS, *shulker_box.link_folders):
+    for folder in (*folders, *shulker_box.link_folders):
         CRAFT_LOGGER.debug(f"Creating {root / folder}")
         (root / folder).mkdir(exist_ok=True, parents=True)
 

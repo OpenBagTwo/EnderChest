@@ -23,7 +23,7 @@ from .instance import InstanceSpec, normalize_modloader
 from .loggers import CRAFT_LOGGER
 from .prompt import NO, YES, confirm, prompt
 from .remote import fetch_remotes_from_a_remote_ender_chest
-from .shulker_box import STANDARD_LINK_FOLDERS, ShulkerBox, create_shulker_box
+from .shulker_box import ShulkerBox, create_shulker_box
 
 
 def craft_ender_chest(
@@ -183,6 +183,7 @@ def craft_shulker_box(
         return
 
     try:
+        folders = load_ender_chest(minecraft_root).shulker_box_folders
         if (
             priority is None
             and link_folders is None
@@ -228,7 +229,7 @@ def craft_shulker_box(
         CRAFT_LOGGER.error(no_ender_chest)
         return
 
-    create_shulker_box(minecraft_root, shulker_box)
+    create_shulker_box(minecraft_root, shulker_box, folders)
 
 
 def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
@@ -413,6 +414,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
     ShulkerBox
         The resulting ShulkerBox
     """
+    ender_chest = load_ender_chest(minecraft_root)
     shulker_root = fs.shulker_box_root(minecraft_root, name)
     if shulker_root in shulker_root.parent.iterdir():
         if not shulker_root.is_dir():
@@ -468,14 +470,20 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
     while True:
         selection_type = prompt(
             "Folders to Link?"
-            "\nUse the [S]tandard set, [M]anually specify or do [N]one?"
-            "\nThe standard set is: " + ", ".join(STANDARD_LINK_FOLDERS)
+            "\nThe [G]lobal set is:"
+            f' {", ".join(ender_chest.global_link_folders) or "(none)"}'
+            "\nThe [S]tandard set is:"
+            f' {", ".join(ender_chest.standard_link_folders) or "(none)"}'
+            "\nYou can also choose [N]one or to [M]anually specify the folders to link",
+            suggestion="S",
         ).lower()
         match selection_type:
             case "n" | "none":
                 link_folders: tuple[str, ...] = ()
-            case "s" | "standard" | "standard set":
-                link_folders = STANDARD_LINK_FOLDERS
+            case "g" | "global" | "global set":
+                link_folders = tuple(ender_chest.global_link_folders)
+            case "s" | "standard" | "standard set" | "":
+                link_folders = tuple(ender_chest.standard_link_folders)
             case "m" | "manual" | "manually specify":
                 folder_choices = prompt(
                     "Specify the folders to link using a comma-separated list"
@@ -522,7 +530,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
                     "What hosts (EnderChest installations) should use this shulker box?"
                     "\nProvide a comma-separated list (wildcards are allowed)"
                     "\nand remember to include the name of this EnderChest"
-                    f' ("{load_ender_chest(minecraft_root).name}")'
+                    f' ("{ender_chest.name}")'
                 ),
                 suggestion="*",
             )
@@ -530,8 +538,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
         )
         hosts = tuple(host.strip() for host in values.split(","))
 
-        # TODO: stop wastefully reloading the cfg
-        host = load_ender_chest(minecraft_root).name
+        host = ender_chest.name
 
         if not shulker_box._replace(match_criteria=(("hosts", hosts),)).matches_host(
             host
