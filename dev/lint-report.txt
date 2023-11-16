@@ -7,13 +7,15 @@ enderchest/shulker_box.py:70:4: R0914: Too many local variables (17/15) (too-man
 enderchest/shulker_box.py:70:4: R0912: Too many branches (17/12) (too-many-branches)
 enderchest/shulker_box.py:193:4: R0912: Too many branches (14/12) (too-many-branches)
 ************* Module enderchest.place
-enderchest/place.py:16:0: R0913: Too many arguments (6/5) (too-many-arguments)
-enderchest/place.py:16:0: R0914: Too many local variables (24/15) (too-many-locals)
-enderchest/place.py:96:4: R0911: Too many return statements (7/6) (too-many-return-statements)
-enderchest/place.py:172:4: R1702: Too many nested blocks (7/5) (too-many-nested-blocks)
-enderchest/place.py:172:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
-enderchest/place.py:16:0: R0912: Too many branches (31/12) (too-many-branches)
-enderchest/place.py:16:0: R0915: Too many statements (100/50) (too-many-statements)
+enderchest/place.py:18:0: R0913: Too many arguments (6/5) (too-many-arguments)
+enderchest/place.py:18:0: R0914: Too many local variables (25/15) (too-many-locals)
+enderchest/place.py:114:4: R0911: Too many return statements (7/6) (too-many-return-statements)
+enderchest/place.py:190:4: R1702: Too many nested blocks (7/5) (too-many-nested-blocks)
+enderchest/place.py:190:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+enderchest/place.py:18:0: R0912: Too many branches (31/12) (too-many-branches)
+enderchest/place.py:18:0: R0915: Too many statements (104/50) (too-many-statements)
+enderchest/place.py:483:12: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+enderchest/place.py:489:8: W0707: Consider explicitly re-raising using 'raise OSError(f'{fs.place_cache(minecraft_root)} is corrupted and could not be parsed:\n{decode_error}') from decode_error' (raise-missing-from)
 ************* Module enderchest.gather
 enderchest/gather.py:501:13: W0511: TODO: if not Windows, try making relative to "~" (fixme)
 enderchest/gather.py:510:0: R0914: Too many local variables (16/15) (too-many-locals)
@@ -55,17 +57,17 @@ enderchest/enderchest.py:220:4: R0914: Too many local variables (20/15) (too-man
 enderchest/enderchest.py:220:4: R0912: Too many branches (14/12) (too-many-branches)
 enderchest/enderchest.py:220:4: R0915: Too many statements (57/50) (too-many-statements)
 ************* Module enderchest.cli
-enderchest/cli.py:705:5: W0511: TODO: set log levels per logger based on the command (fixme)
-enderchest/cli.py:708:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
+enderchest/cli.py:741:5: W0511: TODO: set log levels per logger based on the command (fixme)
+enderchest/cli.py:744:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
 enderchest/cli.py:26:0: R0903: Too few public methods (1/2) (too-few-public-methods)
 enderchest/cli.py:33:0: R0913: Too many arguments (9/5) (too-many-arguments)
-enderchest/cli.py:122:4: C0415: Import outside toplevel (pytest) (import-outside-toplevel)
-enderchest/cli.py:124:4: C0415: Import outside toplevel (enderchest.test.plugin) (import-outside-toplevel)
-enderchest/cli.py:117:4: W0613: Unused argument 'minecraft_root' (unused-argument)
-enderchest/cli.py:232:0: R0914: Too many local variables (24/15) (too-many-locals)
-enderchest/cli.py:232:0: R0915: Too many statements (64/50) (too-many-statements)
-enderchest/cli.py:618:0: R0914: Too many local variables (18/15) (too-many-locals)
-enderchest/cli.py:683:12: C0103: Variable name "MINECRAFT_ROOT" doesn't conform to snake_case naming style (invalid-name)
+enderchest/cli.py:136:4: C0415: Import outside toplevel (pytest) (import-outside-toplevel)
+enderchest/cli.py:138:4: C0415: Import outside toplevel (enderchest.test.plugin) (import-outside-toplevel)
+enderchest/cli.py:131:4: W0613: Unused argument 'minecraft_root' (unused-argument)
+enderchest/cli.py:251:0: R0914: Too many local variables (26/15) (too-many-locals)
+enderchest/cli.py:251:0: R0915: Too many statements (68/50) (too-many-statements)
+enderchest/cli.py:654:0: R0914: Too many local variables (18/15) (too-many-locals)
+enderchest/cli.py:719:12: C0103: Variable name "MINECRAFT_ROOT" doesn't conform to snake_case naming style (invalid-name)
 ************* Module enderchest.test.mock_paramiko
 enderchest/test/mock_paramiko.py:131:8: W0613: Unused argument 'uri' (unused-argument)
 enderchest/test/mock_paramiko.py:131:26: W0613: Unused argument 'timeout' (unused-argument)
@@ -106,13 +108,13 @@ enderchest/sync/sftp.py:396:0: R0915: Too many statements (55/50) (too-many-stat
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[135:142]
 ==enderchest.sync.sftp:[364:371]
-    for path, path_stat, operation in sync_diff:
-        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
-            case (Op.CREATE, True):
-                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
-                (destination_path / path).mkdir(parents=True, exist_ok=True)
-            case (Op.CREATE, False) | (Op.REPLACE, False):
-                SYNC_LOGGER.debug( (duplicate-code)
+        for path, path_stat, operation in sync_diff:
+            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+                case (Op.CREATE, True):
+                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                    (destination_path / path).mkdir(parents=True, exist_ok=True)
+                case (Op.CREATE, False) | (Op.REPLACE, False):
+                    SYNC_LOGGER.debug( (duplicate-code)
 enderchest/sync/sftp.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[127:136]
 ==enderchest.sync.sftp:[492:501]
