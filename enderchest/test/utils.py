@@ -225,7 +225,7 @@ def populate_instances_folder(instances_folder: Path) -> None:
 
 def pre_populate_enderchest(
     enderchest_folder: Path,
-    *shulkers: tuple[str, str],
+    *boxes: tuple[str, str],
 ) -> list[ShulkerBox]:
     """Create an EnderChest folder, pre-populated with the testing enderchest.cfg
     folder and the specified shulker boxes
@@ -234,7 +234,7 @@ def pre_populate_enderchest(
     ----------
     enderchest_folder : Path
         The path of the EnderChest folder
-    *shulkers : 2-tuple of str
+    *boxes : 2-tuple of str
         Shulker boxes to populate, with tuple members of:
           - name : the folder name of the shulker
           - config : the contents of the config file
@@ -249,7 +249,7 @@ def pre_populate_enderchest(
     with as_file(testing_files.ENDERCHEST_CONFIG) as config_file:
         shutil.copy(config_file, enderchest_folder)
     shulker_boxes: list[ShulkerBox] = []
-    for shulker_name, shulker_config in shulkers:
+    for shulker_name, shulker_config in boxes:
         (enderchest_folder / shulker_name).mkdir(parents=True, exist_ok=True)
         config_path = enderchest_folder / shulker_name / fs.SHULKER_BOX_CONFIG_NAME
         with config_path.open("w") as config_file:
