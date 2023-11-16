@@ -85,7 +85,7 @@ start is their priority values):
     !!! note
         If you're creating your shulker box through the command-line interface,
         this is pretty much the only sort of box where I'd recommend selecting
-        the "Standard" set of linked-folders.
+        the "Global" set of linked-folders.
 
    This is also where I have a baseline `options.txt` file. It's almost certain
    to get replaced in the actual instance, but it saves me so much aggravation
@@ -199,7 +199,7 @@ From there, you then create a shulker box for each instance that contains
 _symlinks_ pointing into the files that live in the EnderChest (_e.g._
 `instance_shulker/options.txt -> _Chest Monster/options files/basic_options.txt`).
 
-Each instance will probably want to use the standard set of linked folders so
+Each instance will probably want to use the "Global" set of linked folders so
 that when an instance generates new screenshots, logs, crash reports, etc., they
 go into the EnderChest, and by making the "folders" inside of the shulker boxes
 _symlinks themselves_, they can point into either shared or separated folders
