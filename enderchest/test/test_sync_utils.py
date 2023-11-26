@@ -1,4 +1,5 @@
 """Tests of the sync-helper utilities"""
+import importlib
 import logging
 import os
 import shutil
@@ -8,9 +9,16 @@ from urllib.parse import urlparse
 
 import pytest
 
+from enderchest import sync
 from enderchest.sync import file
 from enderchest.sync import utils as sync_utils
 from enderchest.sync.utils import Operation as Op
+
+
+class TestDetermineAvailableProtocols:
+    def test_available_protocols_only_include_resolvable_modules(self, monkeypatch):
+        monkeypatch.setattr(sync, "PROTOCOLS", ("file", "subspace"))
+        assert sync._determine_available_protocols() == ("file",)
 
 
 class TestPathFromURI:

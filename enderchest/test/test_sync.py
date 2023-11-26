@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import socket
+import subprocess
 import sys
 import time
 from importlib.resources import as_file
@@ -689,6 +690,90 @@ class TestFileSyncOnly:
 
         with pytest.raises(FileNotFoundError):
             sync.push(minecraft_root / "EnderChest", remote)
+
+
+@pytest.mark.skipif(
+    not shutil.which("rsync"), reason="rsync module cannot be imported on this system"
+)
+class TestRsyncVersionChecking:
+    class FakeSubprocessResult:
+        def __init__(self, stdout: str, stderr: str):
+            self.stdout = stdout.encode("utf-8")
+            self.stderr = stderr.encode("utf-8")
+
+    def test_raises_runtime_error_if_rsync_is_not_installed(self, monkeypatch):
+        from enderchest.sync import rsync
+
+        original_run = subprocess.run
+
+        def run_something_else(commands, **kwargs) -> subprocess.CompletedProcess:
+            return original_run(["adsqwcvqawf"], **kwargs)
+
+        monkeypatch.setattr(subprocess, "run", run_something_else)
+
+        with pytest.raises(RuntimeError, match="is not installed"):
+            _ = rsync._get_rsync_version()
+
+    def test_raises_runtime_error_if_rsync_v_produces_error_message(
+        self, monkeypatch
+    ) -> None:
+        from enderchest.sync import rsync
+
+        def mock_run(
+            commands, **kwargs
+        ) -> TestRsyncVersionChecking.FakeSubprocessResult:
+            return TestRsyncVersionChecking.FakeSubprocessResult(
+                "irrelephant", "Something bad!!"
+            )
+
+        monkeypatch.setattr(subprocess, "run", mock_run)
+
+        with pytest.raises(RuntimeError, match="Something bad!!"):
+            _ = rsync._get_rsync_version()
+
+    def test_raises_runtime_error_if_rsync_v_produces_no_output(
+        self, monkeypatch
+    ) -> None:
+        from enderchest.sync import rsync
+
+        def mock_run(
+            commands, **kwargs
+        ) -> TestRsyncVersionChecking.FakeSubprocessResult:
+            return TestRsyncVersionChecking.FakeSubprocessResult("", "")
+
+        monkeypatch.setattr(subprocess, "run", mock_run)
+
+        with pytest.raises(RuntimeError, match="could not be executed"):
+            _ = rsync._get_rsync_version()
+
+    def test_raises_runtime_error_if_head_doesnt_match_regex(self, monkeypatch) -> None:
+        from enderchest.sync import rsync
+
+        def mock_run(
+            commands, **kwargs
+        ) -> TestRsyncVersionChecking.FakeSubprocessResult:
+            return TestRsyncVersionChecking.FakeSubprocessResult(
+                "rsync is totally installed on this system", ""
+            )
+
+        monkeypatch.setattr(subprocess, "run", mock_run)
+
+        with pytest.raises(RuntimeError, match="Could not parse version output"):
+            _ = rsync._get_rsync_version()
+
+    def test_correctly_parses_version_string(self, monkeypatch) -> None:
+        from enderchest.sync import rsync
+
+        def mock_run(
+            commands, **kwargs
+        ) -> TestRsyncVersionChecking.FakeSubprocessResult:
+            return TestRsyncVersionChecking.FakeSubprocessResult(
+                "rsync  version 1.20.78163  protocol version whateva", ""
+            )
+
+        monkeypatch.setattr(subprocess, "run", mock_run)
+
+        assert rsync._get_rsync_version() == (1, 20)
 
 
 @pytest.mark.skipif(
