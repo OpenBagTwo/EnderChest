@@ -1,5 +1,6 @@
 """rsync sync implementation. Relies on the user having rsync installed on their system"""
 import os.path
+import re
 import shutil
 import subprocess
 from collections import defaultdict
@@ -11,7 +12,60 @@ from . import SYNC_LOGGER, get_default_netloc, uri_to_ssh
 
 RSYNC = shutil.which("rsync")
 if RSYNC is None:  # pragma: no cover
-    raise RuntimeError("No rsync executable found on your system. Cannot sync using.")
+    raise RuntimeError(
+        "No rsync executable found on your system. Cannot sync using this protocol."
+    )
+
+
+def _get_rsync_version() -> tuple[int, int]:
+    """Determine the installed version of Rsync
+
+    Returns
+    -------
+    int
+        The major version of the resolved Rsync executable
+    int
+        The minor version of the resolved Rsync executable
+
+    Raises
+    -----
+    RuntimeError
+        If Rsync is not installed, if `rsync --version` returns an error or if
+        the version information cannot be decoded from the `rsync --version`
+        output
+    """
+    try:
+        result = subprocess.run(
+            ["rsync", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        if result.stderr:
+            raise RuntimeError(result.stderr.decode("utf-8"))
+
+        head = result.stdout.decode("utf-8").splitlines()[0]
+    except (FileNotFoundError, IndexError):
+        raise RuntimeError("Rsync is not installed or could not be executed.")
+
+    try:
+        if match := re.match(
+            r"^rsync[\s]+version ([0-9]+).([0-9]+).([0-9]+)",
+            head,
+        ):
+            major, minor, *_ = match.groups()
+            return int(major), int(minor)
+        else:
+            raise AssertionError
+    except (AssertionError, ValueError):
+        raise RuntimeError(f"Could not parse version output:\n{head}")
+
+
+rsync_version = _get_rsync_version()
+if rsync_version < (3, 2):
+    raise RuntimeError(
+        "EnderChest requires Rsync 3.2 or newer."
+        " The version detected on your system is {}.{}".format(*rsync_version)
+    )
 
 
 def run_rsync(

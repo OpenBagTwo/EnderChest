@@ -19,7 +19,22 @@ from .utils import (
     uri_to_ssh,
 )
 
-SUPPORTED_PROTOCOLS = ("rsync", "sftp", "file")
+PROTOCOLS = ("rsync", "sftp", "file")
+
+
+def _determine_available_protocols() -> tuple[str, ...]:
+    """Determine which protocols are available on this system"""
+    available_protocols: list[str] = []
+    for protocol in PROTOCOLS:
+        try:
+            _ = importlib.import_module(f"{__package__}.{protocol}")
+            available_protocols.append(protocol)
+        except (ModuleNotFoundError, RuntimeError):
+            pass
+    return tuple(available_protocols)
+
+
+SUPPORTED_PROTOCOLS = _determine_available_protocols()
 
 DEFAULT_PROTOCOL = SUPPORTED_PROTOCOLS[0]
 
@@ -109,7 +124,7 @@ def remote_file(uri: ParseResult) -> Generator[Path, None, None]:
 
 __all__ = [
     "SYNC_LOGGER",
-    "SUPPORTED_PROTOCOLS",
+    "PROTOCOLS",
     "DEFAULT_PROTOCOL",
     "get_default_netloc",
     "render_remote",
