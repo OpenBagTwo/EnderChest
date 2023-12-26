@@ -90,6 +90,8 @@ def shulker_box_root(minecraft_root: Path, shulker_box_name: str) -> Path:
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+    shulker_box_name : str
+        The name of the shulker box to resolve
 
     Returns
     -------
@@ -112,6 +114,8 @@ def shulker_box_config(minecraft_root: Path, shulker_box_name: str) -> Path:
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+    shulker_box_name : str
+        The name of the shulker box to resolve
 
     Returns
     -------
