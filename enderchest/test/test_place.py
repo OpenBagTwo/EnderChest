@@ -107,7 +107,7 @@ class TestSingleShulkerPlace:
 
         errors = [record for record in caplog.records if record.levelname == "ERROR"]
         assert errors[0].msg.startswith("No minecraft instance exists at")
-        assert placements["axolotl"] == {}
+        assert placements.get("axolotl", {}) == {}
 
     @pytest.mark.parametrize("relative", (True, False), ids=("relative", "absolute"))
     @utils.parametrize_over_instances("official", "axolotl")

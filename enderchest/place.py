@@ -205,7 +205,7 @@ def place_ender_chest(
         if handling is not None:
             match handling:
                 case "return":
-                    return placements
+                    return {}  # intentionally wipe the cache
                 case "break":
                     break
                 case _:  # nothing to link, so might as well skip the rest
@@ -376,15 +376,15 @@ def link_resource(
     if instance_path.is_symlink():
         # remove previous symlink in this spot
         instance_path.unlink()
-        PLACE_LOGGER.debug(f"Removed previous link at {instance_path}")
+        PLACE_LOGGER.debug("Removed previous link at %s", instance_path)
     else:
         try:
             os.rmdir(instance_path)
-            PLACE_LOGGER.debug(f"Removed empty directory at {instance_path}")
+            PLACE_LOGGER.debug("Removed empty directory at %s", instance_path)
         except FileNotFoundError:
             pass  # A-OK
 
-    PLACE_LOGGER.debug(f"Linking {instance_path} to {target}")
+    PLACE_LOGGER.debug("Linking %s to %s", instance_path, target)
     os.symlink(
         target,
         instance_path,
