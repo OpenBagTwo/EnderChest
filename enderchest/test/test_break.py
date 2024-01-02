@@ -174,14 +174,10 @@ class TestBreaking:
     @pytest.mark.parametrize(
         "instance", (instance.name for instance in utils.TESTING_INSTANCES)
     )
-    def test_uninstall_replaces_links_pointing_outside_the_chest(
+    def test_uninstall_replaces_links_pointing_outside_the_chest_with_links(
         self, minecraft_root, placement_cache, instance_lookup, instance
     ):
-        resource_path = (
-            instance_lookup[instance].root.expanduser()
-            / "resourcepacks"
-            / "TEAVSRP.zip"
-        )
+        resource_path = instance_lookup[instance].root.expanduser() / "crash-reports"
 
         # meta-test
         assert not resource_path.readlink().is_relative_to(
@@ -191,8 +187,12 @@ class TestBreaking:
         uninstall._break(minecraft_root, instance_lookup, placement_cache)
 
         assert resource_path.exists()
-        assert not resource_path.is_symlink()
-        assert resource_path.read_text() == "Breaking News!\n"
+        assert resource_path.is_symlink()
+        assert (
+            (resource_path / "20230524.log")
+            .read_text()
+            .endswith("And somehow also on fire\n")
+        )
 
     def test_uninstall_proceeds_past_conflicts(
         self, minecraft_root, instance_lookup, placement_cache, caplog
