@@ -137,6 +137,21 @@ to update your symlinks.
 More detailed usage instructions can be found on
 [GitHub Pages](https://openbagtwo.github.io/EnderChest/dev/usage).
 
+## Uninstalling
+
+If you decide that EnderChest isn't for you, running
+
+```bash
+$ enderchest break
+```
+
+will replace all symlinks into your EnderChest folder with hard copies of
+the linked resources. After that completes, you can safely delete your
+EnderChest folder and remove the package via your Python package manager, _e.g._
+```bash
+pipx uninstall enderchest
+```
+
 ## Contributing
 
 If you're interested in helping develop this project, have a look at the
