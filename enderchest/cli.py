@@ -8,7 +8,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
 from typing import Any, Iterable, Protocol, Sequence
 
-from . import craft, gather, loggers, place, remote
+from . import craft, gather, loggers, place, remote, uninstall
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
@@ -239,6 +239,12 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
         ("close",),
         "push changes to other EnderChests",
         _close,
+    ),
+    (
+        ("break",),
+        "uninstall EnderChest by copying all linked resources"
+        " into the registered instances",
+        uninstall.break_ender_chest,
     ),
     (
         ("test",),
