@@ -35,7 +35,11 @@ def break_ender_chest(minecraft_root: Path) -> None:
     prompt("Press ENTER to continue.")
 
     placement_cache = place.place_ender_chest(
-        minecraft_root, error_handling="ignore", relative=False
+        minecraft_root,
+        error_handling="ignore",
+        relative=False,
+        keep_stale_links=True,
+        keep_broken_links=True,
     )
 
     BREAK_LOGGER.warning(

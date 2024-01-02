@@ -1,5 +1,6 @@
 """Tests of the EnderChest uninstallation procedure"""
 import logging
+import os
 from pathlib import Path
 
 import pytest
@@ -253,3 +254,21 @@ class TestBreaking:
         assert (
             (resource_path / "bumpona.log").read_text("utf-8").startswith("Like a bump")
         )
+
+    def test_break_doesnt_touch_links_created_outside_of_enderchest(
+        self, minecraft_root, placement_cache, instance_lookup, caplog
+    ):
+        # even broken ones
+        resource_path = (
+            instance_lookup["bee"].root.expanduser() / "config" / "some_mod.json"
+        )
+        os.symlink(
+            minecraft_root / "null" / "null", resource_path, target_is_directory=False
+        )
+        uninstall._break(minecraft_root, instance_lookup, placement_cache)
+        warnings = [
+            record for record in caplog.records if record.levelno >= logging.WARNING
+        ]
+        assert len(warnings) == 0
+
+        assert resource_path.readlink().name == "null"
