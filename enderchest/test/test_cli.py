@@ -676,3 +676,7 @@ class TestOpen:
 class TestClose(TestOpen):
     action = "close"
     op = "push"
+
+
+class TestBreak(ActionTestSuite):
+    action = "break"

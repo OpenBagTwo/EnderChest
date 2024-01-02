@@ -38,7 +38,7 @@ class TestBreakEnderChest:
     def test_break_asks_you_if_youre_really_sure(
         self, minecraft_root, home, monkeypatch, capsys, caplog
     ):
-        script_reader = utils.scripted_prompt([""])
+        script_reader = utils.scripted_prompt([""] * 2)
         monkeypatch.setattr("builtins.input", script_reader)
 
         utils.pre_populate_enderchest(
@@ -62,7 +62,7 @@ class TestBreakEnderChest:
     def test_break_allows_you_to_proceed_even_when_there_are_conflicts(
         self, minecraft_root, home, monkeypatch, capsys, caplog
     ):
-        script_reader = utils.scripted_prompt([""])
+        script_reader = utils.scripted_prompt([""] * 2)
         monkeypatch.setattr("builtins.input", script_reader)
 
         uninstall.break_ender_chest(minecraft_root)
@@ -253,9 +253,3 @@ class TestBreaking:
         assert (
             (resource_path / "bumpona.log").read_text("utf-8").startswith("Like a bump")
         )
-
-
-class TestCLI:
-    # TODO
-
-    pass
