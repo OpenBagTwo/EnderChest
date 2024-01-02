@@ -79,10 +79,16 @@ def place_ender_chest(
     - If one of the files or folders being placed is itself a symlink, relative
       links will be created as *nested* links (a link pointing to the link),
       whereas in "absolute" mode (`relative=False`), the link that will be
-      placed will point **directly** to the final target.
+      placed will point **directly** to the final target
     - This can lead to the stale-link cleanup behavior not correctly removing
       an outdated symlink if the fully resolved target of a link falls outside
-      the EnderChest folder.
+      the EnderChest folder
+    - The generated placement record reflects only the placements performed by
+      _this_ placement operation ("stale" links will never be included)
+    - The generated placements record will include broken links irrespective of
+      the `keep_broken_links` argument
+    - If the placement is aborted (`error_handling="abort"` or "Abort" selected
+      from prompt) then the returned placements will be empty
     """
     placements: dict[str, dict[Path, list[str]]] = {}
 

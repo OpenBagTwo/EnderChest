@@ -761,59 +761,6 @@ class TestShulkerInstanceMatching:
         assert self.matchall(multi_condition_shulker) == ["Chest Boat"]
 
 
-@pytest.fixture
-def multi_box_setup_teardown(minecraft_root, home):
-    """Setup / teardown for this test class"""
-    chest_folder = minecraft_root / "EnderChest"
-    utils.pre_populate_enderchest(chest_folder, *utils.TESTING_SHULKER_CONFIGS)
-
-    do_not_touch = {
-        (chest_folder / "global" / "resourcepacks" / "stuff.zip"): "dfgwhgsadfhsd",
-        (chest_folder / "global" / "logs" / "bumpona.log"): (
-            "Like a bump on a bump on a log, baby.\n"
-            "Like I'm in a fist fight with a fog, baby.\n"
-            "Step-ball-change and a pirouette.\n"
-            "And I regret, I regret.\n"
-        ),
-        (chest_folder / "1.19" / "mods" / "FoxNap.jar"): "hello-maestro",
-        (chest_folder / "1.19" / "options.txt"): "autoJump:true",
-        (
-            chest_folder / "vanilla" / "data" / "achievements.txt"
-        ): "Spelled acheivements correctly!",
-        (chest_folder / "optifine" / "mods" / "optifine.jar"): "sodium4life",
-        (chest_folder / "optifine" / "shaderpacks" / "Seuss CitH.zip"): (
-            "But those trees! Oh those trees! But those truffula trees!"
-            "\nAll resplendent and gorgeous in ray-traced 3Ds"
-        ),
-        (
-            chest_folder / "optifine" / "resourcepacks" / "stuff.zip"
-        ): "optifine-optimized!",
-        (
-            minecraft_root
-            / "instances"
-            / "bee"
-            / ".minecraft"
-            / "shaderpacks"
-            / "Seuss CitH.zip.txt"
-        ): (
-            "with settings at max"
-            "\nits important to note"
-            "\nthe lag is real bad"
-            "\nbut just look at that goat!"
-        ),
-    }
-
-    for path, contents in do_not_touch.items():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(contents)
-
-    yield
-
-    # check on teardown that all those "do_not_touch" files are untouched
-    for path, contents in do_not_touch.items():
-        assert path.read_text() == contents
-
-
 @pytest.mark.usefixtures("multi_box_setup_teardown")
 class TestMultiShulkerPlacing:
     @pytest.mark.parametrize("error_handling", ("ignore", "skip"))

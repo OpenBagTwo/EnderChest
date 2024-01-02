@@ -254,7 +254,11 @@ def pre_populate_enderchest(
         config_path = enderchest_folder / shulker_name / fs.SHULKER_BOX_CONFIG_NAME
         with config_path.open("w") as config_file:
             config_file.write(shulker_config)
-        shulker_boxes.append(ShulkerBox.from_cfg(config_path))
+        shulker_box = ShulkerBox.from_cfg(config_path)
+        for folder in shulker_box.link_folders:
+            (shulker_box.root / folder).mkdir(parents=True, exist_ok=True)
+        shulker_boxes.append(shulker_box)
+
     return shulker_boxes
 
 
