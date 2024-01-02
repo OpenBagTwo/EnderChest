@@ -111,7 +111,9 @@ def _break(
                 pass
 
             try:
-                if target.is_dir():
+                if target.is_symlink():
+                    instance_path.symlink_to(target.resolve())
+                elif target.is_dir():
                     shutil.copytree(
                         target, instance_path, symlinks=True, dirs_exist_ok=True
                     )
