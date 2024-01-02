@@ -7,7 +7,7 @@ from . import place
 from .gather import load_ender_chest_instances
 from .instance import InstanceSpec
 from .loggers import BREAK_LOGGER, IMPORTANT
-from .prompt import confirm
+from .prompt import confirm, prompt
 
 
 def break_ender_chest(minecraft_root: Path) -> None:
@@ -28,10 +28,12 @@ def break_ender_chest(minecraft_root: Path) -> None:
         BREAK_LOGGER.error("Aborting.")
         return
     BREAK_LOGGER.info(
-        "Running enderchest place one last time to make sure that all placements"
+        "Running `enderchest place` one last time to make sure that all placements"
         "\nare up-to-date. Note that any placements that are skipped or ignored"
         '\nmay not be "uninstalled" correctly.'
     )
+    prompt("Press ENTER to continue.")
+
     placement_cache = place.place_ender_chest(
         minecraft_root, error_handling="ignore", relative=False
     )
