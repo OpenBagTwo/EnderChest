@@ -296,3 +296,31 @@ in the [CLI docs](../cli/#enderchest-open)).
 
     (this behavior can be disabled by editing the `place-after-open` setting in
     your `enderchest.cfg` file).
+
+## Uninstalling
+
+!!! info
+    Even if you uninstall the EnderChest package, the symbolic links it
+    created will continue working until you replace them or move your
+    EnderChest / Minecraft folders.
+
+If you ever decide that the symlink life isn't for you, run the command:
+
+```bash
+enderchest break
+```
+
+This will go through all of your instance folders, replacing any symlinks that
+point into the EnderChest folder with hard copies of those resources.
+
+!!! info
+    If your EnderChest itself contained links pointing to _outside_ the
+    EnderChest (say, `EnderChest/global/screenshots` → `~/Pictures/Screenshots`),
+    then after breaking, your instances will simply contain _direct links_ to
+    those files and folders.
+
+After that completes, you can safely delete your EnderChest folder and remove
+the package via your Python package manager, _e.g._
+```bash
+pipx uninstall enderchest
+```
