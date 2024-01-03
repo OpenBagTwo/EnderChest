@@ -243,7 +243,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         ("break",),
         "uninstall EnderChest by copying all linked resources"
-        " into the registered instances",
+        " into its registered instances",
         uninstall.break_ender_chest,
     ),
     (
