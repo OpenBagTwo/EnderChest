@@ -99,8 +99,8 @@ class TestBreaking:
         }[instance].root.expanduser() / "usercache.json"
 
         # meta-test
-        assert resource_path.readlink().is_relative_to(
-            fs.ender_chest_folder(minecraft_root)
+        assert resource_path.resolve().is_relative_to(
+            fs.ender_chest_folder(minecraft_root.resolve())
         )
         uninstall._break(fs.ender_chest_folder(minecraft_root), utils.TESTING_INSTANCES)
 
@@ -119,8 +119,8 @@ class TestBreaking:
         }[instance].root.expanduser() / "crash-reports"
 
         # meta-test
-        assert not resource_path.readlink().is_relative_to(
-            fs.ender_chest_folder(minecraft_root)
+        assert not resource_path.resolve().is_relative_to(
+            fs.ender_chest_folder(minecraft_root.resolve())
         )
 
         uninstall._break(fs.ender_chest_folder(minecraft_root), utils.TESTING_INSTANCES)
