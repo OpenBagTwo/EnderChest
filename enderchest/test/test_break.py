@@ -176,7 +176,13 @@ class TestBreaking:
         assert len(errorish_log) == len(utils.TESTING_INSTANCES)
 
         assert all(
-            ("No such file or directory" in record.message for record in errorish_log)
+            (
+                (
+                    "No such file or directory" in record.message
+                    or "system cannot find the file" in record.message
+                )
+                for record in errorish_log
+            )
         )
         assert resource_path.exists()
         assert not resource_path.is_symlink()
