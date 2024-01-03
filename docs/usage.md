@@ -313,7 +313,7 @@ enderchest break
 This will go through all of your instance folders, replacing any symlinks that
 point into the EnderChest folder with hard copies of those resources.
 
-!!! info
+!!! note
     If your EnderChest itself contained links pointing to _outside_ the
     EnderChest (say, `EnderChest/global/screenshots` → `~/Pictures/Screenshots`),
     then after breaking, your instances will simply contain _direct links_ to
