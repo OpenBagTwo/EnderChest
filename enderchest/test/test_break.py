@@ -67,7 +67,7 @@ class TestBreaking:
             fs.ender_chest_folder(minecraft_root, check_exists=False),
             *utils.TESTING_SHULKER_CONFIGS
         )
-        place.place_ender_chest(minecraft_root, relative=False, error_handling="ignore")
+        place.place_ender_chest(minecraft_root, relative=True, error_handling="ignore")
 
         errorish_log = [
             record for record in caplog.records if record.levelno >= logging.WARNING
@@ -117,6 +117,14 @@ class TestBreaking:
         resource_path = {
             instance.name: instance for instance in utils.TESTING_INSTANCES
         }[instance].root.expanduser() / "crash-reports"
+
+        # fix for pytest utilizing symlinks for differently-scoped fixtures
+        resource_path.unlink()
+        resource_path.symlink_to(
+            fs.ender_chest_folder(minecraft_root.resolve())
+            / "global"
+            / resource_path.name
+        )
 
         # meta-test
         assert not resource_path.resolve().is_relative_to(
