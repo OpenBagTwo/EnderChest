@@ -50,8 +50,6 @@ enderchest/place.py:196:4: R1702: Too many nested blocks (7/5) (too-many-nested-
 enderchest/place.py:196:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
 enderchest/place.py:18:0: R0912: Too many branches (31/12) (too-many-branches)
 enderchest/place.py:18:0: R0915: Too many statements (104/50) (too-many-statements)
-enderchest/place.py:489:12: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
-enderchest/place.py:495:8: W0707: Consider explicitly re-raising using 'raise OSError(f'{fs.place_cache(minecraft_root)} is corrupted and could not be parsed:\n{decode_error}') from decode_error' (raise-missing-from)
 ************* Module enderchest.remote
 enderchest/remote.py:92:0: R0914: Too many local variables (17/15) (too-many-locals)
 enderchest/remote.py:92:0: R0912: Too many branches (22/12) (too-many-branches)
@@ -67,13 +65,9 @@ enderchest/craft.py:235:0: R0915: Too many statements (63/50) (too-many-statemen
 enderchest/craft.py:401:0: R0914: Too many local variables (17/15) (too-many-locals)
 enderchest/craft.py:401:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/craft.py:401:0: R0915: Too many statements (58/50) (too-many-statements)
-************* Module enderchest.uninstall
-enderchest/uninstall.py:72:0: C0301: Line too long (119/100) (line-too-long)
-enderchest/uninstall.py:73:0: C0301: Line too long (112/100) (line-too-long)
 ************* Module enderchest.test.mock_paramiko
-enderchest/test/mock_paramiko.py:131:8: W0613: Unused argument 'uri' (unused-argument)
-enderchest/test/mock_paramiko.py:131:26: W0613: Unused argument 'timeout' (unused-argument)
-enderchest/test/mock_paramiko.py:5:0: W0611: Unused import time (unused-import)
+enderchest/test/mock_paramiko.py:130:8: W0613: Unused argument 'uri' (unused-argument)
+enderchest/test/mock_paramiko.py:130:26: W0613: Unused argument 'timeout' (unused-argument)
 ************* Module enderchest.test.utils
 enderchest/test/utils.py:450:0: R0913: Too many arguments (6/5) (too-many-arguments)
 ************* Module enderchest.sync.sftp
@@ -99,9 +93,8 @@ enderchest/sync/file.py:49:0: R0912: Too many branches (16/12) (too-many-branche
 enderchest/sync/file.py:329:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 enderchest/sync/file.py:389:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 ************* Module enderchest.sync.rsync
-enderchest/sync/rsync.py:38:17: W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
-enderchest/sync/rsync.py:48:8: W0707: Consider explicitly re-raising using 'except (FileNotFoundError, IndexError) as exc' and 'raise RuntimeError('Rsync is not installed or could not be executed.') from exc' (raise-missing-from)
-enderchest/sync/rsync.py:51:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+enderchest/sync/rsync.py:44:28: W0511: TODO: #124 just use check=True (fixme)
+enderchest/sync/rsync.py:49:8: W0707: Consider explicitly re-raising using 'except (FileNotFoundError, IndexError) as exc' and 'raise RuntimeError('Rsync is not installed or could not be executed.') from exc' (raise-missing-from)
 enderchest/sync/rsync.py:60:8: W0707: Consider explicitly re-raising using 'except (AssertionError, ValueError) as exc' and 'raise RuntimeError(f'Could not parse version output:\n{head}') from exc' (raise-missing-from)
 enderchest/sync/rsync.py:66:8: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 enderchest/sync/rsync.py:71:0: R0913: Too many arguments (9/5) (too-many-arguments)
@@ -153,5 +146,5 @@ enderchest/sync/rsync.py:1:0: R0801: Similar lines in 2 files
         else: (duplicate-code)
 
 -----------------------------------
-Your code has been rated at 9.57/10
+Your code has been rated at 9.59/10
 
