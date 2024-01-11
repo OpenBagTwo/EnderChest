@@ -2,7 +2,6 @@
 import json
 import os
 import shutil
-import time
 from contextlib import contextmanager
 from importlib.resources import as_file
 from pathlib import Path

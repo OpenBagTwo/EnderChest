@@ -486,7 +486,7 @@ def load_placement_cache(minecraft_root: Path) -> dict[str, dict[Path, list[str]
     try:
         cache_file = fs.place_cache(minecraft_root)
         GATHER_LOGGER.debug(
-            f"Loading placement cache from %s", fs.place_cache(minecraft_root)
+            "Loading placement cache from %s", fs.place_cache(minecraft_root)
         )
         raw_dict: dict[str, dict[str, list[str]]] = json.loads(
             cache_file.read_text("UTF-8")
@@ -494,8 +494,7 @@ def load_placement_cache(minecraft_root: Path) -> dict[str, dict[Path, list[str]
     except json.JSONDecodeError as decode_error:
         raise OSError(
             f"{fs.place_cache(minecraft_root)} is corrupted and could not be parsed:"
-            f"\n{decode_error}"
-        )
+        ) from decode_error
     return {
         instance_name: {
             Path(resource_path): shulker_boxes

@@ -68,10 +68,13 @@ def _break(
             if not direct_target.is_relative_to(
                 chest_folder
             ) and not final_target.is_relative_to(chest_folder):
-                # note: there's a pathological case where someone does something silly like:
-                # ~/.minecraft/options.txt -> ~/options.txt -> EnderChest/options.txt -> /configs/minecraft_options.txt
-                # where deleting your EnderChest folder would break the chain, but EnderChest wouldn't have ever
-                # created that chain, so that person is on their own.
+                # note: there's a pathological case where someone does something
+                # silly like:
+                # ~/.minecraft/options.txt -> ~/options.txt
+                #    -> EnderChest/options.txt -> /configs/minecraft_options.txt
+                # where deleting your EnderChest folder would break the chain,
+                # but EnderChest wouldn't have ever created that chain, so that
+                # person is on their own.
                 continue
 
             try:

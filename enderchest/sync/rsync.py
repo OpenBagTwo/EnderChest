@@ -39,8 +39,9 @@ def _get_rsync_version() -> tuple[int, int]:
             ["rsync", "--version"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            check=False,
         )
-        if result.stderr:
+        if result.stderr:  # TODO: #124 just use check=True
             raise RuntimeError(result.stderr.decode("utf-8"))
 
         head = result.stdout.decode("utf-8").splitlines()[0]
@@ -54,8 +55,7 @@ def _get_rsync_version() -> tuple[int, int]:
         ):
             major, minor, *_ = match.groups()
             return int(major), int(minor)
-        else:
-            raise AssertionError
+        raise AssertionError
     except (AssertionError, ValueError):
         raise RuntimeError(f"Could not parse version output:\n{head}")
 
