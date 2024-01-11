@@ -1,4 +1,5 @@
 """Functionality for copying all files into their instances"""
+import os
 import shutil
 from pathlib import Path
 from typing import Iterable
@@ -61,7 +62,9 @@ def _break(
 
             literal_target = resource_path.readlink()
 
-            direct_target = resource_path.readlink().expanduser().absolute()
+            direct_target = Path(
+                os.path.normpath(resource_path.readlink().expanduser().absolute())
+            )
 
             final_target = resource_path.resolve().expanduser()
 
