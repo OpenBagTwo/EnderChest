@@ -1,0 +1,1378 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Gili "OpenBagTwo" Barlev">
+      
+      
+      
+        <link rel="prev" href="../suggestions/">
+      
+      
+        <link rel="next" href="../cli/">
+      
+      
+      <link rel="icon" href="../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Contribution Guide - EnderChest Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="purple" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#contribution-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="EnderChest Documentation" class="md-header__button md-logo" aria-label="EnderChest Documentation" data-md-component="logo">
+      
+  <img src="../img/enderchest.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EnderChest Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Contribution Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OpenBagTwo/EnderChest" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EnderChest
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EnderChest Documentation" class="md-nav__button md-logo" aria-label="EnderChest Documentation" data-md-component="logo">
+      
+  <img src="../img/enderchest.png" alt="logo">
+
+    </a>
+    EnderChest Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OpenBagTwo/EnderChest" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EnderChest
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation Instructions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick-Start Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../suggestions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Contribution Guide
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Contribution Guide
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-a-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up a Development Environment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#style-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      Style Guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unit-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unit Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tests-requiring-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tests Requiring SSH
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opening-a-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Opening a PR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Full CLI Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Python API Docs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Python API Docs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/enderchest/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    enderchest
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            enderchest
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/filesystem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    filesystem
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/prompt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    prompt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/gather/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gather
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/instance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    instance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/shulker_box/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shulker_box
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/loggers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    loggers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/enderchest/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    enderchest
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cli
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/place/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    place
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/remote/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    remote
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/craft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    craft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/uninstall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    uninstall
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_14" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/enderchest/sync/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    sync
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1_14" id="__nav_8_1_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1_14">
+            <span class="md-nav__icon md-icon"></span>
+            sync
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/sftp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sftp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/rsync/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    rsync
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-a-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up a Development Environment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#style-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      Style Guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unit-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unit Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tests-requiring-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tests Requiring SSH
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opening-a-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Opening a PR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="contribution-guide">Contribution Guide</h1>
+<p><a href="../coverage"><img alt="coverage" src="../img/coverage.svg" /></a>
+<a href="../lint-report.txt"><img alt="lint" src="../img/pylint.svg" /></a></p>
+<p>EnderChest is an open source project, and its source code is
+<a href="https://github.com/OpenBagTwo/EnderChest">publicly available on GitHub</a>.</p>
+<p>Please open <a href="https://github.com/OpenBagTwo/EnderChest/issues/new">a new issue</a>
+to report a bug or to propose a new feature or enhancement.</p>
+<p>If you would like to contribute your own bugfixes or code enhancements, start by
+<a href="https://github.com/OpenBagTwo/EnderChest/fork">forking this repo</a>, and cloning
+it into your local workspace.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that all work should be done off of the <code>dev</code> branch</p>
+</div>
+<h2 id="setting-up-a-development-environment">Setting up a Development Environment</h2>
+<p>The EnderChest development environment is managed using
+<a href="https://docs.conda.io/en/latest/">conda</a>. If you don't have one already,
+I highly recommend using a <a href="https://conda-forge.org/">conda-forge</a>-based
+distribution, such as <a href="https://github.com/conda-forge/miniforge#mambaforge">mambaforge</a>.</p>
+<p>Once you have conda installed and your fork cloned to your local workspace, navigate
+to that workspace and:</p>
+<ol>
+<li>Create the development environment via
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mamba<span class="w"> </span>env<span class="w"> </span>create
+</span></code></pre></div>
+   (substitute <code>conda</code> if you so choose)</li>
+<li>Install the package in editable mode:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>test<span class="o">]</span>
+</span></code></pre></div></li>
+<li>Set up <a href="https://pre-commit.com/">pre-commit</a>:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pre-commit<span class="w"> </span>install
+</span></code></pre></div></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Note</p>
+<p>The <a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/environment.yml">developemnt environment</a>
+specifies <a href="https://anaconda.org/conda-forge/rsync"><code>rsync</code></a> as a dependency,
+and there is currently no build of rsync available for Windows. If you are
+developing from Windows, you will either need to do your development within
+WSL or comment out that line and install rsync yourself.</p>
+</div>
+<p>Once that's done, start developing! Pre-commit is a fantastic tool that will
+take care of most style-guide enforcement for you, but details are below.</p>
+<h2 id="style-guide">Style Guide</h2>
+<p>EnderChest follows the standard Python style guides, most notably
+<a href="https://peps.python.org/pep-0008/">PEP8</a>, targeting the Python 3.10 feature set.
+The one exception is that the line length maximum is set to 88, not 79. All
+non-trivial and "public" functions must have docstrings in
+<a href="https://numpydoc.readthedocs.io/en/latest/format.html">the NumPy style</a>.</p>
+<p>All code should be fully type-hinted, leveraging the latest changes
+<a href="https://docs.python.org/3/whatsnew/3.10.html#new-features-related-to-type-hints">introduced to the language</a>.
+Favor use of <code>| None</code> ✅ instead of <code>Optional</code> ❌ and built-in types (<code>list</code>, <code>tuple</code> ✅)
+<a href="https://docs.python.org/3/whatsnew/3.9.html#type-hinting-generics-in-standard-collections">over their capitalized types</a>
+(<code>from typing import List, Tuple</code> ❌).</p>
+<details class="example">
+<summary>Type Hinting Pro Tip</summary>
+<p>A good practice to follow when using type hints is to make your return hints
+as specific and explicit as possible while making your parameter hints
+as broad as the function will allow. For example:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">def</span> <span class="nf">stringify_dedupe_and_sort</span><span class="p">(</span><span class="n">sort_me</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a collection of stuff, turn them all into strings, remove</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="sd">    any duplicates, and then return the results sorted in alphabetical</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="sd">    (lexical?) order</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="sd">    Parameters</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="sd">    ----------</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="sd">    sort_me : list-like</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="sd">        The things you want to sort</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="sd">    Returns</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="sd">    -------</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="sd">    list of str</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="sd">        The stringified, deduped and sorted items</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="sd">    Notes</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="sd">    -----</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="sd">    @ me if you want to see this implemented via a one-line comprehension!</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    <span class="n">return_me</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sort_me</span><span class="p">:</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>        <span class="n">stringified</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">existing_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">return_me</span><span class="p">):</span>
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>            <span class="k">if</span> <span class="n">existing_value</span> <span class="o">&gt;</span> <span class="n">stringified</span><span class="p">:</span>
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>                <span class="n">return_me</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">stringified</span><span class="p">)</span>
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>                <span class="k">break</span>
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>            <span class="k">elif</span> <span class="n">existing_value</span> <span class="o">==</span> <span class="n">stringified</span><span class="p">:</span>
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>                <span class="k">break</span>
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>                <span class="k">pass</span>
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>            <span class="n">return_me</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stringified</span><span class="p">)</span>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>    <span class="k">return</span> <span class="n">return_me</span>
+</span></code></pre></div>
+In the above, <code>sort_me</code> could be a list of strings, a set of <code>Path</code>s, or
+really any group of objects that you can iteratethrough and
+that has a defined length (and even that isn't even <em>technically</em>
+a requirement). Meanwhile on the output side, you're defining right off the
+bat that <code>return_me</code> is going to be a list and then enforcing that every
+member will be a string.</p>
+</details>
+<p>There are a variety of other style conventions, especially around non-Python
+files, but they will be automatically enforced by
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/.pre-commit-config.yaml">pre-commit</a>.</p>
+<!---  TODO: guidance over capitalization and punctuation
+       TODO: CLI help style guide
+--->
+
+<h2 id="unit-testing">Unit Testing</h2>
+<p>While unit tests are not globally required, any PR will require validation that
+the changes introduced are performing as intended (see below), and unit tests
+are a great way to provide that, especially given that EnderChest is meant to
+run across a wide variety of platforms. EnderChest uses
+<a href="https://docs.pytest.org/en/7.3.x/">py.test</a> as its test runner, and a wide
+variety of
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/utils.py">testing utilities</a>
+and <a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/conftest.py">fixtures</a>
+are available for you to leverage for help mocking out file systems.</p>
+<h3 id="tests-requiring-ssh">Tests Requiring SSH</h3>
+<p>SFTP syncing was originally tested against an SSH server running locally that
+could be authenticated against passwordlessly. To remove the requirement that
+developers have their systems set up similarly, these tests now default to
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/mock_paramiko.py">mocking the calls to paramiko</a>
+using
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/enderchest/test/testing_files/lstat_cache.json">cached SFTP attributes</a>.</p>
+<p>If you make any changes or additions to the "remote" file system used by these
+tests, this cache will need to be regenerated, and for that you will need to
+set up SSH for local passwordless authentication.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>A good example for configuring key-based passwordless SSH on a POSIX
+system can be found in
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/paramiko/.github/workflows/pull_request.yml#L40-L47">our GitHub Actions</a>.</p>
+</div>
+<p>The current procedure to regenerate that cache is:</p>
+<ol>
+<li>Un-comment <a href="https://github.com/OpenBagTwo/EnderChest/blob/853bdbac76124fb9e6d4a754f4dd73c48e66d829/enderchest/test/test_sync.py#L542-L545">this unit test</a></li>
+<li>Run
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pytest<span class="w"> </span>enderchest/test/test_sync.py::TestSFTPSync::test_generate_lstat_cache<span class="w"> </span>--use-local-ssh
+</span></code></pre></div></li>
+<li>Re-comment-out that test, then make sure the cache is working by running
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pytest<span class="w"> </span>-vvx<span class="w"> </span>enderchest/test/test_sync.py::TestSFTPSync
+</span></code></pre></div></li>
+<li>If all tests pass when using the cache, then make sure to <code>git add</code> the
+   regenerated testing file and include it in your next commit</li>
+</ol>
+<h2 id="documentation">Documentation</h2>
+<p>In addition to internal (docstring) documentation, the EnderChest project includes
+HTML documentation hosted on GitHub Pages. This includes the static guides (that
+you are literally reading right now) as well as dynamically-generated HTML docs.</p>
+<p>The tool that performs this magic is called <a href="https://www.mkdocs.org/">MkDocs</a> and
+is included in the EnderChest development environment. One of MkDocs' killer]
+features is its ability to quickly render and serve the documentation locally.
+To do this, navigate your terminal to the repo root, activate your EnderChest
+environment and run the command:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>mkdocs<span class="w"> </span>serve
+</span></code></pre></div>
+<p>and the terminal will soon contain a link (typically to http://127.0.0.1:8000/)
+where you can preview the documentation.</p>
+<p>When developing EnderChest, you should <em>both</em> check
+the <a href="http://127.0.0.1:8000/reference/enderchest/">compiled API docs based on your docstrings</a>
+(<a href="http://127.0.0.1:8000/cli/">and changes to the CLI</a>) to ensure that everything
+is rendering as it should.</p>
+<h2 id="development-workflow">Development Workflow</h2>
+<p>EnderChest development follows
+<a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Gitflow</a>,
+with all development done on feature-branches created off the <code>dev</code> branch.</p>
+<p>Once a significant number of changes have been merged into <code>dev</code> (usually the
+culmination of a
+<a href="https://github.com/OpenBagTwo/EnderChest/milestones">milestone</a>), a staging
+branch will be created off of <code>dev</code>, and a PR will be opened targeting merging
+changes from that branch into <code>release</code>. This process is typically accompanied
+by the creation of release candidate versions which are built and uploaded to PyPI
+for pre-release testing. During this phase, changes will be made directly
+to the staging branch to fix any bugs or regressions that come up during testing.</p>
+<p>Once it's time to cut a release,</p>
+<ol>
+<li>The staging PR will be merged into <code>release</code>.</li>
+<li>
+<p>A <a href="https://github.com/OpenBagTwo/EnderChest/releases/new">new release</a> will
+   be created targeting the <code>release</code> branch and with a tag of the form
+   <a href="https://semver.org/"><code>v0.x.y</code></a>. The release notes should highlight the
+   significant changes in the new version, and the auto-generated release notes
+   should be modified to cover the period from the last full release
+   (as opposed to just the last release candidate).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Create draft release notes when cutting the first release candidate
+so that you can just copy them into the full release</p>
+</div>
+</li>
+<li>
+<p>Cutting the new release will automatically push a new package build to
+   <a href="https://pypi.org/project/enderchest/">pypi</a> and
+   <a href="https://openbagtwo.github.io/EnderChest/release/">update the docs</a>.</p>
+</li>
+<li>Once the release is complete, the <code>dev</code> branch must be <strong>rebased</strong> on top of
+   <code>release</code>. This serves two goals:
+   - it applies any changes committed directly to the staging branch to <code>dev</code>
+   - it keeps the commit history linear (and makes it much easier to calculate)
+     the number of commits in <code>dev</code> since the last release.</li>
+</ol>
+<h2 id="opening-a-pr">Opening a PR</h2>
+<p>Once you're ready to contribute your code change back,
+<a href="https://github.com/OpenBagTwo/EnderChest/compare">open a PR</a> (remember to
+target the <code>dev</code> branch unless this is a hotfix), fill out the PR template, and
+then tag <strong><a href="https://github.com/OpenBagTwo">@OpenBagTwo</a></strong> for review.</p>
+<h2 id="license">License</h2>
+<p>This project--the executable, source code and all documentation--are published
+under the
+<a href="https://github.com/OpenBagTwo/EnderChest/blob/dev/LICENSE">GNU Public License v3</a>,
+and any contributions to or derivatives of this project <em>must</em> be licensed under
+compatible terms.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

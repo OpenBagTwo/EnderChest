@@ -1,0 +1,1637 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Gili "OpenBagTwo" Barlev">
+      
+      
+      
+        <link rel="prev" href="../usage/">
+      
+      
+        <link rel="next" href="../contrib/">
+      
+      
+      <link rel="icon" href="../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Best Practices - EnderChest Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="purple" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#best-practices-and-suggested-workflows" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="EnderChest Documentation" class="md-header__button md-logo" aria-label="EnderChest Documentation" data-md-component="logo">
+      
+  <img src="../img/enderchest.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EnderChest Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Best Practices
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OpenBagTwo/EnderChest" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EnderChest
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EnderChest Documentation" class="md-nav__button md-logo" aria-label="EnderChest Documentation" data-md-component="logo">
+      
+  <img src="../img/enderchest.png" alt="logo">
+
+    </a>
+    EnderChest Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OpenBagTwo/EnderChest" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EnderChest
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation Instructions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick-Start Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Best Practices
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Best Practices
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#other-syncing-protocols" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Syncing Protocols
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Syncing Protocols">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sftp-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      SFTP Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      File Protocol
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-shulker-box-layouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suggested Shulker Box Layouts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Suggested Shulker Box Layouts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hierarchical" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hierarchical
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chest-monster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chest Monster
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#effective-syncing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Effective Syncing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effective Syncing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passwordless-ssh-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Passwordless SSH Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointing-links-outside-of-your-enderchest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pointing Links Outside of Your EnderChest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keeping-local-boxes-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keeping Local Boxes Local
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-control-with-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version control with Git
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launcher-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Launcher Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Launcher Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#startup-and-shutdown-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Startup and Shutdown Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contrib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Full CLI Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Python API Docs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Python API Docs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/enderchest/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    enderchest
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            enderchest
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/filesystem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    filesystem
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/prompt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    prompt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/gather/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gather
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/instance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    instance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/shulker_box/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shulker_box
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/loggers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    loggers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/enderchest/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    enderchest
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cli
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/place/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    place
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/remote/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    remote
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/craft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    craft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/uninstall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    uninstall
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_14" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/enderchest/sync/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    sync
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1_14" id="__nav_8_1_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1_14">
+            <span class="md-nav__icon md-icon"></span>
+            sync
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/sftp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sftp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/file/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    file
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/enderchest/sync/rsync/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    rsync
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#other-syncing-protocols" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Syncing Protocols
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Syncing Protocols">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sftp-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      SFTP Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      File Protocol
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-shulker-box-layouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suggested Shulker Box Layouts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Suggested Shulker Box Layouts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hierarchical" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hierarchical
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chest-monster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chest Monster
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#effective-syncing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Effective Syncing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effective Syncing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passwordless-ssh-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Passwordless SSH Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointing-links-outside-of-your-enderchest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pointing Links Outside of Your EnderChest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keeping-local-boxes-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keeping Local Boxes Local
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-control-with-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version control with Git
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launcher-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Launcher Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Launcher Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#startup-and-shutdown-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Startup and Shutdown Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="best-practices-and-suggested-workflows">Best Practices and Suggested Workflows</h1>
+<h2 id="other-syncing-protocols">Other Syncing Protocols</h2>
+<p>If you can't or don't want to use rsync, EnderChest supports additional
+protocols (and has plans for more).</p>
+<h3 id="sftp-protocol">SFTP Protocol</h3>
+<ul>
+<li><strong>Scheme</strong>: <code>sftp://</code></li>
+<li><strong>Example URI</strong>: <code>sftp://deck@steam-deck/home/deck/minecraft</code></li>
+<li><strong>Platforms</strong>: All (see note)</li>
+<li><strong><a href="https://www.ssh.com/academy/ssh/sftp-ssh-file-transfer-protocol">Documentation</a></strong></li>
+</ul>
+<p>Installing EnderChest
+<a href="../installation#installation-via-pip">with sftp support</a> uses
+<a href="https://www.paramiko.org/">Paramiko</a>, a pure-Python SSH implementation, to
+allow you to connect to remote EnderChests over SSH from machines where rsync
+(or even SSH) isn't available.</p>
+<div class="admonition note">
+<p class="admonition-title">SSH on Windows</p>
+<p>While Paramiko can provide a <em>client</em> for initiating file syncs with remote
+EnderChests over SFTP, in order to use a Windows machine <strong>as a remote</strong>
+for connecting <em>from</em> other EnderChests, you will need to install and
+configure <a href="https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse">OpenSSH for Windows</a>
+or a similar solution.</p>
+</div>
+<p>For example, say you have an ROG Ally running Windows and a Steam Deck running
+SteamOS. With EnderChest installed on both machines, you can get away with not
+running an SSH server on Windows by running all of your <code>open</code> and <code>close</code>
+operations from the Ally (just remember to run <code>place</code> on the Steam Deck
+afterwards to refresh any linking changes).</p>
+<h3 id="file-protocol">File Protocol</h3>
+<ul>
+<li><strong>Scheme</strong>: <code>file://</code></li>
+<li><strong>Example URI</strong>: <code>file:///C:/Users/openbagtwo/My%20Minecraft%20Stuff</code></li>
+<li><strong>Platforms</strong>: All</li>
+<li><strong><a href="https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/jj710207(v=vs.85)">Documentation</a></strong></li>
+</ul>
+<p>You can use this protocol to have EnderChest sync between two folders on the
+same machine. This can be useful if you're using a service like Dropbox or
+Google Drive that automatically backups and synchronizes files in a specific
+directory, and where using <code>enderchest open</code> to pull the files out of that
+shared drive before using them can help avoid conflicts and corruption.</p>
+<div class="admonition warning">
+<p class="admonition-title">Limitation</p>
+<p>EnderChest <strong>does not</strong> support using the file protocol to sync files between
+different computers, nor does it support authenticating as different users.</p>
+</div>
+<h2 id="suggested-shulker-box-layouts">Suggested Shulker Box Layouts</h2>
+<h3 id="hierarchical">Hierarchical</h3>
+<p>My personal strategy for effective, collision-free linking is to break down
+one's Minecraft playing habits into a classification hierarchy:</p>
+<ol>
+<li>These are the things I will want <em>every</em> time I play Minecraft</li>
+<li>These are the things I'll want whenever I want to play <em>a certain kind</em> of
+   Minecraft</li>
+<li>These are the things I'll want whenever I'm playing <em>this particular</em>
+   Minecraft</li>
+<li>These are the things I only want when I'm playing Minecraft <em>on this
+   particular computer</em>.</li>
+</ol>
+<p>Remember that EnderChest respects a <em>priority order</em> you set on each shulker
+box, with lower priority boxes getting linked first, and higher priority ones
+overwriting any links created by the earlier boxes. Use this when thinking about
+what kinds of boxes to create, and about what items to put in each box.</p>
+<div class="admonition tip">
+<p class="admonition-title">Pro Tip</p>
+<p>It's a good idea to give each Shulker Box a unique priority value. It's
+an even better idea to start off by making these priorities, say, multiples
+of 10 or 100 so that later on you can easily slot in new boxes without
+having to change the priority of every other box.</p>
+</div>
+<p>For example, here is how I have my boxes laid out (the number at the
+start is their priority values):</p>
+<ul>
+<li>
+<p>(-20) Global: This shulker box is configured to link to everything and
+  contains my <code>usercache.json</code> and <code>usernamecache.json</code> files, a bunch of
+  resource packs that work across  a wide swath of Minecraft versions,
+  as well as the "Standard" linked folders (backups, logs, crash reports,
+  screenshots, etc.)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you're creating your shulker box through the command-line interface,
+this is pretty much the only sort of box where I'd recommend selecting
+the "Global" set of linked-folders.</p>
+</div>
+</li>
+</ul>
+<p>This is also where I have a baseline <code>options.txt</code> file. It's almost certain
+   to get replaced in the actual instance, but it saves me so much aggravation
+   to be able to create and onboard a new instance and not have to remember to
+   turn off <code>autoJump</code> before hopping into a world.</p>
+<ul>
+<li>
+<p>(-10) Shaders: Because shaders tend to be compatible across pretty much any
+  supported Minecraft version, this box is set up to link with any instance
+  that has Optifine or Iris installed, which for me is just anything
+  non-vanilla, so the <code>shulkerbox.cfg</code> looks like:
+  <div class="language-ini highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">[minecraft]</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="na">*</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">[modloader]</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="na">forge</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="na">fabric-like</span>
+</span></code></pre></div>
+  I also have another box ((-11) Modconfigs) where I put baseline configuration
+  files for mods where the config format hasn't changed or is
+  generally backwards / forwards compatible (so things like "Replay Mod: don't
+  record single-player by default" or
+  "<a href="https://modrinth.com/mod/indypets">IndyPets</a>: pets should not be independent
+  by default"). Even though not every instance linked will use these configs,
+  the files won't hurt anything by being there.</p>
+</li>
+<li>
+<p>(0) 1.20, and also:</p>
+<ul>
+<li>(1) 1.12</li>
+<li>(2) 1.16</li>
+<li>(3) 1.18</li>
+<li>(4) 20w14infinite</li>
+<li>(5) 23w13a_or_b</li>
+</ul>
+<p>these version-specific shulker boxes contain all the resource packs that
+were built for just those Minecraft versions along with customized
+<code>options.txt</code> files that overwrite the one in the "(-20) Global" box.
+The last two boxes also contain the worlds for those versions, since
+it's not like there are modpacks for the April Fool's updates.</p>
+</li>
+<li>
+<p>(10) 1.20 Quilt, and also:</p>
+<ul>
+<li>(11) 1.12 Forge</li>
+<li>(12) 1.16 Forge</li>
+<li>(13) 1.18 Fabric</li>
+<li>(14) 1.18 Forge</li>
+</ul>
+<p>these boxes contain the optimization, performance and other "no regrets"
+mods that I would <em>always</em> want installed for that version and modloader:
+things like Optifine, Sodium, Iris, Replay Mod,
+<a href="https://modrinth.com/mod/shulkerboxtooltip?hl=en-US">Shulker Box Tooltip</a>,
+etc.</p>
+</li>
+<li>
+<p>(100) <a href="https://modrinth.com/mod/betterend">Better End</a>, and also:</p>
+<ul>
+<li>(110) <a href="https://modrinth.com/mod/foxnap">Fox Nap</a></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See how I jumped from priority 13 to 100? This is to make sure that
+there's plenty of space for future Minecraft version x modloader combos.</p>
+</div>
+<p>This next level is for mods that I use across different instances but maybe
+not <em>all</em> instances for a given loader and version. The matching is done
+via tag (as well as version and loader), and I have at times had sub-boxes
+(Better End 1.18, 1.19, 1.20; Fox Nap 1.19.0, 1.19.2, 1.19.3) to contain
+the most up-to-date mod-specific builds while the configuration files go
+in the main box.</p>
+</li>
+<li>
+<p>(200)-(299) Instance-specific boxes. Each instance then gets their own box that
+    explicitly specifies each mod going into that instance, along with any
+    tweaked options or configuration files.</p>
+</li>
+<li>
+<p>(300) Battlestation.local, and also:</p>
+<ul>
+<li>(310) Couch-Gamer.local</li>
+<li>(320) Steam-Deck.local</li>
+</ul>
+<p>These boxes contain computer-specific optimizations, such as overriding
+shaderpack settings and changing keybindings. These have the highest priority
+so as to get applied <strong>last</strong> (and consequently, I'll also sometimes have
+instance-specific, machine-specific boxes that further tweak these settings).
+You may find you have better luck giving "local" boxes <em>lower</em> priority
+(in the -10 range) and then having your instance/machine-specific tweaks set
+at the instance or modpack priority level.</p>
+</li>
+</ul>
+<p>And yes, at the end of the day, I end up with <em>a lot</em> of boxes
+(45 as of this writng). And since the  system <em>relies</em> on links overwriting
+links as you go from broad to specific, it can be difficult to trace back
+<a href="https://github.com/OpenBagTwo/EnderChest/issues/83">where an individual file <em>actually comes from</em></a>
+or which other instances it is shared with.</p>
+<p>But the advantage is that when I get notified that there's version of a mod,
+I know exactly where to put it so that the right instances get the new build, and
+the same goes for settings--I make a tweak to my
+<a href="https://modrinth.com/mod/do-a-barrel-roll">Do A Barrel Roll</a> settings? It gets
+automatically applied to every Minecraft instance that works with that config.</p>
+<h3 id="chest-monster">Chest Monster</h3>
+<p>The polar opposite of the careful hierarchical approach takes advantage of
+the ability of <em>symlinks to point to other symlinks</em>.</p>
+<p>This strategy relies on having a <strong><em>non-shulker-box</em></strong> folder that gets synced
+within your EnderChest that contains every single mod, resource pack, world,
+config file, etc. that you want to use, and <em>every version or permutation</em> of
+each of those files (so, for example, you could have <code>options.basic.txt</code>
+alongside an <code>options.controller.txt</code> that remaps keybinds for instances running
+on the Steam Deck or other handhelds).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Name your Chest Monster something like "_Chest Monster" so that it shows up
+first (or last) when viewing your EnderChest contents alphabetically</p>
+</div>
+<p>From there, you then create a shulker box for each instance that contains
+<em>symlinks</em> pointing into the files that live in the EnderChest (<em>e.g.</em>
+<code>instance_shulker/options.txt -&gt; _Chest Monster/options files/basic_options.txt</code>).</p>
+<p>Each instance will probably want to use the "Global" set of linked folders so
+that when an instance generates new screenshots, logs, crash reports, etc., they
+go into the EnderChest, and by making the "folders" inside of the shulker boxes
+<em>symlinks themselves</em>, they can point into either shared or separated folders
+within the Chest Monster, <em>i.e.</em></p>
+<ul>
+<li><code>instance_shulker/saves -&gt; _Chest Monster/worlds</code>, vs.</li>
+<li><code>instance_shulker/saves -&gt; _Chest Monster/worlds/instance's worlds</code></li>
+</ul>
+<p>This strategy has the advantage of ensuring that there are no linking conflicts,
+as in its purest form, each instance is linked to only one chest, and onboarding
+an existing instance following this approach is comparatively
+straightforward--just move all of the instance's contents into the shulker box,
+then move each file one-by-one from the shulker into the Chest Monster, putting
+a link in the shulker box in the place of each file.</p>
+<p>The downside, however, is that this process needs to be carried out <em>every</em> time
+there's a new instance, and replacing a mod with a newer version of that mod
+requires updating every single link in each of your shulker boxes.</p>
+<div class="admonition tip">
+<p class="admonition-title">Pro Tip</p>
+<p>If you remove the build and mod-version information from a mod's filename,
+then when you replace that file with a newer build, all the existing links
+will still work.</p>
+<p>You can also accomplish a similar effect by creating symlinks named
+<code>&lt;mod&gt;.&lt;minecraft_version&gt;.latest.jar</code> that point to the actual latest
+version. Then you can have the links in your shulker boxes safely point to
+that "latest" file, and when you upgrade the mod, you only need to update
+one symlink.</p>
+</div>
+<p>The other downside is that you can end up with "orphaned" files in your Chest
+Monster that are no longer linked to by any shulker box.</p>
+<p>There are, of course, hybrid approaches (for example, even though I mostly
+follow the hierarchical approach for my instances, all of my worlds actually
+live within structured folders inside of a "Chest Monster" for ease of
+<a href="https://github.com/OpenBagTwo/gsb">backup management</a>), and if you come up
+with a different workflow that works for you,
+<a href="https://github.com/OpenBagTwo/EnderChest/issues/new">I'd be delighted to hear about it.</a></p>
+<h2 id="effective-syncing">Effective Syncing</h2>
+<h3 id="passwordless-ssh-authentication">Passwordless SSH Authentication</h3>
+<p>When connecting to an SSH server (rsync / sftp), it is both more secure and
+more convenient to use <strong>public key authentication</strong> instead of a password.
+Instructions for setting up pubkey authentication can be found
+<a href="https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement">here for Windows</a>
+and
+<a href="https://www.redhat.com/sysadmin/key-based-authentication-ssh">here for macOS and Linux</a></p>
+<h3 id="pointing-links-outside-of-your-enderchest">Pointing Links Outside of Your EnderChest</h3>
+<p>While link-folders (entire folders inside of your shulker box that are linked
+to from your Minecraft instances) are great for centralizing things like
+backups, logs, and crash reports that you probably don't need to have
+split by instance, you <em>probably don't</em> need to sync them across different
+computers. My suggestion is to structure your minecraft folder (the parent of
+your EnderChest folder) as follows:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&lt;minecraft root&gt;: a single folder where all your minecraft data will live
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> ├── instances: your MultiMC-type instances (most launchers let you set a custom location)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a> ├── backups
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a> ├── crash reports
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a> ├── logs
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a> ├── EnderChest: the root directory for all resources managed by this package
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a> │   ├── global: shulker box that links to all instances
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a> │   │   ├── backups ↵ -&gt; ../../../backups
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a> │   │   ├── crash-reports ↵ -&gt; ../../../crash reports
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a> │   │   ├── logs ↵ -&gt; ../../../logs
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a> │   │   ├── screenshots ↵ -&gt; ~/Pictures/minecraft screenshots
+</span></code></pre></div>
+<p>Since backups, crash reports, logs and, in my example, screenshots, live <em>outside</em>
+of the Enderchest, the contents won't actually be synced. Meanwhile, because
+the links themselves <em>do</em> sync, and because I've used
+<a href="https://feryn.eu/blog/relative-symlinks/">relative links</a>, this EnderChest
+configuration will work on any EnderChest installation that uses this folder
+structure, and all without needing to muck with the <code>do-not-sync</code> settings
+in the config file!</p>
+<h3 id="keeping-local-boxes-local">Keeping Local Boxes Local</h3>
+<p>EnderChest's default behavior is to sync <em>all</em> shulker boxes across <em>all</em> installations,
+even if that shulker box won't be used on other machines. This is done so that your
+local files are backed up and available for reference wherever you're playing Minecraft.</p>
+<p>But if you have a lot of EnderChests and a lot of local-only shulker boxes, that might
+not be something that you want, at least not on every machine.</p>
+<p>To exclude a folder (or file) from sync, open your <code>enderchest.cfg</code> file (inside your
+EnderChest folder). Inside the top <code>[properties]</code> section you should see an entry named
+"do-not-sync". By default it should look like this:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">do-not-sync</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">        </span><span class="na">EnderChest/enderchest.cfg</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">        </span><span class="na">EnderChest/.*</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="na">.DS_Store</span>
+</span></code></pre></div>
+<p>If there's a shulker box you want to exclude from syncing, just add it on a new line
+(prefixing it with <code>EnderChest/</code> will help ensure that you're not excluding files with
+that name in other boxes).</p>
+<div class="admonition tip">
+<p class="admonition-title">Pro Tip</p>
+<p>If you use a consistent naming convention, such as giving all of your local-only
+shulker boxes names that end in ".local", you can exclude them all at once by adding
+the line:
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">EnderChest/*.local</span>
+</span></code></pre></div></p>
+</div>
+<p>Note that this "do-not-sync" list <em>is only obeyed</em> for sync commands run from
+the lcoal machine / EnderChest--this means that while running <code>enderchest close</code>
+from one machine may exclude a shulker box from being pushed, running <code>enderchest open</code>
+from that that other machine may grab that box anyway.</p>
+<h2 id="version-control-with-git">Version control with Git</h2>
+<p>As mentioned <a href="#keeping-local-boxes-local">above</a>, if a folder in your
+EnderChest is prefixed with a "." then EnderChest by default <em>will not</em> sync
+it with other machines or place links into that folder. One reason for this
+is to make it easier to create incremental backups and put your configurations
+under full version control using something like <a href="https://git-scm.com/">Git</a>.</p>
+<p>If you navigate <em>into</em> your EnderChest folder and run the command</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>init
+</span></code></pre></div>
+<p>then assuming you have Git installed on your system, it will turn your
+entire EnderChest into a repository and store its version history in the
+hidden ".git" folder. This isn't the place for a full tutorial, but
+a handy cheat-sheet of the basic <code>git</code> commands can be found
+<a href="https://training.github.com/downloads/github-git-cheat-sheet/">here</a>.</p>
+<p>The relevant section for you is the one that reads "Make changes."
+You probably don't want to be pushing your EnderChest (which probably
+contains a large number of very large files) to GitHub, though adding
+the ability for EnderChest to sync between installations directly
+via the Git protocol is
+<a href="https://github.com/OpenBagTwo/EnderChest/issues/30">definitely under consideration</a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Shameless Plug</p>
+<p>If you like the idea of version controls and backups but are intimidated
+by the complexity of Git, have a look at one of my other projects:
+<a href="https://github.com/OpenBagTwo/gsb"><strong>G</strong>ame <strong>S</strong>ave <strong>B</strong>ackups</a>, which
+distills the all the essential backup management operations down to a few
+simple verbs.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If following the <a href="#chest-monster">Chest Monster</a> approach, you may want to
+add the Chest Monster's folder to your
+<a href="https://www.atlassian.com/git/tutorials/saving-changes/gitignore"><code>.gitignore</code></a>
+file to prevent changes from being tracked (I personally prefer to manage
+my world-save backups separately using <code>gsb</code>)</p>
+</div>
+<h2 id="launcher-integration">Launcher Integration</h2>
+<h3 id="startup-and-shutdown-scripts">Startup and Shutdown Scripts</h3>
+<p>Launchers like <a href="prismlauncher.org/">PrismLauncher</a> can be configured to run
+commands before an  instance is launched or after it's closed. Consider putting
+<code>enderchest open /path/to/minecraft_root</code> in your startup scripts and
+<code>enderchest close /path/to/minecraft_root</code> in your shutdown scripts (where
+"minecraft_root" is the location where you usually run the enderchest commands,
+<em>i.e.</em> the parent of your EnderChest folder.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
