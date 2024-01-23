@@ -790,7 +790,7 @@ def _check_for_allowed_symlinks(
         _needs_symlink_allowlist(version) for version in instance.minecraft_versions
     ):
         return
-    ender_chest_abspath = os.path.abspath(ender_chest.root)
+    ender_chest_abspath = os.path.realpath(ender_chest.root)
 
     symlink_allowlist = instance.root / "allowed_symlinks.txt"
 
