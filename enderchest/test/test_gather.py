@@ -418,23 +418,32 @@ class TestSymlinkAllowlistHandling:
         with pytest.raises(StopIteration):
             i_forbid_it()
 
+    @pytest.mark.parametrize(
+        "symlinked_root", (False, True), ids=("direct_root", "symlinked_root")
+    )
     def test_ender_chest_will_write_allowlists_with_consent(
-        self, minecraft_root, home, monkeypatch, capsys
+        self, symlinked_root, minecraft_root, home, monkeypatch, capsys, tmp_path
     ):
         mkay = utils.scripted_prompt(["y"] * 3)
         monkeypatch.setattr("builtins.input", mkay)
 
-        gather.gather_minecraft_instances(minecraft_root, home, True)
+        if symlinked_root:
+            (tmp_path / "mc").symlink_to(minecraft_root)
+            provided_root = tmp_path / "mc"
+        else:
+            provided_root = minecraft_root
+
+        gather.gather_minecraft_instances(provided_root, home, True)
 
         # this is also testing that you're not getting prompted
         # for pre-1.20 instances
         gather.gather_minecraft_instances(
-            minecraft_root, minecraft_root / "instances", False
+            provided_root, minecraft_root / "instances", False
         )
 
         _ = capsys.readouterr()  # suppress outputs
 
-        ender_chest_path = os.path.abspath(fs.ender_chest_folder(minecraft_root))
+        ender_chest_path = os.path.realpath(fs.ender_chest_folder(minecraft_root))
 
         assert (
             home / ".minecraft" / "allowed_symlinks.txt"
