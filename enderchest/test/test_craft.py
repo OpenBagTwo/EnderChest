@@ -1,4 +1,5 @@
 """Tests for setting up EnderChests and shulker boxes"""
+
 import logging
 import os
 from pathlib import Path
@@ -518,6 +519,42 @@ class TestPromptByFilter:
             """Filters match the instances:
   - official
   - Chest Boat"""
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_filter_prompt_supports_negation(self, monkeypatch, capsys, caplog):
+        script_reader = utils.scripted_prompt(
+            (
+                "",
+                "",
+                "",
+                "",
+                "!vanilla*",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_filters(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("minecraft", ("*",)),
+            ("modloader", ("*",)),
+            ("tags", ("!vanilla*",)),
+        )
+
+        # check that it was showing the right instances at the end
+        assert caplog.records[-1].msg % caplog.records[-1].args == (
+            """Filters match the instances:
+  - bee
+  - Drowned"""
         )
 
         # make sure all responses were used
