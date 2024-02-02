@@ -1,4 +1,5 @@
 """Functionality for setting up the folder structure of both chests and shulker boxes"""
+
 import logging
 import re
 from collections import Counter
@@ -30,8 +31,9 @@ def craft_ender_chest(
     minecraft_root: Path,
     copy_from: str | ParseResult | None = None,
     instance_search_paths: Iterable[str | Path] | None = None,
-    remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
-    | None = None,
+    remotes: (
+        Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]] | None
+    ) = None,
     overwrite: bool = False,
 ) -> None:
     """Craft an EnderChest, either from the specified keyword arguments, or
@@ -722,7 +724,8 @@ def _prompt_for_filters(
                 "Tags?"
                 f'\ne.g.{", ".join(example_tags)}'
                 "\n(or multiple using comma-separated lists or wildcards)"
-                "\nNote: tag-matching is not case-sensitive.",
+                "\nNote: tag-matching is not case-sensitive."
+                '\nNote: you can also specify a tag to exclude by prefacing it with "!"',
                 suggestion="*",
             )
             or "*"
@@ -794,6 +797,7 @@ def _prompt_for_instance_numbers(
     shulker_box: ShulkerBox,
     instances: Sequence[InstanceSpec],
     instance_loader: Callable[[], Sequence[InstanceSpec]],
+    exclude: bool = False,
 ) -> ShulkerBox:
     """Prompt the user to specify the instances they'd like by number
 
@@ -806,6 +810,9 @@ def _prompt_for_instance_numbers(
     instance_loader : method that returns a list of InstanceSpec
         A method that when called, prints and returns a refreshed list of instances
         registered to the EnderChest
+    exclude: bool, optional
+        To modify this method to prompt for and return a list of shulker boxes to _exclude_
+        instead of _include_, pass in `exclude=True`
 
     Returns
     -------
@@ -814,13 +821,15 @@ def _prompt_for_instance_numbers(
     """
     selections = prompt(
         (
-            "Which instances would you like to include?"
-            '\ne.g. "1,2,3", "1-3", "1-6" or "*" to specify all'
+            "Which instances would you like to {}?".format(
+                "exclude" if exclude else "include"
+            )
+            + '\ne.g. "1,2,3", "1-3", "1-6" or "*" to specify all'
         ),
-        suggestion="*",
+        suggestion="" if "exclude" else "*",
     )
     selections = re.sub("/s", " ", selections)  # normalize whitespace
-    if selections == "":
+    if selections == "" and not exclude:
         selections = "*"
 
     if re.search("[^0-9-,* ]", selections):  # check for invalid characters
@@ -867,8 +876,10 @@ def _prompt_for_instance_numbers(
     )
 
     CRAFT_LOGGER.info(
-        "You selected the instances:\n%s",
-        "\n".join([f"  - {name}" for name in choices]),
+        "You selected to {} the instances:\n%s".format(
+            "explicitly exclude" if exclude else "include"
+        )
+        + "\n".join([f"  - {name}" for name in choices]),
     )
     if not confirm(default=True):
         CRAFT_LOGGER.debug("Trying again to prompt for instance numbers")
@@ -876,7 +887,20 @@ def _prompt_for_instance_numbers(
         return _prompt_for_instance_numbers(
             shulker_box, instance_loader(), instance_loader
         )
+    if exclude:
+        choices = tuple(f"!{choice}" for choice in choices)
+
+    prior_criteria: list[tuple[str, tuple[str, ...]]] = []
+    prior_instance_selections: list[str] = []
+    for i, (condition, values) in enumerate(shulker_box.match_criteria):
+        if condition == "instances":
+            prior_instance_selections.extend(values)
+        else:
+            prior_criteria.append((condition, values))
 
     return shulker_box._replace(
-        match_criteria=shulker_box.match_criteria + (("instances", choices),)
+        match_criteria=(
+            *prior_criteria,
+            ("instances", (*prior_instance_selections, *choices)),
+        )
     )
