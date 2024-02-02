@@ -594,6 +594,17 @@ class TestShulkerInstanceMatching:
 
         assert self.matchall(name_matching_shulker) == []
 
+    def test_instance_name_matching_supports_wildcards(self):
+        name_matching_shulker = ShulkerBox(
+            0,
+            "name_matching",
+            Path("ignoreme"),
+            (("instances", ("*est*",)),),
+            (),
+        )
+
+        assert self.matchall(name_matching_shulker) == ["Chest Boat"]
+
     @pytest.mark.parametrize("quote_char", ('"', '"'), ids=("single", "double"))
     def test_instance_name_can_be_quoted(self, quote_char):
         name_matching_shulker = ShulkerBox(
