@@ -1,6 +1,8 @@
 """Specification and configuration of a shulker box"""
+
 import fnmatch
 import os
+import re
 from pathlib import Path
 from typing import Any, Iterable, NamedTuple
 
@@ -207,30 +209,62 @@ class ShulkerBox(NamedTuple):
         for condition, values in self.match_criteria:
             match condition:  # these should have been normalized on read-in
                 case "instances":
+                    matchers = []
+                    exclusions = []
                     for value in values:
-                        if fnmatch.fnmatchcase(instance.name, value):
+                        if value.startswith("!"):
+                            exclusions.append(value[1:])
+                        else:
+                            matchers.append(value)
+                    for value in exclusions:
+                        if _matches_string(value, instance.name, case_sensitive=True):
+                            return False
+
+                    if len(matchers) == 0:  # implicit "*"
+                        matchers = ["*"]
+
+                    for value in matchers:
+                        if _matches_string(value, instance.name, case_sensitive=True):
                             break
                     else:
                         return False
+
                 case "tags":
+                    matchers = []
+                    exclusions = []
                     for value in values:
+                        if value.startswith("!"):
+                            exclusions.append(value[1:])
+                        else:
+                            matchers.append(value)
+
+                    for value in exclusions:
+                        for tag in instance.tags:
+                            if _matches_string(value, tag):
+                                return False
+
+                    if len(matchers) == 0:  # implicit "*"
+                        matchers = ["*"]
+
+                    for value in matchers:
                         if value == "*":  # in case instance.tags is empty
                             break
-                        if fnmatch.filter(
-                            [tag.lower() for tag in instance.tags], value.lower()
-                        ):
-                            break
+                        for tag in instance.tags:
+                            if _matches_string(value, tag):
+                                break
+                        else:
+                            continue
+                        break
                     else:
                         return False
+
                 case "modloader":
                     for value in values:
-                        if fnmatch.fnmatchcase(
-                            instance.modloader.lower(),
-                            value.lower(),
-                        ):
+                        if _matches_string(value, instance.modloader):
                             break
                     else:
                         return False
+
                 case "minecraft":
                     for value in values:
                         if any(
@@ -242,9 +276,11 @@ class ShulkerBox(NamedTuple):
                             break
                     else:
                         return False
+
                 case "hosts":
                     # this is handled at a higher level
                     pass
+
                 case _:
                     raise NotImplementedError(
                         f"Don't know how to apply match condition {condition}."
@@ -297,6 +333,37 @@ def _matches_version(version_spec: str, version_string: str) -> bool:
     except ValueError:
         # fall back to simple fnmatching
         return fnmatch.fnmatchcase(version_string.lower(), version_spec.lower())
+
+
+def _matches_string(pattern: str, value: str, case_sensitive: bool = False) -> bool:
+    """Determine whether the given pattern matches the provided value.
+
+    Parameters
+    ----------
+    pattern : str
+        The pattern to match. This can be a literal value, an fnmatch pattern with wildcards or a regular expression
+        if quoted and prefixed with an "r".
+    value : str
+        The value to check
+    case_sensitive : bool, optional
+        Whether the matching is case-sensitive. Default is False. Note that this is **ignored** if the provided pattern
+        is a regular expression.
+
+    Returns
+    -------
+    bool
+        True if the pattern matches the value, False otherwise
+    """
+    pattern = pattern.strip()
+    value = value.strip()
+    if re.match(r"^r('|\").*\1$", pattern):
+        return re.match(pattern[2:-1], value) is not None
+    if re.match(r"^('|\").*\1$", pattern):
+        pattern = pattern[1:-1]
+    if not case_sensitive:
+        pattern = pattern.lower()
+        value = value.lower()
+    return fnmatch.fnmatchcase(value, pattern)
 
 
 def create_shulker_box(
