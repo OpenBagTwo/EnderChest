@@ -684,6 +684,17 @@ class TestShulkerInstanceMatching:
             "Drowned",
         ]
 
+    def test_instance_name_matching_can_combine_patterns_and_negations(self):
+        name_matching_shulker = ShulkerBox(
+            0,
+            "name_matching",
+            Path("ignoreme"),
+            (("instances", ("*e*", "!*oat")),),
+            (),
+        )
+
+        assert self.matchall(name_matching_shulker) == ["bee", "Drowned"]
+
     def test_matching_shulkers_by_tag(self):
         tag_matching_shulker = ShulkerBox(
             0,
@@ -724,6 +735,33 @@ class TestShulkerInstanceMatching:
             "axolotl",
             "Chest Boat",
         ]
+
+    def test_tag_matching_supports_negation(self):
+        tag_matching_shulker = ShulkerBox(
+            0,
+            "vanilla-with-more-steps",
+            Path("ignoreme"),
+            (("tags", ("vanilla*", "!Vanilla Plus")),),
+            (),
+        )
+
+        assert self.matchall(tag_matching_shulker) == [
+            "official",
+            "axolotl",
+        ]
+
+    def test_combining_instance_and_tag_negation(self):
+        double_negative_shulker = ShulkerBox(
+            0,
+            "dont-wants",
+            Path("ignoreme"),
+            (
+                ("instances", ("!Drowned",)),
+                ("tags", ("!vanilla*",)),
+            ),
+            (),
+        )
+        assert self.matchall(double_negative_shulker) == ["bee"]
 
     def test_loader_matching_is_case_insensitive(self):
         # though in this case the values would have been normalized
@@ -850,6 +888,20 @@ class TestShulkerInstanceMatching:
             (),
         )
         assert self.matchall(multi_condition_shulker) == ["Chest Boat"]
+
+    def test_unknown_condition_raises_error(self):
+        whats_this_shulker = ShulkerBox(
+            0,
+            "out-of-left-field",
+            Path("ignoreme"),
+            (("quizzibuck", ("duketastrophe",)),),
+            (),
+        )
+        with pytest.raises(
+            NotImplementedError,
+            match="Don't know how to apply match condition quizzibuck",
+        ):
+            self.matchall(whats_this_shulker)
 
 
 @pytest.mark.usefixtures("multi_box_setup_teardown")
