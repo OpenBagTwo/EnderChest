@@ -1,4 +1,5 @@
 """Tests around instance-linking functionality"""
+
 import itertools
 import logging
 import os
@@ -592,6 +593,85 @@ class TestShulkerInstanceMatching:
         )
 
         assert self.matchall(name_matching_shulker) == []
+
+    @pytest.mark.parametrize("quote_char", ('"', '"'), ids=("single", "double"))
+    def test_instance_name_can_be_quoted(self, quote_char):
+        name_matching_shulker = ShulkerBox(
+            0,
+            "name_matching",
+            Path("ignoreme"),
+            (("instances", (f"{quote_char}Chest Boat{quote_char}",)),),
+            (),
+        )
+
+        assert self.matchall(name_matching_shulker) == ["Chest Boat"]
+
+    @pytest.mark.parametrize(
+        "quote_char", ("", '"', '"'), ids=("no-quote", "single-quote", "double-quote")
+    )
+    def test_instance_name_can_be_negated(self, quote_char):
+        almost_global_shulker = ShulkerBox(
+            0,
+            "almost_global",
+            Path("ignoreme"),
+            (("instances", (f"!{quote_char}axolotl{quote_char}",)),),
+            (),
+        )
+
+        assert self.matchall(almost_global_shulker) == [
+            instance.name
+            for instance in utils.TESTING_INSTANCES
+            if instance.name != "axolotl"
+        ]
+
+    @pytest.mark.parametrize(
+        "quote_char", ("", '"', '"'), ids=("no-quote", "single-quote", "double-quote")
+    )
+    def test_instance_name_negations_are_anded(self, quote_char):
+        almost_global_shulker = ShulkerBox(
+            0,
+            "name_matching",
+            Path("ignoreme"),
+            (
+                (
+                    "instances",
+                    (
+                        f"!{quote_char}axolotl{quote_char}",
+                        f"!{quote_char}Chest Boat{quote_char}",
+                    ),
+                ),
+            ),
+            (),
+        )
+
+        assert self.matchall(almost_global_shulker) == [
+            instance.name
+            for instance in utils.TESTING_INSTANCES
+            if instance.name not in ("axolotl", "Chest Boat")
+        ]
+
+    @pytest.mark.parametrize(
+        "quote_char", ('"', '"'), ids=("single-quote", "double-quote")
+    )
+    def test_instance_name_supports_regex(self, quote_char):
+        pattern_matching_shulker = ShulkerBox(
+            0,
+            "pattern-matching",
+            Path("ignoreme"),
+            (
+                (
+                    "instances",
+                    (f"r{quote_char}.+e.*{quote_char}",),
+                ),
+            ),
+            (),
+        )
+
+        assert self.matchall(pattern_matching_shulker) == [
+            "bee",
+            "Chest Boat",
+            "Drowned",
+        ]
 
     def test_matching_shulkers_by_tag(self):
         tag_matching_shulker = ShulkerBox(
