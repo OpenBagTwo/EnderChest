@@ -1,7 +1,9 @@
 """Higher-level functionality around synchronizing with different EnderCherts"""
+
 import logging
 from pathlib import Path
 from time import sleep
+from typing import Sequence
 from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs
@@ -155,6 +157,7 @@ def sync_with_remotes(
         return  # kinda unnecessary
 
     synced_somewhere = False
+    exclusions: Sequence[str] = sync_kwargs.pop("exclude", None) or ()
     for remote_uri, alias in remotes:
         if dry_run:
             runs: tuple[bool, ...] = (True,)
@@ -189,7 +192,7 @@ def sync_with_remotes(
                         minecraft_root,
                         exclude=[
                             *this_chest.do_not_sync,
-                            *(sync_kwargs.pop("exclude", None) or ()),
+                            *exclusions,
                         ],
                         dry_run=do_dry_run,
                         **sync_kwargs,
@@ -206,7 +209,7 @@ def sync_with_remotes(
                         remote_uri,
                         exclude=[
                             *this_chest.do_not_sync,
-                            *(sync_kwargs.pop("exclude", None) or ()),
+                            *exclusions,
                         ],
                         dry_run=do_dry_run,
                         **sync_kwargs,
