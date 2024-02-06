@@ -1,4 +1,6 @@
 """Tests around file transfer functionality"""
+
+import itertools
 import json
 import logging
 import os
@@ -265,7 +267,7 @@ class TestFileSync:
         r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
         assert original_config == fs.ender_chest_config(minecraft_root).read_text()
 
-    def test_open_not_touch_top_level_dot_folders_by_default(
+    def test_open_does_not_touch_top_level_dot_folders_by_default(
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
@@ -523,6 +525,33 @@ class TestFileSync:
 
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         assert not test_path.exists()
+
+    @pytest.mark.parametrize(
+        "operation, mode",
+        itertools.product(("pull", "push"), ("immediate", "dry_run_first")),
+    )
+    def test_sync_respects_exclude(
+        self, minecraft_root, remote, caplog, operation, mode
+    ):
+        sync_confirm_wait = 1 if mode == "dry_run_first" else 0
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+
+        r.sync_with_remotes(
+            minecraft_root,
+            operation,
+            verbosity=-1,
+            sync_confirm_wait=sync_confirm_wait,
+            exclude="*/diamond.png",
+        )
+        assert (
+            minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
+        ).read_text() != (
+            sync.abspath_from_uri(remote)
+            / "EnderChest"
+            / "vanilla"
+            / "conflict"
+            / "diamond.png"
+        ).read_text()
 
     ############################################################################
     # low-level tests                                                          #
