@@ -1,4 +1,5 @@
 """Test the command-line interface"""
+
 import logging
 import os
 from pathlib import Path
@@ -7,7 +8,7 @@ from typing import Generator
 import pytest
 
 import enderchest
-from enderchest import cli, gather, place, remote
+from enderchest import cli, load, place, remote
 
 
 class TestHelp:
@@ -395,7 +396,7 @@ class TestInventory(ActionTestSuite):
         def mock_load_shulker_boxes(root, **kwargs) -> None:
             gather_log.append((root, kwargs))
 
-        monkeypatch.setattr(gather, "load_shulker_boxes", mock_load_shulker_boxes)
+        monkeypatch.setattr(load, "load_shulker_boxes", mock_load_shulker_boxes)
 
         action, root, _, kwargs = cli.parse_args(["enderchest", *self.action.split()])
         action(root, **kwargs)
@@ -413,7 +414,7 @@ class TestInventory(ActionTestSuite):
             gather_log.append((root, name, kwargs))
 
         monkeypatch.setattr(
-            gather,
+            load,
             "get_shulker_boxes_matching_instance",
             mock_get_shulker_boxes_matching_instance,
         )
@@ -445,7 +446,7 @@ class TestInventory(ActionTestSuite):
             raise AssertionError("I should not have been called!")
 
         monkeypatch.setattr(
-            gather,
+            load,
             "get_shulker_boxes_matching_instance",
             mock_get_shulker_boxes_matching_instance,
         )

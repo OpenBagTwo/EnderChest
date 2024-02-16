@@ -1,12 +1,13 @@
 """Functionality for copying all files into their instances"""
+
 import os
 import shutil
 from pathlib import Path
 from typing import Iterable
 
 from . import filesystem as fs
-from .gather import load_ender_chest_instances
 from .instance import InstanceSpec
+from .load import load_ender_chest_instances
 from .loggers import BREAK_LOGGER, IMPORTANT
 from .prompt import confirm
 

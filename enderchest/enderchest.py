@@ -1,4 +1,5 @@
 """Specification and configuration of an EnderChest"""
+
 from dataclasses import dataclass
 from pathlib import Path
 from socket import gethostname
@@ -9,7 +10,7 @@ from . import config as cfg
 from . import filesystem as fs
 from . import instance as i
 from . import sync
-from .loggers import CRAFT_LOGGER, GATHER_LOGGER
+from .loggers import CRAFT_LOGGER, GATHER_LOGGER, LOAD_LOGGER
 from .sync import abspath_from_uri
 
 _DEFAULTS = (
@@ -135,8 +136,10 @@ class EnderChest:
         self,
         uri: str | ParseResult | Path,
         name: str | None = None,
-        remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
-        | None = None,
+        remotes: (
+            Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
+            | None
+        ) = None,
         instances: Iterable[i.InstanceSpec] | None = None,
     ):
         for setting, value in _DEFAULTS:
@@ -282,7 +285,7 @@ class EnderChest:
         FileNotFoundError
             If there is no config file at the specified location
         """
-        GATHER_LOGGER.debug("Reading config file from %s", config_file)
+        LOAD_LOGGER.debug("Reading config file from %s", config_file)
         config = cfg.read_cfg(config_file)
 
         # All I'm gonna say is that Windows pathing is the worst
@@ -357,7 +360,7 @@ class EnderChest:
                             f" {sync_confirm_wait}"
                         ) from bad_input
         if place_after_open is None:
-            GATHER_LOGGER.warning(
+            LOAD_LOGGER.warning(
                 "This EnderChest does not have a value set for place-after-open."
                 "\nIt is being set to False for now. To enable this functionality,"
                 "\nedit the value in %s",
@@ -378,7 +381,7 @@ class EnderChest:
                 (fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME)
             )
             if chest_cfg_exclusion not in do_not_sync:
-                GATHER_LOGGER.warning(
+                LOAD_LOGGER.warning(
                     "This EnderChest was not configured to exclude the EnderChest"
                     " config file from sync operations."
                     "\nThat is being fixed now."

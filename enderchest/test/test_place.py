@@ -11,7 +11,7 @@ import pytest
 
 from enderchest import ShulkerBox
 from enderchest import filesystem as fs
-from enderchest import gather, place
+from enderchest import load, place
 from enderchest import shulker_box as sb
 from enderchest.loggers import IMPORTANT
 
@@ -1265,7 +1265,7 @@ class TestResourceTracing:
     def test_search_all_instances(self, placement_cache, minecraft_root):
         instance_folders = {
             instance.name: instance.root
-            for instance in gather.load_ender_chest_instances(
+            for instance in load.load_ender_chest_instances(
                 minecraft_root, log_level=logging.DEBUG
             )
         }

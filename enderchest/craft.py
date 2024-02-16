@@ -12,8 +12,9 @@ from pathvalidate import is_valid_filename
 from . import filesystem as fs
 from . import sync
 from .enderchest import EnderChest, create_ender_chest
-from .gather import (
-    gather_minecraft_instances,
+from .gather import gather_minecraft_instances
+from .instance import InstanceSpec, normalize_modloader
+from .load import (
     load_ender_chest,
     load_ender_chest_instances,
     load_ender_chest_remotes,
@@ -21,7 +22,6 @@ from .gather import (
     render_instance,
     report_shulker_boxes,
 )
-from .instance import InstanceSpec, normalize_modloader
 from .loggers import CRAFT_LOGGER
 from .prompt import NO, YES, confirm, prompt
 from .remote import fetch_remotes_from_a_remote_ender_chest

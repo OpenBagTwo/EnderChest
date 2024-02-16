@@ -1,4 +1,5 @@
 """Tests for reading and writing config files"""
+
 import warnings
 from pathlib import Path
 from urllib.parse import urlparse
@@ -9,7 +10,7 @@ from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import config as cfg
 from enderchest import filesystem as fs
 from enderchest.enderchest import _DEFAULTS
-from enderchest.gather import load_shulker_boxes
+from enderchest.load import load_shulker_boxes
 from enderchest.shulker_box import create_shulker_box
 from enderchest.test import utils
 
