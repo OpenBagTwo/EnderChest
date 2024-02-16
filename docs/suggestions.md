@@ -364,7 +364,7 @@ via the Git protocol is
 
 ### Startup and Shutdown Scripts
 
-Launchers like [PrismLauncher](prismlauncher.org/) can be configured to run
+Launchers like [PrismLauncher](https://www.prismlauncher.org/) can be configured to run
 commands before an  instance is launched or after it's closed. Consider putting
 `enderchest open /path/to/minecraft_root` in your startup scripts and
 `enderchest close /path/to/minecraft_root` in your shutdown scripts (where
