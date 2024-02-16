@@ -746,6 +746,14 @@ def _prompt_for_filters(
             instances = matches
             break
 
+    if len(instances) > 0:
+        shulker_box = _prompt_for_instance_numbers(
+            shulker_box,
+            instances,
+            lambda: selected_instances(shulker_box),
+            exclude=True,
+        )
+
     return shulker_box
 
 
@@ -833,18 +841,22 @@ def _prompt_for_instance_numbers(
             "Which instances would you like to {}?".format(
                 "explicitly exclude" if exclude else "include"
             )
-            + '\ne.g. "1,2,3", "1-3", "1-6" or "*" to specify all'
+            + '\ne.g. "1,2,3", "1-3", "1-6"'
+            + (' or "*" to specify all' if not exclude else "")
         ),
         suggestion="" if "exclude" else "*",
     )
     selections = re.sub("/s", " ", selections)  # normalize whitespace
-    if selections == "" and not exclude:
-        selections = "*"
+    if selections == "":
+        if exclude:
+            return shulker_box
+        else:
+            selections = "*"
 
     if re.search("[^0-9-,* ]", selections):  # check for invalid characters
-        CRAFT_LOGGER.error("Invalid selection\n")
+        CRAFT_LOGGER.error("Invalid selection.\n")
         return _prompt_for_instance_numbers(
-            shulker_box, instance_loader(), instance_loader
+            shulker_box, instance_loader(), instance_loader, exclude=exclude
         )
 
     selected_instances: set[str] = set()
@@ -859,7 +871,7 @@ def _prompt_for_instance_numbers(
                 if index < 0 or index >= len(instances):
                     CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
                     return _prompt_for_instance_numbers(
-                        shulker_box, instance_loader(), instance_loader
+                        shulker_box, instance_loader(), instance_loader, exclude=exclude
                     )
                 selected_instances.add(instances[index].name)
             case value if match := re.match("([0-9]+)-([0-9]+)$", value):
@@ -869,34 +881,39 @@ def _prompt_for_instance_numbers(
                         f"Invalid selection: {entry} is not a valid range\n"
                     )
                     return _prompt_for_instance_numbers(
-                        shulker_box, instance_loader(), instance_loader
+                        shulker_box, instance_loader(), instance_loader, exclude=exclude
                     )
                 if max(bounds) > len(instances) or min(bounds) < 1:
                     CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
                     return _prompt_for_instance_numbers(
-                        shulker_box, instance_loader(), instance_loader
+                        shulker_box, instance_loader(), instance_loader, exclude=exclude
                     )
                 selected_instances.update(
                     instance.name for instance in instances[bounds[0] - 1 : bounds[1]]
+                )
+            case _:
+                CRAFT_LOGGER.error(f"Invalid selection.\n")
+                return _prompt_for_instance_numbers(
+                    shulker_box, instance_loader(), instance_loader, exclude=exclude
                 )
 
     choices = tuple(
         instance.name for instance in instances if instance.name in selected_instances
     )
-    if len(choices) == 0:
+    if len(choices) == 0:  # this might not be possible to trigger
         return shulker_box
 
     CRAFT_LOGGER.info(
         "You selected to {} the instances:\n%s".format(
             "explicitly exclude" if exclude else "include"
-        )
-        + "\n".join([f"  - {name}" for name in choices]),
+        ),
+        "\n".join([f"  - {name}" for name in choices]),
     )
     if not confirm(default=True):
         CRAFT_LOGGER.debug("Trying again to prompt for instance numbers")
         CRAFT_LOGGER.info("")  # just making a newline
         return _prompt_for_instance_numbers(
-            shulker_box, instance_loader(), instance_loader
+            shulker_box, instance_loader(), instance_loader, exclude=exclude
         )
     if exclude:
         choices = tuple(f"!{choice}" for choice in choices)
