@@ -5,7 +5,7 @@ import logging
 BREAK_LOGGER = logging.getLogger("enderchest.break")
 CRAFT_LOGGER = logging.getLogger("enderchest.craft")
 GATHER_LOGGER = logging.getLogger("enderchest.gather")
-LOAD_LOGGER = logging.getLogger("enderchest.load")
+INVENTORY_LOGGER = logging.getLogger("enderchest.inventory")
 PLACE_LOGGER = logging.getLogger("enderchest.place")
 SYNC_LOGGER = logging.getLogger("enderchest.sync")
 

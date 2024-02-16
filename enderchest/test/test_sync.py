@@ -17,7 +17,7 @@ import pytest
 
 from enderchest import craft
 from enderchest import filesystem as fs
-from enderchest import gather, load, place
+from enderchest import gather, inventory, place
 from enderchest import remote as r
 from enderchest import sync
 from enderchest.sync import utils as sync_utils
@@ -47,7 +47,7 @@ class TestFileSync:
             minecraft_root / "EnderChest", *utils.TESTING_SHULKER_CONFIGS
         )
 
-        local = load.load_ender_chest(minecraft_root)
+        local = inventory.load_ender_chest(minecraft_root)
         local.sync_confirm_wait = False
         local.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
@@ -79,7 +79,7 @@ class TestFileSync:
             another_root / "EnderChest", *utils.TESTING_SHULKER_CONFIGS[1:]
         )
 
-        not_so_remote = load.load_ender_chest(another_root)
+        not_so_remote = inventory.load_ender_chest(another_root)
         not_so_remote.name = "closer than you think"
         not_so_remote._uri = not_so_remote._uri._replace(scheme=self.protocol)
         not_so_remote.register_remote(local._uri)
@@ -197,7 +197,7 @@ class TestFileSync:
 
         craft.craft_ender_chest(root, copy_from=remote.geturl(), overwrite=True)
 
-        assert load.load_ender_chest_remotes(minecraft_root) == [
+        assert inventory.load_ender_chest_remotes(minecraft_root) == [
             (remote, "closer than you think"),
             (urlparse("ipoac://yoursoul@birdhouse/minecraft"), "birdhouse"),
         ]
@@ -309,7 +309,7 @@ class TestFileSync:
         place.place_ender_chest(minecraft_root)
         assert test_path.read_text("utf-8") == "sparkle"
 
-        enderchest = load.load_ender_chest(minecraft_root)
+        enderchest = inventory.load_ender_chest(minecraft_root)
         enderchest.register_remote(remote, alias="not so remote")
         enderchest.place_after_open = place_after
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
@@ -336,7 +336,7 @@ class TestFileSync:
             / "conflict"
             / "diamond.png"
         )
-        enderchest = load.load_ender_chest(minecraft_root)
+        enderchest = inventory.load_ender_chest(minecraft_root)
         if fail_type == "bad_remotes":
             enderchest.register_remote("file://i/do/not/exist", "does not exist")
         enderchest.place_after_open = True
@@ -367,7 +367,7 @@ class TestFileSync:
             / "conflict"
             / "diamond.png"
         )
-        enderchest = load.load_ender_chest(minecraft_root)
+        enderchest = inventory.load_ender_chest(minecraft_root)
         enderchest.register_remote(remote, alias="not so remote")
         enderchest.place_after_open = True
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
@@ -476,7 +476,7 @@ class TestFileSync:
     def test_chest_obeys_its_own_ignore_list(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
 
-        chest = load.load_ender_chest(minecraft_root)
+        chest = inventory.load_ender_chest(minecraft_root)
         chest.do_not_sync = ["EnderChest/enderchest.cfg"]
         chest.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
@@ -518,7 +518,7 @@ class TestFileSync:
             / "optifine.jar"
         )
 
-        enderchest = load.load_ender_chest(minecraft_root)
+        enderchest = inventory.load_ender_chest(minecraft_root)
         enderchest.register_remote(remote, alias="not so remote")
         enderchest.place_after_open = True
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))

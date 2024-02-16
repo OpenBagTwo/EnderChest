@@ -9,7 +9,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
 from typing import Any, Iterable, Protocol, Sequence
 
-from . import craft, gather, load, loggers, place, remote, uninstall
+from . import craft, gather, inventory, loggers, place, remote, uninstall
 from ._version import get_versions
 
 # mainly because I think I'm gonna forget what names are canonical (it's the first ones)
@@ -89,11 +89,11 @@ def _list_instance_boxes(
             minecraft_root, pattern=path, instance_name=instance_name, **kwargs
         )
     elif instance_name is not None:
-        load.get_shulker_boxes_matching_instance(
+        inventory.get_shulker_boxes_matching_instance(
             minecraft_root, instance_name, **kwargs
         )
     else:
-        load.load_shulker_boxes(minecraft_root, **kwargs)
+        inventory.load_shulker_boxes(minecraft_root, **kwargs)
 
 
 def _list_shulker_box(
@@ -101,7 +101,9 @@ def _list_shulker_box(
 ):
     """Wrapper to handle the fact that name is a required argument"""
     assert shulker_box_name  # it's required by the parser, so this should be fine
-    load.get_instances_matching_shulker_box(minecraft_root, shulker_box_name, **kwargs)
+    inventory.get_instances_matching_shulker_box(
+        minecraft_root, shulker_box_name, **kwargs
+    )
 
 
 def _update_ender_chest(
@@ -203,7 +205,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
             if alias.endswith("s")
         ),
         "list the minecraft instances registered with your Enderchest",
-        load.load_ender_chest_instances,
+        inventory.load_ender_chest_instances,
     ),
     (
         tuple(
@@ -227,7 +229,7 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     (
         tuple(f"{verb} {alias}" for verb in _list_aliases for alias in _remote_aliases),
         "list the other EnderChest installations registered with this EnderChest",
-        load.load_ender_chest_remotes,
+        inventory.load_ender_chest_remotes,
     ),
     (
         ("open",),

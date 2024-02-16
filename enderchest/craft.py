@@ -14,7 +14,7 @@ from . import sync
 from .enderchest import EnderChest, create_ender_chest
 from .gather import gather_minecraft_instances
 from .instance import InstanceSpec, normalize_modloader
-from .load import (
+from .inventory import (
     load_ender_chest,
     load_ender_chest_instances,
     load_ender_chest_remotes,

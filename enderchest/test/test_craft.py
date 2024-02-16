@@ -13,7 +13,7 @@ from enderchest import filesystem as fs
 from enderchest.enderchest import create_ender_chest
 from enderchest.place import place_ender_chest
 
-from ..load import load_ender_chest
+from ..inventory import load_ender_chest
 from . import utils
 
 
