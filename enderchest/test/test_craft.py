@@ -2,6 +2,7 @@
 
 import logging
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -315,12 +316,12 @@ class TestShulkerBoxCrafting:
         script_reader = utils.scripted_prompt(
             [
                 "F",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "",  # version?
+                "",  # confirm
+                "",  # modloader?
+                "",  # confirm
+                "",  # tags?
+                "",  # confirm
                 "m",
                 # while we're here we might as well check setting
                 # the other box properties
@@ -515,10 +516,8 @@ class TestPromptByFilter:
         )
 
         # check that it was showing the right instances right up until the end
-        assert caplog.records[-1].msg % caplog.records[-1].args == (
-            """Filters match the instances:
-  - official
-  - Chest Boat"""
+        assert "filters match" in caplog.records[-1].msg and re.match(
+            "^.*official.*\n.*Chest Boat.*$", caplog.records[-1].args[0]
         )
 
         # make sure all responses were used
@@ -551,10 +550,8 @@ class TestPromptByFilter:
         )
 
         # check that it was showing the right instances at the end
-        assert caplog.records[-1].msg % caplog.records[-1].args == (
-            """Filters match the instances:
-  - bee
-  - Drowned"""
+        assert "filters match" in caplog.records[-1].msg and re.match(
+            "^.*bee.*\n.*Drowned.*$", caplog.records[-1].args[0]
         )
 
         # make sure all responses were used

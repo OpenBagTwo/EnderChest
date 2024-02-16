@@ -13,12 +13,13 @@ from . import filesystem as fs
 from . import sync
 from .enderchest import EnderChest, create_ender_chest
 from .gather import (
-    _report_shulker_boxes,
     gather_minecraft_instances,
     load_ender_chest,
     load_ender_chest_instances,
     load_ender_chest_remotes,
     load_shulker_boxes,
+    render_instance,
+    report_shulker_boxes,
 )
 from .instance import InstanceSpec, normalize_modloader
 from .loggers import CRAFT_LOGGER
@@ -504,7 +505,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
             minecraft_root, log_level=logging.DEBUG
         )
         if existing_shulker_boxes:
-            _report_shulker_boxes(
+            report_shulker_boxes(
                 existing_shulker_boxes, logging.INFO, "the current EnderChest"
             )
 
@@ -594,9 +595,22 @@ def _prompt_for_filters(
     an empty list) then the user's gonna be flying blind.
     """
 
+    def selected_instances(tester: ShulkerBox) -> list[InstanceSpec]:
+        matching = [instance for instance in instances if tester.matches(instance)]
+        CRAFT_LOGGER.info(
+            "Specified filters match the instances:\n%s",
+            "\n".join(
+                [
+                    f"  {i + 1}. {render_instance(instance)}"
+                    for i, instance in enumerate(matching)
+                ]
+            ),
+        )
+        return matching
+
     def check_progress(
         new_condition: str, values: Iterable[str]
-    ) -> tuple[ShulkerBox | None, list[str]]:
+    ) -> tuple[ShulkerBox | None, list[InstanceSpec]]:
         """As we add new conditions, report to the user the list of instances
         that this shulker will match and confirm with them that they want
         to continue.
@@ -630,19 +644,12 @@ def _prompt_for_filters(
         if len(instances) == 0:
             return tester, []
 
-        matches = [instance.name for instance in instances if tester.matches(instance)]
+        matches = selected_instances(tester)
 
         default = True
         if len(matches) == 0:
-            CRAFT_LOGGER.warning("Filters do not match any known instance.")
+            CRAFT_LOGGER.warning("Filters do not match any registered instance.")
             default = False
-        elif len(matches) == 1:
-            CRAFT_LOGGER.info(f"Filters match the instance: {matches[0]}")
-        else:
-            CRAFT_LOGGER.info(
-                "Filters match the instances:\n%s",
-                "\n".join([f"  - {name}" for name in matches]),
-            )
         return tester if confirm(default=default) else None, matches
 
     while True:
@@ -662,7 +669,7 @@ def _prompt_for_filters(
         )
         if updated:
             shulker_box = updated
-            instances = [instance for instance in instances if instance.name in matches]
+            instances = matches
             break
 
     while True:
@@ -697,7 +704,7 @@ def _prompt_for_filters(
         updated, matches = check_progress("modloader", sorted(modloaders))
         if updated:
             shulker_box = updated
-            instances = [instance for instance in instances if instance.name in matches]
+            instances = matches
             break
 
     while True:
@@ -736,7 +743,7 @@ def _prompt_for_filters(
         )
         if updated:
             shulker_box = updated
-            instances = [instance for instance in instances if instance.name in matches]
+            instances = matches
             break
 
     return shulker_box
@@ -764,7 +771,9 @@ def _prompt_for_instance_names(shulker_box: ShulkerBox) -> ShulkerBox:
         entry.strip()
         for entry in prompt(
             "Specify instances by name, separated by commas."
-            "\nYou can also use wildcards (? and *)",
+            "\nNote: this is case-sensitive."
+            "\nNote: You can also use wildcards (? and *)"
+            '\nNote: you can also specify an instance to exclude by prefacing it with "!"',
             suggestion="*",
         ).split(",")
     )
@@ -822,7 +831,7 @@ def _prompt_for_instance_numbers(
     selections = prompt(
         (
             "Which instances would you like to {}?".format(
-                "exclude" if exclude else "include"
+                "explicitly exclude" if exclude else "include"
             )
             + '\ne.g. "1,2,3", "1-3", "1-6" or "*" to specify all'
         ),
@@ -874,6 +883,8 @@ def _prompt_for_instance_numbers(
     choices = tuple(
         instance.name for instance in instances if instance.name in selected_instances
     )
+    if len(choices) == 0:
+        return shulker_box
 
     CRAFT_LOGGER.info(
         "You selected to {} the instances:\n%s".format(

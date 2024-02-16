@@ -1,4 +1,5 @@
 """Functionality for finding, resolving and parsing local installations and instances"""
+
 import json
 import logging
 import os
@@ -94,7 +95,7 @@ def load_ender_chest_instances(
             f" to the {minecraft_root} EnderChest:\n%s",
             "\n".join(
                 [
-                    f"  {i + 1}. {_render_instance(instance)}"
+                    f"  {i + 1}. {render_instance(instance)}"
                     for i, instance in enumerate(instances)
                 ]
             ),
@@ -102,7 +103,7 @@ def load_ender_chest_instances(
     return instances
 
 
-def _render_instance(instance: InstanceSpec) -> str:
+def render_instance(instance: InstanceSpec) -> str:
     """Render an instance spec to a descriptive string
 
     Parameters
@@ -169,13 +170,13 @@ def load_shulker_boxes(
                 f"There are no shulker boxes within the {minecraft_root} EnderChest"
             )
     else:
-        _report_shulker_boxes(
+        report_shulker_boxes(
             shulker_boxes, log_level, f"the {minecraft_root} EnderChest"
         )
     return shulker_boxes
 
 
-def _report_shulker_boxes(
+def report_shulker_boxes(
     shulker_boxes: Iterable[ShulkerBox], log_level: int, ender_chest_name: str
 ) -> None:
     """Log the list of shulker boxes in the order they'll be linked"""
@@ -341,7 +342,7 @@ def get_shulker_boxes_matching_instance(
             f"  - {_render_shulker_box(box)}" for box in matches
         )
 
-    GATHER_LOGGER.info(f"The instance {_render_instance(mc)} {report}")
+    GATHER_LOGGER.info(f"The instance {render_instance(mc)} {report}")
 
     return matches
 
@@ -398,7 +399,7 @@ def get_instances_matching_shulker_box(
         f" to the {minecraft_root} EnderChest:\n%s",
         "\n".join(
             [
-                f"  {i + 1}. {_render_instance(instance)}"
+                f"  {i + 1}. {render_instance(instance)}"
                 for i, instance in enumerate(chest.instances)
             ]
         ),
@@ -412,7 +413,7 @@ def get_instances_matching_shulker_box(
         report = "is not linked to by any registered instances"
     else:
         report = "is linked to by the following instances:\n" + "\n".join(
-            f"  - {_render_instance(instance)}" for instance in matches
+            f"  - {render_instance(instance)}" for instance in matches
         )
 
     GATHER_LOGGER.info(f"The shulker box {_render_shulker_box(shulker_box)} {report}")
@@ -718,8 +719,9 @@ def update_ender_chest(
     minecraft_root: Path,
     search_paths: Iterable[str | Path] | None = None,
     official: bool | None = None,
-    remotes: Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]]
-    | None = None,
+    remotes: (
+        Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]] | None
+    ) = None,
 ) -> None:
     """Orchestration method that coordinates the onboarding of new instances or
     EnderChest installations
