@@ -7,7 +7,7 @@ from typing import Iterable
 
 from . import filesystem as fs
 from .instance import InstanceSpec
-from .load import load_ender_chest_instances
+from .inventory import load_ender_chest_instances
 from .loggers import BREAK_LOGGER, IMPORTANT
 from .prompt import confirm
 

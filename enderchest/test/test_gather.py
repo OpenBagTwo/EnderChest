@@ -9,7 +9,7 @@ from enderchest import craft
 from enderchest import filesystem as fs
 from enderchest import gather
 from enderchest import instance as i
-from enderchest import load
+from enderchest import inventory
 
 from . import utils
 
@@ -142,11 +142,11 @@ class TestGatherInstances:
         # this is a horrible way tp do this
         ec_config[6] = "offer-to-update-symlink-allowlist = False"
         fs.ender_chest_config(minecraft_root).write_text("\n".join(ec_config))
-        assert load.load_ender_chest(minecraft_root).instances == ()
+        assert inventory.load_ender_chest(minecraft_root).instances == ()
         gather.update_ender_chest(minecraft_root, (home, minecraft_root / "instances"))
 
         instances = sorted(
-            load.load_ender_chest_instances(minecraft_root),
+            inventory.load_ender_chest_instances(minecraft_root),
             key=lambda instance: (
                 instance.name if instance.name != "official" else "aaa"
             ),  # sorting hack
@@ -164,7 +164,7 @@ class TestGatherInstances:
     def test_updating_an_instance_does_not_overwrite_tags(
         self, minecraft_root, home
     ) -> None:
-        enderchest = load.load_ender_chest(minecraft_root)
+        enderchest = inventory.load_ender_chest(minecraft_root)
 
         expected: dict[str, tuple[str, ...]] = {}
         for idx, instance in enumerate(enderchest._instances):
@@ -177,7 +177,7 @@ class TestGatherInstances:
 
         gather.update_ender_chest(minecraft_root, (home, minecraft_root / "instances"))
 
-        enderchest = load.load_ender_chest(minecraft_root)
+        enderchest = inventory.load_ender_chest(minecraft_root)
 
         assert expected == {
             instance.name: instance.tags for instance in enderchest.instances

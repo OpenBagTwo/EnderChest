@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 from . import filesystem as fs
-from .load import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
-from .loggers import IMPORTANT, LOAD_LOGGER, PLACE_LOGGER
+from .inventory import load_ender_chest, load_ender_chest_instances, load_shulker_boxes
+from .loggers import IMPORTANT, INVENTORY_LOGGER, PLACE_LOGGER
 from .prompt import prompt
 from .shulker_box import ShulkerBox
 
@@ -486,7 +486,7 @@ def load_placement_cache(minecraft_root: Path) -> dict[str, dict[Path, list[str]
     """
     try:
         cache_file = fs.place_cache(minecraft_root)
-        LOAD_LOGGER.debug(
+        INVENTORY_LOGGER.debug(
             "Loading placement cache from %s", fs.place_cache(minecraft_root)
         )
         raw_dict: dict[str, dict[str, list[str]]] = json.loads(
@@ -604,7 +604,7 @@ def report_resource_trace(
         return
     *other_box_names, primary_box_name = boxes
     try:
-        LOAD_LOGGER.log(
+        INVENTORY_LOGGER.log(
             IMPORTANT,
             "%s currently resolves to %s",
             symlink_location,
@@ -615,21 +615,25 @@ def report_resource_trace(
             ),
         )
     except OSError:
-        LOAD_LOGGER.warning("%s no longer exists or is not a symlink", symlink_location)
+        INVENTORY_LOGGER.warning(
+            "%s no longer exists or is not a symlink", symlink_location
+        )
 
-    LOAD_LOGGER.log(
+    INVENTORY_LOGGER.log(
         IMPORTANT,
         "    based on being linked into shulker box: %s",
         primary_box_name,
     )
-    LOAD_LOGGER.debug(
+    INVENTORY_LOGGER.debug(
         "        - > %s",
         fs.shulker_box_root(minecraft_root, primary_box_name) / resource_path,
     )
 
     for box_name in reversed(other_box_names):
-        LOAD_LOGGER.info("    which overwrote the link into shulker box: %s", box_name)
-        LOAD_LOGGER.debug(
+        INVENTORY_LOGGER.info(
+            "    which overwrote the link into shulker box: %s", box_name
+        )
+        INVENTORY_LOGGER.debug(
             "        - > %s",
             fs.shulker_box_root(minecraft_root, box_name) / resource_path,
         )
@@ -654,7 +658,7 @@ def list_placements(
     try:
         placements = load_placement_cache(minecraft_root)
     except OSError as no_cache:
-        LOAD_LOGGER.error(
+        INVENTORY_LOGGER.error(
             "The placement cache could not be loaded:"
             "\n  %s"
             "\nPlease run enderchest place again to regenerate the cache.",
@@ -666,12 +670,12 @@ def list_placements(
             minecraft_root, pattern, placements, instance_name=instance_name
         )
     except KeyError:
-        LOAD_LOGGER.error(
+        INVENTORY_LOGGER.error(
             "No instance named %s is registered to this EnderChest", instance_name
         )
         return
     if len(matches) == 0:
-        LOAD_LOGGER.warning(
+        INVENTORY_LOGGER.warning(
             "Could not find any placed resources matching the pattern %s%s."
             "\n\nNote: this command does not check inside linked folders.",
             pattern,

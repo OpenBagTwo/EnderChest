@@ -8,13 +8,13 @@ import pytest
 
 from enderchest import craft
 from enderchest import filesystem as fs
-from enderchest import load
+from enderchest import inventory
 from enderchest.test import utils
 
 
 class TestLoadEnderChestInstances:
     def test_bad_folder_just_returns_empty(self, tmp_path, caplog):
-        assert load.load_ender_chest_instances(tmp_path) == []
+        assert inventory.load_ender_chest_instances(tmp_path) == []
 
 
 class TestListShulkerBoxes:
@@ -30,13 +30,13 @@ class TestListShulkerBoxes:
         bad_ini.write_text("is_this_valid_ini=no")
 
     def test_bad_folder_just_returns_empty(self, tmp_path, caplog):
-        assert load.load_shulker_boxes(tmp_path) == []
+        assert inventory.load_shulker_boxes(tmp_path) == []
 
     def test_warn_for_a_chest_without_boxes(self, tmp_path, caplog):
         root = tmp_path / "nowhere"
         root.mkdir()
         craft.craft_ender_chest(root, remotes=(), overwrite=True)
-        _ = load.load_shulker_boxes(root)
+        _ = inventory.load_shulker_boxes(root)
 
         assert "There are no shulker boxes" in "\n".join(
             (
@@ -47,7 +47,7 @@ class TestListShulkerBoxes:
         )
 
     def test_list_shulker_box_reports_the_boxes_in_order(self, minecraft_root, caplog):
-        _ = load.load_shulker_boxes(minecraft_root)
+        _ = inventory.load_shulker_boxes(minecraft_root)
         assert (
             """0. global
   1. 1.19
@@ -60,7 +60,7 @@ class TestListShulkerBoxes:
         self, minecraft_root, caplog, monkeypatch
     ):
         monkeypatch.chdir(minecraft_root.parent)
-        _ = load.load_shulker_boxes(Path(minecraft_root.name))
+        _ = inventory.load_shulker_boxes(Path(minecraft_root.name))
         assert (
             """0. global
   1. 1.19
@@ -70,7 +70,7 @@ class TestListShulkerBoxes:
         )
 
     def test_list_shulker_box_warns_if_theres_a_bad_box(self, minecraft_root, caplog):
-        _ = load.load_shulker_boxes(minecraft_root)
+        _ = inventory.load_shulker_boxes(minecraft_root)
 
         warnings = [
             record for record in caplog.records if record.levelname == "WARNING"
@@ -90,7 +90,9 @@ class TestLoadBoxInstanceMatches:
         )
 
     def test_bad_folder_just_returns_empty(self, tmp_path, caplog):
-        assert load.get_shulker_boxes_matching_instance(tmp_path, "outstance") == []
+        assert (
+            inventory.get_shulker_boxes_matching_instance(tmp_path, "outstance") == []
+        )
 
     @pytest.mark.parametrize(
         "instance_name",
@@ -105,7 +107,9 @@ class TestLoadBoxInstanceMatches:
         }
         box_lookup = {
             box.name: box
-            for box in load.load_shulker_boxes(minecraft_root, log_level=logging.DEBUG)
+            for box in inventory.load_shulker_boxes(
+                minecraft_root, log_level=logging.DEBUG
+            )
         }
 
         expected = []
@@ -115,7 +119,7 @@ class TestLoadBoxInstanceMatches:
                     expected.append(box_lookup[box_name])
 
         assert (
-            load.get_shulker_boxes_matching_instance(minecraft_root, instance_name)
+            inventory.get_shulker_boxes_matching_instance(minecraft_root, instance_name)
             == expected
         )
 
@@ -126,7 +130,7 @@ class TestLoadBoxInstanceMatches:
     def test_loading_instances_that_match_boxes(self, minecraft_root, shulker_box_name):
         instance_lookup = {
             mc.name: mc
-            for mc in load.load_ender_chest_instances(
+            for mc in inventory.load_ender_chest_instances(
                 minecraft_root, log_level=logging.DEBUG
             )
         }
@@ -145,6 +149,8 @@ class TestLoadBoxInstanceMatches:
                     expected.append(instance_lookup[instance_name])
 
         assert (
-            load.get_instances_matching_shulker_box(minecraft_root, shulker_box_name)
+            inventory.get_instances_matching_shulker_box(
+                minecraft_root, shulker_box_name
+            )
             == expected
         )

@@ -10,7 +10,7 @@ from enderchest import EnderChest, InstanceSpec, ShulkerBox
 from enderchest import config as cfg
 from enderchest import filesystem as fs
 from enderchest.enderchest import _DEFAULTS
-from enderchest.load import load_shulker_boxes
+from enderchest.inventory import load_shulker_boxes
 from enderchest.shulker_box import create_shulker_box
 from enderchest.test import utils
 

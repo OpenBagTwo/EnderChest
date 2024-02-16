@@ -7,7 +7,7 @@ from typing import Sequence
 from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs
-from . import load, place
+from . import inventory, place
 from .enderchest import EnderChest
 from .loggers import IMPORTANT, SYNC_LOGGER
 from .prompt import confirm
@@ -138,11 +138,15 @@ def sync_with_remotes(
         )
     try:
         if sync_confirm_wait is None:
-            sync_confirm_wait = load.load_ender_chest(minecraft_root).sync_confirm_wait
-        this_chest = load.load_ender_chest(minecraft_root)
+            sync_confirm_wait = inventory.load_ender_chest(
+                minecraft_root
+            ).sync_confirm_wait
+        this_chest = inventory.load_ender_chest(minecraft_root)
 
         # I know this is redundant, but we want those logs
-        remotes = load.load_ender_chest_remotes(minecraft_root, log_level=logging.DEBUG)
+        remotes = inventory.load_ender_chest_remotes(
+            minecraft_root, log_level=logging.DEBUG
+        )
     except (FileNotFoundError, ValueError) as bad_chest:
         SYNC_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
