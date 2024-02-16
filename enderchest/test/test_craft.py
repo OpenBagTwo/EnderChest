@@ -322,6 +322,7 @@ class TestShulkerBoxCrafting:
                 "",  # confirm
                 "",  # tags?
                 "",  # confirm
+                "",  # no exclusions
                 "m",
                 # while we're here we might as well check setting
                 # the other box properties
@@ -375,6 +376,7 @@ class TestShulkerBoxCrafting:
                 "",
                 "",
                 "",
+                "",
                 "G",
                 "-100",
                 "",
@@ -409,7 +411,7 @@ class TestPromptByFilter:
     def test_giving_default_responses_results_in_the_expected_shulker_box(
         self, monkeypatch, capsys
     ):
-        script_reader = utils.scripted_prompt([""] * 6)
+        script_reader = utils.scripted_prompt([""] * 7)
         monkeypatch.setattr("builtins.input", script_reader)
 
         shulker_box = craft._prompt_for_filters(
@@ -498,6 +500,7 @@ class TestPromptByFilter:
                 "",
                 "vanilla*",
                 "",
+                "",
             )
         )
 
@@ -524,7 +527,7 @@ class TestPromptByFilter:
         with pytest.raises(StopIteration):
             script_reader()
 
-    def test_filter_prompt_supports_negation(self, monkeypatch, capsys, caplog):
+    def test_filter_prompt_supports_tag_negation(self, monkeypatch, capsys, caplog):
         script_reader = utils.scripted_prompt(
             (
                 "",
@@ -532,6 +535,7 @@ class TestPromptByFilter:
                 "",
                 "",
                 "!vanilla*",
+                "",
                 "",
             )
         )
@@ -552,6 +556,40 @@ class TestPromptByFilter:
         # check that it was showing the right instances at the end
         assert "filters match" in caplog.records[-1].msg and re.match(
             "^.*bee.*\n.*Drowned.*$", caplog.records[-1].args[0]
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_filter_prompt_supports_instance_exclusion(
+        self, monkeypatch, capsys, caplog
+    ):
+        script_reader = utils.scripted_prompt(
+            (
+                "",
+                "",
+                "",
+                "",
+                "vanilla*",
+                "",
+                "1",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        shulker_box = craft._prompt_for_filters(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()), utils.TESTING_INSTANCES
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("minecraft", ("*",)),
+            ("modloader", ("*",)),
+            ("tags", ("vanilla*",)),
+            ("instances", ("!official",)),
         )
 
         # make sure all responses were used
@@ -653,6 +691,58 @@ class TestPromptByNumber:
         with pytest.raises(StopIteration):
             script_reader()
 
+    def test_default_exclude_is_exclude_none(self, monkeypatch, capsys):
+        script_reader = utils.scripted_prompt(("",))
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        def get_instances():
+            return utils.TESTING_INSTANCES
+
+        shulker_box = craft._prompt_for_instance_numbers(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()),
+            get_instances(),
+            get_instances,
+            exclude=True,
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == ()
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_number_selection_lets_you_correct_a_mistake(self, monkeypatch, capsys):
+        script_reader = utils.scripted_prompt(
+            (
+                "1-5",
+                "n",
+                "1, 5",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        def get_instances():
+            return utils.TESTING_INSTANCES
+
+        shulker_box = craft._prompt_for_instance_numbers(
+            ShulkerBox(0, "tester", Path("ignored"), (), ()),
+            get_instances(),
+            get_instances,
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            ("instances", tuple(utils.TESTING_INSTANCES[i].name for i in (0, 4))),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
     def test_number_selection_supports_explicit_numbers_and_ranges(
         self, monkeypatch, capsys
     ):
@@ -686,12 +776,13 @@ class TestPromptByNumber:
         with pytest.raises(StopIteration):
             script_reader()
 
+    @pytest.mark.parametrize("invalid_value", ("7", "-1", "G", "1-7", "3-1"))
     def test_invalid_selection_reminds_you_of_the_instance_list(
-        self, monkeypatch, capsys, caplog
+        self, invalid_value, monkeypatch, capsys, caplog
     ):
         script_reader = utils.scripted_prompt(
             (
-                "7",
+                invalid_value,
                 "1, 3",
                 "",
             )
@@ -716,7 +807,15 @@ class TestPromptByNumber:
 
         _ = capsys.readouterr()
 
-        assert """Invalid selection: 7 is out of range
+        match invalid_value:
+            case "7" | "1-7":
+                flavor = f": {invalid_value} is out of range"
+            case "3-1":
+                flavor = f": {invalid_value} is not a valid range"
+            case _:
+                flavor = "."
+
+        assert f"""Invalid selection{flavor}
 
 These are the instances that are currently registered:
   1. official (~/.minecraft)
@@ -730,6 +829,43 @@ These are the instances that are currently registered:
             (
                 "instances",
                 ("official", "bee"),
+            ),
+        )
+
+        # make sure all responses were used
+        with pytest.raises(StopIteration):
+            script_reader()
+
+    def test_instance_selection_extends_prior_selections(self, monkeypatch, capsys):
+        script_reader = utils.scripted_prompt(
+            (
+                "2 - 3",
+                "",
+            )
+        )
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        def get_instances():
+            return utils.TESTING_INSTANCES
+
+        shulker_box = craft._prompt_for_instance_numbers(
+            ShulkerBox(
+                0,
+                "tester",
+                Path("ignored"),
+                (("instances", (utils.TESTING_INSTANCES[4].name,)),),
+                (),
+            ),
+            get_instances(),
+            get_instances,
+        )
+
+        _ = capsys.readouterr()
+
+        assert shulker_box.match_criteria == (
+            (
+                "instances",
+                tuple(utils.TESTING_INSTANCES[i].name for i in (4, 1, 2)),
             ),
         )
 
