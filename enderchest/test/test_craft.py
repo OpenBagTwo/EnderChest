@@ -11,9 +11,9 @@ import pytest
 from enderchest import EnderChest, ShulkerBox, craft
 from enderchest import filesystem as fs
 from enderchest.enderchest import create_ender_chest
-from enderchest.gather import load_ender_chest
 from enderchest.place import place_ender_chest
 
+from ..load import load_ender_chest
 from . import utils
 
 
