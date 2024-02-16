@@ -749,7 +749,7 @@ def _prompt_for_filters(
     if len(instances) > 0:
         shulker_box = _prompt_for_instance_numbers(
             shulker_box,
-            instances,
+            selected_instances(shulker_box),  # display the list again
             lambda: selected_instances(shulker_box),
             exclude=True,
         )
