@@ -9,7 +9,7 @@ from enderchest.sync import render_remote
 
 from . import EnderChest, InstanceSpec, ShulkerBox
 from . import filesystem as fs
-from .loggers import LOAD_LOGGER
+from .loggers import INVENTORY_LOGGER
 
 
 def load_ender_chest(minecraft_root: Path) -> EnderChest:
@@ -36,9 +36,9 @@ def load_ender_chest(minecraft_root: Path) -> EnderChest:
         If the EnderChest configuration is invalid and could not be parsed
     """
     config_path = fs.ender_chest_config(minecraft_root)
-    LOAD_LOGGER.debug(f"Loading {config_path}")
+    INVENTORY_LOGGER.debug(f"Loading {config_path}")
     ender_chest = EnderChest.from_cfg(config_path)
-    LOAD_LOGGER.debug(f"Parsed EnderChest installation from {minecraft_root}")
+    INVENTORY_LOGGER.debug(f"Parsed EnderChest installation from {minecraft_root}")
     return ender_chest
 
 
@@ -73,16 +73,16 @@ def load_ender_chest_instances(
         ender_chest = load_ender_chest(minecraft_root)
         instances: Sequence[InstanceSpec] = ender_chest.instances
     except (FileNotFoundError, ValueError) as bad_chest:
-        LOAD_LOGGER.error(
+        INVENTORY_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
         instances = []
     if len(instances) == 0:
-        LOAD_LOGGER.warning(
+        INVENTORY_LOGGER.warning(
             f"There are no instances registered to the {minecraft_root} EnderChest",
         )
     else:
-        LOAD_LOGGER.log(
+        INVENTORY_LOGGER.log(
             log_level,
             "These are the instances that are currently registered"
             f" to the {minecraft_root} EnderChest:\n%s",
@@ -147,19 +147,21 @@ def load_shulker_boxes(
             try:
                 shulker_boxes.append(_load_shulker_box(shulker_config))
             except (FileNotFoundError, ValueError) as bad_shulker:
-                LOAD_LOGGER.warning(
+                INVENTORY_LOGGER.warning(
                     f"{bad_shulker}\n  Skipping shulker box {shulker_config.parent.name}"
                 )
 
     except FileNotFoundError:
-        LOAD_LOGGER.error(f"There is no EnderChest installed within {minecraft_root}")
+        INVENTORY_LOGGER.error(
+            f"There is no EnderChest installed within {minecraft_root}"
+        )
         return []
 
     shulker_boxes = sorted(shulker_boxes)
 
     if len(shulker_boxes) == 0:
         if log_level >= logging.INFO:
-            LOAD_LOGGER.warning(
+            INVENTORY_LOGGER.warning(
                 f"There are no shulker boxes within the {minecraft_root} EnderChest"
             )
     else:
@@ -173,7 +175,7 @@ def report_shulker_boxes(
     shulker_boxes: Iterable[ShulkerBox], log_level: int, ender_chest_name: str
 ) -> None:
     """Log the list of shulker boxes in the order they'll be linked"""
-    LOAD_LOGGER.log(
+    INVENTORY_LOGGER.log(
         log_level,
         f"These are the shulker boxes within {ender_chest_name}"
         "\nlisted in the order in which they are linked:\n%s",
@@ -205,9 +207,9 @@ def _load_shulker_box(config_file: Path) -> ShulkerBox:
     ValueError
         If there was a problem parsing the config file
     """
-    LOAD_LOGGER.debug(f"Attempting to parse {config_file}")
+    INVENTORY_LOGGER.debug(f"Attempting to parse {config_file}")
     shulker_box = ShulkerBox.from_cfg(config_file)
-    LOAD_LOGGER.debug(f"Successfully parsed {_render_shulker_box(shulker_box)}")
+    INVENTORY_LOGGER.debug(f"Successfully parsed {_render_shulker_box(shulker_box)}")
     return shulker_box
 
 
@@ -262,14 +264,14 @@ def load_ender_chest_remotes(
         ender_chest = load_ender_chest(minecraft_root)
         remotes: Sequence[tuple[ParseResult, str]] = ender_chest.remotes
     except (FileNotFoundError, ValueError) as bad_chest:
-        LOAD_LOGGER.error(
+        INVENTORY_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
         remotes = ()
 
     if len(remotes) == 0:
         if log_level >= logging.INFO:
-            LOAD_LOGGER.warning(
+            INVENTORY_LOGGER.warning(
                 f"There are no remotes registered to the {minecraft_root} EnderChest"
             )
         return []
@@ -284,7 +286,7 @@ def load_ender_chest_remotes(
         report += "\n  - %s"
         log_args.append(render_remote(alias, remote))
         remote_list.append((remote, alias))
-    LOAD_LOGGER.log(log_level, report, *log_args)
+    INVENTORY_LOGGER.log(log_level, report, *log_args)
     return remote_list
 
 
@@ -309,7 +311,7 @@ def get_shulker_boxes_matching_instance(
     try:
         chest = load_ender_chest(minecraft_root)
     except (FileNotFoundError, ValueError) as bad_chest:
-        LOAD_LOGGER.error(
+        INVENTORY_LOGGER.error(
             f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
         )
         return []
@@ -317,7 +319,7 @@ def get_shulker_boxes_matching_instance(
         if mc.name == instance_name:
             break
     else:
-        LOAD_LOGGER.error(
+        INVENTORY_LOGGER.error(
             "No instance named %s is registered to this EnderChest", instance_name
         )
         return []
@@ -335,7 +337,7 @@ def get_shulker_boxes_matching_instance(
             f"  - {_render_shulker_box(box)}" for box in matches
         )
 
-    LOAD_LOGGER.info(f"The instance {render_instance(mc)} {report}")
+    INVENTORY_LOGGER.info(f"The instance {render_instance(mc)} {report}")
 
     return matches
 
@@ -361,31 +363,33 @@ def get_instances_matching_shulker_box(
     try:
         config_file = fs.shulker_box_config(minecraft_root, shulker_box_name)
     except FileNotFoundError:
-        LOAD_LOGGER.error(f"No EnderChest is installed in {minecraft_root}")
+        INVENTORY_LOGGER.error(f"No EnderChest is installed in {minecraft_root}")
         return []
     try:
         shulker_box = _load_shulker_box(config_file)
     except (FileNotFoundError, ValueError) as bad_box:
-        LOAD_LOGGER.error(f"Could not load shulker box {shulker_box_name}\n  {bad_box}")
+        INVENTORY_LOGGER.error(
+            f"Could not load shulker box {shulker_box_name}\n  {bad_box}"
+        )
         return []
 
     chest = load_ender_chest(minecraft_root)
 
     if not shulker_box.matches_host(chest.name):
-        LOAD_LOGGER.warning(
+        INVENTORY_LOGGER.warning(
             "This shulker box will not link to any instances on this machine"
         )
         return []
 
     if not chest.instances:
-        LOAD_LOGGER.warning(
+        INVENTORY_LOGGER.warning(
             "This EnderChest does not have any instances registered."
             " To register some, run the command:"
             "\nenderchest gather minecraft",
         )
         return []
 
-    LOAD_LOGGER.debug(
+    INVENTORY_LOGGER.debug(
         "These are the instances that are currently registered"
         f" to the {minecraft_root} EnderChest:\n%s",
         "\n".join(
@@ -407,6 +411,8 @@ def get_instances_matching_shulker_box(
             f"  - {render_instance(instance)}" for instance in matches
         )
 
-    LOAD_LOGGER.info(f"The shulker box {_render_shulker_box(shulker_box)} {report}")
+    INVENTORY_LOGGER.info(
+        f"The shulker box {_render_shulker_box(shulker_box)} {report}"
+    )
 
     return matches

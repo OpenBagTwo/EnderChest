@@ -10,7 +10,7 @@ from . import config as cfg
 from . import filesystem as fs
 from . import instance as i
 from . import sync
-from .loggers import CRAFT_LOGGER, GATHER_LOGGER, LOAD_LOGGER
+from .loggers import CRAFT_LOGGER, GATHER_LOGGER, INVENTORY_LOGGER
 from .sync import abspath_from_uri
 
 _DEFAULTS = (
@@ -285,7 +285,7 @@ class EnderChest:
         FileNotFoundError
             If there is no config file at the specified location
         """
-        LOAD_LOGGER.debug("Reading config file from %s", config_file)
+        INVENTORY_LOGGER.debug("Reading config file from %s", config_file)
         config = cfg.read_cfg(config_file)
 
         # All I'm gonna say is that Windows pathing is the worst
@@ -360,7 +360,7 @@ class EnderChest:
                             f" {sync_confirm_wait}"
                         ) from bad_input
         if place_after_open is None:
-            LOAD_LOGGER.warning(
+            INVENTORY_LOGGER.warning(
                 "This EnderChest does not have a value set for place-after-open."
                 "\nIt is being set to False for now. To enable this functionality,"
                 "\nedit the value in %s",
@@ -381,7 +381,7 @@ class EnderChest:
                 (fs.ENDER_CHEST_FOLDER_NAME, fs.ENDER_CHEST_CONFIG_NAME)
             )
             if chest_cfg_exclusion not in do_not_sync:
-                LOAD_LOGGER.warning(
+                INVENTORY_LOGGER.warning(
                     "This EnderChest was not configured to exclude the EnderChest"
                     " config file from sync operations."
                     "\nThat is being fixed now."

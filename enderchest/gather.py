@@ -12,7 +12,7 @@ from urllib.parse import ParseResult
 from . import filesystem as fs
 from .enderchest import EnderChest, create_ender_chest
 from .instance import InstanceSpec, normalize_modloader, parse_version
-from .load import load_ender_chest
+from .inventory import load_ender_chest
 from .loggers import GATHER_LOGGER
 from .prompt import prompt
 from .shulker_box import _matches_version
