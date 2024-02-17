@@ -1,4 +1,5 @@
 """Specification of a Minecraft instance"""
+
 import re
 from configparser import SectionProxy
 from pathlib import Path
@@ -93,7 +94,7 @@ def normalize_modloader(loader: str | None) -> list[str]:
     match loader.lower().replace(" ", "").replace("-", "").replace("_", "").replace(
         "/", ""
     ):
-        case "none" | "vanilla":
+        case "none" | "vanilla" | "minecraft_server":
             return [""]
         case "fabric" | "fabricloader":
             return ["Fabric Loader"]
