@@ -1,12 +1,13 @@
 """Functionality for onboarding and updating new installations and instances"""
 
+import itertools
 import json
 import logging
 import os
 import re
 from configparser import ConfigParser, ParsingError
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable, TypedDict
 from urllib.parse import ParseResult
 
 from . import filesystem as fs
@@ -310,6 +311,160 @@ def gather_metadata_for_mmc_instance(
         tuple(instance_groups),
         (),
     )
+
+
+SERVER_JAR_PATTERNS: tuple[str, ...] = (
+    r"^(minecraft_server).([^-]*).jar$",  # vanilla naming as per official docs
+    # (not much we can do with server.jar)
+    r"^(forge)-([0-9\.]*)-([0-9\.]*)-*\.jar$",
+    r"^(fabric)-server-mc.([^-]*)-loader.([0-9\.]*)-launcher.([0-9\.]*).jar$",
+    r"^(paper)-([^-]*)-([0-9]*).jar$",
+    r"^(purpur)-([^-]*)-([0-9]*).jar$",
+    r"^(spigot)-([^-]*).jar$",
+)
+
+
+class _JarFileMeta(TypedDict):
+    modloader: str
+    minecraft_versions: tuple[str]
+
+
+def _gather_metadata_from_jar_filename(jar_name: str) -> _JarFileMeta:
+    """
+
+    Parameters
+    ----------
+    jar_name : str
+        The filename of the server jar
+
+    Returns
+    -------
+    dict with two entries :
+        modloader : str
+             The (display) name of the modloader (vanilla corresponds to "")
+        minecraft_versions : tuple of single str
+            The minecraft version of the instance (tupled for `InstanceSpec`
+            compatibility).
+
+    Notes
+    -----
+    The filename may contain additional metadata (such as the modloader version).
+    That metadata is ignored.
+
+    Raises
+    ------
+    ValueError
+        If the filename doesn't conform to any known patterns and thus
+        metadata cannot be extracted).
+    """
+    for pattern in SERVER_JAR_PATTERNS:
+        if pattern_match := re.match(pattern, jar_name):
+            modloader, version, *_ = pattern_match.groups()
+            break
+    else:
+        raise ValueError(f"Could not parse metadata from jar filename {jar_name}")
+    return {
+        "modloader": normalize_modloader(modloader)[0],
+        "minecraft_versions": (version,),
+    }
+
+
+def gather_metadata_for_minecraft_server(
+    server_home: Path,
+    name: str | None = None,
+    tags: Iterable[str] | None = None,
+    server_jar: Path | None = None,
+) -> InstanceSpec:
+    """Parse files (or user input) to generate metadata for a minecraft server
+    installation
+
+    Parameters
+    ----------
+    server_home : Path
+        The path to the folder containing the server's files
+    name : str, optional
+        A name or alias to give to the server. If None is provided, the user
+        will be prompted to enter it.
+    tags : list of str, optional
+        The tags to assign to the server. If None are specified, the user will
+        be prompted to enter them.
+    server_jar : Path, optional
+        The path to the server JAR file. If None is provided, this method will
+        attempt to locate it within the `server_home`.
+
+    Returns
+    -------
+    InstanceSpec
+        The metadata for this instance
+
+    Raises
+    ------
+    ValueError
+        If this is not a valid Minecraft server installation or the requisite
+        metadata could not be parsed
+
+    Notes
+    -----
+    This method extracts metadata entirely from the filename of the server jar
+    file. Custom-named jars or executables in non-standard locations will
+    require their metadata be added manually.
+    """
+    instance_spec: dict[str, Any] = {"root": server_home, "groups_": ("server",)}
+    if server_jar is not None:
+        jars: Iterable[Path] = (server_jar,)
+    else:
+        jars = filter(
+            lambda jar: not jar.is_relative_to(server_home / "mods"),
+            itertools.chain(server_home.rglob("*.jar"), server_home.rglob("*.JAR")),
+        )
+
+    failed_parses: list[Path] = []
+    for jar in jars:
+        GATHER_LOGGER.debug("Attempting to extract server metadata from %s", jar)
+        try:
+            instance = instance_spec.update(
+                _gather_metadata_from_jar_filename(jar.name.lower())
+            )
+            break
+        except ValueError as parse_fail:
+            GATHER_LOGGER.debug(parse_fail)
+            failed_parses.append(jar)
+    else:
+        GATHER_LOGGER.warning(
+            "Could not parse server metadata from:\n%s",
+            "\n".join((f"  - {jar}" for jar in failed_parses)),
+        )
+    if "modloader" not in instance_spec:
+        instance_spec["modloader"] = normalize_modloader(
+            prompt(
+                "What modloader / type of server is this?"
+                "\ne.g. Vanilla, Fabric, Forge, Paper, Spigot, PurPur..."
+            )
+            .lower()
+            .strip()
+        )[0]
+        instance_spec["minecraft_version"] = (
+            prompt(
+                "What version of Minecraft is this server?\ne.g.1.20.4, 23w13a_or_b..."
+            )
+            .lower()
+            .strip(),
+        )
+    if name is None:
+        name = prompt(
+            "Enter a name / alias for this server", suggestion=server_home.name
+        )
+    instance_spec["name"] = name
+
+    if tags is None:
+        tags = prompt(
+            "Enter any tags you'd like to use to label the server, separated by commas"
+            '(it will be tagged as "server" automatically).'
+        )
+        tags = (tag.lower().strip() for tag in tags.split(","))
+    instance_spec["tags_"] = tuple(tags)
+
+    return InstanceSpec(**instance_spec)
 
 
 def update_ender_chest(
