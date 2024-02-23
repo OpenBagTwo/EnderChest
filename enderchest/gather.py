@@ -316,7 +316,7 @@ def gather_metadata_for_mmc_instance(
 SERVER_JAR_PATTERNS: tuple[str, ...] = (
     r"^(minecraft_server).([^-]*).jar$",  # vanilla naming as per official docs
     # (not much we can do with server.jar)
-    r"^(forge)-([0-9\.]*)-([0-9\.]*)-*\.jar$",
+    r"^(forge)-([0-9\.]*)-([0-9\.]*).*\.jar$",
     r"^(fabric)-server-mc.([^-]*)-loader.([0-9\.]*)-launcher.([0-9\.]*).jar$",
     r"^(paper)-([^-]*)-([0-9]*).jar$",
     r"^(purpur)-([^-]*)-([0-9]*).jar$",
@@ -413,18 +413,19 @@ def gather_metadata_for_minecraft_server(
     if server_jar is not None:
         jars: Iterable[Path] = (server_jar,)
     else:
-        jars = filter(
-            lambda jar: not jar.is_relative_to(server_home / "mods"),
-            itertools.chain(server_home.rglob("*.jar"), server_home.rglob("*.JAR")),
+        jars = sorted(
+            filter(
+                lambda jar: not jar.is_relative_to(server_home / "mods"),
+                itertools.chain(server_home.rglob("*.jar"), server_home.rglob("*.JAR")),
+            ),
+            key=lambda jar: (len(jar.parts), -len(str(jar))),
         )
 
     failed_parses: list[Path] = []
     for jar in jars:
         GATHER_LOGGER.debug("Attempting to extract server metadata from %s", jar)
         try:
-            instance = instance_spec.update(
-                _gather_metadata_from_jar_filename(jar.name.lower())
-            )
+            instance_spec.update(_gather_metadata_from_jar_filename(jar.name.lower()))
             break
         except ValueError as parse_fail:
             GATHER_LOGGER.debug(parse_fail)
@@ -454,6 +455,8 @@ def gather_metadata_for_minecraft_server(
         name = prompt(
             "Enter a name / alias for this server", suggestion=server_home.name
         )
+        if name == "":
+            name = server_home.name
     instance_spec["name"] = name
 
     if tags is None:
@@ -461,7 +464,10 @@ def gather_metadata_for_minecraft_server(
             "Enter any tags you'd like to use to label the server, separated by commas"
             '(it will be tagged as "server" automatically).'
         )
-        tags = (tag.lower().strip() for tag in tags.split(","))
+        if tags == "":
+            tags = ()
+        else:
+            tags = (tag.lower().strip() for tag in tags.split(","))
     instance_spec["tags_"] = tuple(tags)
 
     return InstanceSpec(**instance_spec)
