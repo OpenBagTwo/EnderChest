@@ -114,8 +114,31 @@ def _update_ender_chest(
 ):
     """Wrapper to resolve the official vs. MultiMC flag"""
     if mmc:
-        official = False
-    gather.update_ender_chest(minecraft_root, official=official, **kwargs)
+        instance_type = "mmc"
+    elif official:
+        instance_type = "official"
+    else:
+        instance_type = None
+    gather.update_ender_chest(minecraft_root, instance_type=instance_type, **kwargs)
+
+
+def _gather_server(
+    minecraft_root: Path,
+    server_home: Path | None = None,
+    jar: Path | None = None,
+    name: str | None = None,
+    tags: list[str] | None = None,
+):
+    """Wrapper to route the server flags"""
+    assert server_home  # it's required by the parser, so this should be fine
+    gather.update_ender_chest(
+        minecraft_root,
+        (server_home,),
+        instance_type="server",
+        server_jar=jar,
+        name=name,
+        tags=tags,
+    )
 
 
 def _open(minecraft_root: Path, verbosity: int = 0, **kwargs):
@@ -172,6 +195,11 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
         tuple("gather " + alias for alias in _instance_aliases),
         "register (or update the registry of) a Minecraft installation",
         _update_ender_chest,
+    ),
+    (
+        ("gather server",),
+        "register (or update the registry of) a Minecraft server installation",
+        _gather_server,
     ),
     (
         tuple("gather " + alias for alias in _remote_aliases),
@@ -531,6 +559,32 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         help="specify that these are MultiMC-like instances",
     )
 
+    # gather server options
+    gather_server_parser = action_parsers["gather server"]
+    gather_server_parser.add_argument(
+        "server_home", type=Path, help="the working directory of the Minecraft server"
+    )
+    gather_server_parser.add_argument(
+        "--jar",
+        "-j",
+        type=Path,
+        help=(
+            "explicitly specify the path to the server JAR (in case it's outside"
+            " of the server's working directory of if there are multiple server"
+            " JAR files inside that folder)"
+        ),
+    )
+    gather_server_parser.add_argument(
+        "--name", "-n", help="specify the name (alias) for the server"
+    )
+    gather_server_parser.add_argument(
+        "--tags",
+        "-t",
+        nargs="+",
+        action="extend",
+        help="specify any tags you want to apply to the server",
+    )
+
     # gather remote options
     gather_remote_parser = action_parsers[f"gather {_remote_aliases[0]}"]
     gather_remote_parser.add_argument(
@@ -540,9 +594,9 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         help=(
             "Provide URIs (e.g. rsync://deck@my-steam-deck/home/deck/) of any"
             " remote EnderChest installation to register with this one."
-            "Note: you should not use this method if the alias (name) of the"
-            "remote does not match the remote's hostname (in this example,"
-            '"my-steam-deck").'
+            " Note: you should not use this method if the alias (name) of the"
+            " remote does not match the remote's hostname (in this example,"
+            ' "my-steam-deck").'
         ),
     )
 
