@@ -343,7 +343,7 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
                 "root",
                 nargs="?",
                 help=(
-                    "Optionally specify your root minecraft directory."
+                    "optionally specify your root minecraft directory."
                     "  If no path is given, the current working directory will be used."
                 ),
                 type=Path,
