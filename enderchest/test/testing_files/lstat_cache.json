@@ -3,147 +3,161 @@
         "filename": "1.19",
         "st_mode": 16877,
         "st_size": 120,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/saves",
         "st_mode": 16877,
         "st_size": 60,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/saves/olam",
         "st_mode": 41471,
         "st_size": 97,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/shulkerbox.cfg",
         "st_mode": 33188,
         "st_size": 139,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/.bobby",
         "st_mode": 16877,
         "st_size": 60,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/.bobby/chunk",
         "st_mode": 33188,
         "st_size": 7,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/resourcepacks",
         "st_mode": 16877,
         "st_size": 60,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "1.19/resourcepacks/TEAVSRP_lite.zip",
         "st_mode": 33188,
         "st_size": 18,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "vanilla",
         "st_mode": 16877,
         "st_size": 80,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "vanilla/shulkerbox.cfg",
         "st_mode": 33188,
         "st_size": 126,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "vanilla/conflict",
         "st_mode": 16877,
         "st_size": 60,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "vanilla/conflict/diamond.png",
         "st_mode": 33188,
         "st_size": 10,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "optifine",
         "st_mode": 16877,
         "st_size": 100,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "optifine/mods",
         "st_mode": 16877,
         "st_size": 80,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "optifine/mods/BME.jar",
         "st_mode": 41471,
         "st_size": 123,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "optifine/mods/optifine.jar",
         "st_mode": 33188,
         "st_size": 9,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "optifine/shulkerbox.cfg",
         "st_mode": 33188,
         "st_size": 173,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "optifine/shadercache",
         "st_mode": 16877,
         "st_size": 40,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "steamdeck",
         "st_mode": 16877,
         "st_size": 60,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "steamdeck/shulkerbox.cfg",
         "st_mode": 33188,
         "st_size": 73,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     },
     {
         "filename": "enderchest.cfg",
         "st_mode": 33188,
-        "st_size": 1412,
-        "st_atime": 1704220427,
-        "st_mtime": 1704220427
+        "st_size": 1426,
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
+    },
+    {
+        "filename": "really.local",
+        "st_mode": 16877,
+        "st_size": 60,
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
+    },
+    {
+        "filename": "really.local/all_mine.txt",
+        "st_mode": 33188,
+        "st_size": 15,
+        "st_atime": 1708724799,
+        "st_mtime": 1708724799
     }
 ]
