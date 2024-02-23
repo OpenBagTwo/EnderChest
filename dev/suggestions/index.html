@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.10">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.f2e4d321.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e359304.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -410,6 +410,57 @@
   <a href="#chest-monster" class="md-nav__link">
     <span class="md-ellipsis">
       Chest Monster
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing Servers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing Servers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-server-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dedicated Server Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluding-servers-from-global-shulker-boxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding Servers from "Global" Shulker Boxes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-server-specific-shulker-boxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating Server-Specific Shulker Boxes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncing-between-server-and-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syncing Between Server and Desktop
     </span>
   </a>
   
@@ -859,6 +910,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/enderchest/inventory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    inventory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/enderchest/loggers/" class="md-nav__link">
         
   
@@ -908,7 +980,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_14" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_15" >
         
           
           
@@ -924,14 +996,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8_1_14" id="__nav_8_1_14_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_8_1_15" id="__nav_8_1_15_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_1_14">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1_15">
             <span class="md-nav__icon md-icon"></span>
             sync
           </label>
@@ -1126,6 +1198,57 @@
   <a href="#chest-monster" class="md-nav__link">
     <span class="md-ellipsis">
       Chest Monster
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing Servers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing Servers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-server-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dedicated Server Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluding-servers-from-global-shulker-boxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding Servers from "Global" Shulker Boxes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-server-specific-shulker-boxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating Server-Specific Shulker Boxes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncing-between-server-and-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syncing Between Server and Desktop
     </span>
   </a>
   
@@ -1468,6 +1591,108 @@ live within structured folders inside of a "Chest Monster" for ease of
 <a href="https://github.com/OpenBagTwo/gsb">backup management</a>), and if you come up
 with a different workflow that works for you,
 <a href="https://github.com/OpenBagTwo/EnderChest/issues/new">I'd be delighted to hear about it.</a></p>
+<h2 id="managing-servers">Managing Servers</h2>
+<p>If you host your own Minecraft servers, EnderChest can be extremely helpful
+in keeping your modlists and config files in sync, both between servers and
+between servers and desktop instances. For this section we'll assume
+you're running (or are planning to run) a Minecraft server on a dedicated
+Linux box. After <a href="../installation">installing the <code>enderchest</code> package</a>
+on your dedicated server and verifying that it has
+<a href="../installation/#installing-rsync">a suitable version of Rsync</a>,
+you can either <a href="../usage/#creating-an-enderchest">set up a clean EnderChest</a>
+or use <a href="../cli/#enderchest-craft"><code>enderchest craft --from</code></a> to piggyback off
+your desktop's configuration (see <a href="../usage/#understanding-uris">here</a>
+for details on specifying your desktop's URI).</p>
+<p>with your chest crafted, you can register your server via the command</p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>enderchest<span class="w"> </span>gather<span class="w"> </span>server<span class="w"> </span>&lt;path-to-server-home&gt;
+</span></code></pre></div>
+where <code>&lt;path-to-server-home&gt;</code> is the working directory you call the <code>java</code>
+command from to start your server.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Additional information about this action can be found in
+<a href="../cli/#enderchest-gather-server">the CLI docs</a></p>
+</div>
+<p>If your dedicated box hosts <em>multiple</em> servers, you can register them via
+subsequent calls to <code>enderchest gather server</code>.</p>
+<p>At this point, your <code>EnderChest</code> folder should still be empty, save for your
+configuration file, even if you used the <code>--from</code> flag during crafting.
+Before syncing your files, read through the following sections to make sure
+you're not about to make a giant mess.</p>
+<h3 id="dedicated-server-configuration">Dedicated Server Configuration</h3>
+<p>If you're paying for a dedicated server, you're likely paying a premium for
+disk space and network bandwidth, meaning you <em>probably don't</em> want to sync
+your client-side mods, single-player worlds or screenshots.</p>
+<p>To make sure these files don't get transferred back and forth, open up
+the <code>enderchest.cfg</code> file on the server (inside the <code>EnderChest</code> folder) and
+edit the <code>do-not-sync</code> entry in the top <code>[properties]</code> section to exclude any
+shulker boxes, <a href="#chest-monster">"Chest Monsters"</a>, etc. that should not be
+transferred to the server.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><a href="https://linuxize.com/post/how-to-exclude-files-and-directories-with-rsync/">Here's a helpful guide</a>
+on crafting Rsync <code>--exclude</code> patterns</p>
+</div>
+<h3 id="excluding-servers-from-global-shulker-boxes">Excluding Servers from "Global" Shulker Boxes</h3>
+<p>The <a href="#hierarchical">hierarchical approach to shulker boxes</a> recommended starting
+with a "global" box that contains configurations and files you'll want
+<em>wherever</em> you're playing. If you configured that box as specified, its contents
+will <em>also</em> place links inside your server instances. That might not be something
+you want (for example, if your "global" box contained your screenshots or
+<code>options.txt</code>). Instead, make sure (on your desktop, before syncing, to add "!server"
+to the <code>[tags]</code> section of every <code>shulkerbox.cfg</code> file that should only be
+linked for client-side / single player instances).</p>
+<h3 id="creating-server-specific-shulker-boxes">Creating Server-Specific Shulker Boxes</h3>
+<p>On the flip side, if you're operating multiple servers, you're almost certainly
+going to want to share files and folders across <em>just</em> your servers
+(for example: banlists, log / backup folders, or even the server JARs themselves).</p>
+<p>To create a shulker box that <em>only</em> gets linked to by server folders, open
+up the shulker box's <code>shulkerbox.cfg</code> and make sure the <code>[tags]</code> section reads:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">[tags]</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">server</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Note</p>
+<p>Note that additional entries in each section (with the exception of
+exclusions) are <em>OR</em> -ed, not <em>AND</em> -ed), so, for example, specifying
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">[tags]</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">server</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">*aether*</span>
+</span></code></pre></div>
+would match to all registered servers <em>and additionally</em> to all instances
+with "aether" in the tag name</p>
+</div>
+<p>Another recommendation is to make generous use of
+<a href="../usage/#linking-entire-folders">link-folders</a> in your server-specific
+shulker boxes. This way, new files placed inside these folders will become
+available to the server as soon as they're synced, rather than requiring an
+<code>enderchest place</code>.</p>
+<p>Finally, unless you're <em>only</em> planning on running <code>enderchest open</code> from
+the server (and never <code>enderchest close</code> from a desktop to push changes <em>to</em>
+the server), <strong>do not link your world folders</strong>, as you never want to overwrite
+world files while the game is running.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>On the other hand, if you run an auto-backup script, it's an <em>excellent</em>
+idea to link and sync <em>that</em> folder so that you have off-site copies of
+your world</p>
+</div>
+<h3 id="syncing-between-server-and-desktop">Syncing Between Server and Desktop</h3>
+<p>Just as with any other multi-computer setup, you can use
+<a href="../cli/#enderchest-gather-enderchests"><code>enderchest gather enderchests</code></a>
+to register your server EnderChest to the one on your desktop, though
+to reliably do the reverse you'll either need to contact your ISP about getting
+a static IP, or you'll need to set up a
+<a href="https://www.duckdns.org/">dynamic DNS service</a> for your home
+(you'll also need to run an Rsync (or <a href="#sftp-protocol">SFTP</a>) server on your
+desktop and expose your SSH port to traffic from the internet).</p>
+<p>Planning to run all of your sync operations (<code>enderchest open</code> and
+<code>enderchest close</code>) from the desktop is going to be simpler (and safer)
+for most users, but because EnderChest only runs <code>enderchest place</code> after
+an <code>open</code> operation, you'll need to log into your server to regenerate any new
+symlinks after each desktop-side sync. Running the sync operations from the
+desktop also means you won't be able to easily schedule your sync operations to
+coordinate with server restarts.</p>
 <h2 id="effective-syncing">Effective Syncing</h2>
 <h3 id="passwordless-ssh-authentication">Passwordless SSH Authentication</h3>
 <p>When connecting to an SSH server (rsync / sftp), it is both more secure and
@@ -1483,17 +1708,17 @@ backups, logs, and crash reports that you probably don't need to have
 split by instance, you <em>probably don't</em> need to sync them across different
 computers. My suggestion is to structure your minecraft folder (the parent of
 your EnderChest folder) as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&lt;minecraft root&gt;: a single folder where all your minecraft data will live
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> ├── instances: your MultiMC-type instances (most launchers let you set a custom location)
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a> ├── backups
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a> ├── crash reports
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a> ├── logs
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a> ├── EnderChest: the root directory for all resources managed by this package
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a> │   ├── global: shulker box that links to all instances
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a> │   │   ├── backups ↵ -&gt; ../../../backups
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a> │   │   ├── crash-reports ↵ -&gt; ../../../crash reports
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a> │   │   ├── logs ↵ -&gt; ../../../logs
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a> │   │   ├── screenshots ↵ -&gt; ~/Pictures/minecraft screenshots
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&lt;minecraft root&gt;: a single folder where all your minecraft data will live
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a> ├── instances: your MultiMC-type instances (most launchers let you set a custom location)
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a> ├── backups
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a> ├── crash reports
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a> ├── logs
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a> ├── EnderChest: the root directory for all resources managed by this package
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a> │   ├── global: shulker box that links to all instances
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a> │   │   ├── backups ↵ -&gt; ../../../backups
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a> │   │   ├── crash-reports ↵ -&gt; ../../../crash reports
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a> │   │   ├── logs ↵ -&gt; ../../../logs
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a> │   │   ├── screenshots ↵ -&gt; ~/Pictures/minecraft screenshots
 </span></code></pre></div>
 <p>Since backups, crash reports, logs and, in my example, screenshots, live <em>outside</em>
 of the Enderchest, the contents won't actually be synced. Meanwhile, because
@@ -1511,10 +1736,10 @@ not be something that you want, at least not on every machine.</p>
 <p>To exclude a folder (or file) from sync, open your <code>enderchest.cfg</code> file (inside your
 EnderChest folder). Inside the top <code>[properties]</code> section you should see an entry named
 "do-not-sync". By default it should look like this:</p>
-<div class="language-ini highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">do-not-sync</span><span class="w"> </span><span class="o">=</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">        </span><span class="na">EnderChest/enderchest.cfg</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">        </span><span class="na">EnderChest/.*</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="na">.DS_Store</span>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="na">do-not-sync</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">        </span><span class="na">EnderChest/enderchest.cfg</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">        </span><span class="na">EnderChest/.*</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">        </span><span class="na">.DS_Store</span>
 </span></code></pre></div>
 <p>If there's a shulker box you want to exclude from syncing, just add it on a new line
 (prefixing it with <code>EnderChest/</code> will help ensure that you're not excluding files with
@@ -1524,7 +1749,7 @@ that name in other boxes).</p>
 <p>If you use a consistent naming convention, such as giving all of your local-only
 shulker boxes names that end in ".local", you can exclude them all at once by adding
 the line:
-<div class="language-ini highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">EnderChest/*.local</span>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="na">EnderChest/*.local</span>
 </span></code></pre></div></p>
 </div>
 <p>Note that this "do-not-sync" list <em>is only obeyed</em> for sync commands run from
@@ -1538,7 +1763,7 @@ it with other machines or place links into that folder. One reason for this
 is to make it easier to create incremental backups and put your configurations
 under full version control using something like <a href="https://git-scm.com/">Git</a>.</p>
 <p>If you navigate <em>into</em> your EnderChest folder and run the command</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>init
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>git<span class="w"> </span>init
 </span></code></pre></div>
 <p>then assuming you have Git installed on your system, it will turn your
 entire EnderChest into a repository and store its version history in the
