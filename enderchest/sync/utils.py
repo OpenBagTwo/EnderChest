@@ -1,4 +1,5 @@
 """Non-implementation-specific syncing utilities"""
+
 import fnmatch
 import getpass
 import os
@@ -191,8 +192,10 @@ def filter_contents(
         if not any(
             (
                 fnmatch.fnmatch(
-                    os.path.normpath(os.path.join(prefix or "", path_info[0])),
-                    os.path.join("*", pattern),
+                    os.path.normpath(
+                        os.path.join(prefix or "", path_info[0], "placeholder")
+                    ),
+                    os.path.join("*", pattern, "*"),
                 )
                 for pattern in exclude
             )
