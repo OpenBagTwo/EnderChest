@@ -337,6 +337,33 @@ class TestGatherServer:
 
         assert expected_meta == instance_meta
 
+    @pytest.mark.parametrize(
+        "with_explicit_path", (False, True), ids=("", "with_explicit_path")
+    )
+    def test_mystery_jar_will_prompt_for_info(
+        self, minecraft_root, with_explicit_path, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(["vanilla", "1.0", "OG", "old,vanilla"])
+        monkeypatch.setattr("builtins.input", script_reader)
+        server_jar = minecraft_root / "servers" / "mystery" / "server.jar"
+        server_jar.parent.mkdir(parents=True)
+        server_jar.write_text("Correct jar\n")
+
+        instance_meta = gather.gather_metadata_for_minecraft_server(
+            server_jar.parent, server_jar=server_jar if with_explicit_path else None
+        )
+
+        _ = capsys.readouterr()
+
+        assert instance_meta == i.InstanceSpec(
+            "OG",
+            server_jar.parent,
+            ("1.0",),
+            "",
+            ("server",),
+            ("old", "vanilla"),
+        )
+
 
 class TestSymlinkAllowlistVersionChecker:
     """aka check my regex"""
