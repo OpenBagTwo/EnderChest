@@ -444,7 +444,7 @@ def gather_metadata_for_minecraft_server(
             .lower()
             .strip()
         )[0]
-        instance_spec["minecraft_version"] = (
+        instance_spec["minecraft_versions"] = (
             prompt(
                 "What version of Minecraft is this server?\ne.g.1.20.4, 23w13a_or_b..."
             )
