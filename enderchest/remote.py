@@ -171,13 +171,14 @@ def sync_with_remotes(
             else:
                 prefix = "Attempting"
             try:
+                remote_chest = load_remote_ender_chest(remote_uri)
                 if pull_or_push == "pull":
                     SYNC_LOGGER.log(
                         IMPORTANT,
                         f"{prefix} to pull changes from %s",
                         render_remote(alias, remote_uri),
                     )
-                    remote_chest = remote_uri._replace(
+                    remote_chest_folder = remote_uri._replace(
                         path=urlparse(
                             (
                                 fs.ender_chest_folder(
@@ -188,12 +189,13 @@ def sync_with_remotes(
                         ).path
                     )
                     pull(
-                        remote_chest,
+                        remote_chest_folder,
                         minecraft_root,
-                        exclude=[
+                        exclude={
                             *this_chest.do_not_sync,
+                            *remote_chest.do_not_sync,
                             *exclusions,
-                        ],
+                        },
                         dry_run=do_dry_run,
                         **sync_kwargs,
                     )
@@ -207,10 +209,11 @@ def sync_with_remotes(
                     push(
                         local_chest,
                         remote_uri,
-                        exclude=[
+                        exclude={
                             *this_chest.do_not_sync,
+                            *remote_chest.do_not_sync,
                             *exclusions,
-                        ],
+                        },
                         dry_run=do_dry_run,
                         **sync_kwargs,
                     )
