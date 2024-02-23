@@ -262,8 +262,8 @@ class TestGatherServer:
         )
         server_jar.write_text("Correct jar\n")
         expected_metadata[server_jar] = i.InstanceSpec(
-            server_jar.parent.parent.name,
-            server_jar.parent.parent,
+            server_jar.parent.name,
+            server_jar.parent,
             ("1.18.1",),
             "Fabric Loader",
             ("server",),

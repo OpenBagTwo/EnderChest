@@ -94,7 +94,7 @@ def normalize_modloader(loader: str | None) -> list[str]:
     match loader.lower().replace(" ", "").replace("-", "").replace("_", "").replace(
         "/", ""
     ):
-        case "none" | "vanilla" | "minecraft_server":
+        case "none" | "vanilla" | "minecraftserver":
             return [""]
         case "fabric" | "fabricloader":
             return ["Fabric Loader"]
@@ -105,7 +105,7 @@ def normalize_modloader(loader: str | None) -> list[str]:
         case "forge" | "forgeloader" | "minecraftforge":
             return ["Forge"]
         case _:
-            return [loader]
+            return [loader.title()]
 
 
 def equals(
