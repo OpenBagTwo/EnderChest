@@ -84,7 +84,7 @@ class TestFileSync:
         not_so_remote._uri = not_so_remote._uri._replace(scheme=self.protocol)
         not_so_remote.register_remote(local._uri)
         not_so_remote.register_remote("ipoac://yoursoul@birdhouse/minecraft")
-        not_so_remote.do_not_sync.append("*.local")
+        not_so_remote.do_not_sync.append("EnderChest/*.local")
         not_so_remote.write_to_cfg(another_root / "EnderChest" / "enderchest.cfg")
 
         (another_root / "chest monster" / "worlds" / "olam").mkdir(parents=True)
@@ -425,9 +425,7 @@ class TestFileSync:
         gather.update_ender_chest(root, remotes=(remote,))
         r.sync_with_remotes(root, "push", verbosity=-1)
         assert (
-            sync.abspath_from_uri(remote)
-            / "EnderChest"
-            / "vanilla"
+            fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
             / "conflict"
             / "diamond.png"
         ).read_text() == "sparkle"
@@ -441,12 +439,12 @@ class TestFileSync:
         r.sync_with_remotes(minecraft_root, operation, verbosity=-1)
         assert sync_utils.is_identical(
             (
-                minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
+                fs.shulker_box_root(minecraft_root, "vanilla")
+                / "conflict"
+                / "diamond.png"
             ).stat(),
             (
-                sync.abspath_from_uri(remote)
-                / "EnderChest"
-                / "vanilla"
+                fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
                 / "conflict"
                 / "diamond.png"
             ).stat(),
@@ -456,9 +454,7 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", dry_run=True)
         assert (
-            sync.abspath_from_uri(remote)
-            / "EnderChest"
-            / "vanilla"
+            fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
             / "conflict"
             / "diamond.png"
         ).read_text() == "lab-grown!"
@@ -476,7 +472,9 @@ class TestFileSync:
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", **sync_kwargs)
         assert (
-            not (sync.abspath_from_uri(remote) / "EnderChest" / "optifine").exists()
+            not (
+                fs.ender_chest_folder(sync.abspath_from_uri(remote)) / "optifine"
+            ).exists()
             == delete
         )
 
@@ -485,14 +483,44 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
-        assert not (sync.abspath_from_uri(remote) / "EnderChest" / ".git").exists()
+        assert not (
+            fs.ender_chest_folder(sync.abspath_from_uri(remote)) / ".git"
+        ).exists()
 
     def test_chest_obeys_its_own_ignore_list(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
 
         chest = inventory.load_ender_chest(minecraft_root)
+        chest.do_not_sync.append("super_secret.txt")
+        chest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        (
+            fs.shulker_box_root(minecraft_root, "vanilla") / "super_secret.txt"
+        ).write_text("I'm not sharing!!!")
+
+        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        assert not (
+            fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
+            / "super_secret.txt"
+        ).exists()
+
+        # and then just to make sure
+        assert (
+            fs.shulker_box_root(minecraft_root, "vanilla") / "super_secret.txt"
+        ).read_text("UTF-8") == "I'm not sharing!!!"
+
+    def test_syncing_a_default_exclusion_requires_changes_on_both_sides(
+        self, minecraft_root, remote
+    ):
+        gather.update_ender_chest(minecraft_root, remotes=(remote,))
+
+        chest = inventory.load_ender_chest(minecraft_root)
         chest.do_not_sync = ["EnderChest/enderchest.cfg"]
         chest.write_to_cfg(fs.ender_chest_config(minecraft_root))
+
+        remote_chest = r.load_remote_ender_chest(remote)
+        remote_chest.do_not_sync.remove("EnderChest/.*")
+        remote_chest.write_to_cfg(fs.ender_chest_config(sync.abspath_from_uri(remote)))
 
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         assert (
@@ -558,11 +586,9 @@ class TestFileSync:
             exclude="*/diamond.png",
         )
         assert (
-            minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
+            fs.shulker_box_root(minecraft_root, "vanilla") / "conflict" / "diamond.png"
         ).read_text() != (
-            sync.abspath_from_uri(remote)
-            / "EnderChest"
-            / "vanilla"
+            fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
             / "conflict"
             / "diamond.png"
         ).read_text()
