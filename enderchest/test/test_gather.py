@@ -184,6 +184,160 @@ class TestGatherInstances:
         }
 
 
+class TestGatherServer:
+    @pytest.fixture()
+    def server_jars(self, minecraft_root: Path) -> dict[Path, i.InstanceSpec]:
+        expected_metadata = {}
+        server_folder = minecraft_root / "servers"
+        server_folder.mkdir(exist_ok=True)
+
+        # this might actually be Aether 1?
+        (server_folder / "aether.2").mkdir()
+        (
+            server_folder
+            / "aether.2"
+            / "forge-1.7.10-10.13.4.1614-1.7.10-installer.jar"
+        ).write_text("Wrong jar\n")
+        (server_folder / "aether.2" / ".minecraft").mkdir()
+        server_jar = (
+            server_folder
+            / "aether.2"
+            / ".minecraft"
+            / "forge-1.7.10-10.13.4.1614-1.7.10-universal.jar"
+        )
+        server_jar.write_text("Correct jar\n")
+        expected_metadata[server_jar] = i.InstanceSpec(
+            server_jar.parent.parent.name,
+            server_jar.parent.parent,
+            ("1.7.10",),
+            "Forge",
+            ("server",),
+            (),
+        )
+
+        (
+            server_folder / "aether.2" / ".minecraft" / "minecraft_server.1.7.10.jar"
+        ).write_text("Wrong jar\n")
+        (server_folder / "aether.2" / "mods").mkdir()
+        (server_folder / "aether.2" / "mods" / "aether-1.7.10-1.6.jar").write_text(
+            "Wrong jar\n"
+        )
+
+        (server_folder / "aether.legacy").mkdir()
+        (
+            server_folder / "aether.legacy" / "forge-1.12.2-14.23.5.2860-installer.jar"
+        ).write_text("Wrong jar\n")
+        (server_folder / "aether.legacy" / ".minecraft").mkdir()
+        server_jar = (
+            server_folder
+            / "aether.legacy"
+            / ".minecraft"
+            / "forge-1.12.2-14.23.5.2860.jar"
+        )
+        server_jar.write_text("Correct jar\n")
+        expected_metadata[server_jar] = i.InstanceSpec(
+            server_jar.parent.parent.name,
+            server_jar.parent.parent,
+            ("1.12.2",),
+            "Forge",
+            ("server",),
+            (),
+        )
+        (
+            server_folder
+            / "aether.legacy"
+            / ".minecraft"
+            / "minecraft_server.1.12.2.jar"
+        ).write_text("Wrong jar\n")
+        (server_folder / "aether.legacy" / "mods").mkdir()
+        (
+            server_folder / "aether.legacy" / "mods" / "aether-1.12.2-v1.5.2.jar"
+        ).write_text("Wrong jar\n")
+
+        (server_folder / "chunk.in.a.globe").mkdir()
+        server_jar = (
+            server_folder
+            / "chunk.in.a.globe"
+            / "fabric-server-mc.1.18.1-loader.0.14.4-launcher.0.10.2.jar"
+        )
+        server_jar.write_text("Correct jar\n")
+        expected_metadata[server_jar] = i.InstanceSpec(
+            server_jar.parent.parent.name,
+            server_jar.parent.parent,
+            ("1.18.1",),
+            "Fabric Loader",
+            ("server",),
+            (),
+        )
+        (server_folder / "chunk.in.a.globe" / ".fabric" / "server").mkdir(parents=True)
+        for jar_name in (
+            "1.18.1-server.jar",
+            "fabric-loader-server-0.13.3-minecraft-1.18.1.jar",
+            "fabric-loader-server-0.14.4-minecraft-1.18.1.jar",
+        ):
+            (
+                server_folder / "chunk.in.a.globe" / ".fabric" / "server" / jar_name
+            ).write_text("Wrong jar\n")
+
+        centralized_jar_folder = (
+            minecraft_root / "EnderChest" / "Chest Monster" / "server_jars"
+        )
+        centralized_jar_folder.mkdir(parents=True, exist_ok=True)
+        for jar_name, launcher in (
+            ("minecraft_server-1.20.4.jar", ""),
+            (
+                "fabric-server-mc.1.20.4-loader.0.15.7-launcher.1.0.0.jar",
+                "Fabric Loader",
+            ),
+            ("forge-1.20.4-49.0.30-shim.jar", "Forge"),
+            ("paper-1.20.4-424.jar", "Paper"),
+            ("purpur-1.20.4-2142.jar", "Purpur"),
+            ("spigot-1.20.4.jar", "Spigot"),
+        ):
+            (centralized_jar_folder / jar_name).write_text("Correct jar\n")
+            expected_metadata[centralized_jar_folder / jar_name] = i.InstanceSpec(
+                "ignoreme", Path("ignoreme"), ("1.20.4",), launcher, ("server",), ()
+            )
+        return expected_metadata
+
+    def test_parsing_metadata_from_jar(self, server_jars):
+        expected: list[tuple[Path, tuple[str], str]] = [
+            (jar, instance.minecraft_versions, instance.modloader)
+            for jar, instance in server_jars.items()
+        ]
+        results: list[tuple[Path, tuple[str], str]] = []
+        for jar in server_jars:
+            meta = gather._gather_metadata_from_jar_filename(jar.name)
+            results.append((jar, meta["minecraft_versions"], meta["modloader"]))
+
+        assert expected == results
+
+    @pytest.mark.parametrize(
+        "server", ("aether.2", "aether.legacy", "chunk.in.a.globe")
+    )
+    def test_gather_server_instance_parses_metadata_from_the_correct_jar(
+        self, server, server_jars, minecraft_root, monkeypatch, capsys
+    ):
+        script_reader = utils.scripted_prompt(["", ""])
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        server_home = minecraft_root / "servers" / server
+        instance_meta = gather.gather_metadata_for_minecraft_server(server_home)
+
+        _ = capsys.readouterr()
+
+        for jar, meta in server_jars.items():
+            if jar.is_relative_to(server_home):
+                expected_meta = meta
+                break
+        else:
+            raise RuntimeError(
+                "Whoops! Test class fixture doesn't contain meta for this server home."
+            )
+
+        assert expected_meta == instance_meta
+
+
 class TestSymlinkAllowlistVersionChecker:
     """aka check my regex"""
 
