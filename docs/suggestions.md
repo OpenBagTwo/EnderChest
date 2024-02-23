@@ -241,6 +241,128 @@ with a different workflow that works for you,
 [I'd be delighted to hear about it.](https://github.com/OpenBagTwo/EnderChest/issues/new)
 
 
+## Managing Servers
+
+If you host your own Minecraft servers, EnderChest can be extremely helpful
+in keeping your modlists and config files in sync, both between servers and
+between servers and desktop instances. For this section we'll assume
+you're running (or are planning to run) a Minecraft server on a dedicated
+Linux box. After [installing the `enderchest` package](../installation)
+on your dedicated server and verifying that it has
+[a suitable version of Rsync](../installation/#installing-rsync),
+you can either [set up a clean EnderChest](../usage/#creating-an-enderchest)
+or use [`enderchest craft --from`](../cli/#enderchest-craft) to piggyback off
+your desktop's configuration (see [here](../usage/#understanding-uris)
+for details on specifying your desktop's URI).
+
+with your chest crafted, you can register your server via the command
+
+```bash
+enderchest gather server <path-to-server-home>
+```
+where `<path-to-server-home>` is the working directory you call the `java`
+command from to start your server.
+
+!!! info
+    Additional information about this action can be found in
+    [the CLI docs](../cli/#enderchest-gather-server)
+
+If your dedicated box hosts _multiple_ servers, you can register them via
+subsequent calls to `enderchest gather server`.
+
+At this point, your `EnderChest` folder should still be empty, save for your
+configuration file, even if you used the `--from` flag during crafting.
+Before syncing your files, read through the following sections to make sure
+you're not about to make a giant mess.
+
+### Dedicated Server Configuration
+
+If you're paying for a dedicated server, you're likely paying a premium for
+disk space and network bandwidth, meaning you _probably don't_ want to sync
+your client-side mods, single-player worlds or screenshots.
+
+To make sure these files don't get transferred back and forth, open up
+the `enderchest.cfg` file on the server (inside the `EnderChest` folder) and
+edit the `do-not-sync` entry in the top `[properties]` section to exclude any
+shulker boxes, ["Chest Monsters"](#chest-monster), etc. that should not be
+transferred to the server.
+
+!!! tip
+    [Here's a helpful guide](https://linuxize.com/post/how-to-exclude-files-and-directories-with-rsync/)
+    on crafting Rsync `--exclude` patterns
+
+### Excluding Servers from "Global" Shulker Boxes
+
+The [hierarchical approach to shulker boxes](#hierarchical) recommended starting
+with a "global" box that contains configurations and files you'll want
+_wherever_ you're playing. If you configured that box as specified, its contents
+will _also_ place links inside your server instances. That might not be something
+you want (for example, if your "global" box contained your screenshots or
+`options.txt`). Instead, make sure (on your desktop, before syncing, to add "!server"
+to the `[tags]` section of every `shulkerbox.cfg` file that should only be
+linked for client-side / single player instances).
+
+### Creating Server-Specific Shulker Boxes
+
+On the flip side, if you're operating multiple servers, you're almost certainly
+going to want to share files and folders across _just_ your servers
+(for example: banlists, log / backup folders, or even the server JARs themselves).
+
+To create a shulker box that _only_ gets linked to by server folders, open
+up the shulker box's `shulkerbox.cfg` and make sure the `[tags]` section reads:
+
+```ini
+[tags]
+server
+```
+
+!!! warning "Note"
+    Note that additional entries in each section (with the exception of
+    exclusions) are _OR_ -ed, not _AND_ -ed), so, for example, specifying
+    ```ini
+    [tags]
+    server
+    *aether*
+    ```
+    would match to all registered servers _and additionally_ to all instances
+    with "aether" in the tag name
+
+Another recommendation is to make generous use of
+[link-folders](../usage/#linking-entire-folders) in your server-specific
+shulker boxes. This way, new files placed inside these folders will become
+available to the server as soon as they're synced, rather than requiring an
+`enderchest place`.
+
+Finally, unless you're _only_ planning on running `enderchest open` from
+the server (and never `enderchest close` from a desktop to push changes _to_
+the server), **do not link your world folders**, as you never want to overwrite
+world files while the game is running.
+
+!!! tip
+    On the other hand, if you run an auto-backup script, it's an _excellent_
+    idea to link and sync _that_ folder so that you have off-site copies of
+    your world
+
+### Syncing Between Server and Desktop
+
+Just as with any other multi-computer setup, you can use
+[`enderchest gather enderchests`](../cli/#enderchest-gather-enderchests)
+to register your server EnderChest to the one on your desktop, though
+to reliably do the reverse you'll either need to contact your ISP about getting
+a static IP, or you'll need to set up a
+[dynamic DNS service](https://www.duckdns.org/) for your home
+(you'll also need to run an Rsync (or [SFTP](#sftp-protocol)) server on your
+desktop and expose your SSH port to traffic from the internet).
+
+Planning to run all of your sync operations (`enderchest open` and
+`enderchest close`) from the desktop is going to be simpler (and safer)
+for most users, but because EnderChest only runs `enderchest place` after
+an `open` operation, you'll need to log into your server to regenerate any new
+symlinks after each desktop-side sync. Running the sync operations from the
+desktop also means you won't be able to easily schedule your sync operations to
+coordinate with server restarts.
+
+
 ## Effective Syncing
 
 ### Passwordless SSH Authentication
