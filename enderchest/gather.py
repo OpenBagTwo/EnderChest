@@ -381,7 +381,7 @@ def gather_metadata_for_minecraft_server(
     Parameters
     ----------
     server_home : Path
-        The path to the folder containing the server's files
+        The working directory of the Minecraft server
     name : str, optional
         A name or alias to give to the server. If None is provided, the user
         will be prompted to enter it.
@@ -476,10 +476,11 @@ def gather_metadata_for_minecraft_server(
 def update_ender_chest(
     minecraft_root: Path,
     search_paths: Iterable[str | Path] | None = None,
-    official: bool | None = None,
+    instance_type: str | None = None,
     remotes: (
         Iterable[str | ParseResult | tuple[str, str] | tuple[ParseResult, str]] | None
     ) = None,
+    **server_meta,
 ) -> None:
     """Orchestration method that coordinates the onboarding of new instances or
     EnderChest installations
@@ -492,15 +493,25 @@ def update_ender_chest(
     search_paths : list of Paths, optional
         The local search paths to look for Minecraft installations within.
         Be warned that this search is performed recursively.
-    official : bool | None, optional
-        Optionally specify whether the Minecraft instances you expect to find
-        are from the official launcher (`official=True`) or a MultiMC-derivative
-        (`official=False`).
+    instance_type : str, optional
+        Optionally specify the type of the Minecraft instances you expect to find.
+        Options are:
+
+          - from the official launcher (`instance_type="official"`)
+          - from a MultiMC derivative (`instance_type="mmc"`)
+          - server (in which case, each search path will be accepted verbatim
+            as the server's home directory) (`instance_type="server"`)
+
+        If `None` is specified, this method will search for both official and
+        MMC-style instances (but not servers).
     remotes : list of URIs or (URI, str) tuples, optional
         Any remotes you wish to register to this instance. When a (URI, str) tuple
         is provided, the second value will be used as the name/alias of the remote.
         If there is already a remote specified with the given alias, this method will
         replace it.
+    **server_meta
+        Pass-through for metadata to pass through to any gathered servers (such
+        as name or jar location)
     """
     try:
         ender_chest = load_ender_chest(minecraft_root)
@@ -510,10 +521,28 @@ def update_ender_chest(
         )
         return
     for search_path in search_paths or ():
+        match instance_type:
+            case "server":
+                instance = gather_metadata_for_minecraft_server(
+                    Path(search_path), **server_meta
+                )
+                _ = ender_chest.register_instance(instance)
+                continue
+            case "official":
+                official: bool | None = True
+            case "mmc":
+                official = False
+            case None:
+                official = None
+            case _:
+                raise NotImplementedError(
+                    f"{instance_type} instances are not currently supported."
+                )
         for instance in gather_minecraft_instances(
             minecraft_root, Path(search_path), official=official
         ):
             _ = ender_chest.register_instance(instance)
+
     for remote in remotes or ():
         try:
             if isinstance(remote, (str, ParseResult)):
