@@ -84,6 +84,7 @@ class TestFileSync:
         not_so_remote._uri = not_so_remote._uri._replace(scheme=self.protocol)
         not_so_remote.register_remote(local._uri)
         not_so_remote.register_remote("ipoac://yoursoul@birdhouse/minecraft")
+        not_so_remote.do_not_sync.append("*.local")
         not_so_remote.write_to_cfg(another_root / "EnderChest" / "enderchest.cfg")
 
         (another_root / "chest monster" / "worlds" / "olam").mkdir(parents=True)
@@ -144,11 +145,24 @@ class TestFileSync:
             ),
         )
 
+        (another_root / "EnderChest" / "really.local").mkdir()
+        (another_root / "EnderChest" / "really.local" / "all_mine.txt").write_text(
+            "DO NOT SYNC!!!\n"
+        )
+
         yield not_so_remote._uri
 
         assert (
             another_root / "chest monster" / "worlds" / "olam" / "level.dat"
         ).read_text() == "dootdootdoot"
+
+        assert (
+            another_root / "EnderChest" / "really.local" / "all_mine.txt"
+        ).read_text("UTF-8") == "DO NOT SYNC!!!\n"
+
+        assert not (
+            minecraft_root / "EnderChest" / "really.local" / "all_mine.txt"
+        ).exists()
 
         # now put everything local back the way it was supposed to be before
         # the conftest teardown freaks out
