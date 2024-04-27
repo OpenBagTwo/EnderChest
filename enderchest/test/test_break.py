@@ -2,18 +2,28 @@
 
 import logging
 import os
-from pathlib import Path
 
 import pytest
 
 from enderchest import craft
 from enderchest import filesystem as fs
-from enderchest import gather, place, uninstall
+from enderchest import inventory, place, uninstall
 
 from . import utils
 
 
 class TestBreakEnderChest:
+
+    @pytest.fixture(autouse=True)
+    def patch_break(self, monkeypatch):
+        """Patch the actual break method to prevent accidental breakages
+        and to assert that the break method was never called"""
+
+        def mock_break(*args, **kwargs):
+            raise AssertionError("I should not have been called")
+
+        monkeypatch.setattr(uninstall, "_break", mock_break)
+
     def test_cant_break_what_doesnt_exist(self, tmp_path, caplog):
         uninstall.break_ender_chest(tmp_path)
         error_log = [
@@ -59,6 +69,112 @@ class TestBreakEnderChest:
         assert errorish_log[-2].message.startswith("Are you sure")
 
         assert len(errorish_log) == 2
+
+
+class TestPartiallyBreakEnderChest:
+    @pytest.fixture(autouse=True)
+    def patch_break(self, monkeypatch):
+        """Patch the actual break method to prevent accidental breakages
+        and to assert that the break method was never called"""
+
+        def mock_break(*args, **kwargs):
+            raise AssertionError("I should not have been called")
+
+        monkeypatch.setattr(uninstall, "_break", mock_break)
+
+    def test_cant_break_what_doesnt_exist(self, tmp_path, caplog):
+        with pytest.raises(FileNotFoundError, match="No valid EnderChest"):
+            uninstall.break_instances(tmp_path, ("potato", "infinite"))
+
+    def test_break_aborts_for_a_chest_with_no_instances(self, tmp_path, caplog):
+        craft.craft_ender_chest(
+            tmp_path,
+            instance_search_paths=[],  # gotta give a kwarg so it doesn't go interactive
+        )
+        uninstall.break_instances(tmp_path, ("bee", "Drowned"))
+        errorish_log = [
+            record for record in caplog.records if record.levelno >= logging.WARNING
+        ]
+        assert errorish_log[-1].message.splitlines()[-1] == "Aborting."
+        assert "no valid instances" in errorish_log[-1].message.lower()
+
+    def test_break_asks_you_if_youre_really_sure(
+        self, minecraft_root, home, monkeypatch, capsys, caplog
+    ):
+        script_reader = utils.scripted_prompt([""])
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        utils.pre_populate_enderchest(
+            fs.ender_chest_folder(minecraft_root, check_exists=False),
+            *utils.TESTING_SHULKER_CONFIGS
+        )
+
+        uninstall.break_instances(minecraft_root, ("bee", "Drowned"))
+
+        _ = capsys.readouterr()  # suppress outputs
+        errorish_log = [
+            record for record in caplog.records if record.levelno >= logging.WARNING
+        ]
+        assert errorish_log[-1].message == "Aborting."
+
+        assert errorish_log[-2].levelno == logging.WARNING
+        assert errorish_log[-2].message.startswith("Are you sure")
+        assert "  - bee\n  - Drowned" in errorish_log[-2].message
+
+        assert len(errorish_log) == 2
+
+    def test_break_skips_invalid_instances(
+        self, minecraft_root, home, monkeypatch, capsys, caplog
+    ):
+        script_reader = utils.scripted_prompt([""])
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        utils.pre_populate_enderchest(
+            fs.ender_chest_folder(minecraft_root, check_exists=False),
+            *utils.TESTING_SHULKER_CONFIGS
+        )
+
+        uninstall.break_instances(minecraft_root, ("bee", "drowned"))
+
+        _ = capsys.readouterr()  # suppress outputs
+        errorish_log = [
+            record for record in caplog.records if record.levelno >= logging.WARNING
+        ]
+        assert len(errorish_log) == 3
+        assert errorish_log[-3].levelno == logging.WARNING
+        assert "drowned" in errorish_log[-3].message
+        assert errorish_log[-3].message.lower().endswith("skipping.")
+
+    def test_break_deregisters_instances_afterwards(
+        self, minecraft_root, home, monkeypatch, capsys, caplog
+    ):
+        script_reader = utils.scripted_prompt(["Y"])
+        monkeypatch.setattr("builtins.input", script_reader)
+
+        def mock_break(*args, **kwargs):
+            print("Hi mom")
+            pass
+
+        monkeypatch.setattr(uninstall, "_break", mock_break)
+
+        utils.pre_populate_enderchest(
+            fs.ender_chest_folder(minecraft_root, check_exists=False),
+            *utils.TESTING_SHULKER_CONFIGS
+        )
+
+        assert "bee" in (
+            instance.name
+            for instance in inventory.load_ender_chest_instances(minecraft_root)
+        )
+
+        uninstall.break_instances(minecraft_root, ("bee", "drowned"))
+
+        _ = capsys.readouterr()  # suppress outputs
+
+        assert "bee" not in (
+            instance.name
+            for instance in inventory.load_ender_chest_instances(minecraft_root)
+        )
 
 
 class TestBreaking:
