@@ -1,4 +1,5 @@
 """A mock Paramiko SFTP client to be used for testing on systems without local SSH"""
+
 import json
 import os
 import shutil

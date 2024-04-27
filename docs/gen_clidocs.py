@@ -1,4 +1,5 @@
 """Generate CLI docs"""
+
 import mkdocs_gen_files
 
 from enderchest import cli

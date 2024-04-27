@@ -300,7 +300,7 @@ class TestGatherServer:
             )
         return expected_metadata
 
-    def test_parsing_metadata_from_jar(self, server_jars):
+    def test_parsing_metadata_from_jar(self, server_jars) -> None:
         expected: list[tuple[Path, tuple[str], str]] = [
             (jar, instance.minecraft_versions, instance.modloader)
             for jar, instance in server_jars.items()

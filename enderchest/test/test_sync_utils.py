@@ -1,4 +1,5 @@
 """Tests of the sync-helper utilities"""
+
 import importlib
 import logging
 import os
