@@ -1,4 +1,5 @@
 """Utilities for helping build interactive prompts"""
+
 import getpass
 
 CURSOR = "\x1b[35;1m==>\x1b[0m"

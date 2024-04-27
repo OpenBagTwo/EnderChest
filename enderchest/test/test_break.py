@@ -1,4 +1,5 @@
 """Tests of the EnderChest uninstallation procedure"""
+
 import logging
 import os
 from pathlib import Path

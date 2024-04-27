@@ -1,4 +1,5 @@
 """shutil-based sync implementation"""
+
 import fnmatch
 import logging
 import os

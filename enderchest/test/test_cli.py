@@ -46,6 +46,7 @@ class TestVersion:
 
 
 class ActionTestSuite:
+    action: str
     required_args: tuple[str, ...] = ()
 
     @pytest.mark.parametrize("help_flag", ("-h", "--help"))

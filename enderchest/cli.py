@@ -27,8 +27,7 @@ _list_aliases = ("inventory", "list")
 class Action(Protocol):  # pragma: no cover
     """Common protocol for CLI actions"""
 
-    def __call__(self, minecraft_root: Path, /) -> Any:
-        ...
+    def __call__(self, minecraft_root: Path, /) -> Any: ...
 
 
 def _place(
