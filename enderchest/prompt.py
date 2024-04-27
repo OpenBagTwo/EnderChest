@@ -61,7 +61,7 @@ def confirm(default: bool) -> bool:
         Whether the user has opted to continue
     """
 
-    response = prompt("Do you wish to continue?", "Y/n" if default else "y/N")
+    response = prompt("Do you wish to continue?", "Y/n" if default else "y/N").lower()
 
     if response == "":
         return default
