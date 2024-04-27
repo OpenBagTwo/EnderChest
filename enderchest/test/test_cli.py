@@ -8,7 +8,7 @@ from typing import Generator
 import pytest
 
 import enderchest
-from enderchest import cli, inventory, place, remote
+from enderchest import cli, inventory, place, remote, uninstall
 
 
 class TestHelp:
@@ -682,3 +682,64 @@ class TestClose(TestOpen):
 
 class TestBreak(ActionTestSuite):
     action = "break"
+
+    @pytest.fixture(autouse=True)
+    def prevent_actual_breakage(self, monkeypatch):
+        def mock_break(*args, **kwargs):
+            raise AssertionError("I should not have been called")
+
+        monkeypatch.setattr(uninstall, "_break", mock_break)
+
+    @pytest.fixture
+    def call_logs(self, monkeypatch):
+        full_uninstall_calls = []
+        partial_uninstall_calls = []
+
+        def mock_full_uninstall(*args, **kwargs):
+            full_uninstall_calls.append((args, kwargs))
+
+        def mock_partial_uninstall(*args, **kwargs):
+            partial_uninstall_calls.append((args, kwargs))
+
+        monkeypatch.setattr(uninstall, "break_ender_chest", mock_full_uninstall)
+        monkeypatch.setattr(uninstall, "break_instances", mock_partial_uninstall)
+
+        return {"full": full_uninstall_calls, "partial": partial_uninstall_calls}
+
+    @pytest.mark.parametrize("extra_flags", ("-v", "-q", "--root minceraft"))
+    def test_no_instance_names_routes_to_complete_uninstall(
+        self, call_logs, extra_flags
+    ):
+        action, root, _, kwargs = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                *extra_flags.split(),
+            ]
+        )
+        action(root, **kwargs)
+        assert len(call_logs["partial"]) == 0
+        assert len(call_logs["full"]) == 1
+
+    @pytest.mark.parametrize("n_instances", (1, 2))
+    @pytest.mark.parametrize("extra_flags", ("-v", "-q", "--root minceraft"))
+    def test_providing_instance_names_routes_to_partial_uninstall(
+        self, call_logs, extra_flags, n_instances
+    ):
+        args = ["potato", "infinity"][:n_instances]
+        action, root, _, kwargs = cli.parse_args(
+            [
+                "enderchest",
+                *self.action.split(),
+                *args,
+                *extra_flags.split(),
+            ]
+        )
+        action(root, **kwargs)
+        assert len(call_logs["full"]) == 0
+        assert len(call_logs["partial"]) == 1
+        assert call_logs["partial"][0][0][1:] == (["potato", "infinity"][:n_instances],)
+
+    def test_first_argument_is_root(self):
+        """Because it's not"""
+        pass
