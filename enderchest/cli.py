@@ -169,6 +169,14 @@ def _test(
         raise SystemExit(f"Tests Failed with exit code: {exit_code}")
 
 
+def _break(minecraft_root: Path, instances: Iterable[str] | None = None):
+    """Router for the break verb"""
+    if not instances:
+        uninstall.break_ender_chest(minecraft_root)
+    else:
+        uninstall.break_instances(minecraft_root, instances)
+
+
 ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     # action names (first one is canonical), action description, action method
     (
@@ -270,9 +278,9 @@ ACTIONS: tuple[tuple[tuple[str, ...], str, Action], ...] = (
     ),
     (
         ("break",),
-        "uninstall EnderChest by copying all linked resources"
-        " into its registered instances",
-        uninstall.break_ender_chest,
+        "uninstall EnderChest by copying linked resources"
+        " into some or all of the registered instances",
+        _break,
     ),
     (
         ("test",),
@@ -338,15 +346,16 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
         )
         if verb != "test":
             root = parser.add_mutually_exclusive_group()
-            root.add_argument(
-                "root",
-                nargs="?",
-                help=(
-                    "optionally specify your root minecraft directory."
-                    "  If no path is given, the current working directory will be used."
-                ),
-                type=Path,
-            )
+            if verb != "break":
+                root.add_argument(
+                    "root",
+                    nargs="?",
+                    help=(
+                        "optionally specify your root minecraft directory."
+                        "  If no path is given, the current working directory will be used."
+                    ),
+                    type=Path,
+                )
             root.add_argument(
                 "--root",
                 dest="root_flag",
@@ -689,6 +698,14 @@ def generate_parsers() -> tuple[ArgumentParser, dict[str, ArgumentParser]]:
             " before performing the real sync",
         )
 
+    break_parser = action_parsers["break"]
+    break_parser.add_argument(
+        "instances",
+        nargs="*",
+        help="instead of breaking your entire EnderChest, just deregister and"
+        " copy linked resources into the specified instances (by name)",
+    )
+
     # test pass-through
     test_parser = action_parsers["test"]
     test_parser.add_argument(
@@ -765,7 +782,7 @@ def parse_args(argv: Sequence[str]) -> tuple[Action, Path, int, dict[str, Any]]:
 
             action = actions[aliases[command]]
 
-            root_arg = action_kwargs.pop("root")
+            root_arg = None if command == "break" else action_kwargs.pop("root")
             root_flag = action_kwargs.pop("root_flag")
 
             verbosity = action_kwargs.pop("verbose") - action_kwargs.pop("quiet")
