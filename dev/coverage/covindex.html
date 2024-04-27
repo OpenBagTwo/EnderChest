@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage report</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
-    <script type="text/javascript" src="coverage_html.js" defer></script>
+    <script src="coverage_html.js" defer></script>
 </head>
 <body class="indexfile">
 <header>
@@ -16,13 +16,13 @@
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
-                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts">
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>
                 <div class="keyhelp">
                     <p>
-                        <kbd>n</kbd>
+                        <kbd>f</kbd>
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
@@ -41,11 +41,20 @@
             </div>
         </aside>
         <form id="filter_container">
-            <input id="filter" type="text" value="" placeholder="filter..." />
+            <input id="filter" type="text" value="" placeholder="filter...">
+            <div>
+                <input id="hide100" type="checkbox" >
+                <label for="hide100">hide covered</label>
+            </div>
         </form>
+        <h2>
+                <a class="button current">Files</a>
+                <a class="button" href="function_index.html">Functions</a>
+                <a class="button" href="class_index.html">Classes</a>
+        </h2>
         <p class="text">
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.2">coverage.py v7.4.2</a>,
-            created at 2024-02-23 22:01 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.5.0">coverage.py v7.5.0</a>,
+            created at 2024-04-27 17:23 +0000
         </p>
     </div>
 </header>
@@ -53,162 +62,162 @@
     <table class="index" data-sortable>
         <thead>
             <tr class="tablehead" title="Click to sort">
-                <th class="name left" aria-sort="none" data-shortcut="n">Module</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded</th>
-                <th class="right" aria-sort="none" data-shortcut="c">coverage</th>
+                <th class="name left" aria-sort="none" data-shortcut="f">File<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
+                <th class="right" aria-sort="none" data-shortcut="c">coverage<span class="arrows"></span></th>
             </tr>
         </thead>
         <tbody>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9___init___py.html">enderchest/__init__.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9___init___py.html">enderchest/__init__.py</a></td>
                 <td>6</td>
                 <td>0</td>
                 <td>0</td>
                 <td class="right" data-ratio="6 6">100%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_cli_py.html">enderchest/cli.py</a></td>
-                <td>175</td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_cli_py.html">enderchest/cli.py</a></td>
+                <td>182</td>
                 <td>31</td>
-                <td>4</td>
-                <td class="right" data-ratio="144 175">82%</td>
+                <td>3</td>
+                <td class="right" data-ratio="151 182">83%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_config_py.html">enderchest/config.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_config_py.html">enderchest/config.py</a></td>
                 <td>77</td>
                 <td>2</td>
                 <td>0</td>
                 <td class="right" data-ratio="75 77">97%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_craft_py.html">enderchest/craft.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_craft_py.html">enderchest/craft.py</a></td>
                 <td>359</td>
                 <td>68</td>
                 <td>0</td>
                 <td class="right" data-ratio="291 359">81%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_enderchest_py.html">enderchest/enderchest.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_enderchest_py.html">enderchest/enderchest.py</a></td>
                 <td>182</td>
                 <td>2</td>
                 <td>6</td>
                 <td class="right" data-ratio="180 182">99%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_filesystem_py.html">enderchest/filesystem.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_filesystem_py.html">enderchest/filesystem.py</a></td>
                 <td>36</td>
                 <td>2</td>
                 <td>6</td>
                 <td class="right" data-ratio="34 36">94%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_gather_py.html">enderchest/gather.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_gather_py.html">enderchest/gather.py</a></td>
                 <td>254</td>
                 <td>46</td>
                 <td>0</td>
                 <td class="right" data-ratio="208 254">82%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_instance_py.html">enderchest/instance.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_instance_py.html">enderchest/instance.py</a></td>
                 <td>49</td>
                 <td>0</td>
                 <td>0</td>
                 <td class="right" data-ratio="49 49">100%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_inventory_py.html">enderchest/inventory.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_inventory_py.html">enderchest/inventory.py</a></td>
                 <td>116</td>
                 <td>21</td>
                 <td>2</td>
                 <td class="right" data-ratio="95 116">82%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_loggers_py.html">enderchest/loggers.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_loggers_py.html">enderchest/loggers.py</a></td>
                 <td>19</td>
                 <td>1</td>
                 <td>0</td>
                 <td class="right" data-ratio="18 19">95%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_place_py.html">enderchest/place.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_place_py.html">enderchest/place.py</a></td>
                 <td>235</td>
                 <td>0</td>
                 <td>4</td>
                 <td class="right" data-ratio="235 235">100%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_prompt_py.html">enderchest/prompt.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_prompt_py.html">enderchest/prompt.py</a></td>
                 <td>19</td>
                 <td>1</td>
                 <td>0</td>
                 <td class="right" data-ratio="18 19">95%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_remote_py.html">enderchest/remote.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_remote_py.html">enderchest/remote.py</a></td>
                 <td>85</td>
                 <td>12</td>
                 <td>0</td>
                 <td class="right" data-ratio="73 85">86%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_shulker_box_py.html">enderchest/shulker_box.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_shulker_box_py.html">enderchest/shulker_box.py</a></td>
                 <td>162</td>
                 <td>3</td>
                 <td>0</td>
                 <td class="right" data-ratio="159 162">98%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_2e01aeca92c751f7___init___py.html">enderchest/sync/__init__.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_2e01aeca92c751f7___init___py.html">enderchest/sync/__init__.py</a></td>
                 <td>37</td>
                 <td>1</td>
                 <td>2</td>
                 <td class="right" data-ratio="36 37">97%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_2e01aeca92c751f7_file_py.html">enderchest/sync/file.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_2e01aeca92c751f7_file_py.html">enderchest/sync/file.py</a></td>
                 <td>121</td>
                 <td>6</td>
                 <td>2</td>
                 <td class="right" data-ratio="115 121">95%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_2e01aeca92c751f7_rsync_py.html">enderchest/sync/rsync.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_2e01aeca92c751f7_rsync_py.html">enderchest/sync/rsync.py</a></td>
                 <td>138</td>
                 <td>18</td>
                 <td>13</td>
                 <td class="right" data-ratio="120 138">87%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_2e01aeca92c751f7_sftp_py.html">enderchest/sync/sftp.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_2e01aeca92c751f7_sftp_py.html">enderchest/sync/sftp.py</a></td>
                 <td>180</td>
                 <td>19</td>
                 <td>4</td>
                 <td class="right" data-ratio="161 180">89%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_2e01aeca92c751f7_utils_py.html">enderchest/sync/utils.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_2e01aeca92c751f7_utils_py.html">enderchest/sync/utils.py</a></td>
                 <td>74</td>
                 <td>0</td>
-                <td>10</td>
+                <td>7</td>
                 <td class="right" data-ratio="74 74">100%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_85b4121f764e96b9_uninstall_py.html">enderchest/uninstall.py</a></td>
-                <td>43</td>
-                <td>1</td>
+            <tr class="region">
+                <td class="name left"><a href="z_85b4121f764e96b9_uninstall_py.html">enderchest/uninstall.py</a></td>
+                <td>66</td>
+                <td>3</td>
                 <td>0</td>
-                <td class="right" data-ratio="42 43">98%</td>
+                <td class="right" data-ratio="63 66">95%</td>
             </tr>
         </tbody>
         <tfoot>
             <tr class="total">
                 <td class="name left">Total</td>
-                <td>2367</td>
-                <td>234</td>
-                <td>53</td>
-                <td class="right" data-ratio="2133 2367">90%</td>
+                <td>2397</td>
+                <td>236</td>
+                <td>49</td>
+                <td class="right" data-ratio="2161 2397">90%</td>
             </tr>
         </tfoot>
     </table>
@@ -219,16 +228,16 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.2">coverage.py v7.4.2</a>,
-            created at 2024-02-23 22:01 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.5.0">coverage.py v7.5.0</a>,
+            created at 2024-04-27 17:23 +0000
         </p>
     </div>
     <aside class="hidden">
-        <a id="prevFileLink" class="nav" href="d_85b4121f764e96b9_uninstall_py.html"/>
-        <a id="nextFileLink" class="nav" href="d_85b4121f764e96b9___init___py.html"/>
-        <button type="button" class="button_prev_file" data-shortcut="["/>
-        <button type="button" class="button_next_file" data-shortcut="]"/>
-        <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        <a id="prevFileLink" class="nav" href="z_85b4121f764e96b9_uninstall_py.html"></a>
+        <a id="nextFileLink" class="nav" href="z_85b4121f764e96b9___init___py.html"></a>
+        <button type="button" class="button_prev_file" data-shortcut="["></button>
+        <button type="button" class="button_next_file" data-shortcut="]"></button>
+        <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
     </aside>
 </footer>
 </body>
