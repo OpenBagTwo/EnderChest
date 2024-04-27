@@ -1,13 +1,15 @@
 """Functionality for copying all files into their instances"""
 
+import logging
 import os
 import shutil
 from pathlib import Path
 from typing import Iterable
 
 from . import filesystem as fs
+from .enderchest import create_ender_chest
 from .instance import InstanceSpec
-from .inventory import load_ender_chest_instances
+from .inventory import load_ender_chest, load_ender_chest_instances
 from .loggers import BREAK_LOGGER, IMPORTANT
 from .prompt import confirm
 
@@ -40,11 +42,58 @@ def break_ender_chest(minecraft_root: Path) -> None:
     _break(fs.ender_chest_folder(minecraft_root), instances)
 
 
+def break_instances(minecraft_root: Path, instance_names: Iterable[str]) -> None:
+    """Deregister the specified instances from EnderChest, replacing all
+    instance symlinks with their actual targets, and then removing those
+    instances from the enderchest.cfg
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+    instance_names : list of str
+        The names of the instances to break
+    """
+    ender_chest = load_ender_chest(minecraft_root)
+
+    instance_lookup = {instance.name: instance for instance in ender_chest.instances}
+    instances: list[InstanceSpec] = []
+    for name in instance_names:
+        try:
+            instances.append(instance_lookup[name])
+        except KeyError:
+            BREAK_LOGGER.warning(
+                f'No instance named "{name}" is registered to this EnderChest.'
+                "\nSkipping."
+            )
+    if len(instances) == 0:
+        BREAK_LOGGER.error("No valid instances specified.\nAborting.")
+        return
+
+    BREAK_LOGGER.warning(
+        "Are you sure you want to remove the following instances from your EnderChest?"
+        + "\n"
+        + "\n".join((f"  - {instance.name}" for instance in instances))
+        + "\nDoing so will replace ALL the symlinks in each of the above instances"
+        "\nwith copies of their EnderChest-linked targets."
+        "\n\nTHIS CANNOT EASILY BE UNDONE!!"
+    )
+    if not confirm(default=False):
+        BREAK_LOGGER.error("Aborting.")
+        return
+
+    _break(fs.ender_chest_folder(minecraft_root), instances)
+    for instance in instances:
+        ender_chest._instances.remove(instance)
+    create_ender_chest(minecraft_root, ender_chest)
+
+
 def _break(
     chest_folder: Path,
     instances: Iterable[InstanceSpec],
 ) -> None:
-    """Actually perform the uninstallation (separated out for ease of mocking / testing)
+    """Actually perform the uninstallation
 
     Parameters
     ----------
