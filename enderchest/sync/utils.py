@@ -91,16 +91,13 @@ def render_remote(alias: str, uri: ParseResult) -> str:
 
 class _StatLike(Protocol):  # pragma: no cover
     @property
-    def st_mode(self) -> int | None:
-        ...
+    def st_mode(self) -> int | None: ...
 
     @property
-    def st_size(self) -> float | None:
-        ...
+    def st_size(self) -> float | None: ...
 
     @property
-    def st_mtime(self) -> float | None:
-        ...
+    def st_mtime(self) -> float | None: ...
 
 
 def is_identical(object_one: _StatLike, object_two: _StatLike) -> bool:

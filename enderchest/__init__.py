@@ -1,4 +1,5 @@
 """Top-level imports"""
+
 from . import _version
 from .enderchest import EnderChest
 from .instance import InstanceSpec

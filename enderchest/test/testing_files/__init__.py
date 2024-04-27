@@ -1,4 +1,5 @@
 """Subpackage containing all files and templates used for testing"""
+
 from importlib.resources import files
 
 __all__ = [

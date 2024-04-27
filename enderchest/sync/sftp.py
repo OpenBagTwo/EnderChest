@@ -1,4 +1,5 @@
 """paramiko-based sftp sync implementation"""
+
 import os
 import posixpath
 import stat
