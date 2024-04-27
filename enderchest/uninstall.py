@@ -39,7 +39,16 @@ def break_ender_chest(minecraft_root: Path) -> None:
         BREAK_LOGGER.error("Aborting.")
         return
 
-    _break(fs.ender_chest_folder(minecraft_root), instances)
+    chest_folder = fs.ender_chest_folder(minecraft_root)
+    _break(chest_folder, instances)
+
+    BREAK_LOGGER.log(
+        IMPORTANT,
+        "EnderChest has been uninstalled."
+        "\nYou may now delete %s"
+        "\nand uninstall the EnderChest package",
+        chest_folder,
+    )
 
 
 def break_instances(minecraft_root: Path, instance_names: Iterable[str]) -> None:
@@ -160,11 +169,3 @@ def _break(
                     resource_path,
                     copy_fail,
                 )
-
-    BREAK_LOGGER.log(
-        IMPORTANT,
-        "EnderChest has been uninstalled."
-        "\nYou may now delete %s"
-        "\nand uninstall the EnderChest package",
-        chest_folder,
-    )
