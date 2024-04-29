@@ -487,8 +487,29 @@ via the Git protocol is
 ### Startup and Shutdown Scripts
 
 Launchers like [PrismLauncher](https://www.prismlauncher.org/) can be configured to run
-commands before an  instance is launched or after it's closed. Consider putting
-`enderchest open /path/to/minecraft_root` in your startup scripts and
-`enderchest close /path/to/minecraft_root` in your shutdown scripts (where
+commands before an  instance is launched or after it's closed.
+
+First find the full path to your EnderChest executable by opening a terminal and running:
+
+- Linux / Mac:
+  ```bash
+  whereis enderchest
+  ```
+- Windows:
+  ```bat
+  where enderchest
+  ```
+
+and then put:
+`/path/to/enderchest open /path/to/minecraft_root` in your pre-launch command and
+`/path/to/enderchest close /path/to/minecraft_root` in your post-exit command (where
 "minecraft_root" is the location where you usually run the enderchest commands,
-*i.e.* the parent of your EnderChest folder.
+*i.e.* the parent of your EnderChest folder).
+
+!!! warning "PSA for Flatpak users"
+    Note that this **will not work** if your launcher runs in a sandboxed environment
+    (such as a [flatpak](https://flatpak.org/)), as there is no way to give the launcher
+    access to the necessary libraries and executables. Note that
+    [PrismLauncher](https://prismlauncher.org/download/linux/)
+    is also avaialable as an [AppImage](https://appimage.org/), which _will_ support
+    EnderChest integration.
