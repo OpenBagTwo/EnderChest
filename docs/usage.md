@@ -13,7 +13,7 @@ for example, tells you how to find the official launcher data. MultiMC-derived
 programs like PrismLauncher will often have a
 ["Folder" button](https://prismlauncher.org/wiki/getting-started/migrating-multimc/)
 that will take you to the location of each instance, which is especially helpful
-for the flatpak distribution.
+for the Flatpak distribution.
 
 ## Selecting a "Minecraft Root"
 
@@ -71,6 +71,14 @@ it easy to, for example, manually add a tag to an instance.
         modded
         optifine
     ```
+
+!!! info "PSA for Flatpak users"
+    If you're using a launcher installed via Flatpak,
+    make sure to give it permission to read from and
+    write to your EnderChest folder, if not your entire
+    [Minecraft root](#selecting-a-minecraft-root).
+    Use of [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal)
+    is highly recommended.
 
 ### Registering Additional Instances
 
