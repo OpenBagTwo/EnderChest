@@ -371,6 +371,11 @@ alternative to "cloud saves" for _all_ your games, as any and all files
 and folders within your EnderChest folder can be synchronized across all
 of the computers where you have EnderChest installed.
 
+!!! danger
+    Only do this if you sync your EnderChests **religiously**—unlike with, say, Steam cloud saves,
+    there is nothing in EnderChest's sync routines that check to make sure the data being written
+    is newer than the data being _overwritten._
+
 For example, let's say I want to share my
 [2048](https://flathub.org/apps/org.gnome.TwentyFortyEight)
 high scores across all of my machines. Those scores are stored at:
@@ -380,28 +385,31 @@ I could do is:
 1. Create a folder inside EnderChest called "2048" (better: put that folder
    inside my [Chest Monster](#chest-monster) or another folder called:
    "_Non-Minecraft")
-1. Move my game data from its current location into that folder:
+1. Move my game data from its current location into that folder, _e.g._
    ```bash
    mv ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores $MINECRAFT_ROOT/EnderChest/_Non-Minecraft/2048/.
    ```
-1. Create the symlink:
+1. Create the symlink, _e.g._
    ```bash
    ln -s ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores $MINECRAFT_ROOT/EnderChest/_Non-Minecraft/2048/.
    ```
 
+!!! info "PSA for Flatpak users"
+    When centralizing data for games installed via [Flatpak](https://flatpak.org/)
+    such as the above, make sure to give those games permission to read from and
+    write to your centralized game data folder.
+    Use of [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal)
+    is highly recommended.
+
+
 Then, on every other computer where I have the game installed, I can just delete
-the game data folder and replace it with a symlink:
+the game data folder and replace it with a symlink, _e.g._
 ```bash
 rm -r ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores
 ln -s ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores $MINECRAFT_ROOT/EnderChest/_Non-Minecraft/2048/.
 ```
 
 and my save data will be automatically synchronized.
-
-!!! danger
-    Only do this if you sync your EnderChests **religiously**—unlike with, say, Steam cloud saves,
-    there is nothing in EnderChest's sync routines that check to make sure the data being written
-    is newer than the data being _overwritten._
 
 !!! danger "Note when uninstalling"
     Note that these linked files ***will not*** be automatically copied to their original homes
@@ -552,7 +560,7 @@ and then put:
 
 !!! warning "PSA for Flatpak users"
     Note that this **will not work** if your launcher runs in a sandboxed environment
-    (such as a [flatpak](https://flatpak.org/)), as there is no way to give the launcher
+    (such as a [Flatpak](https://flatpak.org/)), as there is no way to give the launcher
     access to the necessary libraries and executables. Note that
     [PrismLauncher](https://prismlauncher.org/download/linux/)
     is also avaialable as an [AppImage](https://appimage.org/), which _will_ support
