@@ -119,7 +119,7 @@ class TestPartiallyBreakEnderChest:
 
         assert errorish_log[-2].levelno == logging.WARNING
         assert errorish_log[-2].message.startswith("Are you sure")
-        assert "  - bee\n  - Drowned" in errorish_log[-2].message
+        assert errorish_log[-2].args == ("  - bee\n  - Drowned",)
 
         assert len(errorish_log) == 2
 
@@ -142,7 +142,7 @@ class TestPartiallyBreakEnderChest:
         ]
         assert len(errorish_log) == 3
         assert errorish_log[-3].levelno == logging.WARNING
-        assert "drowned" in errorish_log[-3].message
+        assert errorish_log[-3].args == ("drowned",)
         assert errorish_log[-3].message.lower().endswith("skipping.")
 
     def test_break_deregisters_instances_afterwards(
@@ -152,7 +152,6 @@ class TestPartiallyBreakEnderChest:
         monkeypatch.setattr("builtins.input", script_reader)
 
         def mock_break(*args, **kwargs):
-            print("Hi mom")
             pass
 
         monkeypatch.setattr(uninstall, "_break", mock_break)

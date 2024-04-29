@@ -920,7 +920,7 @@ def _prompt_for_instance_numbers(
 
     prior_criteria: list[tuple[str, tuple[str, ...]]] = []
     prior_instance_selections: list[str] = []
-    for i, (condition, values) in enumerate(shulker_box.match_criteria):
+    for condition, values in shulker_box.match_criteria:
         if condition == "instances":
             prior_instance_selections.extend(values)
         else:
