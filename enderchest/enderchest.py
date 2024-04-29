@@ -388,7 +388,7 @@ class EnderChest:
                 )
                 ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
                 requires_rewrite = True
-        for setting in folder_defaults:
+        for setting in folder_defaults.keys():
             if folder_defaults[setting] is None:
                 folder_defaults[setting] = dict(_DEFAULTS)[setting]  # type: ignore
                 # requires_rewrite = True  # though I'm considering it

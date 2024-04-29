@@ -73,8 +73,9 @@ def break_instances(minecraft_root: Path, instance_names: Iterable[str]) -> None
             instances.append(instance_lookup[name])
         except KeyError:
             BREAK_LOGGER.warning(
-                f'No instance named "{name}" is registered to this EnderChest.'
-                "\nSkipping."
+                f'No instance named "%s" is registered to this EnderChest.'
+                "\nSkipping.",
+                name,
             )
     if len(instances) == 0:
         BREAK_LOGGER.error("No valid instances specified.\nAborting.")
@@ -82,11 +83,10 @@ def break_instances(minecraft_root: Path, instance_names: Iterable[str]) -> None
 
     BREAK_LOGGER.warning(
         "Are you sure you want to remove the following instances from your EnderChest?"
-        + "\n"
-        + "\n".join((f"  - {instance.name}" for instance in instances))
-        + "\nDoing so will replace ALL the symlinks in each of the above instances"
+        "\n%s\nDoing so will replace ALL the symlinks in each of the above instances"
         "\nwith copies of their EnderChest-linked targets."
-        "\n\nTHIS CANNOT EASILY BE UNDONE!!"
+        "\n\nTHIS CANNOT EASILY BE UNDONE!!",
+        "\n".join((f"  - {instance.name}" for instance in instances)),
     )
     if not confirm(default=False):
         BREAK_LOGGER.error("Aborting.")
