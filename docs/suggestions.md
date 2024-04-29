@@ -363,6 +363,50 @@ desktop also means you won't be able to easily schedule your sync operations to
 coordinate with server restarts.
 
 
+## Syncing Data for Other Games
+
+While EnderChest was designed for Minecraft, there is absolutely nothing
+stopping you from using it as a distributed and self-hosted
+alternative to "cloud saves" for _all_ your games, as any and all files
+and folders within your EnderChest folder can be synchronized across all
+of the computers where you have EnderChest installed.
+
+For example, let's say I want to share my
+[2048](https://flathub.org/apps/org.gnome.TwentyFortyEight)
+high scores across all of my machines. Those scores are stored at:
+`~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores`, so what
+I could do is:
+
+1. Create a folder inside EnderChest called "2048" (better: put that folder
+   inside my [Chest Monster](#chest-monster) or another folder called:
+   "_Non-Minecraft")
+1. Move my game data from its current location into that folder:
+   ```bash
+   mv ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores $MINECRAFT_ROOT/EnderChest/_Non-Minecraft/2048/.
+   ```
+1. Create the symlink:
+   ```bash
+   ln -s ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores $MINECRAFT_ROOT/EnderChest/_Non-Minecraft/2048/.
+   ```
+
+Then, on every other computer where I have the game installed, I can just delete
+the game data folder and replace it with a symlink:
+```bash
+rm -r ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores
+ln -s ~/.var/app/org.gnome.TwentyFortyEight/data/gnome-2048/scores $MINECRAFT_ROOT/EnderChest/_Non-Minecraft/2048/.
+```
+
+and my save data will be automatically synchronized.
+
+!!! danger
+    Only do this if you sync your EnderChests **religiously**—unlike with, say, Steam cloud saves,
+    there is nothing in EnderChest's sync routines that check to make sure the data being written
+    is newer than the data being _overwritten._
+
+!!! danger "Note when uninstalling"
+    Note that these linked files ***will not*** be automatically copied to their original homes
+    if/when you ["break" your EnderChest](../usage/#uninstalling).
+
 ## Effective Syncing
 
 ### Passwordless SSH Authentication
