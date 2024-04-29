@@ -319,8 +319,17 @@ point into the EnderChest folder with hard copies of those resources.
     then after breaking, your instances will simply contain _direct links_ to
     those files and folders.
 
-After that completes, you can safely delete your EnderChest folder and remove
-the package via your Python package manager, _e.g._
+After that completes, you can remove the package via your Python package manager,
+ _e.g._
+
 ```bash
 pipx uninstall enderchest
 ```
+
+and safely delete your EnderChest folder
+
+!!! danger
+    Make sure before you delete your EnderChest folder to move or preserve
+    any files or folders you've been
+    [manually synchronizing for non-Minecraft games or applications](../suggestions/#syncing-data-for-other-games),
+    as those links are _not_ automatically replaced by the `break` command.
