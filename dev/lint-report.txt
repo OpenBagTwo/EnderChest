@@ -16,7 +16,7 @@ enderchest/place.py:197:4: R1702: Too many nested blocks (6/5) (too-many-nested-
 enderchest/place.py:19:0: R0912: Too many branches (31/12) (too-many-branches)
 enderchest/place.py:19:0: R0915: Too many statements (104/50) (too-many-statements)
 ************* Module enderchest.uninstall
-enderchest/uninstall.py:83:4: W1201: Use lazy % formatting in logging functions (logging-not-lazy)
+enderchest/uninstall.py:76:16: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
 enderchest/uninstall.py:97:8: W0212: Access to a protected member _instances of a client class (protected-access)
 enderchest/uninstall.py:3:0: W0611: Unused import logging (unused-import)
 ************* Module enderchest.cli
@@ -43,7 +43,7 @@ enderchest/craft.py:238:0: R0915: Too many statements (63/50) (too-many-statemen
 enderchest/craft.py:404:0: R0914: Too many local variables (17/15) (too-many-locals)
 enderchest/craft.py:404:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/craft.py:404:0: R0915: Too many statements (58/50) (too-many-statements)
-enderchest/craft.py:813:0: R0914: Too many local variables (17/15) (too-many-locals)
+enderchest/craft.py:813:0: R0914: Too many local variables (16/15) (too-many-locals)
 enderchest/craft.py:841:12: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 enderchest/craft.py:847:25: W0125: Using a conditional statement with a constant value (using-constant-test)
 enderchest/craft.py:851:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
@@ -52,7 +52,6 @@ enderchest/craft.py:907:8: W1202: Use lazy % formatting in logging functions (lo
 enderchest/craft.py:907:8: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 enderchest/craft.py:813:0: R0911: Too many return statements (9/6) (too-many-return-statements)
 enderchest/craft.py:813:0: R0912: Too many branches (14/12) (too-many-branches)
-enderchest/craft.py:923:8: W0612: Unused variable 'i' (unused-variable)
 ************* Module enderchest.gather
 enderchest/gather.py:100:13: W0511: TODO: if not Windows, try making relative to "~" (fixme)
 enderchest/gather.py:109:0: R0914: Too many local variables (16/15) (too-many-locals)
@@ -77,6 +76,7 @@ enderchest/enderchest.py:235:4: C0116: Missing function or method docstring (mis
 enderchest/enderchest.py:268:4: R0914: Too many local variables (23/15) (too-many-locals)
 enderchest/enderchest.py:326:31: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
 enderchest/enderchest.py:391:8: C0206: Consider iterating with .items() (consider-using-dict-items)
+enderchest/enderchest.py:391:23: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
 enderchest/enderchest.py:268:4: R0912: Too many branches (18/12) (too-many-branches)
 enderchest/enderchest.py:268:4: R0915: Too many statements (64/50) (too-many-statements)
 ************* Module enderchest.remote
@@ -126,13 +126,13 @@ enderchest/sync/rsync.py:432:0: R0913: Too many arguments (9/5) (too-many-argume
 enderchest/sync/rsync.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[136:143]
 ==enderchest.sync.sftp:[365:372]
-        for path, path_stat, operation in sync_diff:
-            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
-                case (Op.CREATE, True):
-                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
-                    (destination_path / path).mkdir(parents=True, exist_ok=True)
-                case (Op.CREATE, False) | (Op.REPLACE, False):
-                    SYNC_LOGGER.debug( (duplicate-code)
+    for path, path_stat, operation in sync_diff:
+        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+            case (Op.CREATE, True):
+                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                (destination_path / path).mkdir(parents=True, exist_ok=True)
+            case (Op.CREATE, False) | (Op.REPLACE, False):
+                SYNC_LOGGER.debug( (duplicate-code)
 enderchest/sync/rsync.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[128:137]
 ==enderchest.sync.sftp:[493:502]

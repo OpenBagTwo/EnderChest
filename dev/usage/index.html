@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
     
     
       
@@ -1229,7 +1229,7 @@ for example, tells you how to find the official launcher data. MultiMC-derived
 programs like PrismLauncher will often have a
 <a href="https://prismlauncher.org/wiki/getting-started/migrating-multimc/">"Folder" button</a>
 that will take you to the location of each instance, which is especially helpful
-for the flatpak distribution.</p>
+for the Flatpak distribution.</p>
 <h2 id="selecting-a-minecraft-root">Selecting a "Minecraft Root"</h2>
 <p>Once you have the lay of the land, the next thing you'll want to do is decide
 where you want your EnderChest folder to live. This could be your home folder
@@ -1278,6 +1278,15 @@ or by putting each entry on its own (indented) line, <em>e.g.</em>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="na">modded</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="na">optifine</span>
 </span></code></pre></div></p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">PSA for Flatpak users</p>
+<p>If you're using a launcher installed via Flatpak,
+make sure to give it permission to read from and
+write to your EnderChest folder, if not your entire
+<a href="#selecting-a-minecraft-root">Minecraft root</a>.
+Use of <a href="https://flathub.org/apps/com.github.tchx84.Flatseal">Flatseal</a>
+is highly recommended.</p>
 </div>
 <h3 id="registering-additional-instances">Registering Additional Instances</h3>
 <p>Once you have an EnderChest installed, you can register additional instances
@@ -1473,10 +1482,18 @@ EnderChest (say, <code>EnderChest/global/screenshots</code> → <code>~/Pictures
 then after breaking, your instances will simply contain <em>direct links</em> to
 those files and folders.</p>
 </div>
-<p>After that completes, you can safely delete your EnderChest folder and remove
-the package via your Python package manager, <em>e.g.</em>
+<p>After that completes, you can remove the package via your Python package manager,
+ <em>e.g.</em></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>pipx<span class="w"> </span>uninstall<span class="w"> </span>enderchest
-</span></code></pre></div></p>
+</span></code></pre></div>
+<p>and safely delete your EnderChest folder</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Make sure before you delete your EnderChest folder to move or preserve
+any files or folders you've been
+<a href="../suggestions/#syncing-data-for-other-games">manually synchronizing for non-Minecraft games or applications</a>,
+as those links are <em>not</em> automatically replaced by the <code>break</code> command.</p>
+</div>
 
 
 
@@ -1526,7 +1543,7 @@ the package via your Python package manager, <em>e.g.</em>
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.3220b9d7.min.js"></script>
+      <script src="../assets/javascripts/bundle.a7c05c9e.min.js"></script>
       
     
   </body>
