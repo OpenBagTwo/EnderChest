@@ -544,7 +544,9 @@ class TestFileSync:
         )
         r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
         warnings = [
-            record.msg for record in caplog.records if record.levelname == "WARNING"
+            record.getMessage()
+            for record in caplog.records
+            if record.levelname == "WARNING"
         ]
 
         assert len(warnings) == 1
@@ -891,9 +893,9 @@ class TestRsyncSync(TestFileSync):
         debug_log = ""
         for record in caplog.records:
             if record.levelname == "INFO":
-                info_log += record.msg + "\n"
+                info_log += record.getMessage() + "\n"
             elif record.levelname == "DEBUG":
-                debug_log += record.msg + "\n"
+                debug_log += record.getMessage() + "\n"
 
         # meta-test--make sure that the creation is actually happening
         assert (
@@ -924,7 +926,9 @@ class TestRsyncSync(TestFileSync):
         r.sync_with_remotes(minecraft_root, op, dry_run=True, verbosity=len(verbosity))
 
         debug_log = "\n".join(
-            record.msg for record in caplog.records if record.levelname == "DEBUG"
+            record.getMessage()
+            for record in caplog.records
+            if record.levelname == "DEBUG"
         )
 
         # this wouldn't be in the summary
@@ -938,7 +942,9 @@ class TestRsyncSync(TestFileSync):
         r.sync_with_remotes(minecraft_root, op, dry_run=True, verbosity=-1)
 
         printed_log = "\n".join(
-            record.msg for record in caplog.records if record.levelno > logging.INFO
+            record.getMessage()
+            for record in caplog.records
+            if record.levelno > logging.INFO
         )
 
         assert "Number of created files" in printed_log

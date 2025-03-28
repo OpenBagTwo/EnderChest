@@ -100,7 +100,7 @@ def place_ender_chest(
         host = load_ender_chest(minecraft_root).name
     except (FileNotFoundError, ValueError) as bad_chest:
         PLACE_LOGGER.error(
-            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+            "Could not load EnderChest from %s:\n  %s", minecraft_root, bad_chest
         )
         return {}
 
@@ -111,7 +111,9 @@ def place_ender_chest(
     for shulker_box in load_shulker_boxes(minecraft_root, log_level=logging.DEBUG):
         if not shulker_box.matches_host(host):
             PLACE_LOGGER.debug(
-                f"{shulker_box.name} is not intended for linking to this host ({host})"
+                "%s is not intended for linking to this host (%s)",
+                shulker_box.name,
+                host,
             )
             continue
         shulker_boxes.append(shulker_box)
@@ -205,8 +207,8 @@ def place_ender_chest(
                 break
 
             PLACE_LOGGER.error(
-                "No minecraft instance exists at"
-                f" {instance_root.expanduser().absolute()}"
+                "No minecraft instance exists at %s",
+                instance_root.expanduser().absolute(),
             )
             handling = handle_error(None)
         if handling is not None:
@@ -224,7 +226,7 @@ def place_ender_chest(
                 if file.is_symlink():
                     if fs.links_into_enderchest(minecraft_root, file):
                         PLACE_LOGGER.debug(
-                            f"Removing old link: {file} -> {os.readlink(file)}"
+                            "Removing old link: %s -> %s", file, os.readlink(file)
                         )
                         file.unlink()
 
@@ -236,7 +238,7 @@ def place_ender_chest(
 
             box_root = shulker_box.root.expanduser().absolute()
 
-            PLACE_LOGGER.info(f"Linking {instance.root} to {shulker_box.name}")
+            PLACE_LOGGER.info("Linking %s to %s", instance.root, shulker_box.name)
 
             resources = set(_rglob(box_root, shulker_box.max_link_depth))
 
@@ -255,10 +257,11 @@ def place_ender_chest(
                         handling = None
                     except OSError:
                         PLACE_LOGGER.error(
-                            f"Error linking shulker box {shulker_box.name}"
-                            f" to instance {instance.name}:"
-                            f"\n  {(instance.root / link_folder)} is a"
-                            " non-empty directory"
+                            "Error linking shulker box %s to instance %s:"
+                            "\n  %s is a non-empty directory",
+                            shulker_box.name,
+                            instance.name,
+                            (instance.root / link_folder),
                         )
                         handling = handle_error(shulker_box)
                 if handling is not None:
@@ -305,10 +308,11 @@ def place_ender_chest(
                                 handling = None
                             except OSError:
                                 PLACE_LOGGER.error(
-                                    f"Error linking shulker box {shulker_box.name}"
-                                    f" to instance {instance.name}:"
-                                    f"\n  {(instance.root / resource_path)}"
-                                    " already exists"
+                                    "Error linking shulker box %s to instance %s:"
+                                    "\n  %s already exists",
+                                    shulker_box.name,
+                                    instance.name,
+                                    instance.root / resource_path,
                                 )
                                 handling = handle_error(shulker_box)
                         if handling is not None:
@@ -329,7 +333,7 @@ def place_ender_chest(
                 # we clean up as we go, just in case of a failure
                 for file in instance_root.rglob("*"):
                     if not file.exists():
-                        PLACE_LOGGER.debug(f"Removing broken link: {file}")
+                        PLACE_LOGGER.debug("Removing broken link: %s", file)
                         file.unlink()
 
             if match_exit == "break":

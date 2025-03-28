@@ -149,7 +149,7 @@ def sync_with_remotes(
         )
     except (FileNotFoundError, ValueError) as bad_chest:
         SYNC_LOGGER.error(
-            f"Could not load EnderChest from {minecraft_root}:\n  {bad_chest}"
+            "Could not load EnderChest from %s:\n  %s", minecraft_root, bad_chest
         )
         return
     if not remotes:
@@ -175,7 +175,8 @@ def sync_with_remotes(
                 if pull_or_push == "pull":
                     SYNC_LOGGER.log(
                         IMPORTANT,
-                        f"{prefix} to pull changes from %s",
+                        "%s to pull changes from %s",
+                        prefix,
                         render_remote(alias, remote_uri),
                     )
                     remote_chest_folder = remote_uri._replace(
@@ -202,8 +203,9 @@ def sync_with_remotes(
                 else:
                     SYNC_LOGGER.log(
                         IMPORTANT,
-                        f"{prefix} to push changes"
-                        f" to {render_remote(alias, remote_uri)}",
+                        "%s to push changes to %s",
+                        prefix,
+                        render_remote(alias, remote_uri),
                     )
                     local_chest = fs.ender_chest_folder(minecraft_root)
                     push(
@@ -225,8 +227,9 @@ def sync_with_remotes(
                 RuntimeError,
             ) as sync_fail:
                 SYNC_LOGGER.warning(
-                    f"Could not sync changes with {render_remote(alias, remote_uri)}:"
-                    f"\n  {sync_fail}"
+                    "Could not sync changes with %s:\n  %s",
+                    render_remote(alias, remote_uri),
+                    sync_fail,
                 )
                 break
             if do_dry_run == runs[-1]:
@@ -236,7 +239,7 @@ def sync_with_remotes(
                     SYNC_LOGGER.error("Aborting")
                     return
             else:
-                SYNC_LOGGER.debug(f"Waiting for {sync_confirm_wait} seconds")
+                SYNC_LOGGER.debug("Waiting for %d seconds", sync_confirm_wait)
                 sleep(sync_confirm_wait)
         else:
             synced_somewhere = True
