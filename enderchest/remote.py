@@ -1,9 +1,9 @@
 """Higher-level functionality around synchronizing with different EnderCherts"""
 
 import logging
+from collections.abc import Sequence
 from pathlib import Path
 from time import sleep
-from typing import Sequence
 from urllib.parse import ParseResult, urlparse
 
 from . import filesystem as fs

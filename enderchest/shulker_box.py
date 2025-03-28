@@ -3,8 +3,9 @@
 import fnmatch
 import os
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable, NamedTuple
+from typing import Any, NamedTuple
 
 import semantic_version as semver
 

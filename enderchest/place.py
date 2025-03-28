@@ -6,8 +6,8 @@ import json
 import logging
 import os
 from collections import defaultdict
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Iterable, Sequence
 
 from . import filesystem as fs
 from .inventory import load_ender_chest, load_ender_chest_instances, load_shulker_boxes

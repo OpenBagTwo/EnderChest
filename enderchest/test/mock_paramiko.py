@@ -3,10 +3,11 @@
 import json
 import os
 import shutil
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from importlib.resources import as_file
 from pathlib import Path
-from typing import Callable, Generator, NamedTuple
+from typing import NamedTuple
 from urllib.parse import ParseResult
 from urllib.request import url2pathname
 

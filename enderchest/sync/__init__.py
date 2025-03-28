@@ -1,10 +1,10 @@
 """Low-level functionality for synchronizing across different machines"""
 
 import importlib
+from collections.abc import Collection, Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Collection, Generator
 from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER

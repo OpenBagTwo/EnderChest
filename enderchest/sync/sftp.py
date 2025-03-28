@@ -3,9 +3,10 @@
 import os
 import posixpath
 import stat
+from collections.abc import Collection, Generator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Collection, Generator
+from typing import Any
 from urllib.parse import ParseResult, unquote
 from urllib.request import url2pathname
 
