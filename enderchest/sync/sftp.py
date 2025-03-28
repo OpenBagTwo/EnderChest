@@ -71,12 +71,13 @@ def connect(
         )
 
         SYNC_LOGGER.warning(
-            f"This machine is not set up for passwordless login to {target}"
+            "This machine is not set up for passwordless login to %s"
             "\nFor instructions on setting up public key-based authentication,"
             " which is both"
             "\nmore convenient and more secure, see:"
             "\nhttps://openbagtwo.github.io/EnderChest"
-            "/dev/suggestions/#passwordless-ssh-authentication"
+            "/dev/suggestions/#passwordless-ssh-authentication",
+            target,
         )
         password = prompt(f"Please enter the password for {target}", is_password=True)
         try:
@@ -192,7 +193,7 @@ def rglob(
     - The paths returned are *absolute*
     - The search is performed depth-first
     """
-    SYNC_LOGGER.debug(f"ls {path}")
+    SYNC_LOGGER.debug("ls %s", path)
     top_level = client.listdir_attr(path)
     contents: list[tuple[Path, paramiko.sftp_attr.SFTPAttributes]] = []
     for remote_object in top_level:

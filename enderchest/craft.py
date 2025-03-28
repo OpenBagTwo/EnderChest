@@ -70,7 +70,7 @@ def craft_ender_chest(
       passing in, say "/"
     """
     if not minecraft_root.exists():
-        CRAFT_LOGGER.error(f"The directory {minecraft_root} does not exist")
+        CRAFT_LOGGER.error("The directory %s does not exist", minecraft_root)
         CRAFT_LOGGER.error("Aborting")
         return
     if (
@@ -89,12 +89,13 @@ def craft_ender_chest(
         try:
             fs.ender_chest_config(minecraft_root, check_exists=True)
             exist_message = (
-                f"There is already an EnderChest installed to {minecraft_root}"
+                "There is already an EnderChest installed to %s",
+                minecraft_root,
             )
             if overwrite:
-                CRAFT_LOGGER.warning(exist_message)
+                CRAFT_LOGGER.warning(*exist_message)
             else:
-                CRAFT_LOGGER.error(exist_message)
+                CRAFT_LOGGER.error(*exist_message)
                 CRAFT_LOGGER.error("Aborting")
                 return
         except FileNotFoundError:
@@ -116,7 +117,7 @@ def craft_ender_chest(
                     ender_chest.register_remote(remote, alias)
             except (RuntimeError, ValueError) as fetch_fail:
                 CRAFT_LOGGER.error(
-                    f"Could not fetch remotes from {copy_from}:\n  {fetch_fail}"
+                    "Could not fetch remotes from %s:\n  %s", copy_from, fetch_fail
                 )
                 CRAFT_LOGGER.error("Aborting.")
                 return
@@ -182,7 +183,7 @@ def craft_shulker_box(
       to ensure that they are valid or actively in use
     """
     if not is_valid_filename(name):
-        CRAFT_LOGGER.error(f"{name} is not a valid name: must be usable as a filename")
+        CRAFT_LOGGER.error("%s is not a valid name: must be usable as a filename", name)
         return
 
     try:
@@ -205,13 +206,14 @@ def craft_shulker_box(
             config_path = fs.shulker_box_config(minecraft_root, name)
             if config_path.exists():
                 exist_message = (
-                    f"There is already a shulker box named {name}"
-                    f" in {fs.ender_chest_folder(minecraft_root)}"
+                    "There is already a shulker box named %s in %s",
+                    name,
+                    fs.ender_chest_folder(minecraft_root),
                 )
                 if overwrite:
-                    CRAFT_LOGGER.warning(exist_message)
+                    CRAFT_LOGGER.warning(*exist_message)
                 else:
-                    CRAFT_LOGGER.error(exist_message)
+                    CRAFT_LOGGER.error(*exist_message)
                     CRAFT_LOGGER.error("Aborting")
                     return
             match_criteria: list[tuple[str, tuple[str, ...]]] = []
@@ -252,14 +254,14 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
     try:
         root = fs.ender_chest_folder(minecraft_root)
         CRAFT_LOGGER.info(
-            f"This will overwrite the EnderChest configuration at {root}."
+            "This will overwrite the EnderChest configuration at %s.", root
         )
         if not confirm(default=False):
             message = f"Aborting: {fs.ender_chest_config(minecraft_root)} exists."
             raise FileExistsError(message)
     except FileNotFoundError:
         # good! Then we don't already have an EnderChest here
-        CRAFT_LOGGER.debug(f"{minecraft_root} does not already contain an EnderChest")
+        CRAFT_LOGGER.debug("%s does not already contain an EnderChest", minecraft_root)
 
     instances: list[InstanceSpec] = []
 
@@ -322,7 +324,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
             remotes.extend(fetch_remotes_from_a_remote_ender_chest(remote_uri))
         except Exception as fetch_fail:
             CRAFT_LOGGER.error(
-                f"Could not fetch remotes from {remote_uri}\n  {fetch_fail}"
+                "Could not fetch remotes from %s\n  %s", remote_uri, fetch_fail
             )
             if not confirm(default=True):
                 continue
@@ -383,7 +385,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         )
         if name in (alias for _, alias in remotes):
             CRAFT_LOGGER.error(
-                f"The name {name} is already in use. Choose a different name."
+                f"The name %s is already in use. Choose a different name.", name
             )
             continue
         break
@@ -425,7 +427,7 @@ def specify_shulker_box_from_prompt(minecraft_root: Path, name: str) -> ShulkerB
                 f"A file named {name} already exists in your EnderChest folder."
             )
         CRAFT_LOGGER.warning(
-            f"There is already a folder named {name} in your EnderChest folder."
+            "There is already a folder named %s in your EnderChest folder.", name
         )
         if not confirm(default=False):
             raise FileExistsError(
@@ -869,7 +871,7 @@ def _prompt_for_instance_numbers(
                 # luckily we don't need to worry about negative numbers
                 index = int(value) - 1
                 if index < 0 or index >= len(instances):
-                    CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
+                    CRAFT_LOGGER.error("Invalid selection: %s is out of range\n", entry)
                     return _prompt_for_instance_numbers(
                         shulker_box, instance_loader(), instance_loader, exclude=exclude
                     )
@@ -878,13 +880,13 @@ def _prompt_for_instance_numbers(
                 bounds = tuple(int(bound) for bound in match.groups())
                 if bounds[0] > bounds[1]:
                     CRAFT_LOGGER.error(
-                        f"Invalid selection: {entry} is not a valid range\n"
+                        "Invalid selection: %s is not a valid range\n", entry
                     )
                     return _prompt_for_instance_numbers(
                         shulker_box, instance_loader(), instance_loader, exclude=exclude
                     )
                 if max(bounds) > len(instances) or min(bounds) < 1:
-                    CRAFT_LOGGER.error(f"Invalid selection: {entry} is out of range\n")
+                    CRAFT_LOGGER.error("Invalid selection: %s is out of range\n", entry)
                     return _prompt_for_instance_numbers(
                         shulker_box, instance_loader(), instance_loader, exclude=exclude
                     )
@@ -904,9 +906,8 @@ def _prompt_for_instance_numbers(
         return shulker_box
 
     CRAFT_LOGGER.info(
-        "You selected to {} the instances:\n%s".format(
-            "explicitly exclude" if exclude else "include"
-        ),
+        "You selected to %s the instances:\n%s",
+        "explicitly exclude" if exclude else "include",
         "\n".join([f"  - {name}" for name in choices]),
     )
     if not confirm(default=True):

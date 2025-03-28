@@ -290,10 +290,11 @@ def generate_sync_report(
     for path_key, report in sorted(summary.items()):
         if isinstance(report, Operation):
             # nice that these verbs follow the same pattern
-            SYNC_LOGGER.info(f"{report.name[:-1].title()}ing {path_key}")
+            SYNC_LOGGER.info(f"{report.name[:-1].title()}ing %s", path_key)
         else:
             SYNC_LOGGER.info(
-                f"Within {path_key}...\n%s",
+                "Within %s...\n%s",
+                path_key,
                 "\n".join(
                     f"  - {op.name[:-1].title()}ing {count} file{'' if count == 1 else 's'}"
                     for op, count in report.items()

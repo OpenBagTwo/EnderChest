@@ -397,9 +397,9 @@ def create_shulker_box(
     root.mkdir(exist_ok=True)
 
     for folder in (*folders, *shulker_box.link_folders):
-        CRAFT_LOGGER.debug(f"Creating {root / folder}")
+        CRAFT_LOGGER.debug("Creating %s", root / folder)
         (root / folder).mkdir(exist_ok=True, parents=True)
 
     config_path = fs.shulker_box_config(minecraft_root, shulker_box.name)
     shulker_box.write_to_cfg(config_path)
-    CRAFT_LOGGER.info(f"Shulker box configuration written to {config_path}")
+    CRAFT_LOGGER.info("Shulker box configuration written to %s", config_path)

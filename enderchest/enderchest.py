@@ -228,7 +228,7 @@ class EnderChest:
             counter += 1
             name = f"{instance.name}.{counter}"
 
-        GATHER_LOGGER.debug(f"Registering instance {name} at {instance.root}")
+        GATHER_LOGGER.debug("Registering instance %s at %s", name, instance.root)
         self._instances.append(instance._replace(name=name))
         return self._instances[-1]
 
@@ -481,4 +481,4 @@ def create_ender_chest(minecraft_root: Path, ender_chest: EnderChest) -> None:
 
     config_path = fs.ender_chest_config(minecraft_root, check_exists=False)
     ender_chest.write_to_cfg(config_path)
-    CRAFT_LOGGER.info(f"EnderChest configuration written to {config_path}")
+    CRAFT_LOGGER.info("EnderChest configuration written to %s", config_path)
