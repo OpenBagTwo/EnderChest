@@ -3,8 +3,8 @@
 import logging
 import re
 from collections import Counter
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
-from typing import Callable, Iterable, Sequence
 from urllib.parse import ParseResult
 
 from pathvalidate import is_valid_filename

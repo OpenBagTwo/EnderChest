@@ -5,9 +5,10 @@ import json
 import logging
 import os
 import re
+from collections.abc import Iterable
 from configparser import ConfigParser, ParsingError
 from pathlib import Path
-from typing import Any, Iterable, TypedDict
+from typing import Any, TypedDict
 from urllib.parse import ParseResult
 
 from . import filesystem as fs

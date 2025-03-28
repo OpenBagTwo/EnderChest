@@ -2,9 +2,9 @@
 
 import json
 import shutil
+from collections.abc import Callable, Iterable
 from importlib.resources import as_file
 from pathlib import Path
-from typing import Callable, Iterable
 
 import pytest
 

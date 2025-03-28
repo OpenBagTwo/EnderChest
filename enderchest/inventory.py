@@ -1,8 +1,8 @@
 """Functionality for resolving EnderChest and shulker box states"""
 
 import logging
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Iterable, Sequence
 from urllib.parse import ParseResult
 
 from enderchest.sync import render_remote

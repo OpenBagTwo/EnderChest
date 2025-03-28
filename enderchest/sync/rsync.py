@@ -5,8 +5,8 @@ import re
 import shutil
 import subprocess
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 from urllib.parse import ParseResult, unquote
 
 from . import SYNC_LOGGER, get_default_netloc, uri_to_ssh

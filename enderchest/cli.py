@@ -6,8 +6,9 @@ import logging
 import os
 import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Iterable, Protocol, Sequence
+from typing import Any, Protocol
 
 from . import craft, gather, inventory, loggers, place, remote, uninstall
 from ._version import get_versions

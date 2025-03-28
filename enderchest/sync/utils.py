@@ -6,9 +6,10 @@ import os
 import socket
 import stat
 from collections import defaultdict
+from collections.abc import Collection, Generator, Iterable
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Collection, Generator, Iterable, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 from urllib.parse import ParseResult, unquote
 from urllib.request import url2pathname
 

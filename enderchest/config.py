@@ -2,10 +2,11 @@
 
 import ast
 import datetime as dt
+from collections.abc import Iterable, Mapping, Sequence
 from configparser import ConfigParser, ParsingError
 from io import StringIO
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any
 
 from ._version import get_versions
 

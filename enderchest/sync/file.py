@@ -5,8 +5,8 @@ import logging
 import os
 import shutil
 import stat
+from collections.abc import Callable, Collection
 from pathlib import Path
-from typing import Callable, Collection
 from urllib.parse import ParseResult
 
 from . import (
