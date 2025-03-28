@@ -795,7 +795,7 @@ class TestPromptByNumber:
   1. official (~/.minecraft)
   2. axolotl (instances/axolotl/.minecraft)
   3. bee (instances/bee/.minecraft)
-  4. Chest Boat (instances/chest-boat/.minecraft)"""
+  4. Chest Boat (instances/chest-boat/minecraft)"""
             )
             return utils.TESTING_INSTANCES
 
@@ -821,7 +821,7 @@ These are the instances that are currently registered:
   1. official (~/.minecraft)
   2. axolotl (instances/axolotl/.minecraft)
   3. bee (instances/bee/.minecraft)
-  4. Chest Boat (instances/chest-boat/.minecraft)""" in "\n".join(
+  4. Chest Boat (instances/chest-boat/minecraft)""" in "\n".join(
             record.msg for record in caplog.records
         )
 

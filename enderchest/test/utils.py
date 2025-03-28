@@ -194,34 +194,34 @@ def populate_mmc_instance_folder(
     name : str, optional
         The name of the instance (if different from the name of the folder)
     """
-    _set_up_minecraft_folder(instance_folder / ".minecraft", official=False)
+    _set_up_minecraft_folder(instance_folder, official=False)
     create_mmc_pack_file(
-        instance_folder, minecraft_version=minecraft_version, loader=loader
+        instance_folder.parent, minecraft_version=minecraft_version, loader=loader
     )
-    create_instance_cfg(instance_folder, name or instance_folder.name)
+    create_instance_cfg(instance_folder.parent, name or instance_folder.parent.name)
 
 
-def populate_instances_folder(instances_folder: Path) -> None:
+def populate_instances_folder(minecraft_root: Path) -> None:
     """Populate an MMC-style "instances" folder according to what's already in
     enderchest.cfg
 
     Parameters
     ----------
-    instances_folder : Path
-        The path of the instances folder
+    minecraft_root : Path
+        The parent of the instances folder
     """
-    instances_folder.mkdir(parents=True)
+    (minecraft_root / "instances").mkdir(parents=True)
     for instance_spec in TESTING_INSTANCES:
         if instance_spec.name == "official":
             continue
 
         populate_mmc_instance_folder(
-            instances_folder / instance_spec.root.parent.name,
+            minecraft_root / instance_spec.root,
             instance_spec.minecraft_versions[0],
             instance_spec.modloader,
         )
     with as_file(testing_files.INSTGROUPS) as instgroups:
-        shutil.copy(instgroups, instances_folder)
+        shutil.copy(instgroups, minecraft_root / "instances")
 
 
 def pre_populate_enderchest(
