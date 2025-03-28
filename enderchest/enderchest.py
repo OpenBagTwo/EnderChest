@@ -1,9 +1,10 @@
 """Specification and configuration of an EnderChest"""
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from socket import gethostname
-from typing import Any, Iterable
+from typing import Any
 from urllib.parse import ParseResult, urlparse
 
 from . import config as cfg

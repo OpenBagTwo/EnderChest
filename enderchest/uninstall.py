@@ -1,10 +1,9 @@
 """Functionality for copying all files into their instances"""
 
-import logging
 import os
 import shutil
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from . import filesystem as fs
 from .enderchest import create_ender_chest

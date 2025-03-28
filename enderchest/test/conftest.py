@@ -1,8 +1,8 @@
 """Useful setup / teardown fixtures"""
 
+from collections.abc import Generator
 from importlib.resources import as_file
 from pathlib import Path
-from typing import Generator
 
 import pytest
 
