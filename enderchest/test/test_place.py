@@ -441,7 +441,9 @@ class TestSingleShulkerPlace:
         assert placements[instance.name].get(resource_path, []) == []
 
         error_log = "\n".join(
-            record.msg for record in caplog.records if record.levelno == logging.ERROR
+            record.getMessage()
+            for record in caplog.records
+            if record.levelno == logging.ERROR
         )
         assert re.search(
             rf"{instance.name}((.|\n)*)screenshots((.|\n)*)empty", error_log
@@ -463,7 +465,9 @@ class TestSingleShulkerPlace:
         assert placements[instance.name].get(resource_path, []) == []
 
         error_log = "\n".join(
-            record.msg for record in caplog.records if record.levelname == "ERROR"
+            record.getMessage()
+            for record in caplog.records
+            if record.levelname == "ERROR"
         )
         assert re.search(
             rf"{instance.name}((.|\n)*)usercache.json((.|\n)*)exists", error_log
@@ -923,7 +927,9 @@ class TestMultiShulkerPlacing:
         # TODO: test placements dict
 
         link_log = "\n".join(
-            record.msg for record in caplog.records if record.levelname == "INFO"
+            record.getMessage()
+            for record in caplog.records
+            if record.levelname == "INFO"
         )
 
         assert (
@@ -960,7 +966,9 @@ class TestMultiShulkerPlacing:
         ).exists()
 
         error_log = "\n".join(
-            record.msg for record in caplog.records if record.levelname == "ERROR"
+            record.getMessage()
+            for record in caplog.records
+            if record.levelname == "ERROR"
         )
 
         assert error_log.endswith(
@@ -991,7 +999,7 @@ class TestMultiShulkerPlacing:
 
         assert len(errors) == 1
         error_idx = errors[0]
-        assert "options.txt already exists" in caplog.records[error_idx].msg
+        assert "options.txt already exists" in caplog.records[error_idx].getMessage()
 
         # note: there's actually no guarantee that this link didn't generate
         #       before the failure...
@@ -1018,7 +1026,7 @@ class TestMultiShulkerPlacing:
         # meta-tests that I found the right line
         assert len(errors) == 1
         error_idx = errors[0]
-        assert "options.txt already exists" in caplog.records[error_idx].msg
+        assert "options.txt already exists" in caplog.records[error_idx].getMessage()
 
         assert (
             caplog.records[error_idx + 1].levelname,
@@ -1090,7 +1098,7 @@ class TestMultiShulkerPlacing:
         ]
         assert len(errors) == 2
         error_idx = errors[0]
-        assert "options.txt already exists" in caplog.records[error_idx].msg
+        assert "options.txt already exists" in caplog.records[error_idx].getMessage()
 
         # and then make sure that it actually did abort
 
@@ -1125,7 +1133,9 @@ class TestMultiShulkerPlacing:
             # meta-tests that I found the right line
             assert len(errors) == 1
             error_idx = errors[0]
-            assert "options.txt already exists" in caplog.records[error_idx].msg
+            assert (
+                "options.txt already exists" in caplog.records[error_idx].getMessage()
+            )
 
             assert conflict_file_path.is_symlink()
         finally:

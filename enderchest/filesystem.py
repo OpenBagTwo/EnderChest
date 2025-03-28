@@ -172,7 +172,7 @@ def shulker_box_configs(minecraft_root: Path) -> Iterable[Path]:
     This method does not check to make sure those config files are valid,
     just that they exist
     """
-    INVENTORY_LOGGER.debug(f"Searching for shulker configs within {minecraft_root}")
+    INVENTORY_LOGGER.debug("Searching for shulker configs within %s", minecraft_root)
     return ender_chest_folder(minecraft_root).glob(f"*/{SHULKER_BOX_CONFIG_NAME}")
 
 

@@ -40,7 +40,7 @@ def get_contents(path: Path) -> list[tuple[Path, os.stat_result]]:
       directories come before their children)
     - The paths returned are all relative to the provided path
     """
-    SYNC_LOGGER.debug(f"Getting contents of {path}")
+    SYNC_LOGGER.debug("Getting contents of %s", path)
     return sorted(
         ((p.relative_to(path), p.lstat()) for p in path.rglob("**/*")),
         key=lambda x: len(str(x[0])),
@@ -79,7 +79,7 @@ def copy(
     """
 
     ignore = ignore_patterns(*exclude)
-    SYNC_LOGGER.debug(f"Ignoring patterns: {exclude}")
+    SYNC_LOGGER.debug("Ignoring patterns: %s", exclude)
 
     destination_path = destination_folder / source_path.name
     if destination_path.is_symlink() and not destination_path.is_dir():
@@ -100,7 +100,7 @@ def copy(
         if not dry_run:
             destination_folder.mkdir(parents=True, exist_ok=True)
 
-    SYNC_LOGGER.debug(f"Copying {source_path} into {destination_folder}")
+    SYNC_LOGGER.debug("Copying %s into %s", source_path, destination_folder)
 
     if source_path.exists() and not source_path.is_dir():
         if destination_path.exists() and is_identical(
@@ -214,22 +214,22 @@ def clean(
 
     for path in contents:
         if path.name in ignore_me:
-            SYNC_LOGGER.debug(f"Skipping {path}")
+            SYNC_LOGGER.debug("Skipping %s", path)
             continue
         if path.is_symlink():
-            SYNC_LOGGER.log(log_level, f"Removing symlink {path}")
+            SYNC_LOGGER.log(log_level, f"Removing symlink %s", path)
             if not dry_run:
                 path.unlink()
         elif path.is_dir():
             clean(path, ignore, dry_run)
         else:
-            SYNC_LOGGER.log(log_level, f"Deleting {path}")
+            SYNC_LOGGER.log(log_level, f"Deleting %s", path)
             if not dry_run:
                 path.unlink()
 
     # check if folder is now empty
     if not list(root.iterdir()):
-        SYNC_LOGGER.log(log_level, f"Removing empty {root}")
+        SYNC_LOGGER.log(log_level, f"Removing empty %s", root)
         if not dry_run:
             root.rmdir()
 

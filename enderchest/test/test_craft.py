@@ -822,7 +822,7 @@ These are the instances that are currently registered:
   2. axolotl (instances/axolotl/.minecraft)
   3. bee (instances/bee/.minecraft)
   4. Chest Boat (instances/chest-boat/minecraft)""" in "\n".join(
-            record.msg for record in caplog.records
+            record.getMessage() for record in caplog.records
         )
 
         assert shulker_box.match_criteria == (

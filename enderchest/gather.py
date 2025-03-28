@@ -58,39 +58,41 @@ def gather_minecraft_instances(
     except FileNotFoundError:
         # because this method can be called during crafting
         ender_chest = EnderChest(minecraft_root)
-    GATHER_LOGGER.debug(f"Searching for Minecraft folders inside {search_path}")
+    GATHER_LOGGER.debug("Searching for Minecraft folders inside %s", search_path)
     instances: list[InstanceSpec] = []
     for folder in fs.minecraft_folders(search_path):
         folder_path = folder.absolute()
-        GATHER_LOGGER.debug(f"Found minecraft installation at {folder}")
+        GATHER_LOGGER.debug("Found minecraft installation at %s", folder)
         if official is not False:
             try:
                 instances.append(gather_metadata_for_official_instance(folder_path))
                 GATHER_LOGGER.info(
-                    f"Gathered official Minecraft installation from {folder}"
+                    "Gathered official Minecraft installation from %s", folder
                 )
                 _check_for_allowed_symlinks(ender_chest, instances[-1])
                 continue
             except ValueError as not_official:
                 GATHER_LOGGER.log(
                     logging.DEBUG if official is None else logging.WARNING,
-                    (f"{folder} is not an official instance:" f"\n{not_official}",),
+                    ("%s is not an official instance:" f"\n%s", folder, not_official),
                 )
         if official is not True:
             try:
                 instances.append(gather_metadata_for_mmc_instance(folder_path))
                 GATHER_LOGGER.info(
-                    f"Gathered MMC-like Minecraft installation from {folder}"
+                    "Gathered MMC-like Minecraft installation from %s", folder
                 )
                 _check_for_allowed_symlinks(ender_chest, instances[-1])
                 continue
             except ValueError as not_mmc:
                 GATHER_LOGGER.log(
                     logging.DEBUG if official is None else logging.WARNING,
-                    f"{folder} is not an MMC-like instance:\n{not_mmc}",
+                    "%s is not an MMC-like instance:\n%s",
+                    folder,
+                    not_mmc,
                 )
         GATHER_LOGGER.warning(
-            f"{folder_path} does not appear to be a valid Minecraft instance"
+            "%s does not appear to be a valid Minecraft instance", folder_path
         )
     for i, mc_instance in enumerate(instances):
         try:
@@ -102,7 +104,7 @@ def gather_minecraft_instances(
             pass  # instance isn't inside the minecraft root
     if not instances:
         GATHER_LOGGER.warning(
-            f"Could not find any Minecraft instances inside {search_path}"
+            "Could not find any Minecraft instances inside %s", search_path
         )
     return instances
 
