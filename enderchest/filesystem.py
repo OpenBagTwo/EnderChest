@@ -1,8 +1,9 @@
 """Functionality for managing the EnderChest and shulker box config files and folders"""
 
+import itertools
 import os
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from .loggers import INVENTORY_LOGGER
 
@@ -193,7 +194,9 @@ def minecraft_folders(search_path: Path) -> Iterable[Path]:
     This method does not check to make sure that those .minecraft folders
     contain valid minecraft instances, just that they exist
     """
-    return search_path.rglob(".minecraft")
+    return itertools.chain(
+        search_path.rglob(".minecraft"), search_path.rglob("minecraft")
+    )
 
 
 def links_into_enderchest(
