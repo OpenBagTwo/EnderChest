@@ -570,7 +570,7 @@ class TestFileSync:
 
     @pytest.mark.parametrize(
         "operation, mode",
-        itertools.product(("pull", "push"), ("immediate", "dry_run_first")),
+        list(itertools.product(("pull", "push"), ("immediate", "dry_run_first"))),
     )
     def test_sync_respects_exclude(
         self, minecraft_root, remote, caplog, operation, mode
