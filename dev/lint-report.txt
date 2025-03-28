@@ -1,23 +1,23 @@
 ************* Module enderchest.shulker_box
-enderchest/shulker_box.py:344:0: C0301: Line too long (116/100) (line-too-long)
-enderchest/shulker_box.py:349:0: C0301: Line too long (119/100) (line-too-long)
-enderchest/shulker_box.py:118:17: W0511: TODO check to make sure properties hasn't been read before (fixme)
-enderchest/shulker_box.py:124:17: W0511: TODO: support specifying filters (and link-folders) in the properties section (fixme)
-enderchest/shulker_box.py:72:4: R0914: Too many local variables (17/15) (too-many-locals)
-enderchest/shulker_box.py:72:4: R0912: Too many branches (17/12) (too-many-branches)
-enderchest/shulker_box.py:195:4: R0911: Too many return statements (7/6) (too-many-return-statements)
-enderchest/shulker_box.py:195:4: R0912: Too many branches (29/12) (too-many-branches)
+enderchest/shulker_box.py:345:0: C0301: Line too long (116/100) (line-too-long)
+enderchest/shulker_box.py:350:0: C0301: Line too long (119/100) (line-too-long)
+enderchest/shulker_box.py:119:17: W0511: TODO check to make sure properties hasn't been read before (fixme)
+enderchest/shulker_box.py:125:17: W0511: TODO: support specifying filters (and link-folders) in the properties section (fixme)
+enderchest/shulker_box.py:73:4: R0914: Too many local variables (17/15) (too-many-locals)
+enderchest/shulker_box.py:73:4: R0912: Too many branches (17/12) (too-many-branches)
+enderchest/shulker_box.py:196:4: R0911: Too many return statements (7/6) (too-many-return-statements)
+enderchest/shulker_box.py:196:4: R0912: Too many branches (29/12) (too-many-branches)
 ************* Module enderchest.gather
-enderchest/gather.py:100:13: W0511: TODO: if not Windows, try making relative to "~" (fixme)
-enderchest/gather.py:109:0: R0914: Too many local variables (16/15) (too-many-locals)
-enderchest/gather.py:168:4: W0612: Unused variable 'weird_json' (unused-variable)
-enderchest/gather.py:189:0: R0914: Too many local variables (20/15) (too-many-locals)
-enderchest/gather.py:189:0: R0912: Too many branches (16/12) (too-many-branches)
-enderchest/gather.py:189:0: R0915: Too many statements (59/50) (too-many-statements)
-enderchest/gather.py:275:8: W0612: Unused variable 'no_json' (unused-variable)
-enderchest/gather.py:279:8: W0612: Unused variable 'bad_json' (unused-variable)
-enderchest/gather.py:283:8: W0612: Unused variable 'weird_json' (unused-variable)
-enderchest/gather.py:292:4: W0612: Unused variable 'no_cfg' (unused-variable)
+enderchest/gather.py:101:13: W0511: TODO: if not Windows, try making relative to "~" (fixme)
+enderchest/gather.py:110:0: R0914: Too many local variables (16/15) (too-many-locals)
+enderchest/gather.py:169:4: W0612: Unused variable 'weird_json' (unused-variable)
+enderchest/gather.py:190:0: R0914: Too many local variables (20/15) (too-many-locals)
+enderchest/gather.py:190:0: R0912: Too many branches (16/12) (too-many-branches)
+enderchest/gather.py:190:0: R0915: Too many statements (59/50) (too-many-statements)
+enderchest/gather.py:276:8: W0612: Unused variable 'no_json' (unused-variable)
+enderchest/gather.py:280:8: W0612: Unused variable 'bad_json' (unused-variable)
+enderchest/gather.py:284:8: W0612: Unused variable 'weird_json' (unused-variable)
+enderchest/gather.py:293:4: W0612: Unused variable 'no_cfg' (unused-variable)
 ************* Module enderchest.instance
 enderchest/instance.py:76:4: C0116: Missing function or method docstring (missing-function-docstring)
 enderchest/instance.py:80:0: R0911: Too many return statements (7/6) (too-many-return-statements)
@@ -35,22 +35,21 @@ enderchest/remote.py:94:0: R0914: Too many local variables (19/15) (too-many-loc
 enderchest/remote.py:94:0: R0912: Too many branches (22/12) (too-many-branches)
 enderchest/remote.py:94:0: R0915: Too many statements (52/50) (too-many-statements)
 ************* Module enderchest.uninstall
-enderchest/uninstall.py:76:16: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
-enderchest/uninstall.py:97:8: W0212: Access to a protected member _instances of a client class (protected-access)
-enderchest/uninstall.py:3:0: W0611: Unused import logging (unused-import)
+enderchest/uninstall.py:75:16: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+enderchest/uninstall.py:96:8: W0212: Access to a protected member _instances of a client class (protected-access)
 ************* Module enderchest.enderchest
-enderchest/enderchest.py:338:17: W0511: TODO: flag requires_rewrite if instance was normalized (fixme)
-enderchest/enderchest.py:50:0: R0902: Too many instance attributes (11/7) (too-many-instance-attributes)
-enderchest/enderchest.py:178:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:185:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:189:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:235:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/enderchest.py:268:4: R0914: Too many local variables (23/15) (too-many-locals)
-enderchest/enderchest.py:326:31: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
-enderchest/enderchest.py:391:8: C0206: Consider iterating with .items() (consider-using-dict-items)
-enderchest/enderchest.py:391:23: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
-enderchest/enderchest.py:268:4: R0912: Too many branches (18/12) (too-many-branches)
-enderchest/enderchest.py:268:4: R0915: Too many statements (64/50) (too-many-statements)
+enderchest/enderchest.py:339:17: W0511: TODO: flag requires_rewrite if instance was normalized (fixme)
+enderchest/enderchest.py:51:0: R0902: Too many instance attributes (11/7) (too-many-instance-attributes)
+enderchest/enderchest.py:179:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:186:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:190:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:236:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/enderchest.py:269:4: R0914: Too many local variables (23/15) (too-many-locals)
+enderchest/enderchest.py:327:31: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+enderchest/enderchest.py:392:8: C0206: Consider iterating with .items() (consider-using-dict-items)
+enderchest/enderchest.py:392:23: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+enderchest/enderchest.py:269:4: R0912: Too many branches (18/12) (too-many-branches)
+enderchest/enderchest.py:269:4: R0915: Too many statements (64/50) (too-many-statements)
 ************* Module enderchest.craft
 enderchest/craft.py:712:9: W0511: TODO: should this be most common among matches? (fixme)
 enderchest/craft.py:31:0: R0912: Too many branches (16/12) (too-many-branches)
@@ -74,42 +73,42 @@ enderchest/craft.py:907:8: C0209: Formatting a regular string which could be an 
 enderchest/craft.py:813:0: R0911: Too many return statements (9/6) (too-many-return-statements)
 enderchest/craft.py:813:0: R0912: Too many branches (14/12) (too-many-branches)
 ************* Module enderchest.cli
-enderchest/cli.py:818:5: W0511: TODO: set log levels per logger based on the command (fixme)
-enderchest/cli.py:821:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
-enderchest/cli.py:27:0: R0903: Too few public methods (1/2) (too-few-public-methods)
-enderchest/cli.py:33:0: R0913: Too many arguments (9/5) (too-many-arguments)
-enderchest/cli.py:33:0: R0917: Too many positional arguments (9/5) (too-many-positional-arguments)
-enderchest/cli.py:159:4: C0415: Import outside toplevel (pytest) (import-outside-toplevel)
-enderchest/cli.py:161:4: C0415: Import outside toplevel (enderchest.test.plugin) (import-outside-toplevel)
-enderchest/cli.py:154:4: W0613: Unused argument 'minecraft_root' (unused-argument)
-enderchest/cli.py:293:0: R0914: Too many local variables (28/15) (too-many-locals)
-enderchest/cli.py:293:0: R0915: Too many statements (76/50) (too-many-statements)
-enderchest/cli.py:731:0: R0914: Too many local variables (18/15) (too-many-locals)
-enderchest/cli.py:796:12: C0103: Variable name "MINECRAFT_ROOT" doesn't conform to snake_case naming style (invalid-name)
+enderchest/cli.py:819:5: W0511: TODO: set log levels per logger based on the command (fixme)
+enderchest/cli.py:822:5: W0511: TODO: when we add log files, set this to minimum log level across all handlers (fixme)
+enderchest/cli.py:28:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+enderchest/cli.py:34:0: R0913: Too many arguments (9/5) (too-many-arguments)
+enderchest/cli.py:34:0: R0917: Too many positional arguments (9/5) (too-many-positional-arguments)
+enderchest/cli.py:160:4: C0415: Import outside toplevel (pytest) (import-outside-toplevel)
+enderchest/cli.py:162:4: C0415: Import outside toplevel (enderchest.test.plugin) (import-outside-toplevel)
+enderchest/cli.py:155:4: W0613: Unused argument 'minecraft_root' (unused-argument)
+enderchest/cli.py:294:0: R0914: Too many local variables (28/15) (too-many-locals)
+enderchest/cli.py:294:0: R0915: Too many statements (76/50) (too-many-statements)
+enderchest/cli.py:732:0: R0914: Too many local variables (18/15) (too-many-locals)
+enderchest/cli.py:797:12: C0103: Variable name "MINECRAFT_ROOT" doesn't conform to snake_case naming style (invalid-name)
 ************* Module enderchest.sync.file
 enderchest/sync/file.py:50:0: R0912: Too many branches (16/12) (too-many-branches)
 enderchest/sync/file.py:330:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 enderchest/sync/file.py:390:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
 ************* Module enderchest.sync.sftp
-enderchest/sync/sftp.py:235:0: R0913: Too many arguments (6/5) (too-many-arguments)
-enderchest/sync/sftp.py:235:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
-enderchest/sync/sftp.py:235:0: R0914: Too many local variables (21/15) (too-many-locals)
-enderchest/sync/sftp.py:286:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
-enderchest/sync/sftp.py:235:0: R0912: Too many branches (18/12) (too-many-branches)
-enderchest/sync/sftp.py:235:0: R0915: Too many statements (52/50) (too-many-statements)
-enderchest/sync/sftp.py:397:0: R0913: Too many arguments (6/5) (too-many-arguments)
-enderchest/sync/sftp.py:397:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
-enderchest/sync/sftp.py:397:0: R0914: Too many local variables (22/15) (too-many-locals)
-enderchest/sync/sftp.py:439:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
-enderchest/sync/sftp.py:397:0: R0912: Too many branches (17/12) (too-many-branches)
-enderchest/sync/sftp.py:397:0: R0915: Too many statements (55/50) (too-many-statements)
+enderchest/sync/sftp.py:236:0: R0913: Too many arguments (6/5) (too-many-arguments)
+enderchest/sync/sftp.py:236:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+enderchest/sync/sftp.py:236:0: R0914: Too many local variables (21/15) (too-many-locals)
+enderchest/sync/sftp.py:287:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+enderchest/sync/sftp.py:236:0: R0912: Too many branches (18/12) (too-many-branches)
+enderchest/sync/sftp.py:236:0: R0915: Too many statements (52/50) (too-many-statements)
+enderchest/sync/sftp.py:398:0: R0913: Too many arguments (6/5) (too-many-arguments)
+enderchest/sync/sftp.py:398:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+enderchest/sync/sftp.py:398:0: R0914: Too many local variables (22/15) (too-many-locals)
+enderchest/sync/sftp.py:440:22: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+enderchest/sync/sftp.py:398:0: R0912: Too many branches (17/12) (too-many-branches)
+enderchest/sync/sftp.py:398:0: R0915: Too many statements (55/50) (too-many-statements)
 ************* Module enderchest.sync.utils
-enderchest/sync/utils.py:160:5: W0511: TODO: the proper type hint is tuple[Path, *tuple[Any, ...]] (fixme)
-enderchest/sync/utils.py:45:11: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
-enderchest/sync/utils.py:62:11: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
-enderchest/sync/utils.py:94:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/sync/utils.py:97:4: C0116: Missing function or method docstring (missing-function-docstring)
-enderchest/sync/utils.py:100:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/sync/utils.py:161:5: W0511: TODO: the proper type hint is tuple[Path, *tuple[Any, ...]] (fixme)
+enderchest/sync/utils.py:46:11: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+enderchest/sync/utils.py:63:11: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+enderchest/sync/utils.py:95:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/sync/utils.py:98:4: C0116: Missing function or method docstring (missing-function-docstring)
+enderchest/sync/utils.py:101:4: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module enderchest.sync.rsync
 enderchest/sync/rsync.py:45:28: W0511: TODO: #124 just use check=True (fixme)
 enderchest/sync/rsync.py:50:8: W0707: Consider explicitly re-raising using 'except (FileNotFoundError, IndexError) as exc' and 'raise RuntimeError('Rsync is not installed or could not be executed.') from exc' (raise-missing-from)
@@ -130,34 +129,34 @@ enderchest/sync/rsync.py:432:0: R0917: Too many positional arguments (9/5) (too-
 enderchest/test/utils.py:451:0: R0913: Too many arguments (6/5) (too-many-arguments)
 enderchest/test/utils.py:451:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
 ************* Module enderchest.test.mock_paramiko
-enderchest/test/mock_paramiko.py:131:8: W0613: Unused argument 'uri' (unused-argument)
-enderchest/test/mock_paramiko.py:131:26: W0613: Unused argument 'timeout' (unused-argument)
+enderchest/test/mock_paramiko.py:132:8: W0613: Unused argument 'uri' (unused-argument)
+enderchest/test/mock_paramiko.py:132:26: W0613: Unused argument 'timeout' (unused-argument)
 ************* Module enderchest.test.testing_files.__init__
 enderchest/test/testing_files/__init__.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[136:143]
-==enderchest.sync.sftp:[365:372]
-    for path, path_stat, operation in sync_diff:
-        match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
-            case (Op.CREATE, True):
-                SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
-                (destination_path / path).mkdir(parents=True, exist_ok=True)
-            case (Op.CREATE, False) | (Op.REPLACE, False):
-                SYNC_LOGGER.debug( (duplicate-code)
+==enderchest.sync.sftp:[366:373]
+        for path, path_stat, operation in sync_diff:
+            match (operation, stat.S_ISDIR(path_stat.st_mode or 0)):
+                case (Op.CREATE, True):
+                    SYNC_LOGGER.debug("Creating directory %s", destination_path / path)
+                    (destination_path / path).mkdir(parents=True, exist_ok=True)
+                case (Op.CREATE, False) | (Op.REPLACE, False):
+                    SYNC_LOGGER.debug( (duplicate-code)
 enderchest/test/testing_files/__init__.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[128:137]
-==enderchest.sync.sftp:[493:502]
-        )
+==enderchest.sync.sftp:[494:503]
+    )
 
-        sync_diff = diff(source_contents, destination_contents)
+    sync_diff = diff(source_contents, destination_contents)
 
-        if dry_run:
-            generate_sync_report(sync_diff)
-            return
+    if dry_run:
+        generate_sync_report(sync_diff)
+        return
 
-        for path, path_stat, operation in sync_diff: (duplicate-code)
+    for path, path_stat, operation in sync_diff: (duplicate-code)
 enderchest/test/testing_files/__init__.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[90:96]
-==enderchest.sync.sftp:[299:305]
+==enderchest.sync.sftp:[300:306]
             return
     elif destination_path.exists() and not destination_path.is_dir():
         SYNC_LOGGER.warning("Deleting file %s", destination_path)
@@ -166,7 +165,7 @@ enderchest/test/testing_files/__init__.py:1:0: R0801: Similar lines in 2 files
         else: (duplicate-code)
 enderchest/test/testing_files/__init__.py:1:0: R0801: Similar lines in 2 files
 ==enderchest.sync.file:[84:89]
-==enderchest.sync.sftp:[291:296]
+==enderchest.sync.sftp:[292:297]
     if destination_path.is_symlink() and not destination_path.is_dir():
         SYNC_LOGGER.warning("Removing symlink %s", destination_path)
         if not dry_run:
@@ -174,5 +173,5 @@ enderchest/test/testing_files/__init__.py:1:0: R0801: Similar lines in 2 files
         else: (duplicate-code)
 
 -----------------------------------
-Your code has been rated at 9.51/10
+Your code has been rated at 9.52/10
 
