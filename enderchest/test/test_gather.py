@@ -39,17 +39,20 @@ class TestGatherInstances:
         )
 
     @pytest.mark.parametrize(
-        "instance, idx",
+        "instance, idx, dot_root",
         (
-            ("axolotl", 1),
-            ("bee", 2),
-            ("chest-boat", 3),
+            ("axolotl", 1, True),
+            ("bee", 2, True),
+            ("chest-boat", 3, False),
         ),
     )
-    def test_mmc_instance_parsing(self, minecraft_root, instance, idx):
+    def test_mmc_instance_parsing(self, minecraft_root, instance, idx, dot_root):
         assert utils.normalize_instance(
             gather.gather_metadata_for_mmc_instance(
-                minecraft_root / "instances" / instance / ".minecraft"
+                minecraft_root
+                / "instances"
+                / instance
+                / (".minecraft" if dot_root else "minecraft")
             )
         ) == utils.normalize_instance(
             # we're not testing aliasing right now
@@ -403,14 +406,17 @@ class TestSymlinkAllowlistHandling:
             )
 
         utils.populate_mmc_instance_folder(
-            minecraft_root / "instances" / "talespin", "1.20", "Quilt", "talespin"
+            minecraft_root / "instances" / "talespin" / "minecraft",
+            "1.20",
+            "Quilt",
+            "talespin",
         )
 
         (
             minecraft_root
             / "instances"
             / "talespin"
-            / ".minecraft"
+            / "minecraft"
             / "allowed_symlinks.txt"
         ).write_text(
             "my_development_folder\n"
@@ -423,7 +429,7 @@ class TestSymlinkAllowlistHandling:
                 minecraft_root
                 / "instances"
                 / "talespin"
-                / ".minecraft"
+                / "minecraft"
                 / "allowed_symlinks.txt"
             )
             .read_text()
@@ -451,7 +457,7 @@ class TestSymlinkAllowlistHandling:
             minecraft_root
             / "instances"
             / "talespin"
-            / ".minecraft"
+            / "minecraft"
             / "allowed_symlinks.txt"
         ).read_text() == "my_development_folder\n"
 
@@ -493,7 +499,7 @@ class TestSymlinkAllowlistHandling:
             minecraft_root
             / "instances"
             / "talespin"
-            / ".minecraft"
+            / "minecraft"
             / "allowed_symlinks.txt"
         ).read_text() == f"my_development_folder\n{ender_chest_path}\n"
 

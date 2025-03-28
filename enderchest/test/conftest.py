@@ -35,7 +35,7 @@ def file_system(tmp_path) -> Generator[tuple[Path, Path], None, None]:
     minecraft_root = tmp_path / "minecraft"
     minecraft_root.mkdir(parents=True)
 
-    populate_instances_folder(minecraft_root / "instances")
+    populate_instances_folder(minecraft_root)
 
     home = tmp_path / "home"
     home.mkdir(parents=True)
@@ -103,7 +103,7 @@ def file_system(tmp_path) -> Generator[tuple[Path, Path], None, None]:
             minecraft_root
             / "instances"
             / "chest-boat"
-            / ".minecraft"
+            / "minecraft"
             / "mods"
             / "BME.jar"
         ): (mod_builds_folder / "BME_1.19_alpha.jar"),

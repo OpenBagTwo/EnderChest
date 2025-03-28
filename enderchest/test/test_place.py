@@ -38,9 +38,9 @@ class TestRglob:
         for instance in utils.TESTING_INSTANCES[1:]:
             expected.extend(
                 (
-                    instances_folder / instance.root.parent.name / ".minecraft",
-                    instances_folder / instance.root.parent.name / "instance.cfg",
-                    instances_folder / instance.root.parent.name / "mmc-pack.json",
+                    minecraft_root / instance.root,
+                    minecraft_root / instance.root.parent / "instance.cfg",
+                    minecraft_root / instance.root.parent / "mmc-pack.json",
                 )
             )
         expected.sort()
@@ -928,6 +928,8 @@ class TestMultiShulkerPlacing:
 
         assert (
             f'{os.path.join(instance, ".minecraft")} to {shulker_box}' in link_log
+        ) or (
+            f'{os.path.join(instance, "minecraft")} to {shulker_box}' in link_log
         ) is should_match
 
     @pytest.mark.parametrize("error_handling", ("ignore", "skip"))
@@ -1048,7 +1050,7 @@ class TestMultiShulkerPlacing:
         assert placements["Chest Boat"][Path("options.txt")] == ["1.19"]
 
         assert (
-            minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
+            minecraft_root / "instances" / "chest-boat" / "minecraft" / "options.txt"
         ).read_text() == "autoJump:true"
         assert not (home / ".minecraft" / "data" / "achievements.txt").exists()
 
@@ -1070,7 +1072,7 @@ class TestMultiShulkerPlacing:
         ).read_text() == "Spelled acheivements correctly!"
 
         assert not (
-            minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
+            minecraft_root / "instances" / "chest-boat" / "minecraft" / "options.txt"
         ).exists()
 
     def test_raise_on_invalid_error_handling_arg(self, home, minecraft_root, caplog):
@@ -1158,7 +1160,7 @@ not-this-chest
         assert "1.19" not in set(sum(placements["Chest Boat"].values(), []))
 
         assert not (
-            minecraft_root / "instances" / "chest-boat" / ".minecraft" / "options.txt"
+            minecraft_root / "instances" / "chest-boat" / "minecraft" / "options.txt"
         ).exists()
 
         assert (
