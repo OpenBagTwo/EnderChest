@@ -62,7 +62,9 @@ class InstanceSpec(NamedTuple):
             tuple(
                 parse_version(version.strip())
                 for version in cfg.parse_ini_list(
-                    section.get("minecraft-version", section.get("minecraft_version"))
+                    section.get(
+                        "minecraft-version", section.get("minecraft_version", "")
+                    )
                 )
             ),
             normalize_modloader(section.get("modloader", None))[0],
