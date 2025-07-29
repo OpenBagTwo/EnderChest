@@ -217,19 +217,19 @@ def clean(
             SYNC_LOGGER.debug("Skipping %s", path)
             continue
         if path.is_symlink():
-            SYNC_LOGGER.log(log_level, f"Removing symlink %s", path)
+            SYNC_LOGGER.log(log_level, "Removing symlink %s", path)
             if not dry_run:
                 path.unlink()
         elif path.is_dir():
             clean(path, ignore, dry_run)
         else:
-            SYNC_LOGGER.log(log_level, f"Deleting %s", path)
+            SYNC_LOGGER.log(log_level, "Deleting %s", path)
             if not dry_run:
                 path.unlink()
 
     # check if folder is now empty
     if not list(root.iterdir()):
-        SYNC_LOGGER.log(log_level, f"Removing empty %s", root)
+        SYNC_LOGGER.log(log_level, "Removing empty %s", root)
         if not dry_run:
             root.rmdir()
 
