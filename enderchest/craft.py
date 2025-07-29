@@ -852,8 +852,7 @@ def _prompt_for_instance_numbers(
     if selections == "":
         if exclude:
             return shulker_box
-        else:
-            selections = "*"
+        selections = "*"
 
     if re.search("[^0-9-,* ]", selections):  # check for invalid characters
         CRAFT_LOGGER.error("Invalid selection.\n")
