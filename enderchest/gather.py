@@ -168,10 +168,11 @@ def gather_metadata_for_official_instance(
         raise ValueError(
             f"{version_manifest_file} is corrupt and could not be parsed"
         ) from bad_json
-    except KeyError as weird_json:
+    except KeyError:
         GATHER_LOGGER.warning(
-            f"{version_manifest_file} has no latest-version lookup."
+            "%s has no latest-version lookup."
             "\nPlease check the parsed metadata to ensure that it's accurate.",
+            version_manifest_file,
         )
         version_lookup = {}
 
@@ -275,16 +276,16 @@ def gather_metadata_for_mmc_instance(
                 if name in metadata.get("instances", ()):
                     instance_groups.append(group)
 
-        except FileNotFoundError as no_json:
+        except FileNotFoundError:
             GATHER_LOGGER.warning(
-                f"Could not find {instgroups_file} and thus could not load tags"
+                "Could not find %s and thus could not load tags", instgroups_file
             )
-        except json.JSONDecodeError as bad_json:
+        except json.JSONDecodeError:
             GATHER_LOGGER.warning(
-                f"{instgroups_file} is corrupt and could not be parsed for tags"
+                "%s is corrupt and could not be parsed for tags", instgroups_file
             )
-        except KeyError as weird_json:
-            GATHER_LOGGER.warning(f"Could not parse tags from {instgroups_file}")
+        except KeyError:
+            GATHER_LOGGER.warning("Could not parse tags from %s", instgroups_file)
 
     instance_cfg = minecraft_folder.parent / "instance.cfg"
 
@@ -292,16 +293,16 @@ def gather_metadata_for_mmc_instance(
         parser = ConfigParser(allow_no_value=True, interpolation=None)
         parser.read_string("[instance]\n" + instance_cfg.read_text())
         name = parser["instance"]["name"]
-    except FileNotFoundError as no_cfg:
+    except FileNotFoundError:
         GATHER_LOGGER.warning(
-            f"Could not find {instance_cfg} and thus could not load the instance name"
+            "Could not find %s and thus could not load the instance name", instance_cfg
         )
-    except ParsingError as no_cfg:
+    except ParsingError:
         GATHER_LOGGER.warning(
-            f"{instance_cfg} is corrupt and could not be parsed the instance name"
+            "is corrupt and could not be parsed the instance name", instance_cfg
         )
-    except KeyError as weird_json:
-        GATHER_LOGGER.warning(f"Could not parse instance name from {instance_cfg}")
+    except KeyError:
+        GATHER_LOGGER.warning(f"Could not parse instance name from %s", instance_cfg)
 
     if name == "":
         raise ValueError("Could not determine the name of the instance.")

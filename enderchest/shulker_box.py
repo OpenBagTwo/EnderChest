@@ -342,13 +342,13 @@ def _matches_string(pattern: str, value: str, case_sensitive: bool = False) -> b
     Parameters
     ----------
     pattern : str
-        The pattern to match. This can be a literal value, an fnmatch pattern with wildcards or a regular expression
-        if quoted and prefixed with an "r".
+        The pattern to match. This can be a literal value, an fnmatch pattern
+        with wildcards or a regular expression if quoted and prefixed with an "r".
     value : str
         The value to check
     case_sensitive : bool, optional
-        Whether the matching is case-sensitive. Default is False. Note that this is **ignored** if the provided pattern
-        is a regular expression.
+        Whether the matching is case-sensitive. Default is False. Note that this
+        is **ignored** if the provided pattern is a regular expression.
 
     Returns
     -------

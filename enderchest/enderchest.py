@@ -320,13 +320,13 @@ class EnderChest:
                 offer_to_update_symlink_allowlist = config[section].getboolean(
                     "offer-to-update-symlink-allowlist", True
                 )
-                if "do-not-sync" in config[section].keys():
+                if "do-not-sync" in config[section]:
                     do_not_sync = cfg.parse_ini_list(
                         config[section]["do-not-sync"] or ""
                     )
-                for setting in folder_defaults.keys():
+                for setting in folder_defaults:
                     setting_key = setting.replace("_", "-")
-                    if setting_key in config[section].keys():
+                    if setting_key in config[section]:
                         folder_defaults[setting] = cfg.parse_ini_list(
                             config[section][setting_key] or ""
                         )
@@ -389,7 +389,7 @@ class EnderChest:
                 )
                 ender_chest.do_not_sync.insert(0, chest_cfg_exclusion)
                 requires_rewrite = True
-        for setting in folder_defaults.keys():
+        for setting in folder_defaults:
             if folder_defaults[setting] is None:
                 folder_defaults[setting] = dict(_DEFAULTS)[setting]  # type: ignore
                 # requires_rewrite = True  # though I'm considering it
