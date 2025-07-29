@@ -385,7 +385,7 @@ def specify_ender_chest_from_prompt(minecraft_root: Path) -> EnderChest:
         )
         if name in (alias for _, alias in remotes):
             CRAFT_LOGGER.error(
-                f"The name %s is already in use. Choose a different name.", name
+                "The name %s is already in use. Choose a different name.", name
             )
             continue
         break
@@ -894,7 +894,7 @@ def _prompt_for_instance_numbers(
                     instance.name for instance in instances[bounds[0] - 1 : bounds[1]]
                 )
             case _:
-                CRAFT_LOGGER.error(f"Invalid selection.\n")
+                CRAFT_LOGGER.error("Invalid selection.\n")
                 return _prompt_for_instance_numbers(
                     shulker_box, instance_loader(), instance_loader, exclude=exclude
                 )

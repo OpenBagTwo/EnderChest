@@ -72,7 +72,7 @@ def break_instances(minecraft_root: Path, instance_names: Iterable[str]) -> None
             instances.append(instance_lookup[name])
         except KeyError:
             BREAK_LOGGER.warning(
-                f'No instance named "%s" is registered to this EnderChest.'
+                'No instance named "%s" is registered to this EnderChest.'
                 "\nSkipping.",
                 name,
             )

@@ -74,7 +74,7 @@ def gather_minecraft_instances(
             except ValueError as not_official:
                 GATHER_LOGGER.log(
                     logging.DEBUG if official is None else logging.WARNING,
-                    ("%s is not an official instance:" f"\n%s", folder, not_official),
+                    ("%s is not an official instance:\n%s", folder, not_official),
                 )
         if official is not True:
             try:
