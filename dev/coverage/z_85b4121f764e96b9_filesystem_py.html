@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for enderchest/filesystem.py: 95%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="covindex.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_85b4121f764e96b9_gather_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.7.1">coverage.py v7.7.1</a>,
-            created at 2025-03-28 20:32 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.1">coverage.py v7.10.1</a>,
+            created at 2025-07-30 12:06 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -160,8 +160,8 @@
     <p class="pln"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">    <span class="key">if</span> <span class="nam">check_exists</span> <span class="key">and</span> <span class="key">not</span> <span class="nam">config_path</span><span class="op">.</span><span class="nam">exists</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">        <span class="key">raise</span> <span class="nam">FileNotFoundError</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">            <span class="str">f"No valid EnderChest installation exists within {minecraft_root}"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">            <span class="str">f"No valid EnderChest installation exists within {minecraft_root}"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">    <span class="key">return</span> <span class="nam">config_path</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -254,7 +254,7 @@
     <p class="pln"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="str">    This method does not check to make sure those config files are valid,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="str">    just that they exist</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t">    <span class="nam">INVENTORY_LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">f"Searching for shulker configs within {minecraft_root}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t">    <span class="nam">INVENTORY_LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Searching for shulker configs within %s"</span><span class="op">,</span> <span class="nam">minecraft_root</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t">    <span class="key">return</span> <span class="nam">ender_chest_folder</span><span class="op">(</span><span class="nam">minecraft_root</span><span class="op">)</span><span class="op">.</span><span class="nam">glob</span><span class="op">(</span><span class="str">f"*/{SHULKER_BOX_CONFIG_NAME}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -277,13 +277,13 @@
     <p class="pln"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="str">    contain valid minecraft instances, just that they exist</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">    <span class="key">return</span> <span class="nam">itertools</span><span class="op">.</span><span class="nam">chain</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">        <span class="nam">search_path</span><span class="op">.</span><span class="nam">rglob</span><span class="op">(</span><span class="str">".minecraft"</span><span class="op">)</span><span class="op">,</span> <span class="nam">search_path</span><span class="op">.</span><span class="nam">rglob</span><span class="op">(</span><span class="str">"minecraft"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">        <span class="nam">search_path</span><span class="op">.</span><span class="nam">rglob</span><span class="op">(</span><span class="str">".minecraft"</span><span class="op">)</span><span class="op">,</span> <span class="nam">search_path</span><span class="op">.</span><span class="nam">rglob</span><span class="op">(</span><span class="str">"minecraft"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t"><span class="key">def</span> <span class="nam">links_into_enderchest</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">    <span class="nam">minecraft_root</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">link</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">check_exists</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t"><span class="op">)</span> <span class="op">-></span> <span class="nam">bool</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">    <span class="nam">minecraft_root</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">link</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">check_exists</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t"><span class="op">)</span> <span class="op">-></span> <span class="nam">bool</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t">    <span class="str">"""Determine whether a symlink's target is inside the EnderChest specified</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t"><span class="str">    by the Minecraft root.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -319,10 +319,10 @@
     <p class="pln"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t"><span class="str">        If the link provided isn't actually a symbolic link</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t238" href="#t238">238</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t239" href="#t239">239</a></span><span class="t">    <span class="nam">chest_folder</span> <span class="op">=</span> <span class="nam">os</span><span class="op">.</span><span class="nam">path</span><span class="op">.</span><span class="nam">normpath</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t">        <span class="nam">ender_chest_folder</span><span class="op">(</span><span class="nam">minecraft_root</span><span class="op">,</span> <span class="nam">check_exists</span><span class="op">=</span><span class="nam">check_exists</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t">        <span class="op">.</span><span class="nam">expanduser</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t">        <span class="op">.</span><span class="nam">absolute</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t243" href="#t243">243</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t">        <span class="nam">ender_chest_folder</span><span class="op">(</span><span class="nam">minecraft_root</span><span class="op">,</span> <span class="nam">check_exists</span><span class="op">=</span><span class="nam">check_exists</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t">        <span class="op">.</span><span class="nam">expanduser</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t">        <span class="op">.</span><span class="nam">absolute</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t243" href="#t243">243</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t244" href="#t244">244</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t245" href="#t245">245</a></span><span class="t">    <span class="nam">target</span> <span class="op">=</span> <span class="nam">os</span><span class="op">.</span><span class="nam">readlink</span><span class="op">(</span><span class="nam">link</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t246" href="#t246">246</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">os</span><span class="op">.</span><span class="nam">path</span><span class="op">.</span><span class="nam">isabs</span><span class="op">(</span><span class="nam">target</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -351,8 +351,8 @@
             <a class="nav" href="covindex.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_85b4121f764e96b9_gather_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.7.1">coverage.py v7.7.1</a>,
-            created at 2025-03-28 20:32 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.1">coverage.py v7.10.1</a>,
+            created at 2025-07-30 12:06 +0000
         </p>
     </div>
 </footer>
