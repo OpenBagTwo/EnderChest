@@ -8,16 +8,19 @@ from tempfile import TemporaryDirectory
 from urllib.parse import ParseResult
 
 from ..loggers import SYNC_LOGGER
-from .utils import Operation as Op
+from .utils import FileOperation as Op
 from .utils import (
+    SyncOperation,
     abspath_from_uri,
     diff,
     filter_contents,
     generate_sync_report,
     get_default_netloc,
     is_identical,
+    load_sync_log,
     render_remote,
     uri_to_ssh,
+    write_sync_log,
 )
 
 PROTOCOLS = ("rsync", "sftp", "file")
@@ -127,6 +130,7 @@ __all__ = [
     "SYNC_LOGGER",
     "PROTOCOLS",
     "DEFAULT_PROTOCOL",
+    "SyncOperation",
     "get_default_netloc",
     "render_remote",
     "remote_file",
@@ -134,4 +138,6 @@ __all__ = [
     "pull",
     "push",
     "uri_to_ssh",
+    "load_sync_log",
+    "write_sync_log",
 ]

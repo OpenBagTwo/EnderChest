@@ -1,7 +1,9 @@
 """Non-implementation-specific syncing utilities"""
 
+import datetime as dt
 import fnmatch
 import getpass
+import json
 import os
 import socket
 import stat
@@ -10,7 +12,7 @@ from collections.abc import Collection, Generator, Iterable
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Protocol, TypeVar
-from urllib.parse import ParseResult, unquote
+from urllib.parse import ParseResult, unquote, urlparse
 from urllib.request import url2pathname
 
 from ..loggers import SYNC_LOGGER
@@ -140,8 +142,8 @@ def is_identical(object_one: _StatLike, object_two: _StatLike) -> bool:
     return True
 
 
-class Operation(Enum):
-    """The recognized sync operations
+class FileOperation(Enum):
+    """The recognized file sync operations
 
     Notes
     -----
@@ -204,7 +206,7 @@ def filter_contents(
 def diff(
     source_files: Iterable[tuple[Path, _StatLike]],
     destination_files: Iterable[tuple[Path, _StatLike]],
-) -> Generator[tuple[Path, _StatLike, Operation], None, None]:
+) -> Generator[tuple[Path, _StatLike, FileOperation], None, None]:
     """Compute the "diff" between the source and destination, enumerating
     all the operations that should be performed so that the destination
     matches the source
@@ -233,21 +235,21 @@ def diff(
     destination_lookup: dict[Path, _StatLike] = dict(destination_files)
     for file, source_stat in source_files:
         if file not in destination_lookup:
-            yield file, source_stat, Operation.CREATE
+            yield file, source_stat, FileOperation.CREATE
         else:
             destination_stat = destination_lookup.pop(file)
             if not is_identical(source_stat, destination_stat):
-                yield file, source_stat, Operation.REPLACE
+                yield file, source_stat, FileOperation.REPLACE
             # else: continue
 
     for file, destination_stat in sorted(
         destination_lookup.items(), key=lambda x: -len(str(x[0]))
     ):
-        yield file, destination_stat, Operation.DELETE
+        yield file, destination_stat, FileOperation.DELETE
 
 
 def generate_sync_report(
-    content_diff: Iterable[tuple[Path, _StatLike, Operation]], depth: int = 2
+    content_diff: Iterable[tuple[Path, _StatLike, FileOperation]], depth: int = 2
 ) -> None:
     """Compile a high-level summary of the outcome of the `diff` method
     and report it to the logging.INFO level
@@ -266,8 +268,12 @@ def generate_sync_report(
     -------
     None
     """
-    summary: dict[Path, dict[Operation, int] | Operation] = defaultdict(
-        lambda: {Operation.CREATE: 0, Operation.REPLACE: 0, Operation.DELETE: 0}
+    summary: dict[Path, dict[FileOperation, int] | FileOperation] = defaultdict(
+        lambda: {
+            FileOperation.CREATE: 0,
+            FileOperation.REPLACE: 0,
+            FileOperation.DELETE: 0,
+        }
     )
 
     for full_path, path_stat, operation in content_diff:
@@ -278,17 +284,17 @@ def generate_sync_report(
             continue
 
         entry = summary[path_key]
-        if isinstance(entry, Operation):
+        if isinstance(entry, FileOperation):
             # then this is described by the top-level op
             continue
-        if operation == Operation.CREATE and stat.S_ISDIR(path_stat.st_mode or 0):
+        if operation == FileOperation.CREATE and stat.S_ISDIR(path_stat.st_mode or 0):
             # don't count folder creations
             continue
 
         entry[operation] += 1
 
     for path_key, report in sorted(summary.items()):
-        if isinstance(report, Operation):
+        if isinstance(report, FileOperation):
             # nice that these verbs follow the same pattern
             SYNC_LOGGER.info(f"{report.name[:-1].title()}ing %s", path_key)
         else:
@@ -300,3 +306,88 @@ def generate_sync_report(
                     for op, count in report.items()
                 ),
             )
+
+
+class SyncOperation(Enum):
+    """The valid sync types"""
+
+    PUSH = "push"
+    PULL = "pull"
+
+
+def load_sync_log(
+    sync_log_file: Path,
+) -> dict[ParseResult, list[tuple[SyncOperation, dt.datetime]]]:
+    """Load the sync log from file
+
+    Parameters
+    ----------
+    sync_log_file : Path
+        The file to parse
+
+    Returns
+    -------
+    dict of URIs to lists of (operation, timestamp) tuples
+        A record of sync operations, keyed by remotes, sorted from most to
+        least recent
+
+    Raises
+    ------
+    OSError
+        If the sync log could not be found, read or parsed
+    """
+    SYNC_LOGGER.debug("Loading sync log from %s", sync_log_file)
+    try:
+        raw_dict: dict[str, list[list[str]]] = json.loads(
+            sync_log_file.read_text("UTF-8")
+        )
+    except json.JSONDecodeError as decode_error:
+        raise OSError(
+            f"{sync_log_file} is corrupted and could not be parsed:"
+        ) from decode_error
+    try:
+        return {
+            urlparse(remote): sorted(
+                [
+                    (
+                        SyncOperation(entry[1]),
+                        dt.datetime.fromisoformat(entry[0]),
+                    )
+                    for entry in log
+                ],
+                key=lambda entry: -entry[1].timestamp(),
+            )
+            for remote, log in raw_dict.items()
+        }
+    except (IndexError, TypeError, ValueError) as parse_error:
+        raise OSError(
+            f"{sync_log_file} is corrupted and could not be parsed:"
+        ) from parse_error
+
+
+def write_sync_log(
+    sync_log_file: Path,
+    sync_log: dict[ParseResult, list[tuple[SyncOperation, dt.datetime]]],
+) -> None:
+    """Write a sync log to file
+
+    Parameters
+    ----------
+    sync_log_file : Path
+        The destination to write the sync log
+    sync_log : dict
+        The sync log to write
+    """
+    sync_log_file.write_text(
+        json.dumps(
+            {
+                remote.geturl(): [
+                    [timestamp.isoformat(), op.value] for op, timestamp in log
+                ]
+                for remote, log in sync_log.items()
+            },
+            indent=4,
+            sort_keys=False,
+        )
+    )
+    SYNC_LOGGER.debug("Sync log written to %s", sync_log_file)

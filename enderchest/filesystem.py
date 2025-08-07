@@ -15,7 +15,7 @@ SHULKER_BOX_CONFIG_NAME = "shulkerbox.cfg"
 
 PLACE_CACHE_NAME = ".place_cache.json"
 
-SYNC_LOG_NAME = ".last_synced.json"
+SYNC_LOG_NAME = ".sync_log.json"
 
 
 def ender_chest_folder(minecraft_root: Path, check_exists: bool = True) -> Path:

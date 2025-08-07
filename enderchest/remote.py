@@ -1,10 +1,8 @@
 """Higher-level functionality around synchronizing with different EnderCherts"""
 
 import datetime as dt
-import json
 import logging
 from collections.abc import Sequence
-from enum import Enum
 from pathlib import Path
 from time import sleep
 from urllib.parse import ParseResult, urlparse
@@ -14,7 +12,16 @@ from . import inventory, place
 from .enderchest import EnderChest
 from .loggers import IMPORTANT, SYNC_LOGGER
 from .prompt import confirm
-from .sync import abspath_from_uri, pull, push, remote_file, render_remote
+from .sync import (
+    SyncOperation,
+    abspath_from_uri,
+    load_sync_log,
+    pull,
+    push,
+    remote_file,
+    render_remote,
+    write_sync_log,
+)
 
 
 def load_remote_ender_chest(uri: str | ParseResult) -> EnderChest:
@@ -92,13 +99,6 @@ def fetch_remotes_from_a_remote_ender_chest(
             f"There are duplicates aliases in the list of remotes pulled from {uri}"
         )
     return remotes
-
-
-class SyncOperation(Enum):
-    """The valid sync types"""
-
-    PUSH = "push"
-    PULL = "pull"
 
 
 def sync_with_remotes(
@@ -263,48 +263,102 @@ def sync_with_remotes(
         SYNC_LOGGER.error("Could not sync with any remote EnderChests")
 
 
-def load_sync_log(
-    minecraft_root: Path,
+def get_last_sync_times(
+    minecraft_root: Path, remote_alias: str | None
 ) -> dict[ParseResult, tuple[SyncOperation, dt.datetime]]:
-    """Load the last-sync log from file
+    """Log the last sync time for each remote (and whether it was a pull or
+    a push)
 
     Parameters
     ----------
     minecraft_root : Path
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder)
+    remote_alias : str, optional
+        The remote to query (if None is specified, all will be reported)
 
     Returns
     -------
     dict
-        A record of when each remote was last synced with, and whether that
-        sync was a pull or a push
-
-    Raises
-    ------
-    OSError
-        If the last-sync log could not be found, read or parsed
+        A mapping of each remote to the timestamp and type of their last
+        sync operation (if `remote_alias` is passed, then the only entry
+        in the dict will be for that remote)
     """
-
-    sync_log_file = fs.sync_log(minecraft_root)
-    SYNC_LOGGER.debug("Loading last-sync log from %s", sync_log_file)
     try:
-        raw_dict: dict[str, list[list[str]]] = json.loads(
-            sync_log_file.read_text("UTF-8")
+        remotes = inventory.load_ender_chest_remotes(
+            minecraft_root, log_level=logging.DEBUG
         )
-    except json.JSONDecodeError as decode_error:
-        raise OSError(
-            f"{sync_log_file} is corrupted and could not be parsed:"
-        ) from decode_error
+    except (FileNotFoundError, ValueError) as bad_chest:
+        SYNC_LOGGER.error(
+            "Could not load EnderChest from %s:\n  %s", minecraft_root, bad_chest
+        )
+        return {}
     try:
-        return {
-            urlparse(remote): (
-                SyncOperation(log[0][1]),
-                dt.datetime.fromisoformat(log[0][0]),
+        sync_log = load_sync_log(fs.sync_log(minecraft_root))
+    except OSError as bad_sync_log:
+        SYNC_LOGGER.error(bad_sync_log)
+        return {}
+    last_synced: dict[ParseResult, tuple[SyncOperation, dt.datetime]] = {}
+
+    for remote, alias in remotes:
+        if remote_alias and alias != remote_alias:
+            continue
+        log = sync_log.get(remote, [])
+        if len(log) == 0:
+            SYNC_LOGGER.info("This EnderChest has never synced with %s", alias)
+        else:
+            SYNC_LOGGER.info(
+                "This EnderChest last %s %s at %s",
+                "pushed to" if log[0][0] == SyncOperation.PUSH else "pulled from",
+                alias,
+                log[0][1].astimezone().isoformat(),
             )
-            for remote, log in raw_dict.items()
-        }
-    except (AttributeError, IndexError, TypeError, ValueError) as parse_error:
-        raise OSError(
-            f"{sync_log_file} is corrupted and could not be parsed:"
-        ) from parse_error
+            last_synced[remote] = log[0]
+
+    return last_synced
+
+
+def log_sync(
+    sync_log_file: Path,
+    remote: ParseResult,
+    operation: SyncOperation,
+    keep: int = 1,
+    since: dt.datetime | None = None,
+) -> None:
+    """Log a completed sync to file
+
+     Parameters
+     ----------
+    sync_log_file : Path
+         The destination to write the sync log
+     remote : URI
+         The remote that was synced
+     operation : SyncOperation
+         Whether the sync was a pull or a push
+     keep : int, optional
+         The number of syncs to keep in the log entry for this remote. Default is 1
+         (only keep last sync)
+     since : dt.datetime, optional
+         Discard all syncs that occurred before the specified timestamp. If None is
+         specified, this parameter is ignored
+    """
+    if sync_log_file.exists():
+        try:
+            sync_log = load_sync_log(sync_log_file)
+        except OSError as bad_sync_log:
+            SYNC_LOGGER.warning(bad_sync_log)
+            SYNC_LOGGER.warning("Overwrite with a new file?")
+            if not confirm(False):
+                SYNC_LOGGER.error("Aborting")
+                return
+            sync_log = {}
+    else:
+        sync_log = {}
+
+    log = [(operation, dt.datetime.now().astimezone())] + sync_log.get(remote, [])
+    if since:
+        log = list(
+            filter(lambda entry: entry[1].astimezone() > since.astimezone(), log)
+        )
+    sync_log[remote] = log[:keep]
+    write_sync_log(sync_log_file, sync_log)
