@@ -1,7 +1,10 @@
 """Higher-level functionality around synchronizing with different EnderCherts"""
 
+import datetime as dt
+import json
 import logging
 from collections.abc import Sequence
+from enum import Enum
 from pathlib import Path
 from time import sleep
 from urllib.parse import ParseResult, urlparse
@@ -91,9 +94,16 @@ def fetch_remotes_from_a_remote_ender_chest(
     return remotes
 
 
+class SyncOperation(Enum):
+    """The valid sync types"""
+
+    PUSH = "push"
+    PULL = "pull"
+
+
 def sync_with_remotes(
     minecraft_root: Path,
-    pull_or_push: str,
+    pull_or_push: SyncOperation,
     dry_run: bool = False,
     sync_confirm_wait: bool | int | None = None,
     **sync_kwargs,
@@ -106,7 +116,7 @@ def sync_with_remotes(
         The root directory that your minecraft stuff (or, at least, the one
         that's the parent of your EnderChest folder). This will be used to
         construct relative paths.
-    pull_or_push : str
+    pull_or_push : enum
         "pull" or "push"
     dry_run: bool, optional
          Perform a dry run of the sync operation, reporting the operations\
@@ -132,10 +142,6 @@ def sync_with_remotes(
 
     This method will attempt to push local changes to *every* remote
     """
-    if pull_or_push not in ("pull", "push"):
-        raise ValueError(
-            'Invalid choice for sync operation. Choices are "pull" and "push"'
-        )
     try:
         if sync_confirm_wait is None:
             sync_confirm_wait = inventory.load_ender_chest(
@@ -172,7 +178,7 @@ def sync_with_remotes(
                 prefix = "Attempting"
             try:
                 remote_chest = load_remote_ender_chest(remote_uri)
-                if pull_or_push == "pull":
+                if pull_or_push == SyncOperation.PULL:
                     SYNC_LOGGER.log(
                         IMPORTANT,
                         "%s to pull changes from %s",
@@ -243,7 +249,7 @@ def sync_with_remotes(
                 sleep(sync_confirm_wait)
         else:
             synced_somewhere = True
-            if pull_or_push == "pull":
+            if pull_or_push == SyncOperation.PULL:
                 if this_chest.place_after_open and not dry_run:
                     place.place_ender_chest(
                         minecraft_root,
@@ -255,3 +261,50 @@ def sync_with_remotes(
                 break
     if not synced_somewhere:
         SYNC_LOGGER.error("Could not sync with any remote EnderChests")
+
+
+def load_sync_log(
+    minecraft_root: Path,
+) -> dict[ParseResult, tuple[SyncOperation, dt.datetime]]:
+    """Load the last-sync log from file
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+
+    Returns
+    -------
+    dict
+        A record of when each remote was last synced with, and whether that
+        sync was a pull or a push
+
+    Raises
+    ------
+    OSError
+        If the last-sync log could not be found, read or parsed
+    """
+
+    sync_log_file = fs.sync_log(minecraft_root)
+    SYNC_LOGGER.debug("Loading last-sync log from %s", sync_log_file)
+    try:
+        raw_dict: dict[str, list[list[str]]] = json.loads(
+            sync_log_file.read_text("UTF-8")
+        )
+    except json.JSONDecodeError as decode_error:
+        raise OSError(
+            f"{sync_log_file} is corrupted and could not be parsed:"
+        ) from decode_error
+    try:
+        return {
+            urlparse(remote): (
+                SyncOperation(log[0][1]),
+                dt.datetime.fromisoformat(log[0][0]),
+            )
+            for remote, log in raw_dict.items()
+        }
+    except (AttributeError, IndexError, TypeError, ValueError) as parse_error:
+        raise OSError(
+            f"{sync_log_file} is corrupted and could not be parsed:"
+        ) from parse_error

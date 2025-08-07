@@ -143,12 +143,16 @@ def _gather_server(
 
 def _open(minecraft_root: Path, verbosity: int = 0, **kwargs):
     """Router for open verb"""
-    remote.sync_with_remotes(minecraft_root, "pull", verbosity=verbosity, **kwargs)
+    remote.sync_with_remotes(
+        minecraft_root, remote.SyncOperation.PULL, verbosity=verbosity, **kwargs
+    )
 
 
 def _close(minecraft_root: Path, verbosity: int = 0, **kwargs):
     """Router for close verb"""
-    remote.sync_with_remotes(minecraft_root, "push", verbosity=verbosity, **kwargs)
+    remote.sync_with_remotes(
+        minecraft_root, remote.SyncOperation.PUSH, verbosity=verbosity, **kwargs
+    )
 
 
 def _test(

@@ -495,7 +495,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 
@@ -523,7 +523,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 
@@ -539,7 +539,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 
@@ -567,7 +567,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 
@@ -594,7 +594,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 
@@ -608,7 +608,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 
@@ -643,7 +643,7 @@ class TestOpen:
         sync_log: list[tuple[str, str, dict]] = []
 
         def mock_sync(root, op, **kwargs) -> None:
-            sync_log.append((root, op, kwargs))
+            sync_log.append((root, op.value, kwargs))
 
         monkeypatch.setattr(remote, "sync_with_remotes", mock_sync)
 

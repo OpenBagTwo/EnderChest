@@ -15,6 +15,8 @@ SHULKER_BOX_CONFIG_NAME = "shulkerbox.cfg"
 
 PLACE_CACHE_NAME = ".place_cache.json"
 
+SYNC_LOG_NAME = ".last_synced.json"
+
 
 def ender_chest_folder(minecraft_root: Path, check_exists: bool = True) -> Path:
     """Given a minecraft root directory, return the path to the EnderChest
@@ -151,6 +153,28 @@ def place_cache(minecraft_root: Path) -> Path:
     This method does not check if the cache file is valid or if it even exists
     """
     return ender_chest_folder(minecraft_root) / PLACE_CACHE_NAME
+
+
+def sync_log(minecraft_root: Path) -> Path:
+    """Given a minecraft root directory, return the path to the EnderChest
+    sync log file
+
+    Parameters
+    ----------
+    minecraft_root : Path
+        The root directory that your minecraft stuff (or, at least, the one
+        that's the parent of your EnderChest folder)
+
+    Returns
+    -------
+    Path
+        The path to the sync log file
+
+    Notes
+    -----
+    This method does not check if the file is valid or if it even exists
+    """
+    return ender_chest_folder(minecraft_root) / SYNC_LOG_NAME
 
 
 def shulker_box_configs(minecraft_root: Path) -> Iterable[Path]:

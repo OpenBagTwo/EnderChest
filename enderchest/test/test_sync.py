@@ -1,6 +1,5 @@
 """Tests around file transfer functionality"""
 
-import itertools
 import json
 import logging
 import os
@@ -230,7 +229,7 @@ class TestFileSync:
             monkeypatch.chdir(minecraft_root.parent)
 
         gather.update_ender_chest(root, remotes=(remote,))
-        r.sync_with_remotes(root, "pull", verbosity=-1)
+        r.sync_with_remotes(root, r.SyncOperation.PULL, verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
         ).read_text() == "it's okay"
@@ -240,14 +239,14 @@ class TestFileSync:
 
     def test_open_dry_run_does_nothing(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", dry_run=True)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, dry_run=True)
         assert not (
             minecraft_root / "EnderChest" / "optifine" / "mods" / "optifine.jar"
         ).exists()
 
     def test_open_overwrites_local_files(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "vanilla" / "conflict" / "diamond.png"
         ).read_text() == "lab-grown!"
@@ -257,7 +256,7 @@ class TestFileSync:
 
     def test_open_copies_over_symlinks(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "1.19" / "saves" / "olam"
         ).resolve() != (minecraft_root / "worlds" / "olam")
@@ -270,7 +269,7 @@ class TestFileSync:
         if not delete:
             sync_kwargs["delete"] = False
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", **sync_kwargs)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, **sync_kwargs)
         assert not (minecraft_root / "EnderChest" / "global").exists() == delete
 
     def test_open_does_not_overwrite_enderchest_by_default(
@@ -278,14 +277,14 @@ class TestFileSync:
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         original_config = fs.ender_chest_config(minecraft_root).read_text()
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
         assert original_config == fs.ender_chest_config(minecraft_root).read_text()
 
     def test_open_does_not_touch_top_level_dot_folders_by_default(
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / ".git" / "log"
         ).read_text() == "i committed some stuff\n"
@@ -294,7 +293,7 @@ class TestFileSync:
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
         assert (
             minecraft_root / "EnderChest" / "1.19" / ".bobby" / "chunk"
         ).read_text() == "chunky\n"
@@ -328,7 +327,9 @@ class TestFileSync:
         enderchest.place_after_open = place_after
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
-        r.sync_with_remotes(minecraft_root, "pull", dry_run=dry_run, verbosity=-1)
+        r.sync_with_remotes(
+            minecraft_root, r.SyncOperation.PULL, dry_run=dry_run, verbosity=-1
+        )
         assert (
             test_path.read_text("utf-8") == "lab-grown!"
             if place_after and not dry_run
@@ -356,7 +357,7 @@ class TestFileSync:
         enderchest.place_after_open = True
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
 
         failure_messages = {
             "no_remotes": "EnderChest has no remotes. Aborting.",
@@ -386,18 +387,20 @@ class TestFileSync:
         enderchest.place_after_open = True
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1, dry_run=True)
+        r.sync_with_remotes(
+            minecraft_root, r.SyncOperation.PULL, verbosity=-1, dry_run=True
+        )
 
         assert not test_path.exists()
 
-    @pytest.mark.parametrize("operation", ("pull", "push"))
+    @pytest.mark.parametrize("operation", r.SyncOperation, ids=lambda op: op.value)
     def test_timeout_argument_doesnt_obviously_break_(
         self, minecraft_root, remote, operation
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, operation, verbosity=-1, timeout=15)
 
-    @pytest.mark.parametrize("operation", ("pull", "push"))
+    @pytest.mark.parametrize("operation", r.SyncOperation, ids=lambda op: op.value)
     def test_identical_objects_are_not_synced(
         self, minecraft_root, remote, caplog, operation
     ):
@@ -423,14 +426,14 @@ class TestFileSync:
             monkeypatch.chdir(minecraft_root.parent)
 
         gather.update_ender_chest(root, remotes=(remote,))
-        r.sync_with_remotes(root, "push", verbosity=-1)
+        r.sync_with_remotes(root, r.SyncOperation.PUSH, verbosity=-1)
         assert (
             fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
             / "conflict"
             / "diamond.png"
         ).read_text() == "sparkle"
 
-    @pytest.mark.parametrize("operation", ("pull", "push"))
+    @pytest.mark.parametrize("operation", r.SyncOperation, ids=lambda op: op.value)
     def test_objects_are_identical_after_sync(
         self, minecraft_root, remote, caplog, operation
     ):
@@ -452,7 +455,7 @@ class TestFileSync:
 
     def test_close_dry_run_does_nothing(self, minecraft_root, remote):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "push", dry_run=True)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, dry_run=True)
         assert (
             fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
             / "conflict"
@@ -470,7 +473,7 @@ class TestFileSync:
         if not delete:
             sync_kwargs["delete"] = False
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "push", **sync_kwargs)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, **sync_kwargs)
         assert (
             not (
                 fs.ender_chest_folder(sync.abspath_from_uri(remote)) / "optifine"
@@ -482,7 +485,7 @@ class TestFileSync:
         self, minecraft_root, remote
     ):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, verbosity=-1)
         assert not (
             fs.ender_chest_folder(sync.abspath_from_uri(remote)) / ".git"
         ).exists()
@@ -498,7 +501,7 @@ class TestFileSync:
             fs.shulker_box_root(minecraft_root, "vanilla") / "super_secret.txt"
         ).write_text("I'm not sharing!!!")
 
-        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, verbosity=-1)
         assert not (
             fs.shulker_box_root(sync.abspath_from_uri(remote), "vanilla")
             / "super_secret.txt"
@@ -522,7 +525,7 @@ class TestFileSync:
         remote_chest.do_not_sync.remove("EnderChest/.*")
         remote_chest.write_to_cfg(fs.ender_chest_config(sync.abspath_from_uri(remote)))
 
-        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, verbosity=-1)
         assert (
             sync.abspath_from_uri(remote) / "EnderChest" / ".git" / "log"
         ).read_text() == "i committed some stuff\n"
@@ -531,7 +534,7 @@ class TestFileSync:
         gather.update_ender_chest(
             minecraft_root, remotes=(remote, "prayer://unreachable")
         )
-        r.sync_with_remotes(minecraft_root, "pull", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, verbosity=-1)
         warnings = [
             record.msg for record in caplog.records if record.levelname == "WARNING"
         ]
@@ -542,7 +545,7 @@ class TestFileSync:
         gather.update_ender_chest(
             minecraft_root, remotes=(remote, "prayer://unreachable")
         )
-        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, verbosity=-1)
         warnings = [
             record.getMessage()
             for record in caplog.records
@@ -567,13 +570,11 @@ class TestFileSync:
         enderchest.place_after_open = True
         enderchest.write_to_cfg(fs.ender_chest_config(minecraft_root))
 
-        r.sync_with_remotes(minecraft_root, "push", verbosity=-1)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PUSH, verbosity=-1)
         assert not test_path.exists()
 
-    @pytest.mark.parametrize(
-        "operation, mode",
-        list(itertools.product(("pull", "push"), ("immediate", "dry_run_first"))),
-    )
+    @pytest.mark.parametrize("mode", ("immediate", "dry_run_first"))
+    @pytest.mark.parametrize("operation", r.SyncOperation, ids=lambda op: op.value)
     def test_sync_respects_exclude(
         self, minecraft_root, remote, caplog, operation, mode
     ):
@@ -858,7 +859,7 @@ class TestRsyncSync(TestFileSync):
     ):
         caplog.set_level(logging.DEBUG)
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", dry_run=True)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, dry_run=True)
         info_log = ""
         debug_log = ""
         for record in caplog.records:
@@ -888,7 +889,7 @@ class TestRsyncSync(TestFileSync):
     ):
         caplog.set_level(logging.DEBUG)
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
-        r.sync_with_remotes(minecraft_root, "pull", dry_run=True)
+        r.sync_with_remotes(minecraft_root, r.SyncOperation.PULL, dry_run=True)
         info_log = ""
         debug_log = ""
         for record in caplog.records:
@@ -910,7 +911,7 @@ class TestRsyncSync(TestFileSync):
         assert f"Creating EnderChest{os.path.sep}optifine" in info_log
 
     @pytest.mark.parametrize("verbosity", ("v", "vv", "vvv"))
-    @pytest.mark.parametrize("op", ("pull", "push"))
+    @pytest.mark.parametrize("op", r.SyncOperation, ids=lambda op: op.value)
     def test_verbose_dry_run_doesnt_summarize(
         self, monkeypatch, minecraft_root, remote, caplog, op, verbosity
     ):
@@ -934,7 +935,7 @@ class TestRsyncSync(TestFileSync):
         # this wouldn't be in the summary
         assert f"EnderChest{os.sep}global{os.sep}config" in debug_log
 
-    @pytest.mark.parametrize("op", ("pull", "push"))
+    @pytest.mark.parametrize("op", r.SyncOperation, ids=lambda op: op.value)
     def test_quiet_dry_run_still_reports_stats(
         self, minecraft_root, remote, caplog, op
     ):
@@ -949,7 +950,7 @@ class TestRsyncSync(TestFileSync):
 
         assert "Number of created files" in printed_log
 
-    @pytest.mark.parametrize("op", ("pull", "push"))
+    @pytest.mark.parametrize("op", r.SyncOperation, ids=lambda op: op.value)
     def test_super_quiet_dry_run_still_reports_stats(
         self, minecraft_root, remote, caplog, op
     ):
@@ -962,7 +963,7 @@ class TestRsyncSync(TestFileSync):
 
         assert "Number of created files" in printed_log
 
-    @pytest.mark.parametrize("op", ("pull", "push"))
+    @pytest.mark.parametrize("op", r.SyncOperation, ids=lambda op: op.value)
     def test_regular_sync_only_reports_overall_progress(
         self, minecraft_root, remote, capfd, op
     ):
@@ -977,7 +978,7 @@ class TestRsyncSync(TestFileSync):
         assert "Number of created files" in printed_log
 
     @pytest.mark.parametrize("verbosity", ("v", "vv", "vvv"))
-    @pytest.mark.parametrize("op", ("pull", "push"))
+    @pytest.mark.parametrize("op", r.SyncOperation, ids=lambda op: op.value)
     def test_verbose_sync_reports_file_level_progress(
         self, minecraft_root, remote, capfd, op, verbosity
     ):
@@ -990,7 +991,7 @@ class TestRsyncSync(TestFileSync):
         assert "xfr#2, to-chk=" in printed_log
 
     @pytest.mark.parametrize("quietude", ("q", "qq", "qqq"))
-    @pytest.mark.parametrize("op", ("pull", "push"))
+    @pytest.mark.parametrize("op", r.SyncOperation, ids=lambda op: op.value)
     def test_quiet_sync_is_silent(self, minecraft_root, remote, capfd, op, quietude):
         gather.update_ender_chest(minecraft_root, remotes=(remote,))
         r.sync_with_remotes(minecraft_root, op, verbosity=-len(quietude))
